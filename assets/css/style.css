@@ -306,7 +306,7 @@ html, body {
 
 /* Navigation */
 .site-navigation {
-  background-color: #196fc2;
+  background-color: black;
 }
 
 .site-navigation.affix {
@@ -425,7 +425,7 @@ html, body {
 /* HERO
 ================================================== */
 .hero {
-  background: url(../img/code.jpg) center no-repeat;
+  background: url(../img/code.png) center no-repeat;
   height: 100%;
   width: 100%;
   display: table;

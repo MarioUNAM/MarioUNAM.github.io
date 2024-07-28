@@ -94,8 +94,20 @@ html, body {
   box-shadow: 4px 4px 0px 0px #dddddd;
 }
 
+.big-rectangle img{
+  width: 100%;
+  height: 100%;
+  position: absolute;
+  top: 45%;
+  left: 45%;
+  transform: translate(-50%, -50%) rotate(-45deg);
+  -webkit-transform: translate(-50%, -50%) rotate(-45deg);
+  -moz-transform: translate(-50%, -50%) rotate(-45deg);
+  -o-transform: translate(-50%, -50%) rotate(-45deg);
+  -ms-transform: translate(-50%, -50%) rotate(-45deg);
+}
+
 .rectangle i,
-.big-rectangle img,
 .rectangle span,
 .rectangle img {
   position: absolute;
@@ -279,7 +291,7 @@ html, body {
   position: relative;
   padding: 0 30px 0 15px;
   height: 60px;
-  background-color: #004b91;
+  background-color: ;
   z-index: 2;
 }
 
@@ -290,7 +302,7 @@ html, body {
   height: 100%;
   top: 0;
   right: 0;
-  background-color: #004b91;
+  background-color:#747474;
 }
 
 .site-logo a {
@@ -300,7 +312,7 @@ html, body {
   margin-top: 17px;
   font-size: 26px;
   line-height: 26px;
-  color: #6F6F6F;
+  color: #F7F7F7;
   text-transform: uppercase;
 }
 
@@ -2036,7 +2048,7 @@ html, body {
 
 /* Sections background: Quote */
 .section-quote {
-  background: url(../img/quote.jpg) center no-repeat fixed;
+  background: url(../img/codegreen.gif);
 }
 
 .section-quote p {

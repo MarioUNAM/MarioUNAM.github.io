@@ -2256,6 +2256,10 @@ textarea.form-control {
   color: #747474;
 }
 
+.mirectangulo{
+overflow: hidden;
+}
+
 /* FOOTER
 ================================================== */
 .site-footer .container-fluid {

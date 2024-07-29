@@ -36,7 +36,7 @@ html, body {
  * Background colors 
  */
 .blue-bg {
-  background-color: #196fc2;
+  background-color: #747474;
 }
 
 /* 
@@ -44,13 +44,9 @@ html, body {
  */
 .btn {
   font-family: "Varela", sans-serif;
-  background-color: #196fc2;
-  padding: 0 15px;
+  background-color: transparent;
   color: #ffffff;
   height: 44px;
-  line-height: 42px;
-  border-radius: 0;
-  border: 1px solid #196fc2;
   text-transform: uppercase;
 }
 
@@ -70,8 +66,8 @@ html, body {
 .btn-inverted:hover,
 .btn-inverted:focus {
   color: #ffffff;
-  background-color: #196fc2;
-  border-color: #196fc2;
+  background-color: #747474;
+  border-color: #747474;
 }
 
 /* 
@@ -129,7 +125,7 @@ html, body {
   margin: 0 auto;
   width: 230px;
   height: 230px;
-  background-color: #196fc2;
+  background-color: black;
   border: 0;
   transform: translate(-50%, -50%) rotate(45deg);
   -webkit-transform: translate(-50%, -50%) rotate(45deg);
@@ -273,8 +269,6 @@ html, body {
 /* Image responsive */
 .img-res {
   display: block;
-  width: 100vw;
-  height: 100vh;
   max-width: 100%;
   max-height: 100%;
   object-fit: cover;
@@ -617,7 +611,7 @@ html, body {
   font-family: "Varela", sans-serif;
   margin: 0;
   font-size: 32px;
-  color: #196fc2;
+  color: #747474;
   text-align: center;
   text-transform: uppercase;
 }
@@ -896,7 +890,7 @@ html, body {
 .progress {
   position: relative;
   margin: 10px 0 0;
-  background-color: #666;
+  background-color: #f6f6f6;
   border-radius: 0;
   height: 10px;
   box-shadow: none;
@@ -905,7 +899,7 @@ html, body {
 
 .progress-bar {
   position: relative;
-  background-color: #196fc2;
+  background-color: #747474;
   height: 10px;
 }
 
@@ -918,7 +912,7 @@ html, body {
   height: 0;
   border-style: solid;
   border-width: 0 15px 20px 15px;
-  border-color: transparent transparent #196fc2 transparent;
+  border-color: transparent transparent #3F3F3F transparent;
   z-index: 2;
 }
 
@@ -1039,7 +1033,7 @@ html, body {
 .section-services .nav-tabs .col-sm-fifth {
   height: 160px;
   background: #ffffff;
-  border-bottom: 3px solid #196fc2;
+  border-bottom: 3px solid #747474;
 }
 
 .section-services .carousel-inner {
@@ -1088,8 +1082,8 @@ html, body {
 }
 
 .section-services .item-controls .carousel-control:hover, .section-services .item-controls .carousel-control:focus {
-  background-color: #196fc2;
-  border-color: #196fc2;
+  background-color: #747474;
+  border-color: #747474;
 }
 
 .section-services .item-controls .carousel-control:hover i, .section-services .item-controls .carousel-control:focus i {
@@ -1157,7 +1151,7 @@ html, body {
 
 .carousel-indicators .active .col-sm-fifth,
 .carousel-indicators a:hover .col-sm-fifth {
-  background-color: #196fc2;
+  background-color: #747474;
 }
 
 .carousel-indicators .active .service p,
@@ -1180,7 +1174,7 @@ html, body {
 }
 
 .carousel-indicators .active .service .rectangle {
-  color: #196fc2;
+  color: #747474;
 }
 
 .carousel-indicators .active .service:after {
@@ -1194,7 +1188,7 @@ html, body {
   height: 0;
   border-style: solid;
   border-width: 15px 15px 0 15px;
-  border-color: #196fc2 transparent transparent transparent;
+  border-color: #747474 transparent transparent transparent;
   z-index: 99;
 }
 
@@ -1292,7 +1286,7 @@ html, body {
 
 .review-carousel .slick.rectangle:hover {
   background-color: #ffffff;
-  color: #196fc2;
+  color: #747474;
 }
 
 .review-carousel .slick.rectangle.slick-next {
@@ -1468,7 +1462,7 @@ html, body {
 .team-member .team-member-back {
   padding: 0 20px;
   display: table;
-  background: #196fc2;
+  background: #747474;
   text-align: center;
   color: #ffffff;
   transform: rotateY(-180deg);
@@ -1542,11 +1536,11 @@ html, body {
 /* Section: History */
 .section-history {
   padding: 70px 0;
-  background-color: #f6f6f6;
+  background-color: white;
 }
 
 .section-history .section-diff-title h2 {
-  color: #196fc2;
+  color: #747474;
 }
 
 .section-history .section-diff-title p {
@@ -1566,7 +1560,7 @@ html, body {
   position: absolute;
   content: " ";
   width: 1px;
-  background-color: #dddddd;
+  background-color: black;
   left: 50%;
   margin-left: -0.5px;
 }
@@ -1593,7 +1587,17 @@ html, body {
   position: relative;
   left: 0.5px;
   margin: 0 auto;
-  background-color: #ffffff;
+  background-color: white;
+  box-shadow: none;
+}
+
+.timeline > li.timeline-start .rectangle:hover, .timeline > li.timeline-end .rectangle:hover {
+  display: block;
+  position: relative;
+  left: 0.5px;
+  margin: 0 auto;
+  color: white;
+  background-color: black;
   box-shadow: none;
 }
 
@@ -1601,6 +1605,7 @@ html, body {
   font-size: 12px;
   text-transform: uppercase;
 }
+
 
 .timeline > li > .timeline-panel {
   width: 50%;
@@ -1648,7 +1653,7 @@ html, body {
 
 .timeline > li > .timeline-panel .timeline-heading .timeline-date {
   padding: 0 10px;
-  background-color: #196fc2;
+  background-color: #747474;
 }
 
 .timeline > li > .timeline-panel .timeline-heading .timeline-position {
@@ -1679,7 +1684,7 @@ html, body {
   top: 15px;
   left: 0.5px;
   right: 0;
-  background-color: #666;
+  background-color: black;
   width: 20px;
   height: 20px;
   border: 0;
@@ -1703,6 +1708,16 @@ html, body {
 .timeline > li.timeline-inverted .timeline-panel:before {
   left: 0px;
   right: auto;
+}
+
+.migris{
+  filter: grayscale(100%);
+  -webkit-filter: grayscale(100%)
+}
+
+.migris:hover {
+  filter: grayscale(0%);
+  -webkit-filter: grayscale(0%);
 }
 
 @media only screen and (max-width: 767px) {
@@ -1795,7 +1810,7 @@ html, body {
   margin: 0;
   border-top: 1px solid #f6f6f6;
   border-right: 1px solid #f6f6f6;
-  border-bottom: 2px solid #196fc2;
+  border-bottom: 2px solid #747474;
   height: 47px;
 }
 
@@ -1813,16 +1828,17 @@ html, body {
   border-left: 1px solid #f6f6f6;
   border-right: 1px solid #f6f6f6;
   text-transform: uppercase;
+  color: #747474;
 }
 
 .portfolio-sorting li a:hover, .portfolio-sorting li a.active {
-  background-color: #196fc2;
+  background-color: #747474;
   color: #ffffff;
-  border-color: #196fc2;
+  border-color: #747474;
 }
 
 .portfolio-sorting li a:hover:after, .portfolio-sorting li a.active:after {
-  border-color: #196fc2;
+  border-color: #747474;
 }
 
 .portfolio-sorting li a:after, .portfolio-sorting li a.acitve:after {
@@ -1850,7 +1866,7 @@ html, body {
   height: 0;
   border-style: solid;
   border-width: 10px 10px 0 10px;
-  border-color: #196fc2 transparent transparent transparent;
+  border-color: #747474 transparent transparent transparent;
   z-index: 99;
 }
 
@@ -1881,7 +1897,7 @@ html, body {
 
 .portfolio-item .portfolio-item-thumb:after {
   content: '';
-  background-color: #196fc2;
+  background-color: #747474;
   position: absolute;
   left: 0;
   right: 0;
@@ -1892,6 +1908,11 @@ html, body {
   -o-transition: all 0.25s ease-in-out;
   -moz-transition: all 0.25s ease-in-out;
   transition: all 0.25s ease-in-out;
+}
+
+.portfolio-item .portfolio-item-thumb .rectangle i{
+  color: black;
+
 }
 
 .portfolio-item .portfolio-item-thumb .rectangle {
@@ -1966,8 +1987,8 @@ html, body {
 }
 
 .portfolio-item:hover .portfolio-item-thumb .rectangle:hover {
-  background-color: #196fc2;
-  border-color: #196fc2;
+  background-color: #747474;
+  border-color: #747474;
   color: #ffffff;
 }
 
@@ -1980,6 +2001,8 @@ html, body {
   opacity: 1;
   visibility: visible;
 }
+
+
 
 @media only screen and (max-width: 991px) {
   /* Section: Portfolio */
@@ -2057,12 +2080,12 @@ html, body {
 }
 
 .section-quote p span {
-  color: #196fc2;
+  color: #5D5D5D;
 }
 
 /* Sections background: Me */
 .section-me {
-  background: url(../img/portfolio-7.jpg) center no-repeat fixed;
+  background: url(../img/me.jpeg) center no-repeat fixed;
 }
 
 .section-me h2 {
@@ -2169,7 +2192,6 @@ html, body {
 }
 
 .section-contact .btn {
-  margin-top: 50px;
   width: 100%;
   border-color: #dddddd;
   color: #000;
@@ -2177,7 +2199,7 @@ html, body {
 
 .section-contact .btn:hover {
   color: #ffffff;
-  border-color: #196fc2;
+  border-color: #747474;
 }
 
 .form-control {
@@ -2190,7 +2212,7 @@ html, body {
 
 .form-control:focus {
   box-shadow: none;
-  border-bottom-color: #196fc2;
+  border-bottom-color: #747474;
 }
 
 textarea.form-control {
@@ -2231,7 +2253,7 @@ textarea.form-control {
 
 .section-networks a:hover, .section-networks a:focus {
   background-color: #ffffff;
-  color: #196fc2;
+  color: #747474;
 }
 
 /* FOOTER
@@ -2262,7 +2284,7 @@ textarea.form-control {
 }
 
 .site-footer ul a:hover {
-  color: #196fc2;
+  color: #747474;
 }
 
 .site-footer a {
@@ -2272,7 +2294,7 @@ textarea.form-control {
 }
 
 .site-footer a:hover {
-  color: #196fc2;
+  color: #747474;
 }
 
 .site-footer .rectangle {
@@ -2290,7 +2312,7 @@ textarea.form-control {
 }
 
 .site-footer .rectangle:hover {
-  background-color: #196fc2;
+  background-color: #747474;
   color: #ffffff;
 }
 
@@ -2347,7 +2369,7 @@ textarea.form-control {
   top: -20px;
   height: 40px;
   width: 40px;
-  background-color: #196fc2;
+  background-color: #747474;
   color: #ffffff;
   box-shadow: none;
   border: 0;
@@ -2356,8 +2378,8 @@ textarea.form-control {
 
 .modal-header .rectangle:hover {
   background-color: #ffffff;
-  color: #196fc2;
-  border-color: #196fc2;
+  color: #747474;
+  border-color: #747474;
 }
 
 .modal-header,
@@ -2371,8 +2393,8 @@ textarea.form-control {
 
 .modal-footer .btn:hover {
   background-color: #ffffff;
-  color: #196fc2;
-  border-color: #196fc2;
+  color: #747474;
+  border-color: #747474;
 }
 
 .modal-content {

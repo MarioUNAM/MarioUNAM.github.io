@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <title>Sobre y Carta Animados</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      background: url('../assets/img/fondocarta.png') no-repeat center center fixed;
+      background-size: cover;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      font-family: 'Arial', sans-serif;
+    }
+
+    .envelope {
+      position: relative;
+      width: 300px;
+      height: 200px;
+      background: #fff;
+      border: 2px solid #ccc;
+      border-radius: 10px;
+      cursor: pointer;
+      perspective: 800px;
+      animation: shake 2s infinite;
+      transition: transform 0.5s;
+    }
+    .envelope.open {
+      animation: none;
+    }
+
+    /* Solapa invertida */
+    .flap {
+      position: absolute;
+      top: 0;
+      left: 50%;
+      width: 0;
+      height: 0;
+      border-left: 150px solid transparent;
+      border-right: 150px solid transparent;
+      border-top: 100px solid #f1c40f;
+      transform-origin: top center;
+      transition: transform 0.6s ease-out, border-top-color 0.6s ease-out;
+      backface-visibility: hidden;
+      z-index: 2;
+      transform: translateX(-50%);
+    }
+
+    /* Triángulo extra al abrir */
+    .envelope::after {
+      content: '';
+      position: absolute;
+      top: -100px;
+      left: 50%;
+      width: 0;
+      height: 0;
+      border-left: 150px solid transparent;
+      border-right: 150px solid transparent;
+      border-bottom: 100px solid #f1c40f;
+      transform: translateX(-50%);
+      opacity: 0;
+      z-index: 4;
+    }
+    .envelope.open::after {
+      animation: showExtra 2s forwards;
+    }
+
+    @keyframes showExtra {
+      0%, 80% { opacity: 1; }
+      100%   { opacity: 0; }
+    }
+
+    .heart {
+      position: absolute;
+      top: 80px;
+      left: 50%;
+      transform: translateX(-50%);
+      font-size: 2em;
+      color: red;
+      z-index: 3;
+      pointer-events: none;
+    }
+
+    /* Carta con scroll para mensajes largos */
+    .letter {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 90%;
+      max-width: 260px;
+      max-height: 300px;
+      background: #f5f5dc;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+      box-shadow: 0 8px 16px rgba(0,0,0,0.2);
+      transform: translate(-50%, -50%) scale(0.5) rotate(-45deg);
+      opacity: 0;
+      z-index: 5;
+      transition: transform 0.6s ease-out, opacity 0.6s ease-out;
+      overflow-y: auto;
+      padding: 20px;
+      box-sizing: border-box;
+    }
+    .letter-content {
+      font-size: 0.95em;
+      line-height: 1.4;
+      text-align: justify;
+      word-break: break-word;
+      white-space: pre-wrap; /* respeta saltos de línea */
+    }
+
+    .envelope.open .flap {
+      transform: translateX(-50%) rotateX(-180deg);
+      border-top-color: #d4ac0d;
+    }
+    .envelope.open .letter {
+  /* Baja el valor de ‘top’ para que empiece más abajo */
+  top: 60%;            /* antes era 50% */
+  /* Ajusta el translateY para que no suba tanto */
+  transform: translate(-50%, -100%) scale(1) rotate(-20deg);
+  opacity: 1;
+  transition-delay: 0.6s;
+}
+
+    @keyframes shake {
+      0% { transform: translate(1px, 1px) rotate(0deg); }
+      10% { transform: translate(-1px, -2px) rotate(-1deg); }
+      20% { transform: translate(-3px, 0px) rotate(1deg); }
+      30% { transform: translate(3px, 2px) rotate(0deg); }
+      40% { transform: translate(1px, -1px) rotate(1deg); }
+      50% { transform: translate(-1px, 2px) rotate(-1deg); }
+      60% { transform: translate(-3px, 1px) rotate(0deg); }
+      70% { transform: translate(3px, 1px) rotate(-1deg); }
+      80% { transform: translate(-1px, -1px) rotate(1deg); }
+      90% { transform: translate(1px, 2px) rotate(0deg); }
+      100% { transform: translate(1px, -2px) rotate(-1deg); }
+    }
+  </style>
+</head>
+<body>
+<script>
+  // Creamos el audio silenciado para sortear el autoplay block
+  const musica = new Audio('../assets/audio/senora.mp3');
+  musica.loop = true;
+  musica.volume = 1;
+  musica.muted = true;          // arranca silenciado
+  musica.play().catch(e => console.warn('No se pudo reproducir:', e));
+
+  // Al primer clic en la página, desmuteamos y seguimos reproduciendo
+  function desbloquearAudio() {
+    musica.muted = false;
+    // opcional: musica.play() para asegurar que siga sonando
+    musica.play().catch(() => {});
+    document.removeEventListener('click', desbloquearAudio);
+  }
+  document.addEventListener('click', desbloquearAudio, { once: true });
+</script>
+  <div class="envelope" onclick="this.classList.toggle('open')">
+    <div class="flap"></div>
+    <div class="heart">❤️</div>
+    <div class="letter">
+      <div class="letter-content">
+Solo quería decirte gracias por todo lo que has hecho por mí y por mi hermano 🙏💖.
+
+Siempre has estado ahí, dándolo todo sin pedir nada a cambio. Me encanta ver cómo sigues creciendo, aprendiendo y saliendo adelante, incluso cuando las cosas no han sido fáciles 🌱✨.
+
+Te admiro muchísimo y me siento muy afortunado de tener esta relación tan chida contigo 🤗❤️.
+
+Te amo mucho 😘.
+        
+¡Feliz Día de las Madres! 🌷👩‍👦
+      </div>
+    </div>
+  </div>
+
+</body>
+</html>

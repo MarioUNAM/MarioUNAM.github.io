@@ -70,6 +70,22 @@ html, body {
   border-color: #747474;
 }
 
+.hero-cta {
+  margin-top: 30px;
+}
+
+.hero-cta .btn {
+  padding: 12px 32px;
+  border-width: 2px;
+  letter-spacing: 1px;
+  font-weight: 600;
+}
+
+.hero-cta .btn:focus-visible {
+  outline: 3px solid rgba(255, 255, 255, 0.55);
+  outline-offset: 4px;
+}
+
 /* 
  * Rectangle 
  */
@@ -141,6 +157,56 @@ html, body {
 .medium-rectangle {
   width: 75px;
   height: 75px;
+}
+
+.section-highlights {
+  background-color: #f5f7fa;
+}
+
+.section-highlights .section-subtitle span {
+  color: #747474;
+  letter-spacing: 2px;
+}
+
+.section-highlights .highlight-card {
+  background-color: #ffffff;
+  border-radius: 12px;
+  padding: 35px 28px 40px;
+  margin-bottom: 30px;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.08);
+  text-align: left;
+  height: 100%;
+}
+
+.section-highlights .highlight-card h3 {
+  margin-top: 28px;
+  font-weight: 700;
+  color: #2b2b2b;
+}
+
+.section-highlights .highlight-card p {
+  color: #505050;
+  line-height: 1.7;
+  margin-bottom: 0;
+}
+
+.section-highlights .highlight-card .rectangle {
+  border-color: #747474;
+  box-shadow: none;
+}
+
+.section-highlights .highlight-card .rectangle i {
+  color: #747474;
+}
+
+@media (max-width: 767px) {
+  .hero-cta {
+    text-align: center;
+  }
+
+  .section-highlights .highlight-card {
+    text-align: center;
+  }
 }
 
 /*

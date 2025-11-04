@@ -35,6 +35,8 @@ Las carpetas `template1/`, `template2/` y `template3/` conservan variaciones o p
 ### Personalización de contenidos
 
 - **Secciones principales:** Edita `index.html` para actualizar textos, secciones de experiencia y enlaces. Cada bloque está etiquetado con comentarios HTML descriptivos.
+- **Llamado a la acción principal:** Dentro del bloque `.hero-content` de `index.html` puedes personalizar el botón con clase `btn btn-inverted` para apuntar a tu CV en PDF, LinkedIn u otro perfil profesional.
+- **Bloque de highlights:** La sección `#highlights` agrega tarjetas con métricas, certificaciones y reconocimientos. Ajusta títulos y textos en `index.html` y, si necesitas modificar espaciados o colores, utiliza las clases `.section-highlights` y `.highlight-card` definidas en `assets/css/style.css`.
 - **Galería y modales:** Las tarjetas del portafolio se definen alrededor de la línea 360 de `index.html` y se enlazan con modales `#portfolioItem1` a `#portfolioItem4` definidos al final del archivo. Para añadir un nuevo proyecto, duplica una tarjeta, crea un modal con un identificador único y actualiza el contenido (título, descripción, imágenes y enlaces).
 - **Imágenes y multimedia:** Coloca imágenes en `assets/img/` y actualiza las rutas dentro de `index.html` o los modales correspondientes. Para mantener el desempeño, optimiza las imágenes antes de subirlas.
 - **Dimensiones sugeridas de imágenes:**

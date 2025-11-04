@@ -537,11 +537,11 @@ html, body {
   padding: 0 15px;
   margin: 30px auto 0;
   text-align: center;
-  text-transform: uppercase;
 }
 
 .hero-content .hero-job {
   font-size: 18px;
+  text-transform: uppercase;
 }
 
 .hero-content .hero-job span {
@@ -552,6 +552,7 @@ html, body {
 .hero-content .hero-job-desc {
   font-size: 14px;
   max-width: 700px;
+  text-transform: none;
 }
 
 .hero-arrow {

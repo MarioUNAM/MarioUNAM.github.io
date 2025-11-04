@@ -368,70 +368,74 @@
 
                 <div class="portfolio">
                     <ul class="portfolio-sorting list-inline">
-                        <li><a href="#" class=" active" data-group="all">all</a></li>
-                        <li><a href="#" class="" data-group="webdesign">Web Design</a></li>
-                        <li><a href="#" class="" data-group="javadev">Java Development</a></li>
-                        <li><a href="#" class="" data-group="others">Others</a></li>
+                        <li><a href="#" class="active" data-group="all">all</a></li>
+                        <li><a href="#" data-group="automation">Automation</a></li>
+                        <li><a href="#" data-group="data">Data Analytics</a></li>
+                        <li><a href="#" data-group="mdm">MDM</a></li>
                     </ul><!-- /.portfolio-sorting  -->
 
                     <div id="grid">
-                        
-                        <!-- Portfolio item --> 
-                        <div class="col-md-3 col-sm-4 col-xs-6" data-groups='["webdesign"]'>
+
+                        <!-- Portfolio item: Automation -->
+                        <div class="col-md-3 col-sm-4 col-xs-6" data-groups='["automation"]'>
                             <div class="portfolio-item">
                                 <div class="portfolio-item-thumb">
-                                    <img src="assets/img/template1.png" alt="Miniatura de la plantilla web de invitación 1" class="img-res" loading="lazy">
+                                    <img src="assets/img/portfolio-automation-rpa.svg" alt="Bot RPA conciliando facturas en SAP" class="img-res" loading="lazy">
                                     <a href="#" class="rectangle" data-toggle="modal" data-target="#portfolioItem1">
                                         <i class="fa fa-plus"></i>
                                     </a>
                                 </div><!-- /.portfolio-item-thumb  -->
                                 <div class="portfolio-info">
-                                    <a href="./template1/index.html"><h3>Plantilla invitacion 1</h3></a>
-                                    <p>Web Development</p>
+                                    <a href="./projects/rpa-invoice-automation.html"><h3>Bot RPA conciliación SAP</h3></a>
+                                    <p>Automatización financiera</p>
                                 </div><!-- /.portfolio-info  -->
                             </div>
                         </div><!-- /.col-md-3  -->
-                        <div class="col-md-3 col-sm-4 col-xs-6" data-groups='["webdesign"]'>
+
+                        <!-- Portfolio item: Data analytics -->
+                        <div class="col-md-3 col-sm-4 col-xs-6" data-groups='["data"]'>
                             <div class="portfolio-item">
                                 <div class="portfolio-item-thumb">
-                                    <img src="assets/img/template2.png" alt="Miniatura de la plantilla web de invitación 2" class="img-res" loading="lazy">
+                                    <img src="assets/img/portfolio-data-analytics.svg" alt="Dashboard comercial en Power BI" class="img-res" loading="lazy">
                                     <a href="#" class="rectangle" data-toggle="modal" data-target="#portfolioItem2">
                                         <i class="fa fa-plus" aria-hidden="true"></i>
                                     </a>
                                 </div><!-- /.portfolio-item-thumb  -->
                                 <div class="portfolio-info">
-                                    <a href="./template2/index.html"><h3>Plantilla invitacion 2</h3></a>
-                                    <p>Web Design</p>
+                                    <a href="./projects/data-analytics-dashboard.html"><h3>Dashboard comercial Power BI</h3></a>
+                                    <p>Analítica de datos</p>
                                 </div><!-- /.portfolio-info  -->
                             </div>
                         </div><!-- /.col-md-3  -->
-                        <!-- Portfolio item -->
-                        <div class="col-md-3 col-sm-4 col-xs-6" data-groups='["webdesign"]'>
+
+                        <!-- Portfolio item: MDM -->
+                        <div class="col-md-3 col-sm-4 col-xs-6" data-groups='["mdm"]'>
                             <div class="portfolio-item">
                                 <div class="portfolio-item-thumb">
-                                    <img src="assets/img/paginaPresenta.png" alt="Vista previa de la plantilla de página de presentación" class="img-res" loading="lazy">
+                                    <img src="assets/img/portfolio-mdm-ebx.svg" alt="Vista del hub de datos maestros en EBX" class="img-res" loading="lazy">
                                     <a href="#" class="rectangle" data-toggle="modal" data-target="#portfolioItem3">
                                         <i class="fa fa-plus"></i>
                                     </a>
                                 </div><!-- /.portfolio-item-thumb  -->
                                 <div class="portfolio-info">
-                                    <a href="./template3/index.html"><h3>Plantilla Pagina presentación</h3></a>
-                                    <p>Web Development</p>
+                                    <a href="./projects/ebx-mdm-hub.html"><h3>Hub MDM con TIBCO EBX</h3></a>
+                                    <p>Gobernanza de datos</p>
                                 </div><!-- /.portfolio-info  -->
                             </div>
                         </div>
-                        <!-- Portfolio item -->
-                        <div class="col-md-3 col-sm-4 col-xs-6" data-groups='["webdesign"]'>
+
+                        <!-- Portfolio item: Data quality automation -->
+                        <div class="col-md-3 col-sm-4 col-xs-6" data-groups='["automation","data"]'>
                             <div class="portfolio-item">
                                 <div class="portfolio-item-thumb">
-                                    <img src="assets/img/paginaPresenta.png" alt="Vista previa del proyecto Carta a mamá" class="img-res" loading="lazy">
+                                    <img src="assets/img/portfolio-data-quality.svg" alt="Monitoreo automatizado de calidad de datos" class="img-res" loading="lazy">
                                     <a href="#" class="rectangle" data-toggle="modal" data-target="#portfolioItem4">
                                         <i class="fa fa-plus"></i>
                                     </a>
                                 </div><!-- /.portfolio-item-thumb  -->
                                 <div class="portfolio-info">
-                                    <a href="./CartaMama/index.html"><h3>Carta a mamá</h3></a>
-                                    <p>Web Development</p>
+                                    <a href="./projects/data-quality-observability.html"><h3>Observabilidad de datos 24/7</h3></a>
+                                    <p>Calidad y automatización</p>
                                 </div><!-- /.portfolio-info  -->
                             </div>
                         </div>
@@ -526,14 +530,14 @@
             <div class="modal-content">
                 <div class="modal-header">
                     <a class="rectangle" data-dismiss="modal"><i class="fa fa-times"></i></a>
-                    <img class="img-res" src="assets/img/portfolio-1.jpg" alt="Captura detallada de la plantilla de invitación 1" loading="lazy">
+                    <img class="img-res" src="assets/img/portfolio-automation-rpa.svg" alt="Detalle del bot RPA conciliando facturas en SAP" loading="lazy">
                 </div>
                 <div class="modal-body">
-                    <h4 class="modal-title">Invitación digital "Jack &amp; Rose"</h4>
-                    <p>Clon personalizado de la plantilla Jack &amp; Rose con carrusel a pantalla completa, cuenta regresiva para el gran día, secciones para la historia de la pareja y un formulario RSVP integrado.</p>
+                    <h4 class="modal-title">Bot RPA conciliación SAP</h4>
+                    <p>Automatización desarrollada en Python + Selenium para cruzar estados de cuenta bancarios con SAP FI, generar ajustes contables y notificar excepciones a tesorería vía correo y Teams.</p>
                 </div>
                 <div class="modal-footer">
-                    <a href="./template1/index.html" class="btn">Visit Page</a>
+                    <a href="./projects/rpa-invoice-automation.html" class="btn">Ver caso</a>
                 </div>
             </div><!-- /.modal-content -->
         </div><!-- /.modal-dialog -->
@@ -544,14 +548,14 @@
             <div class="modal-content">
                 <div class="modal-header">
                     <a class="rectangle" data-dismiss="modal"><i class="fa fa-times"></i></a>
-                    <img class="img-res" src="assets/img/portfolio-2.jpg" alt="Captura detallada de la plantilla de invitación 2" loading="lazy">
+                    <img class="img-res" src="assets/img/portfolio-data-analytics.svg" alt="Visualización del dashboard comercial en Power BI" loading="lazy">
                 </div>
                 <div class="modal-body">
-                    <h4 class="modal-title">Landing "Wedding."</h4>
-                    <p>Adaptación del tema Wedding de FreeHTML5 con navegación multipágina, animaciones parallax, galería fotográfica, cronograma del evento y llamado a reservar la fecha.</p>
+                    <h4 class="modal-title">Dashboard comercial Power BI</h4>
+                    <p>Modelo semántico y dashboard interactivo que integra POS, CRM y objetivos trimestrales para seguimiento de KPIs, predicciones de ventas y alertas automáticas en Power BI Service.</p>
                 </div>
                 <div class="modal-footer">
-                    <a href="./template2/index.html" class="btn">Visit Page</a>
+                    <a href="./projects/data-analytics-dashboard.html" class="btn">Ver demo</a>
                 </div>
             </div><!-- /.modal-content -->
         </div><!-- /.modal-dialog -->
@@ -562,14 +566,14 @@
             <div class="modal-content">
                 <div class="modal-header">
                     <a class="rectangle" data-dismiss="modal"><i class="fa fa-times"></i></a>
-                    <img class="img-res" src="assets/img/portfolio-4.jpg" alt="Captura de la página de presentación en desktop" loading="lazy">
+                    <img class="img-res" src="assets/img/portfolio-mdm-ebx.svg" alt="Configuración del hub de datos maestros en TIBCO EBX" loading="lazy">
                 </div>
                 <div class="modal-body">
-                    <h4 class="modal-title">Portafolio "Strata"</h4>
-                    <p>Implementación del portfolio Strata de HTML5UP, con diseño responsivo tipo one-page, galería filtrable para trabajos recientes y formulario de contacto integrado.</p>
+                    <h4 class="modal-title">Hub MDM con TIBCO EBX</h4>
+                    <p>Implementación de un repositorio centralizado de productos y clientes con workflows de aprobación, integraciones REST y reglas de calidad para asegurar datos confiables en toda la organización.</p>
                 </div>
                 <div class="modal-footer">
-                    <a href="./template3/index.html" class="btn">Visit Page</a>
+                    <a href="./projects/ebx-mdm-hub.html" class="btn">Ver caso</a>
                 </div>
             </div><!-- /.modal-content -->
         </div><!-- /.modal-dialog -->
@@ -580,14 +584,14 @@
             <div class="modal-content">
                 <div class="modal-header">
                     <a class="rectangle" data-dismiss="modal"><i class="fa fa-times"></i></a>
-                    <img class="img-res" src="assets/img/portfolio-3.jpg" alt="Mockup genérico de proyecto web creativo" loading="lazy">
+                    <img class="img-res" src="assets/img/portfolio-data-quality.svg" alt="Panel de observabilidad para calidad de datos" loading="lazy">
                 </div>
                 <div class="modal-body">
-                    <h4 class="modal-title">Carta animada para mamá</h4>
-                    <p>Micrositio interactivo con un sobre animado en CSS y carta desplegable, ambientado con ilustraciones y música de fondo que se activa con la interacción del usuario.</p>
+                    <h4 class="modal-title">Observabilidad de datos 24/7</h4>
+                    <p>Framework de monitoreo con Great Expectations y Airflow que valida pipelines críticos, guarda evidencias en data lake y publica métricas de cobertura en Grafana con alertas vía Slack.</p>
                 </div>
                 <div class="modal-footer">
-                    <a href="./CartaMama/index.html" class="btn">Visit Page</a>
+                    <a href="./projects/data-quality-observability.html" class="btn">Ver referencia</a>
                 </div>
             </div><!-- /.modal-content -->
         </div><!-- /.modal-dialog -->

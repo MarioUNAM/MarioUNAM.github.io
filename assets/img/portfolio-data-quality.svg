@@ -1,0 +1,30 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 360" role="img" aria-labelledby="title desc">
+  <title id="title">Panel de observabilidad de calidad de datos 24/7</title>
+  <desc id="desc">Pantalla con gráficas circulares y alertas que representan un tablero de monitoreo de calidad de datos.</desc>
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#004d40" />
+      <stop offset="100%" stop-color="#00695c" />
+    </linearGradient>
+  </defs>
+  <rect width="640" height="360" rx="24" fill="url(#bg)" />
+  <g transform="translate(56 52)">
+    <rect x="0" y="0" width="528" height="256" rx="24" fill="#e0f2f1" opacity="0.95" />
+    <rect x="28" y="28" width="180" height="200" rx="18" fill="#004d40" opacity="0.85" />
+    <circle cx="118" cy="108" r="60" fill="#26a69a" />
+    <circle cx="118" cy="108" r="40" fill="#80cbc4" />
+    <path d="M118 48v60l52 15" fill="none" stroke="#004d40" stroke-width="10" stroke-linecap="round" stroke-linejoin="round" />
+    <text x="76" y="212" font-family="'Segoe UI', 'Helvetica Neue', Arial, sans-serif" font-size="20" fill="#e0f2f1">99.1% OK</text>
+    <rect x="240" y="40" width="248" height="48" rx="10" fill="#b2dfdb" />
+    <rect x="240" y="104" width="248" height="32" rx="8" fill="#4db6ac" opacity="0.8" />
+    <rect x="240" y="152" width="192" height="24" rx="8" fill="#80cbc4" opacity="0.9" />
+    <rect x="240" y="192" width="224" height="24" rx="8" fill="#ffab91" />
+    <g transform="translate(240 196)">
+      <circle cx="0" cy="0" r="10" fill="#ff7043" />
+      <text x="20" y="8" font-family="'Segoe UI', 'Helvetica Neue', Arial, sans-serif" font-size="18" fill="#004d40">Alertas activas: 3</text>
+    </g>
+    <polyline points="248 136 288 120 328 148 368 132 408 160 448 128" fill="none" stroke="#26a69a" stroke-width="8" stroke-linecap="round" stroke-linejoin="round" opacity="0.8" />
+    <polyline points="248 184 288 168 328 188 368 172 408 200 448 176" fill="none" stroke="#ff7043" stroke-width="6" stroke-linecap="round" stroke-linejoin="round" opacity="0.7" />
+  </g>
+  <text x="48" y="324" font-family="'Segoe UI', 'Helvetica Neue', Arial, sans-serif" font-size="34" fill="#e0f2f1" font-weight="600">Observabilidad de datos 24/7</text>
+</svg>

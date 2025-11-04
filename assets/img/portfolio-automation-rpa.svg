@@ -1,0 +1,38 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 360" role="img" aria-labelledby="title desc">
+  <title id="title">Ilustración de automatización RPA conciliando facturas en SAP</title>
+  <desc id="desc">Panel azul con engranes y un flujo automatizado que simboliza la conciliación de facturas dentro de SAP FI.</desc>
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0d47a1" />
+      <stop offset="100%" stop-color="#1976d2" />
+    </linearGradient>
+    <linearGradient id="arrow" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#ffb300" />
+      <stop offset="100%" stop-color="#ff8f00" />
+    </linearGradient>
+  </defs>
+  <rect width="640" height="360" fill="url(#bg)" rx="24" />
+  <g fill="#bbdefb">
+    <circle cx="160" cy="120" r="56" opacity="0.65" />
+    <path d="M160 70l8 12a36 36 0 0130 0l8-12 16 10-6 14a36 36 0 0116 26h14v20h-14a36 36 0 01-16 26l6 14-16 10-8-12a36 36 0 01-30 0l-8 12-16-10 6-14a36 36 0 01-16-26h-14v-20h14a36 36 0 0116-26l-6-14z" opacity="0.9" />
+  </g>
+  <g transform="translate(260 90)">
+    <rect x="0" y="0" width="320" height="180" rx="18" fill="#e3f2fd" opacity="0.95" />
+    <rect x="24" y="32" width="272" height="28" rx="6" fill="#0d47a1" opacity="0.8" />
+    <g fill="#1565c0" opacity="0.85">
+      <rect x="24" y="84" width="128" height="20" rx="4" />
+      <rect x="24" y="116" width="176" height="20" rx="4" />
+      <rect x="164" y="84" width="132" height="20" rx="4" opacity="0.6" />
+      <rect x="212" y="116" width="84" height="20" rx="4" opacity="0.4" />
+    </g>
+    <g transform="translate(48 52)" fill="#ffb300">
+      <circle cx="0" cy="0" r="10" />
+      <circle cx="108" cy="0" r="10" />
+      <circle cx="216" cy="0" r="10" />
+    </g>
+    <path d="M48 140h84l-12-12" fill="none" stroke="url(#arrow)" stroke-width="10" stroke-linecap="round" stroke-linejoin="round" />
+    <path d="M132 140l12 12" fill="none" stroke="url(#arrow)" stroke-width="10" stroke-linecap="round" stroke-linejoin="round" />
+    <path d="M216 140h60" fill="none" stroke="url(#arrow)" stroke-width="10" stroke-linecap="round" />
+  </g>
+  <text x="40" y="320" font-family="'Segoe UI', 'Helvetica Neue', Arial, sans-serif" font-size="36" fill="#e3f2fd" font-weight="600">Bot RPA para conciliación SAP</text>
+</svg>

@@ -37,6 +37,20 @@ Las carpetas `template1/`, `template2/` y `template3/` conservan variaciones o p
 - **Secciones principales:** Edita `index.html` para actualizar textos, secciones de experiencia y enlaces. Cada bloque está etiquetado con comentarios HTML descriptivos.
 - **Galería y modales:** Las tarjetas del portafolio se definen alrededor de la línea 360 de `index.html` y se enlazan con modales `#portfolioItem1` a `#portfolioItem4` definidos al final del archivo. Para añadir un nuevo proyecto, duplica una tarjeta, crea un modal con un identificador único y actualiza el contenido (título, descripción, imágenes y enlaces).
 - **Imágenes y multimedia:** Coloca imágenes en `assets/img/` y actualiza las rutas dentro de `index.html` o los modales correspondientes. Para mantener el desempeño, optimiza las imágenes antes de subirlas.
+- **Dimensiones sugeridas de imágenes:**
+
+  | Uso | Selector / Clase | Dimensiones recomendadas | Relación de aspecto | Notas |
+  | --- | --- | --- | --- | --- |
+  | Avatar de perfil | `.big-rectangle` | 230 × 230 px | 1:1 | Se recorta centrado gracias a `object-fit: cover`; prepara el archivo cuadrado para evitar deformaciones. |
+  | Logo de cronología | `.timeline-body-thumb` | 100 × 100 px | 1:1 | Mantén fondos transparentes cuando sea posible para integrarse con la línea de tiempo. |
+  | Miniatura de portafolio | `.portfolio-item-thumb` | ≥ 300 × 250 px | ~6:5 | Ajusta la composición pensando en el recorte centrado por `object-fit: cover`. |
+  | Imagen de cabecera en modal | (imagen principal del modal) | ≥ 1200 × 400 px | ≥ 3:1 | Asegura una altura efectiva de 400 px para evitar pixelado y aprovecha el recorte central. |
+
+- **Buenas prácticas para imágenes:**
+  - Comprueba que el peso del archivo sea razonable: <200 KB para miniaturas y logotipos, y <400 KB para imágenes de modales o cabeceras amplias.
+  - Prioriza formatos óptimos según el contenido: PNG para gráficos con transparencia, JPEG para fotografías y WebP cuando sea soportado para reducir peso.
+  - Sigue una convención clara de nombres en `assets/img/`, por ejemplo `seccion-descriptivo-tipo.ext` (`portfolio-analitica-thumb.jpg`, `timeline-empresa-logo.png`) para facilitar el mantenimiento.
+  - Después de reemplazar imágenes, revisa el sitio tanto en vista de escritorio como en dispositivos móviles para confirmar que el recorte centrado se muestra correctamente.
 - **Estilos personalizados:** Ajusta los estilos en `assets/css/style.css` (u otras hojas dentro de `assets/css/`). Si la modificación requiere JavaScript, utiliza `assets/js/script.js` para mantener la lógica centralizada.
 - **Plantillas alternativas:** Las carpetas `template1/`, `template2/` y `template3/` contienen versiones completas de plantillas descargadas. Consulta los archivos `README.txt`, `READ-ME.txt` o `LICENSE.txt` en cada una para respetar sus términos antes de reutilizar elementos en la página principal.
 

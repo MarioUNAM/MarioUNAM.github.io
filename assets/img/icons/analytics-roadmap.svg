@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 80 80" role="img" aria-labelledby="title desc">
+  <title>Analytics roadmap icon</title>
+  <desc>Chart line traveling across milestones on a roadmap</desc>
+  <defs>
+    <linearGradient id="analyticsGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#6a1b9a" />
+      <stop offset="100%" stop-color="#ab47bc" />
+    </linearGradient>
+  </defs>
+  <rect x="8" y="16" width="64" height="48" rx="10" fill="url(#analyticsGradient)" opacity="0.15" />
+  <polyline points="16 52 28 38 40 44 52 30 64 34" fill="none" stroke="#6a1b9a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+  <circle cx="28" cy="38" r="4" fill="#ab47bc" />
+  <circle cx="40" cy="44" r="4" fill="#ab47bc" />
+  <circle cx="52" cy="30" r="4" fill="#ab47bc" />
+  <circle cx="64" cy="34" r="4" fill="#ab47bc" />
+  <rect x="20" y="26" width="12" height="8" rx="2" ry="2" fill="none" stroke="#6a1b9a" stroke-width="2" />
+  <path d="M20 28h12" stroke="#6a1b9a" stroke-width="2" stroke-linecap="round" />
+  <path d="M20 32h6" stroke="#6a1b9a" stroke-width="2" stroke-linecap="round" />
+</svg>

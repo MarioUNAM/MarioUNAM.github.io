@@ -1,30 +1,42 @@
 <!DOCTYPE html>
-<html lang="es">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard de analítica comercial</title>
+    <title data-i18n="projects.analytics.pageTitle">Commercial analytics dashboard</title>
     <link rel="stylesheet" href="../assets/css/bootstrap.min.css">
     <link rel="stylesheet" href="../assets/css/project-detail.css">
 </head>
 <body>
     <main class="container py-5">
-        <h1 class="mb-4">Panel de analítica comercial en Power BI</h1>
-        <p class="lead">Solución end-to-end que integra ventas POS, CRM y objetivos trimestrales para brindar seguimiento diario a indicadores clave.</p>
+        <div class="text-right mb-4">
+            <label for="language-switcher" class="sr-only" data-i18n="projects.common.languageLabel">Language</label>
+            <select id="language-switcher" class="language-switcher" data-i18n-attrs="aria-label:projects.common.languageAria">
+                <option value="en" data-i18n="language.option.en">EN</option>
+                <option value="es" data-i18n="language.option.es">ES</option>
+            </select>
+        </div>
+        <h1 class="mb-4" data-i18n="projects.analytics.heading">Power BI commercial analytics dashboard</h1>
+        <p class="lead" data-i18n="projects.analytics.lead">End-to-end solution integrating POS sales, CRM, and quarterly targets to provide daily tracking of key indicators.</p>
         <section class="mb-4">
-            <h2>Highlights del dashboard</h2>
+            <h2 data-i18n="projects.analytics.highlightsTitle">Dashboard highlights</h2>
             <ul>
-                <li>Modelo tabular con más de 120 medidas DAX para márgenes, churn y forecast.</li>
-                <li>Segmentaciones avanzadas por canal, región y familia de producto.</li>
-                <li>Alertas proactivas publicadas mediante Power BI Service + Teams.</li>
+                <li data-i18n="projects.analytics.highlight1">Tabular model with more than 120 DAX measures for margins, churn, and forecasts.</li>
+                <li data-i18n="projects.analytics.highlight2">Advanced segmentations by channel, region, and product family.</li>
+                <li data-i18n="projects.analytics.highlight3">Proactive alerts published through Power BI Service and Teams.</li>
             </ul>
         </section>
         <section class="mb-4">
-            <h2>Dataset y procesos</h2>
-            <p>El pipeline de datos se construyó con Azure Data Factory y notebooks de Synapse para limpiar información transaccional, enriquecer con datos maestros y publicar el dataset certificado.</p>
+            <h2 data-i18n="projects.analytics.datasetTitle">Dataset and processes</h2>
+            <p data-i18n="projects.analytics.datasetDescription">The data pipeline was built with Azure Data Factory and Synapse notebooks to clean transactional information, enrich with master data, and publish the certified dataset.</p>
         </section>
-        <p><a class="btn btn-primary" href="https://app.powerbi.com/view?r=eyJrIjoiY2FzZS1zdHVkaW8tc2FsZXMiLCJuIjoiYXV0by1zaGFyZSJ9" target="_blank" rel="noopener">Ver demo interactiva</a></p>
-        <p><a href="../index.html">&larr; Volver</a></p>
+        <p><a class="btn btn-primary" href="https://app.powerbi.com/view?r=eyJrIjoiY2FzZS1zdHVkaW8tc2FsZXMiLCJuIjoiYXV0by1zaGFyZSJ9" target="_blank" rel="noopener" data-i18n="projects.analytics.button">View interactive demo</a></p>
+        <p><a href="../index.html" data-i18n="projects.common.back">← Back</a></p>
     </main>
+
+    <script src="../assets/js/jquery.min.js"></script>
+    <script src="../assets/js/bootstrap.min.js"></script>
+    <script src="../assets/js/i18n.js"></script>
+    <script src="../assets/js/script.js"></script>
 </body>
 </html>

@@ -1,39 +1,51 @@
 <!DOCTYPE html>
-<html lang="es">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Automatización de conciliación de facturas</title>
+    <title data-i18n="projects.rpa.pageTitle">Invoice reconciliation automation</title>
     <link rel="stylesheet" href="../assets/css/bootstrap.min.css">
     <link rel="stylesheet" href="../assets/css/project-detail.css">
 </head>
 <body>
     <main class="container py-5">
-        <h1 class="mb-4">Bot RPA para conciliación de facturas SAP</h1>
-        <p class="lead">Script de automatización construido con Python + Selenium que integra el portal de proveedores con SAP FI para agilizar la conciliación mensual.</p>
+        <div class="text-right mb-4">
+            <label for="language-switcher" class="sr-only" data-i18n="projects.common.languageLabel">Language</label>
+            <select id="language-switcher" class="language-switcher" data-i18n-attrs="aria-label:projects.common.languageAria">
+                <option value="en" data-i18n="language.option.en">EN</option>
+                <option value="es" data-i18n="language.option.es">ES</option>
+            </select>
+        </div>
+        <h1 class="mb-4" data-i18n="projects.rpa.heading">SAP invoice reconciliation RPA bot</h1>
+        <p class="lead" data-i18n="projects.rpa.lead">Automation script built with Python + Selenium that integrates the vendor portal with SAP FI to accelerate monthly reconciliation.</p>
         <section class="mb-4">
-            <h2>Objetivo</h2>
-            <p>Reducir el tiempo de conciliación de facturas pendientes automatizando la descarga de estados de cuenta, la clasificación de incidencias y el registro de ajustes en SAP.</p>
+            <h2 data-i18n="projects.rpa.objectiveTitle">Objective</h2>
+            <p data-i18n="projects.rpa.objectiveDescription">Reduce reconciliation time for pending invoices by automating statement downloads, incident classification, and adjustment posting in SAP.</p>
         </section>
         <section class="mb-4">
-            <h2>Stack</h2>
+            <h2 data-i18n="projects.rpa.stackTitle">Stack</h2>
             <ul>
-                <li>Python 3.10</li>
-                <li>Selenium con WebDriver Manager</li>
-                <li>APIs REST internas de SAP</li>
-                <li>Orquestación con Jenkins</li>
+                <li data-i18n="projects.rpa.stack.item1">Python 3.10</li>
+                <li data-i18n="projects.rpa.stack.item2">Selenium with WebDriver Manager</li>
+                <li data-i18n="projects.rpa.stack.item3">Internal SAP REST APIs</li>
+                <li data-i18n="projects.rpa.stack.item4">Orchestration with Jenkins</li>
             </ul>
         </section>
         <section class="mb-4">
-            <h2>Resultados</h2>
+            <h2 data-i18n="projects.rpa.resultsTitle">Results</h2>
             <ul>
-                <li>80% de reducción en el tiempo de conciliación mensual.</li>
-                <li>Alertas automáticas por correo ante diferencias mayores a MXN $5,000.</li>
-                <li>Reporte consolidado disponible en Power BI en menos de 30 minutos.</li>
+                <li data-i18n="projects.rpa.results.item1">80% reduction in monthly reconciliation time.</li>
+                <li data-i18n="projects.rpa.results.item2">Automatic email alerts for differences greater than MXN $5,000.</li>
+                <li data-i18n="projects.rpa.results.item3">Consolidated report available in Power BI in under 30 minutes.</li>
             </ul>
         </section>
-        <p><a class="btn btn-primary" href="../pythoncodes/seleniumprueba1.py" target="_blank" rel="noopener">Ver script Selenium</a></p>
-        <p><a href="../index.html">&larr; Volver</a></p>
+        <p><a class="btn btn-primary" href="../pythoncodes/seleniumprueba1.py" target="_blank" rel="noopener" data-i18n="projects.rpa.button">View Selenium script</a></p>
+        <p><a href="../index.html" data-i18n="projects.common.back">← Back</a></p>
     </main>
+
+    <script src="../assets/js/jquery.min.js"></script>
+    <script src="../assets/js/bootstrap.min.js"></script>
+    <script src="../assets/js/i18n.js"></script>
+    <script src="../assets/js/script.js"></script>
 </body>
 </html>

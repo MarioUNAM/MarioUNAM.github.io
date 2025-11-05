@@ -1,10 +1,14 @@
-$(function () {    
-// Navigation 
-    $('.site-navigation').affix({
-      offset: {
-        top: $('.hero').height()
-            }
-    });
+$(function () {
+// Navigation
+    var $navigation = $('.site-navigation');
+    var heroHeight = $('.hero').length ? $('.hero').height() : 0;
+    if ($navigation.length && typeof $navigation.affix === 'function') {
+        $navigation.affix({
+          offset: {
+            top: heroHeight
+                }
+        });
+    }
 
     var $window = $(window);
     function checkWidth() {
@@ -50,30 +54,36 @@ $(function () {
     };
 
 
-// Progress bar 
+// Progress bar
     var $section = $('.section-skills');
     function loadDaBars() {
-        $('.progress .progress-bar').progressbar({
-            transition_delay: 500,
-            display_text: 'center'
+        if (typeof $.fn.progressbar === 'function') {
+            $('.progress .progress-bar').progressbar({
+                transition_delay: 500,
+                display_text: 'center'
+            });
+        }
+    }
+
+    if ($section.length) {
+        $(document).bind('scroll', function(ev) {
+            var scrollOffset = $(document).scrollTop();
+            var containerOffset = $section.offset().top - window.innerHeight;
+            if (scrollOffset > containerOffset) {
+                loadDaBars();
+                // unbind event not to load scrolsl again
+                $(document).unbind('scroll');
+            }
         });
     }
-    
-    $(document).bind('scroll', function(ev) {
-        var scrollOffset = $(document).scrollTop();
-        var containerOffset = $section.offset().top - window.innerHeight;
-        if (scrollOffset > containerOffset) {
-            loadDaBars();
-            // unbind event not to load scrolsl again
-            $(document).unbind('scroll');
-        }
-    });
 
 //Team Carousel
-    $('#services-carousel').carousel({ interval: false });
+    if ($('#services-carousel').length && typeof $.fn.carousel === 'function') {
+        $('#services-carousel').carousel({ interval: false });
+    }
 
     // Carousel touch support
-    if($(".carousel-inner").length) {
+    if($(".carousel-inner").length && typeof $.fn.swipe === 'function') {
         $(".carousel-inner").swipe({
             //Generic swipe handler for all directions
             swipeLeft: function (event, direction, distance, duration, fingerCount) {
@@ -87,33 +97,42 @@ $(function () {
         });
     }
 
-// Slick.js   
-    $('.review-carousel').slick({
-        nextArrow: '<button class="slick rectangle slick-next"><i class="fa fa-angle-right" aria-hidden="true"></button>',
-        prevArrow: '<button class="slick rectangle slick-prev"><i class="fa fa-angle-left" aria-hidden="true"></button>'
-    });
+// Slick.js
+    if ($('.review-carousel').length && typeof $.fn.slick === 'function') {
+        $('.review-carousel').slick({
+            nextArrow: '<button class="slick rectangle slick-next"><i class="fa fa-angle-right" aria-hidden="true"></button>',
+            prevArrow: '<button class="slick rectangle slick-prev"><i class="fa fa-angle-left" aria-hidden="true"></button>'
+        });
+    }
 
-    $('.clients-carousel').slick({
-        arrows: false,
-        slidesToShow: 5,
-        responsive: [ {
-            breakpoint : 992,
-            settings: {
-                slidesToShow: 2
-            }
-        },
-        {
-            breakpoint : 480,
-            settings: {
-                slidesToShow: 1
-            }
-      }]
-    });
+    if ($('.clients-carousel').length && typeof $.fn.slick === 'function') {
+        $('.clients-carousel').slick({
+            arrows: false,
+            slidesToShow: 5,
+            responsive: [ {
+                breakpoint : 992,
+                settings: {
+                    slidesToShow: 2
+                }
+            },
+            {
+                breakpoint : 480,
+                settings: {
+                    slidesToShow: 1
+                }
+          }]
+        });
+    }
 
 //shuffle.js
     var shuffleme = (function( $ ) {
       'use strict';
-          var $grid = $('#grid'), //locate what we want to sort 
+          if (typeof $.fn.shuffle !== 'function') {
+            return {
+              init: function() {}
+            };
+          }
+          var $grid = $('#grid'), //locate what we want to sort
           $filterOptions = $('.portfolio-sorting li'),  //locate the filter categories
 
       init = function() {
@@ -161,9 +180,12 @@ $(function () {
       // I recommend using imagesloaded to determine when an image is loaded
       // but that doesn't support IE7
       listen = function() {
-        var debouncedLayout = $.throttle( 300, function() {
+        var debouncedLayout = function() {
           $grid.shuffle('update');
-        });
+        };
+        if (typeof $.throttle === 'function') {
+          debouncedLayout = $.throttle( 300, debouncedLayout);
+        }
 
         // Get all images inside shuffle
         $grid.find('img').each(function() {
@@ -195,7 +217,86 @@ $(function () {
       };
     }( jQuery ));
 
-    if($('#grid').length >0 ) { 
+    if($('#grid').length >0 ) {
       shuffleme.init(); //filter portfolio
     };
+
+    // Internationalization
+    var translations = window.TRANSLATIONS || {};
+
+    function applyTranslations(lang) {
+      if (!translations[lang]) {
+        return;
+      }
+
+      document.documentElement.setAttribute('lang', lang);
+
+      $('[data-i18n], [data-i18n-attrs]').each(function () {
+        var $element = $(this);
+        var key = $element.data('i18n');
+        if (key && translations[lang][key] !== undefined) {
+          var target = $element.data('i18n-target');
+          if (target === 'html') {
+            $element.html(translations[lang][key]);
+          } else {
+            $element.text(translations[lang][key]);
+          }
+        }
+
+        var attrs = $element.data('i18n-attrs');
+        if (attrs && translations[lang]) {
+          attrs.split(',').forEach(function (instruction) {
+            var parts = instruction.split(':');
+            if (parts.length === 2) {
+              var attrName = $.trim(parts[0]);
+              var attrKey = $.trim(parts[1]);
+              if (translations[lang][attrKey] !== undefined) {
+                $element.attr(attrName, translations[lang][attrKey]);
+              }
+            }
+          });
+        }
+      });
+
+      if (typeof window.localStorage !== 'undefined') {
+        try {
+          window.localStorage.setItem('preferredLanguage', lang);
+        } catch (error) {
+          // Ignore storage errors
+        }
+      }
+
+      $('.language-switcher').each(function () {
+        if ($(this).val() !== lang) {
+          $(this).val(lang);
+        }
+      });
+    }
+
+    function resolveInitialLanguage() {
+      var defaultLang = 'en';
+      if (typeof window.localStorage !== 'undefined') {
+        try {
+          var stored = window.localStorage.getItem('preferredLanguage');
+          if (stored && translations[stored]) {
+            defaultLang = stored;
+          }
+        } catch (error) {
+          // Ignore storage errors
+        }
+      }
+      return translations[defaultLang] ? defaultLang : 'en';
+    }
+
+    var currentLanguage = resolveInitialLanguage();
+    applyTranslations(currentLanguage);
+
+    $(document).on('change', '.language-switcher', function (event) {
+      var selectedLang = $(event.target).val();
+      if (!translations[selectedLang]) {
+        selectedLang = 'en';
+      }
+      currentLanguage = selectedLang;
+      applyTranslations(currentLanguage);
+    });
 }());

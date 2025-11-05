@@ -1,30 +1,42 @@
 <!DOCTYPE html>
-<html lang="es">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Implementación de EBX para datos maestros</title>
+    <title data-i18n="projects.mdm.pageTitle">EBX master data implementation</title>
     <link rel="stylesheet" href="../assets/css/bootstrap.min.css">
     <link rel="stylesheet" href="../assets/css/project-detail.css">
 </head>
 <body>
     <main class="container py-5">
-        <h1 class="mb-4">Hub de datos maestros con TIBCO EBX</h1>
-        <p class="lead">Proyecto de Master Data Management para centralizar catálogo de productos y clientes en una plataforma EBX altamente gobernada.</p>
+        <div class="text-right mb-4">
+            <label for="language-switcher" class="sr-only" data-i18n="projects.common.languageLabel">Language</label>
+            <select id="language-switcher" class="language-switcher" data-i18n-attrs="aria-label:projects.common.languageAria">
+                <option value="en" data-i18n="language.option.en">EN</option>
+                <option value="es" data-i18n="language.option.es">ES</option>
+            </select>
+        </div>
+        <h1 class="mb-4" data-i18n="projects.mdm.heading">Master data hub with TIBCO EBX</h1>
+        <p class="lead" data-i18n="projects.mdm.lead">Master Data Management project to centralize the product and customer catalog in a highly governed EBX platform.</p>
         <section class="mb-4">
-            <h2>Alcance</h2>
+            <h2 data-i18n="projects.mdm.scopeTitle">Scope</h2>
             <ul>
-                <li>Diseño del modelo de datos jerárquico para más de 150 atributos.</li>
-                <li>Workflows de aprobación multinivel con roles de negocio y TI.</li>
-                <li>Integraciones en tiempo real con SAP y Salesforce mediante servicios REST.</li>
+                <li data-i18n="projects.mdm.scope1">Design of the hierarchical data model for more than 150 attributes.</li>
+                <li data-i18n="projects.mdm.scope2">Multilevel approval workflows with business and IT roles.</li>
+                <li data-i18n="projects.mdm.scope3">Real-time integrations with SAP and Salesforce through REST services.</li>
             </ul>
         </section>
         <section class="mb-4">
-            <h2>Gobernanza y calidad</h2>
-            <p>Se implementaron reglas de validación, controles de duplicidad y tableros de monitoreo en EBX Insight para asegurar la calidad de los datos maestros.</p>
+            <h2 data-i18n="projects.mdm.governanceTitle">Governance and quality</h2>
+            <p data-i18n="projects.mdm.governanceDescription">Validation rules, deduplication controls, and monitoring dashboards in EBX Insight to ensure master data quality.</p>
         </section>
-        <p><a class="btn btn-primary" href="https://www.tibco.com/resources/case-study" target="_blank" rel="noopener">Caso de éxito relacionado</a></p>
-        <p><a href="../index.html">&larr; Volver</a></p>
+        <p><a class="btn btn-primary" href="https://www.tibco.com/resources/case-study" target="_blank" rel="noopener" data-i18n="projects.mdm.button">Related success story</a></p>
+        <p><a href="../index.html" data-i18n="projects.common.back">← Back</a></p>
     </main>
+
+    <script src="../assets/js/jquery.min.js"></script>
+    <script src="../assets/js/bootstrap.min.js"></script>
+    <script src="../assets/js/i18n.js"></script>
+    <script src="../assets/js/script.js"></script>
 </body>
 </html>

@@ -2250,12 +2250,65 @@ html, body {
 }
 
 /* Section: Contact */
+
 .section-contact .container {
   max-width: 770px;
 }
 
-.section-contact .container form {
-  margin-top: 70px;
+.contact-form-wrapper {
+  margin-top: 48px;
+}
+
+.contact-form {
+  padding: 32px 36px;
+  border: 1px solid #e0e0e0;
+  border-radius: 12px;
+  background-color: #ffffff;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.04);
+}
+
+.contact-form-intro h3 {
+  margin-top: 0;
+  margin-bottom: 12px;
+  font-size: 22px;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+}
+
+.contact-form-intro p {
+  margin-bottom: 28px;
+  color: #555555;
+}
+
+.contact-form .form-group {
+  margin-bottom: 24px;
+}
+
+.contact-form label {
+  display: block;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  font-size: 13px;
+}
+
+.contact-form .form-control {
+  margin-top: 10px;
+  padding: 12px 0;
+  font-size: 15px;
+}
+
+.contact-form textarea.form-control {
+  margin-top: 10px;
+  min-height: 160px;
+  resize: vertical;
+}
+
+.contact-form-footer {
+  margin-top: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
 }
 
 .contact-cards-row {
@@ -2356,17 +2409,50 @@ textarea.form-control {
   resize: none;
 }
 
+.contact-form .form-alert {
+  margin-top: 16px;
+  padding: 12px 16px;
+  border-radius: 8px;
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+.contact-form .form-alert[hidden] {
+  display: none;
+}
+
+.contact-form .form-alert-success {
+  background-color: #e9f7f0;
+  border: 1px solid #c3ead8;
+  color: #257953;
+}
+
+.contact-form .form-alert-error {
+  background-color: #fdecea;
+  border: 1px solid #f4c7c3;
+  color: #a33a32;
+}
+
 @media only screen and (max-width: 767px) {
   /* Section: Contact */
-  .section-contact .container form {
-    margin-top: 30px;
-  }
   .section-contact .btn {
     margin-top: 30px;
   }
   .form-control,
   textarea.form-control {
     margin-top: 15px;
+  }
+  .contact-form-wrapper {
+    margin-top: 32px;
+  }
+  .contact-form {
+    padding: 24px;
+  }
+  .contact-form .form-group {
+    margin-bottom: 18px;
+  }
+  .contact-form textarea.form-control {
+    min-height: 140px;
   }
   .contact-card {
     flex-direction: column;

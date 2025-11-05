@@ -518,6 +518,49 @@
             <div class="container">
                 <h2 data-i18n="contact.title">Contact</h2>
                 <p class="section-subtitle"><span data-i18n="contact.subtitle">Choose a channel</span></p>
+                <div class="contact-form-wrapper">
+                    <form class="contact-form" action="https://formspree.io/f/xwkgozkj" method="POST" data-i18n-attrs="aria-label:contact.form.ariaLabel" aria-label="Direct contact form">
+                        <div class="contact-form-intro">
+                            <h3 data-i18n="contact.form.title">Send a direct message</h3>
+                            <p data-i18n="contact.form.description">Share a bit about your project and how I can help.</p>
+                        </div>
+                        <div class="row">
+                            <div class="col-sm-6">
+                                <div class="form-group">
+                                    <label for="contact-name" data-i18n="contact.form.nameLabel">Name</label>
+                                    <input id="contact-name" class="form-control" type="text" name="name" required autocomplete="name" data-i18n-attrs="placeholder:contact.form.namePlaceholder" placeholder="Your name">
+                                </div>
+                            </div>
+                            <div class="col-sm-6">
+                                <div class="form-group">
+                                    <label for="contact-email" data-i18n="contact.form.emailLabel">Email</label>
+                                    <input id="contact-email" class="form-control" type="email" name="email" required autocomplete="email" data-i18n-attrs="placeholder:contact.form.emailPlaceholder" placeholder="your@email.com">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-sm-6">
+                                <div class="form-group">
+                                    <label for="contact-subject" data-i18n="contact.form.subjectLabel">Subject</label>
+                                    <input id="contact-subject" class="form-control" type="text" name="subject" required autocomplete="on" data-i18n-attrs="placeholder:contact.form.subjectPlaceholder" placeholder="Project idea or topic">
+                                </div>
+                            </div>
+                            <div class="col-sm-12">
+                                <div class="form-group">
+                                    <label for="contact-message" data-i18n="contact.form.messageLabel">Message</label>
+                                    <textarea id="contact-message" class="form-control" name="message" rows="4" required maxlength="500" data-i18n-attrs="placeholder:contact.form.messagePlaceholder" placeholder="Share a short message"></textarea>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="contact-form-footer">
+                            <button type="submit" class="btn" data-i18n="contact.form.submit">Send message</button>
+                            <div class="form-alert form-alert-success" role="status" aria-live="polite" tabindex="-1" hidden data-i18n="contact.form.success">Thank you! Your message was sent successfully.</div>
+                            <div class="form-alert form-alert-error" role="alert" aria-live="assertive" tabindex="-1" hidden data-i18n="contact.form.error">Something went wrong. Please try again or use another channel.</div>
+                        </div>
+                        <input type="hidden" name="_redirect" value="https://mariounam.github.io/?status=success#contact">
+                        <input type="hidden" name="_error" value="https://mariounam.github.io/?status=error#contact">
+                    </form>
+                </div>
                 <div class="row contact-cards-row">
                     <div class="col-sm-4 col-xs-12">
                         <div class="contact-card">

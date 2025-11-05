@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 200" role="img" aria-labelledby="title desc">
+  <title>Leadership playbook illustration</title>
+  <desc>Abstract guidebook with leadership icons.</desc>
+  <rect width="320" height="200" rx="16" fill="#6a1b9a" />
+  <g fill="#f3e5f5">
+    <rect x="82" y="48" width="156" height="120" rx="18" />
+    <rect x="102" y="66" width="116" height="84" rx="12" fill="#ce93d8" />
+  </g>
+  <g fill="#ffffff">
+    <circle cx="160" cy="96" r="24" />
+    <path d="M136 136c4-16 16-24 24-24s20 8 24 24" fill="none" stroke="#ffffff" stroke-width="8" stroke-linecap="round" stroke-linejoin="round" />
+    <path d="M118 86h20" stroke="#ffffff" stroke-width="8" stroke-linecap="round" />
+    <path d="M182 106h20" stroke="#ffffff" stroke-width="8" stroke-linecap="round" />
+  </g>
+</svg>

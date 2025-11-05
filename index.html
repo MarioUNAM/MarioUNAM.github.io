@@ -234,45 +234,62 @@
                     </div>
                     <div class="col-sm-6">
                         <h2 data-i18n="skills.listTitle">Skills</h2>
-                        <div class="progress-group">
-                            <p>SQL</p>
-                            <div class="progress">
-                                <div class="progress-bar" role="progressbar" data-transitiongoal="90">
-                                </div>
-                            </div><!-- /.progress -->
-                        </div><!-- /.progress-group -->
-
-                        <div class="progress-group">
-                            <p>PYTHON</p>
-                            <div class="progress">
-                                <div class="progress-bar" role="progressbar" data-transitiongoal="70">
-                                </div>
-                            </div><!-- /.progress -->
-                        </div><!-- /.progress-group -->
-
-                        <div class="progress-group">
-                            <p>JAVA</p>
-                            <div class="progress">
-                                <div class="progress-bar" role="progressbar" data-transitiongoal="70">
-                                </div>
-                            </div><!-- /.progress -->
-                        </div><!-- /.progress-group -->
-
-                        <div class="progress-group">
-                            <p>R</p>
-                            <div class="progress">
-                                <div class="progress-bar" role="progressbar" data-transitiongoal="60">
-                                </div>
-                            </div><!-- /.progress -->
-                        </div><!-- /.progress-group -->
-
-                        <div class="progress-group">
-                            <p>TIBCO EBX</p>
-                            <div class="progress">
-                                <div class="progress-bar" role="progressbar" data-transitiongoal="60">
-                                </div>
-                            </div><!-- /.progress -->
-                        </div><!-- /.progress-group -->
+                        <div class="skills-wrapper">
+                            <section class="skills-category">
+                                <h3 data-i18n="skills.technical.title">Technical Skills</h3>
+                                <ul class="skill-list">
+                                    <li>
+                                        <i class="fa fa-code skill-icon" aria-hidden="true"></i>
+                                        <span class="skill-badge" data-i18n="skills.technical.python">Python</span>
+                                    </li>
+                                    <li>
+                                        <i class="fa fa-database skill-icon" aria-hidden="true"></i>
+                                        <span class="skill-badge" data-i18n="skills.technical.sql">SQL / DML</span>
+                                    </li>
+                                    <li>
+                                        <i class="fa fa-coffee skill-icon" aria-hidden="true"></i>
+                                        <span class="skill-badge" data-i18n="skills.technical.java">Java</span>
+                                    </li>
+                                    <li>
+                                        <i class="fa fa-cubes skill-icon" aria-hidden="true"></i>
+                                        <span class="skill-badge" data-i18n="skills.technical.tibco">TIBCO EBX</span>
+                                    </li>
+                                    <li>
+                                        <i class="fa fa-bar-chart skill-icon" aria-hidden="true"></i>
+                                        <span class="skill-badge" data-i18n="skills.technical.powerbi">Power BI</span>
+                                    </li>
+                                    <li>
+                                        <i class="fa fa-language skill-icon" aria-hidden="true"></i>
+                                        <span class="skill-badge" data-i18n="skills.technical.english">English B2</span>
+                                    </li>
+                                </ul>
+                            </section>
+                            <section class="skills-category">
+                                <h3 data-i18n="skills.soft.title">Soft Skills</h3>
+                                <ul class="skill-list">
+                                    <li>
+                                        <i class="fa fa-comments skill-icon" aria-hidden="true"></i>
+                                        <span class="skill-badge" data-i18n="skills.soft.communication">Communication</span>
+                                    </li>
+                                    <li>
+                                        <i class="fa fa-lightbulb-o skill-icon" aria-hidden="true"></i>
+                                        <span class="skill-badge" data-i18n="skills.soft.problemSolving">Problem-solving</span>
+                                    </li>
+                                    <li>
+                                        <i class="fa fa-users skill-icon" aria-hidden="true"></i>
+                                        <span class="skill-badge" data-i18n="skills.soft.teamwork">Teamwork</span>
+                                    </li>
+                                    <li>
+                                        <i class="fa fa-random skill-icon" aria-hidden="true"></i>
+                                        <span class="skill-badge" data-i18n="skills.soft.adaptability">Adaptability</span>
+                                    </li>
+                                    <li>
+                                        <i class="fa fa-compass skill-icon" aria-hidden="true"></i>
+                                        <span class="skill-badge" data-i18n="skills.soft.leadership">Stakeholder leadership</span>
+                                    </li>
+                                </ul>
+                            </section>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -733,9 +750,6 @@
 
     <!-- Bootstrap core js | Do not Delete -->
     <script src="assets/js/bootstrap.min.js"></script>
-
-    <!-- Bootstrap progressbar JS -->
-    <script src="assets/js/bootstrap-progressbar.min.js"></script>
 
     <!-- Count To JS -->
     <script src="assets/js/jquery.countTo.min.js"></script>

@@ -7,7 +7,7 @@
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
 
-    <title>MAHUNO</title>
+    <title data-i18n="meta.title">MAHUNO</title>
 
     <meta name="description" content="Portfolio for Mario Huarte Nolasco showcasing engineering expertise in automation, data analysis, and business intelligence.">
     <meta name="author" content="Mario Huarte Nolasco">
@@ -26,7 +26,7 @@
     <link rel="icon" type="image/png" sizes="32x32" href="assets/img/favicon-32x32.png">
     <link rel="icon" type="image/png" sizes="16x16" href="assets/img/favicon-16x16.png">
     <link rel="icon" sizes="16x16" href="assets/img/favicon.png">
- 
+
     <link rel="mask-icon" href="assets/img/safari-pinned-tab.svg" color="#5bbad5">
     <meta name="theme-color" content="#ffffff">
 
@@ -37,7 +37,7 @@
 
     <!-- Font Awesome core CSS -->
     <link rel="stylesheet" href="assets/css/font-awesome.min.css" />
-    
+
     <!-- Custom CSS -->
     <link rel="stylesheet" href="assets/css/style.css">
 
@@ -51,14 +51,14 @@
 
     <!-- Hero Section, Background Image change in css -->
     <div id="top" class="hero background-overlay">
-    
+
         <!-- Name & Description -->
         <div class="hero-content">
-            <h1>Mario Huarte Nolasco</h1>
-            <p class="hero-job"><span>COMPUTER ENGINEER</span></p>
-            <p class="hero-job-desc">“Passionate about automation, data analysis, and business intelligence. Always seeking new challenges and opportunities to apply my expertise and contribute to the success of technological projects.”</p>
+            <h1 data-i18n="hero.name">Mario Huarte Nolasco</h1>
+            <p class="hero-job"><span data-i18n="hero.role">COMPUTER ENGINEER</span></p>
+            <p class="hero-job-desc" data-i18n="hero.description">“Passionate about automation, data analysis, and business intelligence. Always seeking new challenges and opportunities to apply my expertise and contribute to the success of technological projects.”</p>
             <div class="hero-cta">
-                <a class="btn btn-inverted" href="https://www.linkedin.com/in/mario-huarte-nolasco-874436202" target="_blank" rel="noopener noreferrer">View LinkedIn profile</a>
+                <a class="btn btn-inverted" href="https://www.linkedin.com/in/mario-huarte-nolasco-874436202" target="_blank" rel="noopener noreferrer" data-i18n="hero.cta">View LinkedIn profile</a>
             </div>
 
         </div><!-- /.hero-content -->
@@ -81,7 +81,7 @@
                         <span class="icon-bar"></span>
                         <span class="icon-bar"></span>
                     </button>
-                    
+
                     <!-- Name -->
                     <div class="page-scroll site-logo">
                         <a href="#top">MARIO</a>
@@ -94,13 +94,20 @@
                     <!-- Navigation -->
                     <ul class="nav navbar-nav navbar-right">
 
-                        <li class="page-scroll"><a href="#top">Home</a></li>
-                        <li class="page-scroll"><a href="#intro">Intro</a></li>
-                        <li class="page-scroll"><a href="#about">About</a></li>
-                        <li class="page-scroll"><a href="#history">History</a></li>
-                        <li class="page-scroll"><a href="#works">Works</a></li>
-                        <li class="page-scroll"><a href="#contact">Contact</a></li>
-                        
+                        <li class="page-scroll"><a href="#top" data-i18n="nav.home">Home</a></li>
+                        <li class="page-scroll"><a href="#intro" data-i18n="nav.intro">Intro</a></li>
+                        <li class="page-scroll"><a href="#about" data-i18n="nav.about">About</a></li>
+                        <li class="page-scroll"><a href="#history" data-i18n="nav.history">History</a></li>
+                        <li class="page-scroll"><a href="#works" data-i18n="nav.works">Works</a></li>
+                        <li class="page-scroll"><a href="#contact" data-i18n="nav.contact">Contact</a></li>
+                        <li class="language-selector">
+                            <label for="language-switcher" class="sr-only" data-i18n="language.label">Language</label>
+                            <select id="language-switcher" class="language-switcher" data-i18n-attrs="aria-label:language.switcherLabel">
+                                <option value="en" data-i18n="language.option.en">EN</option>
+                                <option value="es" data-i18n="language.option.es">ES</option>
+                            </select>
+                        </li>
+
                     </ul><!-- /.navbar-nav -->
 
                 </div><!-- /.navbar-collapse -->
@@ -113,101 +120,101 @@
     <main id="main" class="site-main">
 
         <!-- Hello section -->
-		<section class="site-section section-hello" id="intro">
-			<div class="container">
-				<h2>STRENGTHS &amp; WEAKNESS</h2>
-				<p class="section-subtitle"><span>Know about me</span></p>
-				<div class="row">
-					<div class="col-sm-4">
-						<div class="main-service text-right">
-							<div class="rectangle">
-								<i class="fa fa-calendar" aria-hidden="true"></i>
-							</div><!-- /.rectangle -->
-							<h3>Organization</h3>
-							<p>Organization is key. I thrive on structure, prioritizing tasks, and managing time efficiently. This skillset helps me achieve goals and excel in any role.</p>
-						</div><!-- /.main-service -->
+        <section class="site-section section-hello" id="intro">
+            <div class="container">
+                <h2 data-i18n="intro.title">Strengths &amp; Weaknesses</h2>
+                <p class="section-subtitle"><span data-i18n="intro.subtitle">Get to know me</span></p>
+                <div class="row">
+                    <div class="col-sm-4">
+                        <div class="main-service text-right">
+                            <div class="rectangle">
+                                <i class="fa fa-calendar" aria-hidden="true"></i>
+                            </div><!-- /.rectangle -->
+                            <h3 data-i18n="intro.organization.title">Organization</h3>
+                            <p data-i18n="intro.organization.description">Organization is key. I thrive on structure, prioritizing tasks, and managing time efficiently. This skillset helps me achieve goals and excel in any role.</p>
+                        </div><!-- /.main-service -->
                         <div class="main-service text-right">
                             <div class="rectangle">
                                 <i class="fa fa-comments" aria-hidden="true"></i>
                             </div>
-                            <h3>Collaborative</h3>
-                            <p>Throughout my life, I've worked in teams, from student projects to my current work environment. This experience has helped me learn how to communicate effectively, delegate tasks, and learn from others.</p>
+                            <h3 data-i18n="intro.collaboration.title">Collaborative</h3>
+                            <p data-i18n="intro.collaboration.description">Throughout my life, I've worked in teams, from student projects to my current work environment. This experience has helped me learn how to communicate effectively, delegate tasks, and learn from others.</p>
                         </div><!-- /.main-service -->
-					</div>
-					<div class="col-sm-4">
-						<div class="big-rectangle">
-                                                        <img src="assets/img/week.png" alt="STRENGTHSandWEEKNES" loading="lazy">
-						</div><!-- /.big-rectangle -->
-					</div>
-					<div class="col-sm-4">
+                    </div>
+                    <div class="col-sm-4">
+                        <div class="big-rectangle">
+                            <img src="assets/img/week.png" alt="Illustration representing strengths and weaknesses" loading="lazy" data-i18n-attrs="alt:intro.image.alt">
+                        </div><!-- /.big-rectangle -->
+                    </div>
+                    <div class="col-sm-4">
                         <div class="main-service text-left">
                             <div class="rectangle">
                                 <i class="fa fa-check" aria-hidden="true"></i>
                             </div>
-                            <h3> Self-critical</h3>
-                            <p>My self-critical nature drives me to excel, but it can also be a weakness, leading to excessive pressure and potential for self-doubt.</p>
+                            <h3 data-i18n="intro.selfCritical.title">Self-critical</h3>
+                            <p data-i18n="intro.selfCritical.description">My self-critical nature drives me to excel, but it can also be a weakness, leading to excessive pressure and potential for self-doubt.</p>
                         </div><!-- /.main-service -->
-						<div class="main-service text-left">
-							<div class="rectangle">
-								<i class="fa fa-list" aria-hidden="true"></i>
-							</div><!-- /.rectangle -->
-							<h3>Overload</h3>
-							<p>I often overload myself, juggling work and personal commitments. It's a challenge to stay focused and avoid burnout, but I'm learning to prioritize and delegate. </p>
-						</div><!-- /.main-service -->
-					</div>
-				</div>
-			</div>
-		</section><!-- /.section-hello -->
+                        <div class="main-service text-left">
+                            <div class="rectangle">
+                                <i class="fa fa-list" aria-hidden="true"></i>
+                            </div><!-- /.rectangle -->
+                            <h3 data-i18n="intro.overload.title">Overload</h3>
+                            <p data-i18n="intro.overload.description">I often overload myself, juggling work and personal commitments. It's a challenge to stay focused and avoid burnout, but I'm learning to prioritize and delegate.</p>
+                        </div><!-- /.main-service -->
+                    </div>
+                </div>
+            </div>
+        </section><!-- /.section-hello -->
         <!-- End Hello section -->
 
         <!-- Quote section -->
-		<section class="section-background section-quote background-overlay text-center">
-			<div class="container">
-				<p>You only <span>fail</span> when you <span>stop trying</span></p>
-			</div>
-		</section><!-- /.section-quote -->
+        <section class="section-background section-quote background-overlay text-center">
+            <div class="container">
+                <p data-i18n="quote.text" data-i18n-target="html">You only <span>fail</span> when you <span>stop trying</span></p>
+            </div>
+        </section><!-- /.section-quote -->
         <!-- End Quote section -->
 
         <!-- About section -->
         <section class="site-section section-about text-center" id="about">
             <div class="container">
-                <h2>Work areas of interest</h2>
-                <p class="section-subtitle"><span></span></p>
+                <h2 data-i18n="about.title">Work areas of interest</h2>
+                <p class="section-subtitle"><span data-i18n="about.subtitle"></span></p>
                 <div class="row">
                     <div class="col-sm-3 col-xs-6">
                         <div class="feature-about">
                             <div class="medium-rectangle rectangle">
                                 <i class="fa fa-magic" aria-hidden="true"></i>
                             </div><!-- /.rectangle -->
-                            <h3>Automation</h3>
-                            <p>As a computer engineer, automation is my secret weapon. I love creating programs that work for me on repetitive tasks, freeing up human potential for more complex challenges.</p>
+                            <h3 data-i18n="about.automation.title">Automation</h3>
+                            <p data-i18n="about.automation.description">As a computer engineer, automation is my secret weapon. I love creating programs that work for me on repetitive tasks, freeing up human potential for more complex challenges.</p>
                         </div><!-- /.feature-about -->
-                    </div>                    
+                    </div>
                     <div class="col-sm-3 col-xs-6">
                         <div class="feature-about">
                             <div class="medium-rectangle rectangle">
                                 <i class="fa fa-tachometer" aria-hidden="true"></i>
                             </div><!-- /.rectangle -->
-                            <h3>Data Analysis</h3>
-                            <p>I love turning data into insights. By exploring datasets, I uncover patterns and trends that drive business decisions. Data analysis is the key to unlocking hidden value.</p>
+                            <h3 data-i18n="about.data.title">Data Analysis</h3>
+                            <p data-i18n="about.data.description">I love turning data into insights. By exploring datasets, I uncover patterns and trends that drive business decisions. Data analysis is the key to unlocking hidden value.</p>
                         </div><!-- /.feature-about -->
-                    </div>                    
+                    </div>
                     <div class="col-sm-3 col-xs-6">
                         <div class="feature-about">
                             <div class="medium-rectangle rectangle">
                                 <i class="fa fa-briefcase" aria-hidden="true"></i>
                             </div><!-- /.rectangle -->
-                            <h3>Business Intelligence</h3>
-                            <p>I create solutions that turn data into actionable knowledge. Business intelligence helps organizations make informed decisions, improve performance, and gain a competitive edge.</p>
+                            <h3 data-i18n="about.bi.title">Business Intelligence</h3>
+                            <p data-i18n="about.bi.description">I create solutions that turn data into actionable knowledge. Business intelligence helps organizations make informed decisions, improve performance, and gain a competitive edge.</p>
                         </div><!-- /.feature-about -->
-                    </div>                    
+                    </div>
                     <div class="col-sm-3 col-xs-6">
                         <div class="feature-about">
                             <div class="medium-rectangle rectangle">
                                <i class="fa fa-sitemap" aria-hidden="true"></i>
                             </div><!-- /.rectangle -->
-                            <h3>MDM</h3>
-                            <p>Master data management is the foundation for data-driven success. I ensure data accuracy, consistency, and accessibility. By creating a single source of truth, I improve data quality and reliability.</p>
+                            <h3 data-i18n="about.mdm.title">MDM</h3>
+                            <p data-i18n="about.mdm.description">Master data management is the foundation for data-driven success. I ensure data accuracy, consistency, and accessibility. By creating a single source of truth, I improve data quality and reliability.</p>
                         </div><!-- /.feature-about -->
                     </div>
                 </div>
@@ -220,13 +227,13 @@
             <div class="container">
                 <div class="row">
                     <div class="col-sm-6">
-                        <h2>Introduction video</h2>
+                        <h2 data-i18n="skills.videoTitle">Introduction video</h2>
                         <div class="embed-responsive embed-responsive-16by9">
-                            <iframe class="embed-responsive-item" src="https://www.youtube.com/embed/-QXW3OVFMcc" title="Presentación" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+                            <iframe class="embed-responsive-item" src="https://www.youtube.com/embed/-QXW3OVFMcc" title="Introduction video" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen data-i18n-attrs="title:skills.videoTitle"></iframe>
                         </div>
                     </div>
                     <div class="col-sm-6">
-                        <h2>SKILLS</h2>
+                        <h2 data-i18n="skills.listTitle">Skills</h2>
                         <div class="progress-group">
                             <p>SQL</p>
                             <div class="progress">
@@ -276,8 +283,8 @@
         <section class="site-section section-highlights" id="highlights">
             <div class="container">
                 <div class="text-center">
-                    <h2>Highlights en Automatización y Datos</h2>
-                    <p class="section-subtitle"><span>Certificaciones, métricas e impacto</span></p>
+                    <h2 data-i18n="highlights.title">Automation and Data Highlights</h2>
+                    <p class="section-subtitle"><span data-i18n="highlights.subtitle">Certifications, metrics, and impact</span></p>
                 </div>
                 <div class="row">
                     <div class="col-sm-6 col-md-3">
@@ -285,8 +292,8 @@
                             <div class="medium-rectangle rectangle">
                                 <i class="fa fa-certificate" aria-hidden="true"></i>
                             </div>
-                            <h3>Certificaciones Clave</h3>
-                            <p>Scrum Master &amp; Data Analyst certificados para impulsar entregas ágiles y decisiones basadas en datos.</p>
+                            <h3 data-i18n="highlights.certifications.title">Key Certifications</h3>
+                            <p data-i18n="highlights.certifications.description">Certified Scrum Master and Data Analyst supporting agile delivery and data-driven decisions.</p>
                         </div>
                     </div>
                     <div class="col-sm-6 col-md-3">
@@ -294,8 +301,8 @@
                             <div class="medium-rectangle rectangle">
                                 <i class="fa fa-line-chart" aria-hidden="true"></i>
                             </div>
-                            <h3>Automatización Escalable</h3>
-                            <p>+1,200 horas anuales liberadas mediante bots RPA y orquestación de procesos críticos.</p>
+                            <h3 data-i18n="highlights.automation.title">Scalable Automation</h3>
+                            <p data-i18n="highlights.automation.description">Over 1,200 hours saved annually through RPA bots and orchestration of critical processes.</p>
                         </div>
                     </div>
                     <div class="col-sm-6 col-md-3">
@@ -303,8 +310,8 @@
                             <div class="medium-rectangle rectangle">
                                 <i class="fa fa-database" aria-hidden="true"></i>
                             </div>
-                            <h3>Gobierno de Datos</h3>
-                            <p>Modelos MDM que consolidan más de 30 fuentes y elevan la calidad de datos maestros a 98%.</p>
+                            <h3 data-i18n="highlights.governance.title">Data Governance</h3>
+                            <p data-i18n="highlights.governance.description">MDM models consolidating more than 30 sources and elevating master data quality to 98%.</p>
                         </div>
                     </div>
                     <div class="col-sm-6 col-md-3">
@@ -312,8 +319,8 @@
                             <div class="medium-rectangle rectangle">
                                 <i class="fa fa-trophy" aria-hidden="true"></i>
                             </div>
-                            <h3>Reconocimientos</h3>
-                            <p>Premios internos por analítica predictiva aplicada a ventas y mentoría en comunidades tecnológicas.</p>
+                            <h3 data-i18n="highlights.awards.title">Recognition</h3>
+                            <p data-i18n="highlights.awards.description">Internal awards for predictive analytics applied to sales and mentoring tech communities.</p>
                         </div>
                     </div>
                 </div>
@@ -323,107 +330,107 @@
 
         <!-- History section -->
         <section class="section-history" id="history">
-            <div class="container">          
-                <div class="text-center section-diff-title">     
-                    <h2>A Look Back At my History</h2>
-                    <p>This my Education and Experience</p>
-                </div> 
-                <!-- Timeline --> 
+            <div class="container">
+                <div class="text-center section-diff-title">
+                    <h2 data-i18n="timeline.title">A Look Back at My History</h2>
+                    <p data-i18n="timeline.subtitle">This is my education and experience</p>
+                </div>
+                <!-- Timeline -->
                 <ul class="timeline">
-                    <!-- Timeline badge --> 
+                    <!-- Timeline badge -->
                     <li class="timeline-start">
-                        <div class="rectangle"><span>2017</span></div>
+                        <div class="rectangle"><span data-i18n="timeline.2017.label">2017</span></div>
                     </li><!-- /.timeline-start -->
 
-                    <!-- Timeline job & description  --> 
+                    <!-- Timeline job & description  -->
                     <li>
                         <div class="rectangle timeline-rectangle"></div>
                         <div class="timeline-panel">
                             <div class="timeline-heading">
                                 <div class="timeline-date">
-                                    <p>1 Ago</p>
+                                    <p data-i18n="timeline.2017.date">Aug 1</p>
                                 </div><!-- /.timeline-date -->
                                 <div class="timeline-position">
-                                    <p>Computer engineer</p>
+                                    <p data-i18n="timeline.2017.position">Computer engineer</p>
                                 </div><!-- /.timeline-position -->
                             </div><!-- /.timeline-heading -->
                             <div class="timeline-body">
                                 <div class="timeline-body-thumb">
-                                    <img src="assets/img/escudofi.png" class="img-res migris" alt="Escudo de la Facultad de Ingeniería de la UNAM" loading="lazy">
+                                    <img src="assets/img/escudofi.png" class="img-res migris" alt="Coat of arms of UNAM's Faculty of Engineering" loading="lazy" data-i18n-attrs="alt:timeline.2017.imageAlt">
                                 </div><!-- /.timeline-body-thumb -->
-                                <p>Start my carrer at UNAM</p>
+                                <p data-i18n="timeline.2017.description">Started my degree at UNAM.</p>
                             </div><!-- /.timeline-body -->
                         </div><!-- /.timeline-panel -->
                     </li>
 
-                    <!-- Timeline badge --> 
+                    <!-- Timeline badge -->
                     <li class="timeline-start">
-                        <div class="rectangle"><span>2020</span></div>
+                        <div class="rectangle"><span data-i18n="timeline.2020.label">2020</span></div>
                     </li><!-- /.timeline-start -->
 
-                    <!-- Timeline job & description, inverted  --> 
+                    <!-- Timeline job & description, inverted  -->
                     <li class="timeline-inverted">
                         <div class="rectangle timeline-rectangle"></div>
                         <div class="timeline-panel">
                             <div class="timeline-heading">
                                <div class="timeline-position">
-                                    <p>PROTECO</p>
+                                    <p data-i18n="timeline.2020.position">PROTECO</p>
                                 </div><!-- /.timeline-position -->
                                 <div class="timeline-date">
-                                    <p>1 Jan</p>
+                                    <p data-i18n="timeline.2020.date">Jan 1</p>
                                 </div><!-- /.timeline-date -->
                             </div><!-- /.timeline-heading -->
                             <div class="timeline-body">
                                 <div class="timeline-body-thumb">
-                                    <img src="assets/img/PROTECO.jfif" class="img-res migris" alt="Logo del programa PROTECO de la UNAM" loading="lazy">
+                                    <img src="assets/img/PROTECO.jfif" class="img-res migris" alt="Logo of the UNAM PROTECO program" loading="lazy" data-i18n-attrs="alt:timeline.2020.imageAlt">
                                 </div><!-- /.timeline-body-thumb -->
-                                <p>Student association where i learned different technologies and how to teach.</p>
+                                <p data-i18n="timeline.2020.description">Student association where I learned different technologies and how to teach.</p>
                             </div><!-- /.timeline-body -->
                         </div><!-- /.timeline-panel -->
                     </li><!-- /.timeline-inverted -->
 
-                    <!-- Timeline badge --> 
+                    <!-- Timeline badge -->
                     <li class="timeline-start">
-                        <div class="rectangle"><span>2022</span></div>
+                        <div class="rectangle"><span data-i18n="timeline.2022.label">2022</span></div>
                     </li><!-- /.timeline-start -->
 
-                    <!-- Timeline job & description  --> 
+                    <!-- Timeline job & description  -->
                     <li>
                         <div class="rectangle timeline-rectangle"></div>
                         <div class="timeline-panel">
                             <div class="timeline-heading">
                                 <div class="timeline-date">
-                                    <p>1 Dic</p>
+                                    <p data-i18n="timeline.2022.date">Dec 1</p>
                                 </div><!-- /.timeline-date -->
                                 <div class="timeline-position">
-                                    <p>Alldatum</p>
+                                    <p data-i18n="timeline.2022.position">Alldatum</p>
                                 </div><!-- /.timeline-position -->
                             </div><!-- /.timeline-heading -->
                             <div class="timeline-body">
                                 <div class="timeline-body-thumb">
-                                    <img src="assets/img/ALLDATUM.jfif" class="img-res migris" alt="Logotipo de la empresa Alldatum Business" loading="lazy">
+                                    <img src="assets/img/ALLDATUM.jfif" class="img-res migris" alt="Logo of Alldatum Business" loading="lazy" data-i18n-attrs="alt:timeline.2022.imageAlt">
                                 </div><!-- /.timeline-body-thumb -->
-                                <p>My first and current job</p>
+                                <p data-i18n="timeline.2022.description">My first and current job.</p>
                             </div><!-- /.timeline-body -->
                         </div><!-- /.timeline-panel -->
                     </li>
                 </ul>
             </div>
         </section><!-- /.section-history -->
-        <!-- End History section --> 
+        <!-- End History section -->
 
-        <!-- Portfolio/Works section --> 
+        <!-- Portfolio/Works section -->
         <section class="site-section section-works" id="works">
             <div class="container">
-                <h2>RECENT WORKS</h2>
-                <p class="section-subtitle"><span>My experience</span></p>
+                <h2 data-i18n="works.title">Recent Works</h2>
+                <p class="section-subtitle"><span data-i18n="works.subtitle">My experience</span></p>
 
                 <div class="portfolio">
                     <ul class="portfolio-sorting list-inline">
-                        <li><a href="#" class="active" data-group="all">all</a></li>
-                        <li><a href="#" data-group="automation">Automation</a></li>
-                        <li><a href="#" data-group="data">Data Analytics</a></li>
-                        <li><a href="#" data-group="mdm">MDM</a></li>
+                        <li><a href="#" class="active" data-group="all" data-i18n="works.filter.all">All</a></li>
+                        <li><a href="#" data-group="automation" data-i18n="works.filter.automation">Automation</a></li>
+                        <li><a href="#" data-group="data" data-i18n="works.filter.data">Data Analytics</a></li>
+                        <li><a href="#" data-group="mdm" data-i18n="works.filter.mdm">MDM</a></li>
                     </ul><!-- /.portfolio-sorting  -->
 
                     <div id="grid">
@@ -432,14 +439,14 @@
                         <div class="col-md-3 col-sm-4 col-xs-6" data-groups='["automation"]'>
                             <div class="portfolio-item">
                                 <div class="portfolio-item-thumb">
-                                    <img src="assets/img/portfolio-automation-rpa.svg" alt="Bot RPA conciliando facturas en SAP" class="img-res" loading="lazy">
+                                    <img src="assets/img/portfolio-automation-rpa.svg" alt="RPA bot reconciling invoices in SAP" class="img-res" loading="lazy" data-i18n-attrs="alt:works.rpa.alt">
                                     <a href="#" class="rectangle" data-toggle="modal" data-target="#portfolioItem1">
                                         <i class="fa fa-plus"></i>
                                     </a>
                                 </div><!-- /.portfolio-item-thumb  -->
                                 <div class="portfolio-info">
-                                    <a href="./projects/rpa-invoice-automation.html"><h3>Bot RPA conciliación SAP</h3></a>
-                                    <p>Automatización financiera</p>
+                                    <a href="./projects/rpa-invoice-automation.html"><h3 data-i18n="works.rpa.title">SAP Reconciliation RPA Bot</h3></a>
+                                    <p data-i18n="works.rpa.subtitle">Financial automation</p>
                                 </div><!-- /.portfolio-info  -->
                             </div>
                         </div><!-- /.col-md-3  -->
@@ -448,14 +455,14 @@
                         <div class="col-md-3 col-sm-4 col-xs-6" data-groups='["data"]'>
                             <div class="portfolio-item">
                                 <div class="portfolio-item-thumb">
-                                    <img src="assets/img/portfolio-data-analytics.svg" alt="Dashboard comercial en Power BI" class="img-res" loading="lazy">
+                                    <img src="assets/img/portfolio-data-analytics.svg" alt="Commercial dashboard in Power BI" class="img-res" loading="lazy" data-i18n-attrs="alt:works.analytics.alt">
                                     <a href="#" class="rectangle" data-toggle="modal" data-target="#portfolioItem2">
                                         <i class="fa fa-plus" aria-hidden="true"></i>
                                     </a>
                                 </div><!-- /.portfolio-item-thumb  -->
                                 <div class="portfolio-info">
-                                    <a href="./projects/data-analytics-dashboard.html"><h3>Dashboard comercial Power BI</h3></a>
-                                    <p>Analítica de datos</p>
+                                    <a href="./projects/data-analytics-dashboard.html"><h3 data-i18n="works.analytics.title">Power BI Commercial Dashboard</h3></a>
+                                    <p data-i18n="works.analytics.subtitle">Data analytics</p>
                                 </div><!-- /.portfolio-info  -->
                             </div>
                         </div><!-- /.col-md-3  -->
@@ -464,14 +471,14 @@
                         <div class="col-md-3 col-sm-4 col-xs-6" data-groups='["mdm"]'>
                             <div class="portfolio-item">
                                 <div class="portfolio-item-thumb">
-                                    <img src="assets/img/portfolio-mdm-ebx.svg" alt="Vista del hub de datos maestros en EBX" class="img-res" loading="lazy">
+                                    <img src="assets/img/portfolio-mdm-ebx.svg" alt="Master data hub view in EBX" class="img-res" loading="lazy" data-i18n-attrs="alt:works.mdm.alt">
                                     <a href="#" class="rectangle" data-toggle="modal" data-target="#portfolioItem3">
                                         <i class="fa fa-plus"></i>
                                     </a>
                                 </div><!-- /.portfolio-item-thumb  -->
                                 <div class="portfolio-info">
-                                    <a href="./projects/ebx-mdm-hub.html"><h3>Hub MDM con TIBCO EBX</h3></a>
-                                    <p>Gobernanza de datos</p>
+                                    <a href="./projects/ebx-mdm-hub.html"><h3 data-i18n="works.mdm.title">MDM Hub with TIBCO EBX</h3></a>
+                                    <p data-i18n="works.mdm.subtitle">Data governance</p>
                                 </div><!-- /.portfolio-info  -->
                             </div>
                         </div>
@@ -480,14 +487,14 @@
                         <div class="col-md-3 col-sm-4 col-xs-6" data-groups='["automation","data"]'>
                             <div class="portfolio-item">
                                 <div class="portfolio-item-thumb">
-                                    <img src="assets/img/portfolio-data-quality.svg" alt="Monitoreo automatizado de calidad de datos" class="img-res" loading="lazy">
+                                    <img src="assets/img/portfolio-data-quality.svg" alt="Automated data quality monitoring panel" class="img-res" loading="lazy" data-i18n-attrs="alt:works.observability.alt">
                                     <a href="#" class="rectangle" data-toggle="modal" data-target="#portfolioItem4">
                                         <i class="fa fa-plus"></i>
                                     </a>
                                 </div><!-- /.portfolio-item-thumb  -->
                                 <div class="portfolio-info">
-                                    <a href="./projects/data-quality-observability.html"><h3>Observabilidad de datos 24/7</h3></a>
-                                    <p>Calidad y automatización</p>
+                                    <a href="./projects/data-quality-observability.html"><h3 data-i18n="works.observability.title">24/7 Data Observability</h3></a>
+                                    <p data-i18n="works.observability.subtitle">Quality and automation</p>
                                 </div><!-- /.portfolio-info  -->
                             </div>
                         </div>
@@ -495,22 +502,22 @@
                 </div>
             </div>
         </section><!-- /.section-works -->
-        <!-- End Works section --> 
+        <!-- End Works section -->
 
-        <!-- Me section --> 
+        <!-- Me section -->
         <section class="section-background section-me background-overlay text-center">
             <div class="container page-scroll">
-                <h2>Are You Impressed By My Work?</h2>
-                <a href="#contact" class="btn">GET IN TOUCH</a>
+                <h2 data-i18n="cta.workImpression">Are You Impressed By My Work?</h2>
+                <a href="#contact" class="btn" data-i18n="cta.getInTouch">GET IN TOUCH</a>
             </div>
         </section><!-- /.section-me -->
-        <!-- End Me section --> 
+        <!-- End Me section -->
 
-        <!-- Contacts section --> 
+        <!-- Contacts section -->
         <section class="site-section section-hello" id="contact">
             <div class="container">
-                <h2>CONTACT</h2>
-                <p class="section-subtitle"><span>Click on me</span></p>
+                <h2 data-i18n="contact.title">Contact</h2>
+                <p class="section-subtitle"><span data-i18n="contact.subtitle">Choose a channel</span></p>
                 <div class="row contact-cards-row">
                     <div class="col-sm-4 col-xs-12">
                         <div class="contact-card">
@@ -518,8 +525,8 @@
                                 <i class="fa fa-envelope"></i>
                             </span>
                             <div class="contact-card-content">
-                                <h3>Correo</h3>
-                                <p>Escríbeme para colaborar o resolver dudas técnicas.</p>
+                                <h3 data-i18n="contact.email.heading">Email</h3>
+                                <p data-i18n="contact.email.description">Write to collaborate or resolve technical questions.</p>
                                 <a class="contact-card-link" href="mailto:mario_huarte@outlook.com">mario_huarte@outlook.com</a>
                             </div>
                         </div>
@@ -530,8 +537,8 @@
                                 <i class="fa fa-linkedin"></i>
                             </span>
                             <div class="contact-card-content">
-                                <h3>Redes profesionales</h3>
-                                <p>Conecta en LinkedIn o envía un mensaje directo por WhatsApp.</p>
+                                <h3 data-i18n="contact.networks.heading">Professional networks</h3>
+                                <p data-i18n="contact.networks.description">Connect on LinkedIn or send a direct WhatsApp message.</p>
                                 <div class="contact-card-actions">
                                     <a class="contact-card-link" href="https://www.linkedin.com/in/mario-huarte-nolasco-874436202/" target="_blank" rel="noopener">LinkedIn</a>
                                     <a class="contact-card-link" href="https://wa.me/qr/4AUDRLIXV2L4C1" target="_blank" rel="noopener">WhatsApp</a>
@@ -545,18 +552,18 @@
                                 <i class="fa fa-map-marker"></i>
                             </span>
                             <div class="contact-card-content">
-                                <h3>Ubicación y disponibilidad</h3>
-                                <p>Basado en Ciudad de México. Abierto a roles remotos e híbridos.</p>
-                                <a class="contact-card-link" href="https://maps.app.goo.gl/wdM2vc9GzA1wha2E8" target="_blank" rel="noopener">Ver área de trabajo</a>
+                                <h3 data-i18n="contact.location.heading">Location and availability</h3>
+                                <p data-i18n="contact.location.description">Based in Mexico City. Open to remote and hybrid roles.</p>
+                                <a class="contact-card-link" href="https://maps.app.goo.gl/wdM2vc9GzA1wha2E8" target="_blank" rel="noopener" data-i18n="contact.location.cta">View work area</a>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
         </section><!-- /.section-contact-->
-        <!-- End Contacts section --> 
-        
-        <!-- Social Networks section --> 
+        <!-- End Contacts section -->
+
+        <!-- Social Networks section -->
         <section class="section-networks blue-bg">
             <div class="container">
                 <a href="https://www.linkedin.com/in/mario-huarte-nolasco-874436202/" class="rectangle">
@@ -568,23 +575,23 @@
                 </a>
             </div>
         </section><!-- /.section-networks-->
-        <!-- End Social Networks section --> 
+        <!-- End Social Networks section -->
 
     </main><!-- /#main -->
     <!-- End Main content -->
 
-    <!-- Footer --> 
+    <!-- Footer -->
     <footer id="colophon" class="site-footer">
 
         <div class="container-fluid">
 
             <ul class="list-unstyled list-inline">
-                <li class="page-scroll"><a href="#top">Home</a></li>
-                <li class="page-scroll"><a href="#intro">Intro</a></li>
-                <li class="page-scroll"><a href="#about">About</a></li>
-                <li class="page-scroll"><a href="#history">History</a></li>
-                <li class="page-scroll"><a href="#works">Works</a></li>
-                <li class="page-scroll"><a href="#contact">Contact</a></li>
+                <li class="page-scroll"><a href="#top" data-i18n="nav.home">Home</a></li>
+                <li class="page-scroll"><a href="#intro" data-i18n="nav.intro">Intro</a></li>
+                <li class="page-scroll"><a href="#about" data-i18n="nav.about">About</a></li>
+                <li class="page-scroll"><a href="#history" data-i18n="nav.history">History</a></li>
+                <li class="page-scroll"><a href="#works" data-i18n="nav.works">Works</a></li>
+                <li class="page-scroll"><a href="#contact" data-i18n="nav.contact">Contact</a></li>
             </ul>
 
             <div class="page-scroll">
@@ -600,7 +607,7 @@
         </div>
 
     </footer><!-- /#footer -->
-    <!-- End Footer --> 
+    <!-- End Footer -->
 
     <!-- Modals -->
     <div id="portfolioItem1" class="modal fade fade-scale" role="dialog">
@@ -608,14 +615,14 @@
             <div class="modal-content">
                 <div class="modal-header">
                     <a class="rectangle" data-dismiss="modal"><i class="fa fa-times"></i></a>
-                    <img class="img-res" src="assets/img/portfolio-automation-rpa.svg" alt="Detalle del bot RPA conciliando facturas en SAP" loading="lazy">
+                    <img class="img-res" src="assets/img/portfolio-automation-rpa.svg" alt="Detail of the RPA bot reconciling invoices in SAP" loading="lazy" data-i18n-attrs="alt:works.modal.rpa.alt">
                 </div>
                 <div class="modal-body">
-                    <h4 class="modal-title">Bot RPA conciliación SAP</h4>
-                    <p>Automatización desarrollada en Python + Selenium para cruzar estados de cuenta bancarios con SAP FI, generar ajustes contables y notificar excepciones a tesorería vía correo y Teams.</p>
+                    <h4 class="modal-title" data-i18n="works.modal.rpa.title">SAP Reconciliation RPA Bot</h4>
+                    <p data-i18n="works.modal.rpa.description">Automation developed in Python + Selenium to match bank statements with SAP FI, generate accounting adjustments, and notify treasury about exceptions via email and Teams.</p>
                 </div>
                 <div class="modal-footer">
-                    <a href="./projects/rpa-invoice-automation.html" class="btn">Ver caso</a>
+                    <a href="./projects/rpa-invoice-automation.html" class="btn" data-i18n="works.modal.rpa.button">View case</a>
                 </div>
             </div><!-- /.modal-content -->
         </div><!-- /.modal-dialog -->
@@ -626,14 +633,14 @@
             <div class="modal-content">
                 <div class="modal-header">
                     <a class="rectangle" data-dismiss="modal"><i class="fa fa-times"></i></a>
-                    <img class="img-res" src="assets/img/portfolio-data-analytics.svg" alt="Visualización del dashboard comercial en Power BI" loading="lazy">
+                    <img class="img-res" src="assets/img/portfolio-data-analytics.svg" alt="Visualization of the commercial dashboard in Power BI" loading="lazy" data-i18n-attrs="alt:works.modal.analytics.alt">
                 </div>
                 <div class="modal-body">
-                    <h4 class="modal-title">Dashboard comercial Power BI</h4>
-                    <p>Modelo semántico y dashboard interactivo que integra POS, CRM y objetivos trimestrales para seguimiento de KPIs, predicciones de ventas y alertas automáticas en Power BI Service.</p>
+                    <h4 class="modal-title" data-i18n="works.modal.analytics.title">Power BI Commercial Dashboard</h4>
+                    <p data-i18n="works.modal.analytics.description">Semantic model and interactive dashboard integrating POS, CRM, and quarterly goals to track KPIs, forecast sales, and send automated alerts through Power BI Service.</p>
                 </div>
                 <div class="modal-footer">
-                    <a href="./projects/data-analytics-dashboard.html" class="btn">Ver demo</a>
+                    <a href="./projects/data-analytics-dashboard.html" class="btn" data-i18n="works.modal.analytics.button">View demo</a>
                 </div>
             </div><!-- /.modal-content -->
         </div><!-- /.modal-dialog -->
@@ -644,14 +651,14 @@
             <div class="modal-content">
                 <div class="modal-header">
                     <a class="rectangle" data-dismiss="modal"><i class="fa fa-times"></i></a>
-                    <img class="img-res" src="assets/img/portfolio-mdm-ebx.svg" alt="Configuración del hub de datos maestros en TIBCO EBX" loading="lazy">
+                    <img class="img-res" src="assets/img/portfolio-mdm-ebx.svg" alt="Configuration of the master data hub in TIBCO EBX" loading="lazy" data-i18n-attrs="alt:works.modal.mdm.alt">
                 </div>
                 <div class="modal-body">
-                    <h4 class="modal-title">Hub MDM con TIBCO EBX</h4>
-                    <p>Implementación de un repositorio centralizado de productos y clientes con workflows de aprobación, integraciones REST y reglas de calidad para asegurar datos confiables en toda la organización.</p>
+                    <h4 class="modal-title" data-i18n="works.modal.mdm.title">MDM Hub with TIBCO EBX</h4>
+                    <p data-i18n="works.modal.mdm.description">Implementation of a centralized repository for products and clients with approval workflows, REST integrations, and quality rules to ensure reliable data across the organization.</p>
                 </div>
                 <div class="modal-footer">
-                    <a href="./projects/ebx-mdm-hub.html" class="btn">Ver caso</a>
+                    <a href="./projects/ebx-mdm-hub.html" class="btn" data-i18n="works.modal.mdm.button">View case</a>
                 </div>
             </div><!-- /.modal-content -->
         </div><!-- /.modal-dialog -->
@@ -662,14 +669,14 @@
             <div class="modal-content">
                 <div class="modal-header">
                     <a class="rectangle" data-dismiss="modal"><i class="fa fa-times"></i></a>
-                    <img class="img-res" src="assets/img/portfolio-data-quality.svg" alt="Panel de observabilidad para calidad de datos" loading="lazy">
+                    <img class="img-res" src="assets/img/portfolio-data-quality.svg" alt="Observability dashboard for data quality" loading="lazy" data-i18n-attrs="alt:works.modal.observability.alt">
                 </div>
                 <div class="modal-body">
-                    <h4 class="modal-title">Observabilidad de datos 24/7</h4>
-                    <p>Framework de monitoreo con Great Expectations y Airflow que valida pipelines críticos, guarda evidencias en data lake y publica métricas de cobertura en Grafana con alertas vía Slack.</p>
+                    <h4 class="modal-title" data-i18n="works.modal.observability.title">24/7 Data Observability</h4>
+                    <p data-i18n="works.modal.observability.description">Monitoring framework with Great Expectations and Airflow that validates critical pipelines, stores evidence in a data lake, and publishes coverage metrics in Grafana with Slack alerts.</p>
                 </div>
                 <div class="modal-footer">
-                    <a href="./projects/data-quality-observability.html" class="btn">Ver referencia</a>
+                    <a href="./projects/data-quality-observability.html" class="btn" data-i18n="works.modal.observability.button">View reference</a>
                 </div>
             </div><!-- /.modal-content -->
         </div><!-- /.modal-dialog -->
@@ -703,7 +710,8 @@
     <script src="assets/js/touchswipe.min.js"></script>
 
     <!-- Custom JS -->
+    <script src="assets/js/i18n.js"></script>
     <script src="assets/js/script.js"></script>
-  
+
 </body>
 </html>

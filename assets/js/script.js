@@ -224,6 +224,49 @@ $(function () {
     // Internationalization
     var translations = window.TRANSLATIONS || {};
 
+    function parseContactStatusFromQuery() {
+      var search = window.location ? window.location.search : '';
+      if (!search) {
+        return null;
+      }
+      try {
+        var params = new URLSearchParams(search);
+        var status = params.get('status');
+        return status === 'success' || status === 'error' ? status : null;
+      } catch (error) {
+        return null;
+      }
+    }
+
+    var contactStatus = parseContactStatusFromQuery();
+
+    function updateContactFormAlerts(status) {
+      var $form = $('.contact-form');
+      if (!$form.length) {
+        return;
+      }
+
+      var $success = $form.find('.form-alert-success');
+      var $error = $form.find('.form-alert-error');
+      var $alerts = $form.find('.form-alert');
+
+      $alerts.attr('hidden', true);
+
+      var $visibleAlert = null;
+      if (status === 'success' && $success.length) {
+        $visibleAlert = $success;
+      } else if (status === 'error' && $error.length) {
+        $visibleAlert = $error;
+      }
+
+      if ($visibleAlert) {
+        $visibleAlert.removeAttr('hidden');
+        setTimeout(function () {
+          $visibleAlert.focus();
+        }, 0);
+      }
+    }
+
     function applyTranslations(lang) {
       if (!translations[lang]) {
         return;
@@ -271,6 +314,8 @@ $(function () {
           $(this).val(lang);
         }
       });
+
+      updateContactFormAlerts(contactStatus);
     }
 
     function resolveInitialLanguage() {
@@ -290,6 +335,11 @@ $(function () {
 
     var currentLanguage = resolveInitialLanguage();
     applyTranslations(currentLanguage);
+
+    if (contactStatus && window.history && typeof window.history.replaceState === 'function') {
+      var newUrl = window.location.pathname + (window.location.hash || '');
+      window.history.replaceState({}, document.title, newUrl);
+    }
 
     $(document).on('change', '.language-switcher', function (event) {
       var selectedLang = $(event.target).val();

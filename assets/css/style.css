@@ -952,57 +952,181 @@ html, body {
 }
 
 /* Section: About */
-.section-about .row {
-  margin-top: 70px;
+.section-about .services-grid {
+  margin-top: 60px;
 }
 
-.section-about .col-sm-3 {
-  min-height: 250px;
+.section-about .services-grid [class*="col-"] {
+  margin-bottom: 30px;
+  display: flex;
 }
 
-.section-about .rectangle {
-  margin: 15px auto 10px;
+.section-about .service-card {
+  background-color: #ffffff;
+  border-radius: 18px;
+  padding: 36px 32px;
+  box-shadow: 0 25px 50px rgba(26, 32, 44, 0.12);
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  width: 100%;
+  text-align: left;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
 
-.section-about .rectangle i {
-  font-size: 28px;
+.section-about .service-card:hover,
+.section-about .service-card:focus-within {
+  transform: translateY(-6px);
+  box-shadow: 0 32px 60px rgba(26, 32, 44, 0.16);
 }
 
-.feature-about h3 {
-  margin: 50px 0 0;
-  font-size: 16px;
+.service-card__header {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+}
+
+.service-card__icon-wrap {
+  width: 64px;
+  height: 64px;
+  border-radius: 18px;
+  background: rgba(13, 71, 161, 0.08);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.service-card__icon {
+  width: 42px;
+  height: 42px;
+}
+
+.section-about .service-card h3 {
+  margin: 0;
+  font-size: 20px;
+  font-weight: 700;
+  text-transform: none;
+  color: #1a202c;
+}
+
+.service-card__description {
+  margin-top: 20px;
+  color: #444444;
+  line-height: 1.65;
+}
+
+.service-card__details {
+  margin-top: 28px;
+  display: grid;
+  gap: 18px;
+}
+
+.service-card__detail h4 {
+  margin: 0 0 12px;
+  font-size: 13px;
+  letter-spacing: 0.8px;
+  text-transform: uppercase;
+  font-weight: 700;
+  color: #0d47a1;
+}
+
+.service-card__list {
+  margin: 0;
+  padding-left: 18px;
+  color: #555555;
+  line-height: 1.6;
+}
+
+.service-card__detail p {
+  margin: 0;
+  color: #555555;
+  line-height: 1.6;
+}
+
+.section-about .service-card__timeline {
+  margin: 28px 0 24px;
+  padding: 0 0 0 24px;
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  border-left: 2px solid rgba(13, 71, 161, 0.2);
+}
+
+.section-about .service-card__timeline li {
+  position: relative;
+  padding-left: 12px;
+  font-size: 12px;
   font-weight: 700;
   text-transform: uppercase;
+  letter-spacing: 0.6px;
+  color: #0d47a1;
+  line-height: 1.4;
 }
 
-.feature-about p {
-  margin: 30px 0 0;
+.section-about .service-card__timeline li::before {
+  content: '';
+  position: absolute;
+  top: 3px;
+  left: -24px;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: #0d47a1;
+  box-shadow: 0 0 0 4px rgba(13, 71, 161, 0.18);
+}
+
+.btn-service {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 12px 30px;
+  border-radius: 999px;
+  border: 2px solid #0d47a1;
+  background-color: #ffffff;
+  color: #0d47a1;
+  font-weight: 700;
+  letter-spacing: 0.8px;
+  text-transform: uppercase;
+  box-shadow: 0 12px 30px rgba(13, 71, 161, 0.12);
+  margin-top: auto;
+  align-self: flex-start;
+}
+
+.btn-service:hover,
+.btn-service:focus {
+  background-color: #0d47a1;
+  color: #ffffff;
+  box-shadow: 0 16px 36px rgba(13, 71, 161, 0.2);
+}
+
+.btn-service:focus-visible {
+  outline: 3px solid rgba(13, 71, 161, 0.25);
+  outline-offset: 4px;
+  box-shadow: 0 0 0 4px rgba(255, 255, 255, 0.7), 0 16px 36px rgba(13, 71, 161, 0.2);
+}
+
+@media only screen and (max-width: 991px) {
+  .section-about .services-grid {
+    margin-top: 40px;
+  }
+  .section-about .services-grid [class*="col-"] {
+    margin-bottom: 24px;
+  }
 }
 
 @media only screen and (max-width: 767px) {
-  .section-about .row {
-    margin-top: 30px;
+  .section-about .service-card {
+    padding: 28px 24px;
   }
-  .section-about .col-xs-6:nth-child(n+3) .feature-about {
-    margin-top: 20px;
+  .service-card__header {
+    align-items: flex-start;
   }
-  .section-about .feature-about h3 {
-    margin-top: 30px;
-  }
-  .section-about .feature-about p {
-    margin-top: 15px;
+  .section-about .service-card__timeline {
+    padding-left: 20px;
   }
 }
 
-@media only screen and (max-width: 479px) {
-  .section-about .col-xs-6 {
-    width: 100%;
-    min-height: 100%;
-  }
-  .section-about .col-xs-6:nth-child(n+2) .feature-about {
-    margin-top: 20px;
-  }
-}
 
 /* Section: Skills */
 .section-skills {

@@ -75,11 +75,18 @@ $(function () {
     }
 
 // Slick.js
-    if ($('.review-carousel').length && typeof $.fn.slick === 'function') {
-        $('.review-carousel').slick({
-            nextArrow: '<button class="slick rectangle slick-next"><i class="fa fa-angle-right" aria-hidden="true"></button>',
-            prevArrow: '<button class="slick rectangle slick-prev"><i class="fa fa-angle-left" aria-hidden="true"></button>'
-        });
+    var $testimonialCarousel = $('.review-carousel');
+    if ($testimonialCarousel.length && typeof $.fn.slick === 'function') {
+        var testimonialCount = $testimonialCarousel.find('.testimonial-card').length;
+        if (testimonialCount > 1) {
+            $testimonialCarousel.slick({
+                dots: true,
+                adaptiveHeight: true,
+                arrows: true,
+                nextArrow: '<button class="slick rectangle slick-next" aria-label="Next testimonial"><i class="fa fa-angle-right" aria-hidden="true"></i></button>',
+                prevArrow: '<button class="slick rectangle slick-prev" aria-label="Previous testimonial"><i class="fa fa-angle-left" aria-hidden="true"></i></button>'
+            });
+        }
     }
 
     if ($('.clients-carousel').length && typeof $.fn.slick === 'function') {

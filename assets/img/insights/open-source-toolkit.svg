@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 200" role="img" aria-labelledby="title desc">
+  <title>Open source repository illustration</title>
+  <desc>Abstract toolbox with data nodes connected by lines.</desc>
+  <rect width="320" height="200" rx="16" fill="#004d40" />
+  <g stroke="#a7ffeb" stroke-width="6" stroke-linecap="round" stroke-linejoin="round" fill="none">
+    <rect x="70" y="60" width="180" height="80" rx="14" />
+    <path d="M70 96h-30" />
+    <path d="M250 96h30" />
+    <circle cx="70" cy="96" r="10" fill="#a7ffeb" />
+    <circle cx="250" cy="96" r="10" fill="#a7ffeb" />
+    <path d="M110 140v30" />
+    <path d="M210 140v30" />
+  </g>
+  <g fill="#ffffff">
+    <rect x="102" y="76" width="36" height="36" rx="8" />
+    <rect x="182" y="76" width="36" height="36" rx="8" />
+    <rect x="152" y="92" width="16" height="20" rx="6" />
+  </g>
+</svg>

@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 200" role="img" aria-labelledby="title desc">
+  <title>Automation workflow illustration</title>
+  <desc>Abstract illustration showing gears connected by data signals.</desc>
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0d47a1" />
+      <stop offset="100%" stop-color="#26c6da" />
+    </linearGradient>
+  </defs>
+  <rect width="320" height="200" fill="url(#bg)" rx="16" />
+  <g fill="none" stroke="#ffffff" stroke-width="6" stroke-linecap="round" stroke-linejoin="round">
+    <circle cx="94" cy="98" r="36" />
+    <circle cx="226" cy="70" r="26" />
+    <circle cx="226" cy="142" r="30" />
+    <path d="M130 98h60" />
+    <path d="M206 70h-16l-8-16" />
+    <path d="M206 142h-20l-12 16" />
+  </g>
+  <g fill="#ffffff">
+    <rect x="74" y="86" width="12" height="24" rx="4" />
+    <rect x="102" y="86" width="12" height="24" rx="4" />
+    <rect x="130" y="90" width="8" height="16" rx="4" />
+  </g>
+</svg>

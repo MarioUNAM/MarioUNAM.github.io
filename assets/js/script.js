@@ -54,29 +54,6 @@ $(function () {
     };
 
 
-// Progress bar
-    var $section = $('.section-skills');
-    function loadDaBars() {
-        if (typeof $.fn.progressbar === 'function') {
-            $('.progress .progress-bar').progressbar({
-                transition_delay: 500,
-                display_text: 'center'
-            });
-        }
-    }
-
-    if ($section.length) {
-        $(document).bind('scroll', function(ev) {
-            var scrollOffset = $(document).scrollTop();
-            var containerOffset = $section.offset().top - window.innerHeight;
-            if (scrollOffset > containerOffset) {
-                loadDaBars();
-                // unbind event not to load scrolsl again
-                $(document).unbind('scroll');
-            }
-        });
-    }
-
 //Team Carousel
     if ($('#services-carousel').length && typeof $.fn.carousel === 'function') {
         $('#services-carousel').carousel({ interval: false });

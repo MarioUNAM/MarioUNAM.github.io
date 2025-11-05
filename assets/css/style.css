@@ -973,68 +973,60 @@ html, body {
   margin: 10px 0 0;
 }
 
-.progress-group p {
+.skills-wrapper {
+  display: grid;
+  gap: 20px;
+}
+
+.skills-category {
+  background: #f6f6f6;
+  border-radius: 12px;
+  padding: 20px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+  height: 100%;
+}
+
+.skills-category h3 {
+  font-size: 18px;
+  margin: 0 0 15px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.skill-list {
+  list-style: none;
   margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 12px;
+}
+
+.skill-list li {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.skill-icon {
+  font-size: 18px;
+  color: #3f3f3f;
+}
+
+.skill-badge {
+  display: inline-block;
+  padding: 6px 14px;
+  border-radius: 999px;
+  background: #ffffff;
+  border: 1px solid #e0e0e0;
+  font-weight: 600;
+  letter-spacing: 0.5px;
   text-transform: uppercase;
 }
 
-.progress-group + .progress-group {
-  margin-top: 20px;
-}
-
-.progress {
-  position: relative;
-  margin: 10px 0 0;
-  background-color: #f6f6f6;
-  border-radius: 0;
-  height: 10px;
-  box-shadow: none;
-  overflow: visible;
-}
-
-.progress-bar {
-  position: relative;
-  background-color: #747474;
-  height: 10px;
-}
-
-.progress-bar:before {
-  content: '';
-  position: absolute;
-  right: 0;
-  top: -10px;
-  width: 0;
-  height: 0;
-  border-style: solid;
-  border-width: 0 15px 20px 15px;
-  border-color: transparent transparent #3F3F3F transparent;
-  z-index: 2;
-}
-
-.progress-bar:after {
-  content: '';
-  position: absolute;
-  right: -8px;
-  top: -10px;
-  width: 0;
-  height: 0;
-  border-style: solid;
-  border-width: 0 15px 20px 15px;
-  border-color: transparent transparent #f6f6f6 transparent;
-  z-index: 1;
-}
-
-.progress-bar span {
-  width: 40px !important;
-  position: absolute;
-  top: -30px;
-  right: -7px;
-  color: #000;
-  z-index: 3;
-}
-
-.progressbar-back-text {
-  display: none;
+@media only screen and (min-width: 768px) {
+  .skills-wrapper {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
 }
 
 @media only screen and (max-width: 767px) {

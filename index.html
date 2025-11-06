@@ -108,7 +108,8 @@
                         <li class="page-scroll"><a href="#contact" data-i18n="nav.contact">Contact</a></li>
                         <li class="language-selector">
                             <label for="language-switcher" class="sr-only" data-i18n="language.label">Language</label>
-                            <select id="language-switcher" class="language-switcher" data-i18n-attrs="aria-label:language.switcherLabel">
+                            <span id="language-switcher-description" class="sr-only" data-i18n="language.hint">Use this menu to change the language of the site.</span>
+                            <select id="language-switcher" class="language-switcher" aria-describedby="language-switcher-description" data-i18n-attrs="aria-label:language.switcherLabel">
                                 <option value="en" data-i18n="language.option.en">EN</option>
                                 <option value="es" data-i18n="language.option.es">ES</option>
                             </select>

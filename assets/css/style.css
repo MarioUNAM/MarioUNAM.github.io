@@ -1017,11 +1017,9 @@ html, body {
 /* Section: About */
 .section-about .services-grid {
   margin-top: 60px;
-}
-
-.section-about .services-grid [class*="col-"] {
-  margin-bottom: 30px;
-  display: flex;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 30px;
 }
 
 .section-about .service-card {
@@ -1172,9 +1170,7 @@ html, body {
 @media only screen and (max-width: 991px) {
   .section-about .services-grid {
     margin-top: 40px;
-  }
-  .section-about .services-grid [class*="col-"] {
-    margin-bottom: 24px;
+    gap: 24px;
   }
 }
 

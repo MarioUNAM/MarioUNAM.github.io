@@ -77,16 +77,54 @@ $(function () {
 // Slick.js
     var $testimonialCarousel = $('.review-carousel');
     if ($testimonialCarousel.length && typeof $.fn.slick === 'function') {
-        var testimonialCount = $testimonialCarousel.find('.testimonial-card').length;
-        if (testimonialCount > 1) {
-            $testimonialCarousel.slick({
-                dots: true,
-                adaptiveHeight: true,
-                arrows: true,
-                nextArrow: '<button class="slick rectangle slick-next" aria-label="Next testimonial"><i class="fa fa-angle-right" aria-hidden="true"></i></button>',
-                prevArrow: '<button class="slick rectangle slick-prev" aria-label="Previous testimonial"><i class="fa fa-angle-left" aria-hidden="true"></i></button>'
-            });
-        }
+        $testimonialCarousel.each(function () {
+            var $carousel = $(this);
+            var testimonialCount = $carousel.find('.testimonial-card').length;
+            if (testimonialCount > 1) {
+                var arrowPreference = ($carousel.data('arrows') || 'always').toString().toLowerCase();
+                var arrowBreakpoint = window.matchMedia('(min-width: 992px)');
+
+                var shouldShowArrows = function () {
+                    switch (arrowPreference) {
+                        case 'never':
+                            return false;
+                        case 'mobile':
+                            return !arrowBreakpoint.matches;
+                        case 'desktop':
+                            return arrowBreakpoint.matches;
+                        default:
+                            return true;
+                    }
+                };
+
+                $carousel.slick({
+                    dots: true,
+                    adaptiveHeight: true,
+                    arrows: shouldShowArrows(),
+                    autoplay: true,
+                    autoplaySpeed: 7000,
+                    pauseOnHover: true,
+                    pauseOnFocus: true,
+                    pauseOnDotsHover: true,
+                    nextArrow: '<button class="slick rectangle slick-next" aria-label="Next testimonial"><i class="fa fa-angle-right" aria-hidden="true"></i></button>',
+                    prevArrow: '<button class="slick rectangle slick-prev" aria-label="Previous testimonial"><i class="fa fa-angle-left" aria-hidden="true"></i></button>'
+                });
+
+                if (arrowPreference === 'desktop' || arrowPreference === 'mobile') {
+                    var updateArrowVisibility = function () {
+                        if ($carousel.hasClass('slick-initialized')) {
+                            $carousel.slick('slickSetOption', 'arrows', shouldShowArrows(), true);
+                        }
+                    };
+
+                    if (typeof arrowBreakpoint.addEventListener === 'function') {
+                        arrowBreakpoint.addEventListener('change', updateArrowVisibility);
+                    } else if (typeof arrowBreakpoint.addListener === 'function') {
+                        arrowBreakpoint.addListener(updateArrowVisibility);
+                    }
+                }
+            }
+        });
     }
 
     if ($('.clients-carousel').length && typeof $.fn.slick === 'function') {

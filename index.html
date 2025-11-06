@@ -850,15 +850,23 @@
         <!-- End Contacts section -->
 
         <!-- Social Networks section -->
-        <section class="section-networks blue-bg">
+        <section class="section-networks blue-bg" aria-labelledby="connect-title">
             <div class="container">
-                <a href="https://www.linkedin.com/in/mario-huarte-nolasco-874436202/" class="rectangle">
-                    <i class="fa fa-linkedin-square" aria-hidden="true"></i>
-                </a>
-
-                <a href="https://wa.me/qr/4AUDRLIXV2L4C1" class="rectangle">
-                    <i class="fa fa-whatsapp" aria-hidden="true"></i>
-                </a>
+                <h2 id="connect-title" class="sr-only" data-i18n="connect.title">Connect with Mario</h2>
+                <ul class="network-list" role="list">
+                    <li>
+                        <a class="network-link" href="https://www.linkedin.com/in/mario-huarte-nolasco-874436202/" target="_blank" rel="noopener" data-i18n-attrs="aria-label:connect.linkedinAria">
+                            <i class="fa fa-linkedin-square" aria-hidden="true"></i>
+                            <span class="sr-only" data-i18n="connect.linkedinLabel">LinkedIn</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a class="network-link" href="mailto:mario_huarte@outlook.com" data-i18n-attrs="aria-label:connect.emailAria">
+                            <i class="fa fa-envelope" aria-hidden="true"></i>
+                            <span class="sr-only" data-i18n="connect.emailLabel">Email</span>
+                        </a>
+                    </li>
+                </ul>
             </div>
         </section><!-- /.section-networks-->
         <!-- End Social Networks section -->
@@ -869,23 +877,17 @@
     <!-- Footer -->
     <footer id="colophon" class="site-footer">
 
-        <div class="container-fluid">
+        <div class="container footer-primary">
+            <p class="footer-contact-line">
+                <span data-i18n="footer.contactIntro">Available for data and automation collaborations.</span>
+                <a class="footer-contact-link" href="mailto:mario_huarte@outlook.com" data-i18n="footer.contactEmail" data-i18n-attrs="aria-label:footer.contactEmailAria">mario_huarte@outlook.com</a>
+            </p>
 
-            <ul class="list-unstyled list-inline">
-                <li class="page-scroll"><a href="#top" data-i18n="nav.home">Home</a></li>
-                <li class="page-scroll"><a href="#intro" data-i18n="nav.intro">Intro</a></li>
-                <li class="page-scroll"><a href="#about" data-i18n="nav.about">About</a></li>
-                <li class="page-scroll"><a href="#history" data-i18n="nav.history">History</a></li>
-                <li class="page-scroll"><a href="#works" data-i18n="nav.works">Works</a></li>
-                <li class="page-scroll"><a href="#contact" data-i18n="nav.contact">Contact</a></li>
-            </ul>
-
-            <div class="page-scroll">
-                <a href="#top" class="rectangle">
-                    <i class="fa fa-angle-double-up"></i>
+            <div class="footer-backtotop page-scroll">
+                <a href="#top" class="footer-backtotop-link" data-i18n-attrs="aria-label:footer.backToTopAria">
+                    <i class="fa fa-angle-double-up" aria-hidden="true"></i>
                 </a>
             </div>
-
         </div>
 
         <div class="container text-center">

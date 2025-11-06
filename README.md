@@ -82,6 +82,11 @@ El sitio es completamente estático. Puedes revisarlo localmente de dos maneras:
 - **Scripts adicionales:** coloca nuevos scripts en `assets/js/` y enlázalos en la sección `<head>` o antes del cierre de `</body>` de `index.html`.
 - **Contenido de plantillas:** para mantener historial y créditos, conserva los archivos `LICENSE.txt` y `README` incluidos en las carpetas de plantillas.
 
+## Recomendaciones de accesibilidad
+
+- **Navegación por teclado mejorada:** incorporar un enlace de “Saltar al contenido”, revisar el orden de tabulación en modales y asegurar que todos los controles visibles reciben un estilo `:focus-visible` coherente para usuarios que navegan sin ratón.
+- **Modo de alto contraste:** ofrecer un selector de contraste independiente (o integrado con el cambio de idioma) que incremente la relación de contraste de textos y elementos interactivos, además de documentar los colores alternativos en `assets/css/style.css` para futuros mantenimientos.
+
 ## Créditos y licencias
 
 - Los recursos de terceros (Bootstrap, jQuery, Font Awesome, Slick, etc.) mantienen sus respectivas licencias. Consulta la documentación oficial de cada proyecto para detalles de uso.

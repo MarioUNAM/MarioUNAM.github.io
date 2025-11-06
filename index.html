@@ -760,7 +760,7 @@
                 <h2 data-i18n="contact.title">Contact</h2>
                 <p class="section-subtitle"><span data-i18n="contact.subtitle">Choose a channel</span></p>
                 <div class="contact-form-wrapper">
-                    <form class="contact-form" action="https://formspree.io/f/xwkgozkj" method="POST" data-i18n-attrs="aria-label:contact.form.ariaLabel" aria-label="Direct contact form">
+                    <form class="contact-form" method="POST" data-i18n-attrs="aria-label:contact.form.ariaLabel" aria-label="Direct contact form">
                         <div class="contact-form-intro">
                             <h3 data-i18n="contact.form.title">Send a direct message</h3>
                             <p data-i18n="contact.form.description">Share a bit about your project and how I can help.</p>
@@ -794,12 +794,14 @@
                             </div>
                         </div>
                         <div class="contact-form-footer">
-                            <button type="submit" class="btn btn-contact" data-i18n="contact.form.submit">Send message</button>
+                            <input type="hidden" name="_redirect" value="contact-success.html?status=success" data-contact-redirect-input>
+                            <input type="hidden" name="_error" value="contact-error.html?status=error" data-contact-error-input>
+                            <input type="hidden" name="language" value="en" data-contact-language-input>
+                            <button type="submit" class="btn btn-contact" data-i18n="contact.form.submit" disabled>Send message</button>
                             <div class="form-alert form-alert-success" role="status" aria-live="polite" tabindex="-1" hidden data-i18n="contact.form.success">Thank you! Your message was sent successfully.</div>
                             <div class="form-alert form-alert-error" role="alert" aria-live="assertive" tabindex="-1" hidden data-i18n="contact.form.error">Something went wrong. Please try again or use another channel.</div>
+                            <div class="form-alert form-alert-config" role="alert" aria-live="assertive" tabindex="-1" hidden data-i18n="contact.form.configError">The contact form is temporarily unavailable because its endpoint is not configured.</div>
                         </div>
-                        <input type="hidden" name="_redirect" value="https://mariounam.github.io/contact-success.html">
-                        <input type="hidden" name="_error" value="https://mariounam.github.io/contact-error.html">
                     </form>
                 </div>
                 <div class="row contact-cards-row">
@@ -992,6 +994,7 @@
 
     <!-- Custom JS -->
     <script src="assets/js/i18n.js"></script>
+    <script src="assets/js/contact-config.js"></script>
     <script src="assets/js/insights.js"></script>
     <script src="assets/js/script.js"></script>
 

@@ -70,6 +70,30 @@ El sitio es completamente estático. Puedes revisarlo localmente de dos maneras:
    ```
    Luego visita <http://localhost:8000> en tu navegador.
 
+## Configuración del formulario de contacto
+
+La integración con servicios como Formspree requiere definir el endpoint del formulario y las URL de redirección. Por limitaciones de red en el entorno de desarrollo automatizado no fue posible iniciar sesión en Formspree ni validar el identificador `xwkgozkj`; deberás crear o verificar el formulario manualmente antes de desplegar.
+
+1. Crea un formulario nuevo en [Formspree](https://formspree.io/) (u otro servicio equivalente) y copia su endpoint seguro, por ejemplo `https://formspree.io/f/tuHashNuevo`.
+2. Actualiza `assets/js/contact-config.js` asignando el valor del endpoint en `endpoint`. Si tu servicio utiliza URL personalizadas para redirecciones de éxito o error, también puedes modificar `successRedirect` y `errorRedirect`.
+3. Abre `index.html` y confirma que el botón “Send message” aparece habilitado; si el endpoint está vacío, el botón permanecerá deshabilitado y se mostrará un mensaje de configuración pendiente.
+4. Verifica el flujo de redirección ejecutando el servidor de simulación local y enviando una petición de prueba:
+   ```bash
+   node scripts/mock-formspree.js &
+   curl -i -X POST "http://localhost:8787" \
+     -H "Content-Type: application/x-www-form-urlencoded" \
+     -d "name=Test&email=test@example.com&subject=Hi&_redirect=contact-success.html?status=success&_error=contact-error.html?status=error"
+   ```
+   El mock responde con un estado `303` y redirige según los valores enviados. Finaliza el servidor con `Ctrl+C` al terminar.
+5. Para simular un error de validación, añade `?forceError=1` a la URL en `curl`; el mock redirigirá hacia la página de error definida.
+
+### Rotación del hash o credenciales del formulario
+
+- **Cambiar el endpoint:** actualiza `assets/js/contact-config.js` con el nuevo hash y vuelve a desplegar. El sitio deshabilita el botón automáticamente cuando falta configuración válida.
+- **Limpiar caches:** al rotar la clave, borra caché del navegador o utiliza una ventana privada para asegurarte de que el formulario carga la nueva configuración.
+- **Verificar respuestas:** utiliza el comando `curl` anterior (reemplazando el endpoint real) o las herramientas de pruebas que ofrezca tu proveedor para confirmar que obtienes una respuesta `200/303` antes de compartir el formulario.
+- **Actualizar traducciones:** si cambias los mensajes de éxito o error en `assets/js/i18n.js`, traduce las versiones en inglés y español para mantener la paridad entre idiomas.
+
 ## Publicación con GitHub Pages
 
 1. Asegúrate de que los cambios estén confirmados y enviados al repositorio `MarioUNAM/MarioUNAM.github.io` en la rama `main`.

@@ -2234,6 +2234,13 @@ html, body {
   margin-top: 48px;
 }
 
+.insight-noscript {
+  margin-top: 24px;
+  text-align: center;
+  color: #606060;
+  font-size: 14px;
+}
+
 .insight-card {
   display: flex;
   flex-direction: column;
@@ -2354,6 +2361,12 @@ html, body {
   color: #0b3d8a;
 }
 
+.insight-title-link:focus-visible,
+.insight-link:focus-visible {
+  outline: 3px solid rgba(13, 71, 161, 0.35);
+  outline-offset: 3px;
+}
+
 .insights-cta {
   margin-top: 48px;
 }
@@ -2375,6 +2388,11 @@ html, body {
 .btn-insights:focus {
   background-color: #0d47a1;
   color: #ffffff;
+}
+
+.btn-insights:focus-visible {
+  outline: 3px solid rgba(13, 71, 161, 0.4);
+  outline-offset: 4px;
 }
 
 @media only screen and (max-width: 991px) {

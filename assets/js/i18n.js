@@ -169,6 +169,7 @@
       'works.observability.title': '24/7 Data Observability',
       'works.observability.subtitle': 'Quality and automation',
       'works.observability.alt': 'Automated data quality monitoring panel',
+      // Insight cards: every new base key requires .title, .description, .date, .linkLabel, .url and .imageAlt entries per language.
       'insights.title': 'Latest insights & resources',
       'insights.subtitle': 'Curated articles, talks, and tools on automation, data, and leadership.',
       'insights.tags.automation': 'Automation',
@@ -460,6 +461,7 @@
       'works.observability.title': 'Observabilidad de datos 24/7',
       'works.observability.subtitle': 'Calidad y automatización',
       'works.observability.alt': 'Panel de monitoreo de calidad de datos',
+      // Tarjetas de insights: agrega por idioma las claves .title, .description, .date, .linkLabel, .url y .imageAlt para cada nuevo elemento.
       'insights.title': 'Ideas y recursos recientes',
       'insights.subtitle': 'Artículos, charlas y herramientas sobre automatización, datos y liderazgo.',
       'insights.tags.automation': 'Automatización',

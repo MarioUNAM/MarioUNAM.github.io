@@ -246,6 +246,77 @@ $(function () {
     // Internationalization
     var translations = window.TRANSLATIONS || {};
 
+    function updateContactLanguageInput(lang) {
+      var $langInputs = $('.contact-form [data-contact-language-input]');
+      if ($langInputs.length) {
+        $langInputs.val(lang);
+      }
+    }
+
+    function configureContactForm(config) {
+      var $form = $('.contact-form');
+      if (!$form.length) {
+        return;
+      }
+
+      var settings = $.extend({
+        endpoint: '',
+        successRedirect: 'contact-success.html?status=success',
+        errorRedirect: 'contact-error.html?status=error'
+      }, config || {});
+
+      var $submitButton = $form.find('.btn-contact');
+      var $configAlert = $form.find('.form-alert-config');
+      var $redirectInput = $form.find('[data-contact-redirect-input]');
+      var $errorInput = $form.find('[data-contact-error-input]');
+
+      if (!settings.endpoint) {
+        $form.removeAttr('action');
+        if ($submitButton.length) {
+          $submitButton.prop('disabled', true);
+        }
+        if ($configAlert.length) {
+          var wasHidden = $configAlert.attr('hidden');
+          $configAlert.removeAttr('hidden');
+          if (wasHidden !== undefined) {
+            setTimeout(function () {
+              $configAlert.focus();
+            }, 0);
+          }
+        }
+        return;
+      }
+
+      if ($configAlert.length) {
+        $configAlert.attr('hidden', true);
+      }
+      if ($submitButton.length) {
+        $submitButton.prop('disabled', false);
+      }
+
+      $form.attr('action', settings.endpoint);
+
+      if (!$redirectInput.length) {
+        $redirectInput = $('<input>', {
+          type: 'hidden',
+          name: '_redirect',
+          'data-contact-redirect-input': ''
+        }).appendTo($form);
+      }
+      $redirectInput.val(settings.successRedirect);
+
+      if (!$errorInput.length) {
+        $errorInput = $('<input>', {
+          type: 'hidden',
+          name: '_error',
+          'data-contact-error-input': ''
+        }).appendTo($form);
+      }
+      $errorInput.val(settings.errorRedirect);
+
+      updateContactLanguageInput(document.documentElement.getAttribute('lang') || 'en');
+    }
+
     function parseContactStatusFromQuery() {
       var search = window.location ? window.location.search : '';
       if (!search) {
@@ -270,7 +341,7 @@ $(function () {
 
       var $success = $form.find('.form-alert-success');
       var $error = $form.find('.form-alert-error');
-      var $alerts = $form.find('.form-alert');
+      var $alerts = $form.find('.form-alert-success, .form-alert-error');
 
       $alerts.attr('hidden', true);
 
@@ -337,6 +408,7 @@ $(function () {
         }
       });
 
+      updateContactLanguageInput(lang);
       updateContactFormAlerts(contactStatus);
     }
 
@@ -356,6 +428,8 @@ $(function () {
     }
 
     var currentLanguage = resolveInitialLanguage();
+
+    configureContactForm(window.FORMSPREE_CONFIG || {});
     applyTranslations(currentLanguage);
 
     if (contactStatus && window.history && typeof window.history.replaceState === 'function') {

@@ -48,6 +48,7 @@ Las carpetas `template1/`, `template2/` y `template3/` conservan variaciones o p
   | Avatar de perfil | `.big-rectangle` | 230 × 230 px | 1:1 | Se recorta centrado gracias a `object-fit: cover`; prepara el archivo cuadrado para evitar deformaciones. |
   | Logo de cronología | `.timeline-body-thumb` | 100 × 100 px | 1:1 | Mantén fondos transparentes cuando sea posible para integrarse con la línea de tiempo. |
   | Miniatura de portafolio | `.portfolio-item-thumb` | ≥ 300 × 250 px | ~6:5 | Ajusta la composición pensando en el recorte centrado por `object-fit: cover`. |
+  | Miniatura de insights | `.insight-thumb-image` | 480 × 320 px (SVG recomendado) | 3:2 | Exporta ilustraciones o capturas en SVG optimizado (<100 KB) para asegurar nitidez y carga rápida en la cuadrícula de insights. |
   | Imagen de cabecera en modal | (imagen principal del modal) | ≥ 1200 × 400 px | ≥ 3:1 | Asegura una altura efectiva de 400 px para evitar pixelado y aprovecha el recorte central. |
 
 - **Buenas prácticas para imágenes:**

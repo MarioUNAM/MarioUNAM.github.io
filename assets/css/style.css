@@ -2685,16 +2685,54 @@ html, body {
 }
 
 .section-testimonials .slick-dots {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
   margin-top: 32px;
 }
 
+.section-testimonials .slick-dots li {
+  width: auto;
+  height: auto;
+  margin: 0;
+}
+
+.section-testimonials .slick-dots li button {
+  width: 18px;
+  height: 18px;
+  padding: 0;
+  background: transparent;
+  border: none;
+  line-height: 1;
+  outline: none;
+}
+
 .section-testimonials .slick-dots li button:before {
-  font-size: 12px;
-  color: rgba(13, 71, 161, 0.35);
+  content: "";
+  display: block;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  border: 2px solid #1e88e5;
+  background-color: transparent;
+  opacity: 1;
+  margin: 0 auto;
+  transition: background-color 0.3s ease, border-color 0.3s ease, transform 0.3s ease,
+    box-shadow 0.3s ease;
+}
+
+.section-testimonials .slick-dots li button:hover:before,
+.section-testimonials .slick-dots li button:focus:before,
+.section-testimonials .slick-dots li button:focus-visible:before {
+  border-color: #0d47a1;
+  box-shadow: 0 0 0 3px rgba(13, 71, 161, 0.35);
 }
 
 .section-testimonials .slick-dots li.slick-active button:before {
-  color: #0d47a1;
+  background-color: #0d47a1;
+  border-color: #0d47a1;
+  transform: scale(1.05);
 }
 
 @media only screen and (max-width: 991px) {

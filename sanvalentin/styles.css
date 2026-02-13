@@ -515,6 +515,40 @@ body {
 }
 
 
+#music-toggle {
+  position: fixed;
+  right: clamp(0.8rem, 2vw, 1.2rem);
+  bottom: clamp(0.8rem, 2vw, 1.2rem);
+  z-index: 20;
+  border: 1px solid rgba(90, 26, 59, 0.35);
+  background: rgba(255, 255, 255, 0.78);
+  color: #5a1a3b;
+  border-radius: 999px;
+  padding: 0.58rem 0.9rem;
+  font: 600 0.9rem/1 var(--font-sans);
+  letter-spacing: 0.01em;
+  backdrop-filter: blur(4px);
+  box-shadow: 0 8px 18px rgba(90, 26, 59, 0.14);
+  cursor: pointer;
+  transition: background-color 180ms var(--motion-ease), color 180ms var(--motion-ease), border-color 180ms var(--motion-ease), transform 180ms var(--motion-ease);
+}
+
+#music-toggle:hover {
+  transform: translateY(-1px);
+}
+
+#music-toggle.is-active {
+  background: rgba(222, 93, 152, 0.9);
+  border-color: rgba(176, 70, 123, 0.9);
+  color: #fff6fb;
+}
+
+#music-toggle:focus-visible {
+  outline: 3px solid var(--focus);
+  outline-offset: 3px;
+}
+
+
 @media (min-width: 760px) {
   #card-scene {
     display: grid;

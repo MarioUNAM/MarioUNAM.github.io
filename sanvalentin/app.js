@@ -13,9 +13,15 @@ const counterMessage = document.querySelector("#counter-message");
 const treeCanopy = document.querySelector(".tree-canopy");
 const poemContainer = document.querySelector("#poem");
 const fallingHeartsLayer = document.querySelector("#falling-hearts-layer");
+const backgroundMusic = document.querySelector("#bg-music");
+const musicToggleButton = document.querySelector("#music-toggle");
 
 const START_DATE = "2024-02-14T00:00:00";
 const startDate = new Date(START_DATE);
+const MUSIC_STORAGE_KEY = "musicOn";
+const DEFAULT_MUSIC_VOLUME = 0.25;
+const MUSIC_FADE_IN_DURATION_MS = 900;
+const MUSIC_FADE_IN_STEP_MS = 60;
 
 const STATES = {
   INTRO: "intro",
@@ -58,6 +64,9 @@ let poemHasStarted = false;
 let elapsedCounterIntervalId = null;
 let heartShowerHasStarted = false;
 let heartShowerResizeTimeoutId = null;
+let musicFadeIntervalId = null;
+let musicShouldBeOn = false;
+let hasUserInteractedForMusic = false;
 
 const fallingHeartPool = [];
 
@@ -109,6 +118,101 @@ function waitForMotionEnd({
       finish();
     }, timeoutMs);
   });
+}
+
+function setMusicPreference(nextValue) {
+  musicShouldBeOn = Boolean(nextValue);
+  window.localStorage.setItem(MUSIC_STORAGE_KEY, String(musicShouldBeOn));
+  updateMusicToggleUI();
+}
+
+function updateMusicToggleUI() {
+  if (!musicToggleButton) {
+    return;
+  }
+
+  musicToggleButton.classList.toggle("is-active", musicShouldBeOn);
+  musicToggleButton.setAttribute("aria-pressed", String(musicShouldBeOn));
+  musicToggleButton.setAttribute(
+    "aria-label",
+    musicShouldBeOn ? "Pausar música de fondo" : "Activar música de fondo",
+  );
+  musicToggleButton.textContent = musicShouldBeOn ? "❚❚ Música" : "▶ Música";
+}
+
+function stopMusicFade() {
+  if (!musicFadeIntervalId) {
+    return;
+  }
+
+  window.clearInterval(musicFadeIntervalId);
+  musicFadeIntervalId = null;
+}
+
+function fadeInMusicTo(targetVolume = DEFAULT_MUSIC_VOLUME) {
+  if (!backgroundMusic) {
+    return;
+  }
+
+  stopMusicFade();
+
+  const totalSteps = Math.max(1, Math.round(MUSIC_FADE_IN_DURATION_MS / MUSIC_FADE_IN_STEP_MS));
+  const volumeStep = targetVolume / totalSteps;
+
+  backgroundMusic.volume = 0;
+  musicFadeIntervalId = window.setInterval(() => {
+    const nextVolume = Math.min(targetVolume, backgroundMusic.volume + volumeStep);
+    backgroundMusic.volume = nextVolume;
+
+    if (nextVolume >= targetVolume) {
+      stopMusicFade();
+    }
+  }, MUSIC_FADE_IN_STEP_MS);
+}
+
+async function playMusicWithFadeIn() {
+  if (!backgroundMusic) {
+    return;
+  }
+
+  try {
+    await backgroundMusic.play();
+    fadeInMusicTo(DEFAULT_MUSIC_VOLUME);
+  } catch (_error) {
+    setMusicPreference(false);
+  }
+}
+
+function pauseMusic() {
+  if (!backgroundMusic) {
+    return;
+  }
+
+  stopMusicFade();
+  backgroundMusic.pause();
+  backgroundMusic.volume = DEFAULT_MUSIC_VOLUME;
+}
+
+function syncMusicWithPreference() {
+  if (!backgroundMusic) {
+    return;
+  }
+
+  if (!hasUserInteractedForMusic) {
+    return;
+  }
+
+  if (musicShouldBeOn) {
+    playMusicWithFadeIn();
+    return;
+  }
+
+  pauseMusic();
+}
+
+function registerMusicGesture() {
+  hasUserInteractedForMusic = true;
+  syncMusicWithPreference();
 }
 
 function getCanopyHeartCount() {
@@ -418,12 +522,30 @@ async function runIntroSequence() {
 }
 
 heartButton.addEventListener("click", () => {
+  registerMusicGesture();
+
   if (currentState !== STATES.INTRO) {
     return;
   }
 
   runIntroSequence();
 });
+
+if (musicToggleButton) {
+  musicToggleButton.addEventListener("click", () => {
+    registerMusicGesture();
+    setMusicPreference(!musicShouldBeOn);
+    syncMusicWithPreference();
+  });
+}
+
+if (backgroundMusic) {
+  backgroundMusic.volume = DEFAULT_MUSIC_VOLUME;
+}
+
+const storedMusicPreference = window.localStorage.getItem(MUSIC_STORAGE_KEY);
+musicShouldBeOn = storedMusicPreference === "true";
+updateMusicToggleUI();
 
 buildCanopyHearts(getCanopyHeartCount());
 buildFallingHeartPool();

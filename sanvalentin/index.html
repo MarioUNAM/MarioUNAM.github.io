@@ -8,6 +8,7 @@
   </head>
   <body>
     <audio id="bg-music" loop preload="auto" aria-hidden="true"></audio>
+    <div id="stars-layer" class="stars-layer" aria-hidden="true"></div>
 
     <main id="scene" aria-live="polite">
       <div id="falling-hearts-layer" class="falling-hearts-layer" aria-hidden="true"></div>
@@ -36,6 +37,7 @@
               <section class="poem-body" aria-label="Poema de amor">
                 <h2 class="poem-title">Poema</h2>
                 <div id="poem" class="poem" aria-live="polite"></div>
+                <p id="final-dedication" class="final-dedication" aria-live="polite"></p>
               </section>
 
               <div class="counter-wrapper">
@@ -67,6 +69,12 @@
     <button id="music-toggle" type="button" aria-pressed="false" aria-label="Activar música de fondo">
       ▶ Música
     </button>
+
+    <div class="floating-controls">
+      <button id="theme-toggle" type="button" aria-pressed="false" aria-label="Activar noche romántica">🌙 Noche romántica</button>
+      <button id="mute-toggle" type="button" aria-pressed="false" aria-label="Activar mute global">🔔 Sonidos activos</button>
+      <button id="restart-button" type="button" aria-label="Repetir animación">↺ Repetir animación</button>
+    </div>
 
     <script src="app.js"></script>
   </body>

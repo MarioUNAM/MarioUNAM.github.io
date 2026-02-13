@@ -396,6 +396,8 @@ body {
   margin: 0;
   padding: 1rem;
   border-radius: 1rem;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
 .heart-button:disabled {
@@ -406,43 +408,31 @@ body {
   display: inline-block;
   position: relative;
   width: var(--heart-base);
-  height: calc(var(--heart-base) * 0.91);
-  transform: rotate(-45deg);
-  background: var(--heart-3);
-  border-radius: 16px;
-  box-shadow: none;
-  transition: transform 220ms var(--motion-ease), background-color 220ms var(--motion-ease), box-shadow 220ms var(--motion-ease);
+  aspect-ratio: 1 / 1;
+  transform: translateZ(0) scale(1);
+  transform-origin: center;
+  filter: drop-shadow(0 8px 14px rgba(122, 30, 70, 0.2)) drop-shadow(0 2px 4px rgba(122, 30, 70, 0.15));
+  transition: transform 220ms var(--motion-ease), filter 220ms var(--motion-ease);
+  backface-visibility: hidden;
+  will-change: transform;
+}
+
+.heart img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  user-select: none;
+  -webkit-user-drag: none;
 }
 
 .heart.is-morphing {
-  border-radius: 50%;
-  transform: rotate(0deg) scale(0.82);
-  transition: transform 520ms var(--motion-ease), border-radius 520ms var(--motion-ease);
-}
-
-.heart::before,
-.heart::after {
-  content: "";
-  position: absolute;
-  width: var(--heart-base);
-  height: calc(var(--heart-base) * 0.91);
-  border-radius: 50%;
-  background: inherit;
-}
-
-.heart::before {
-  top: calc(var(--heart-base) * -0.5);
-  left: 0;
-}
-
-.heart::after {
-  top: 0;
-  left: calc(var(--heart-base) * 0.5);
+  transform: translateZ(0) scale(0.82);
+  transition: transform 520ms var(--motion-ease);
 }
 
 .heart-button:hover .heart {
-  transform: rotate(-45deg) scale(1.06);
-  background: var(--heart-5);
+  transform: translateZ(0) scale(1.06);
+  filter: drop-shadow(0 10px 16px rgba(122, 30, 70, 0.24)) drop-shadow(0 3px 6px rgba(122, 30, 70, 0.18));
 }
 
 .heart-button:focus-visible {
@@ -451,8 +441,8 @@ body {
 }
 
 .heart-button:focus-visible .heart {
-  transform: rotate(-45deg) scale(1.06);
-  background: var(--heart-5);
+  transform: translateZ(0) scale(1.06);
+  filter: drop-shadow(0 10px 16px rgba(122, 30, 70, 0.24)) drop-shadow(0 3px 6px rgba(122, 30, 70, 0.18));
 }
 
 .heart-button.is-falling {
@@ -481,9 +471,7 @@ body {
   pointer-events: none;
 }
 
-.heart-button.is-hidden .heart,
-.heart-button.is-hidden .heart::before,
-.heart-button.is-hidden .heart::after {
+.heart-button.is-hidden .heart {
   opacity: 0;
 }
 
@@ -943,19 +931,8 @@ body {
 }
 
 @media (max-width: 768px) {
-  .heart,
-  .heart::before,
-  .heart::after {
+  .heart {
     width: clamp(108px, 31vw, 132px);
-    height: clamp(98px, 28vw, 120px);
-  }
-
-  .heart::before {
-    top: clamp(-64px, -14vw, -52px);
-  }
-
-  .heart::after {
-    left: clamp(52px, 14vw, 64px);
   }
 
   .love-tree {
@@ -1024,19 +1001,8 @@ body {
     padding-inline: 0.1rem;
   }
 
-  .heart,
-  .heart::before,
-  .heart::after {
+  .heart {
     width: clamp(100px, 31vw, 120px);
-    height: clamp(92px, 28vw, 108px);
-  }
-
-  .heart::before {
-    top: clamp(-58px, -13vw, -46px);
-  }
-
-  .heart::after {
-    left: clamp(46px, 13vw, 58px);
   }
 
   .love-tree {

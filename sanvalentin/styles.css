@@ -764,7 +764,8 @@ body {
 }
 
 .falling-heart.is-active {
-  animation: falling-heart var(--fall-duration) linear forwards;
+  animation: falling-heart var(--fall-duration) linear infinite;
+  animation-iteration-count: infinite;
 }
 
 .falling-heart:not(.is-enabled) {

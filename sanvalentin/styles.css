@@ -225,8 +225,8 @@ body {
 
 #left-message .counter-wrapper {
   display: grid;
-  gap: clamp(0.35rem, 1.1vw, 0.65rem);
-  margin-top: clamp(0.2rem, 1vw, 0.45rem);
+  gap: clamp(0.2rem, 0.8vw, 0.45rem);
+  margin-top: 0;
 }
 
 .signature {
@@ -542,14 +542,6 @@ body {
 .final-dedication.is-visible {
   opacity: 1;
   transform: translateY(0);
-}
-
-.counter-wrapper h3 {
-  color: #6a2145;
-  font-family: var(--font-sans);
-  font-size: clamp(0.98rem, 0.95vw, 1.12rem);
-  font-weight: 700;
-  line-height: 1.35;
 }
 
 .counter {
@@ -967,8 +959,7 @@ body {
   }
 
   .counter,
-  #left-message h2,
-  #left-message h3 {
+  #left-message h2 {
     font-size: 0.92rem;
   }
 
@@ -1000,7 +991,6 @@ body {
 :root[data-theme="night"] .poem,
 :root[data-theme="night"] .signature,
 :root[data-theme="night"] .counter,
-:root[data-theme="night"] .counter-wrapper h3,
 :root[data-theme="night"] .poem-title,
 :root[data-theme="night"] .final-dedication,
 :root[data-theme="night"] .counter-label {

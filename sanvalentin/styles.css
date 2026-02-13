@@ -26,6 +26,8 @@ body {
   width: min(94vw, 720px);
   padding: clamp(1rem, 3vw, 1.5rem);
   overflow: hidden;
+  position: relative;
+  isolation: isolate;
 }
 
 .scene-track {
@@ -247,6 +249,57 @@ body {
   color: var(--primary-dark);
 }
 
+
+.falling-hearts-layer {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  overflow: hidden;
+  z-index: 3;
+}
+
+.falling-heart {
+  --heart-size: 14px;
+  --heart-color: #ec4899;
+  --fall-distance: 360px;
+  --fall-duration: 6s;
+  --drift-x: 18px;
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: var(--heart-size);
+  height: var(--heart-size);
+  background: var(--heart-color);
+  border-radius: 4px;
+  opacity: 0;
+  transform: translate3d(0, 0, 0) rotate(-45deg);
+  will-change: transform, opacity;
+}
+
+.falling-heart::before,
+.falling-heart::after {
+  content: "";
+  position: absolute;
+  width: var(--heart-size);
+  height: var(--heart-size);
+  background: inherit;
+  border-radius: 50%;
+}
+
+.falling-heart::before {
+  top: calc(var(--heart-size) * -0.5);
+  left: 0;
+}
+
+.falling-heart::after {
+  top: 0;
+  left: calc(var(--heart-size) * 0.5);
+}
+
+.falling-heart.is-active {
+  animation: falling-heart var(--fall-duration) linear forwards;
+}
+
 @keyframes tree-appear {
   0% {
     opacity: 0;
@@ -268,6 +321,33 @@ body {
 
   50% {
     filter: brightness(1.12);
+  }
+}
+
+
+@keyframes falling-heart {
+  0% {
+    opacity: 0;
+    transform: translate3d(0, 0, 0) rotate(-45deg);
+  }
+
+  12% {
+    opacity: 0.95;
+  }
+
+  50% {
+    transform: translate3d(var(--drift-x), calc(var(--fall-distance) * 0.48), 0) rotate(-45deg);
+  }
+
+  100% {
+    opacity: 0;
+    transform: translate3d(calc(var(--drift-x) * -0.8), var(--fall-distance), 0) rotate(-45deg);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .falling-hearts-layer {
+    display: none;
   }
 }
 

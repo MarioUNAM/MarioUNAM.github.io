@@ -12,6 +12,7 @@ const elapsedSeconds = document.querySelector("#elapsed-seconds");
 const counterMessage = document.querySelector("#counter-message");
 const treeCanopy = document.querySelector(".tree-canopy");
 const poemContainer = document.querySelector("#poem");
+const fallingHeartsLayer = document.querySelector("#falling-hearts-layer");
 
 const START_DATE = "2024-02-14T00:00:00";
 const startDate = new Date(START_DATE);
@@ -31,6 +32,10 @@ const typewriterConfig = {
 
 let poemHasStarted = false;
 let elapsedCounterIntervalId = null;
+let heartShowerHasStarted = false;
+let heartShowerResizeTimeoutId = null;
+
+const fallingHeartPool = [];
 
 function randomBetween(min, max) {
   return Math.random() * (max - min) + min;
@@ -70,6 +75,97 @@ function buildCanopyHearts(count) {
     heartNode.style.animationDelay = `${randomBetween(0, 1.4).toFixed(2)}s`;
     treeCanopy.append(heartNode);
   }
+}
+
+
+function getFallingHeartPoolSize() {
+  const area = window.innerWidth * window.innerHeight;
+  const minHearts = 14;
+  const maxHearts = 54;
+  const normalizedArea = Math.min(area, 1920 * 1080) / (1920 * 1080);
+
+  return Math.round(minHearts + (maxHearts - minHearts) * normalizedArea);
+}
+
+function configureAndLaunchFallingHeart(heartNode) {
+  if (!fallingHeartsLayer || !heartNode) {
+    return;
+  }
+
+  const canopyRect = treeCanopy?.getBoundingClientRect();
+  const layerRect = fallingHeartsLayer.getBoundingClientRect();
+  const originCenterX = canopyRect
+    ? canopyRect.left - layerRect.left + canopyRect.width * randomBetween(0.28, 0.72)
+    : layerRect.width * randomBetween(0.32, 0.68);
+  const originY = canopyRect
+    ? Math.max(0, canopyRect.top - layerRect.top + canopyRect.height * randomBetween(0.08, 0.32))
+    : layerRect.height * 0.2;
+
+  const size = randomBetween(8, 16);
+  const distance = randomBetween(layerRect.height * 0.58, layerRect.height * 0.98);
+  const durationMs = randomBetween(4200, 7600);
+  const drift = randomBetween(-26, 26);
+  const colors = ["#e11d74", "#ec4899", "#fb7185", "#f43f5e"];
+
+  heartNode.classList.remove("is-active");
+  heartNode.style.left = `${originCenterX.toFixed(1)}px`;
+  heartNode.style.top = `${originY.toFixed(1)}px`;
+  heartNode.style.setProperty("--heart-size", `${size.toFixed(1)}px`);
+  heartNode.style.setProperty("--heart-color", colors[Math.floor(Math.random() * colors.length)]);
+  heartNode.style.setProperty("--fall-distance", `${distance.toFixed(1)}px`);
+  heartNode.style.setProperty("--fall-duration", `${(durationMs / 1000).toFixed(2)}s`);
+  heartNode.style.setProperty("--drift-x", `${drift.toFixed(1)}px`);
+
+  window.requestAnimationFrame(() => {
+    heartNode.classList.add("is-active");
+  });
+
+  window.setTimeout(() => {
+    configureAndLaunchFallingHeart(heartNode);
+  }, durationMs + randomBetween(240, 1800));
+}
+
+function buildFallingHeartPool() {
+  if (!fallingHeartsLayer) {
+    return;
+  }
+
+  const desiredCount = getFallingHeartPoolSize();
+
+  while (fallingHeartPool.length < desiredCount) {
+    const heartNode = document.createElement("span");
+    heartNode.className = "falling-heart";
+    heartNode.setAttribute("aria-hidden", "true");
+    fallingHeartsLayer.append(heartNode);
+    fallingHeartPool.push(heartNode);
+
+    if (heartShowerHasStarted) {
+      configureAndLaunchFallingHeart(heartNode);
+    }
+  }
+
+  while (fallingHeartPool.length > desiredCount) {
+    const heartNode = fallingHeartPool.pop();
+    heartNode?.remove();
+  }
+}
+
+function startFallingHeartShower() {
+  if (heartShowerHasStarted || !fallingHeartsLayer) {
+    return;
+  }
+
+  heartShowerHasStarted = true;
+
+  if (fallingHeartPool.length === 0) {
+    buildFallingHeartPool();
+  }
+
+  fallingHeartPool.forEach((heartNode, index) => {
+    window.setTimeout(() => {
+      configureAndLaunchFallingHeart(heartNode);
+    }, index * 120);
+  });
 }
 
 function getElapsedParts(fromDate) {
@@ -173,6 +269,7 @@ function showMessageView() {
     elapsedCounterIntervalId = window.setInterval(updateElapsedCounter, 1000);
   }
   typePoem(poemLines);
+  startFallingHeartShower();
 }
 
 let isAnimating = false;
@@ -203,7 +300,16 @@ heartButton.addEventListener("click", () => {
 });
 
 buildCanopyHearts(getCanopyHeartCount());
+buildFallingHeartPool();
 
 window.addEventListener("resize", () => {
   buildCanopyHearts(getCanopyHeartCount());
+
+  if (heartShowerResizeTimeoutId) {
+    window.clearTimeout(heartShowerResizeTimeoutId);
+  }
+
+  heartShowerResizeTimeoutId = window.setTimeout(() => {
+    buildFallingHeartPool();
+  }, 180);
 });

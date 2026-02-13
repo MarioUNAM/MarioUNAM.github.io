@@ -87,7 +87,6 @@
 
 body {
   margin: 0;
-  min-height: 100vh;
   min-height: 100svh;
   min-height: 100dvh;
   display: grid;
@@ -170,7 +169,6 @@ body {
 }
 
 #intro-view {
-  min-height: 100vh;
   min-height: 100svh;
   min-height: 100dvh;
   display: grid;
@@ -210,7 +208,9 @@ body {
 }
 
 #scene {
-  width: min(98vw, 1220px);
+  width: 100%;
+  min-height: 100svh;
+  min-height: 100dvh;
   padding: var(--space-md);
   overflow: hidden;
   position: relative;
@@ -233,6 +233,8 @@ body {
 .view {
   width: 50%;
   flex: 0 0 50%;
+  min-height: 100svh;
+  min-height: 100dvh;
   text-align: center;
   padding: 0 var(--space-sm);
 }
@@ -242,10 +244,10 @@ body {
 }
 
 #card-scene {
-  max-width: 1120px;
-  margin: 0 auto;
+  width: 100%;
   position: relative;
-  min-height: clamp(460px, 70vh, 780px);
+  min-height: 100svh;
+  min-height: 100dvh;
   display: grid;
   align-items: end;
   background: transparent;
@@ -312,7 +314,7 @@ body {
 #right-tree {
   position: relative;
   z-index: 1;
-  min-height: clamp(460px, 78vh, 820px);
+  min-height: 100%;
   display: flex;
   flex-direction: column;
   justify-content: flex-end;
@@ -790,8 +792,8 @@ body {
 
 #music-toggle {
   position: fixed;
-  right: clamp(0.8rem, 2vw, 1.2rem);
-  bottom: clamp(0.8rem, 2vw, 1.2rem);
+  right: calc(clamp(0.8rem, 2vw, 1.2rem) + env(safe-area-inset-right, 0px));
+  bottom: calc(clamp(0.8rem, 2vw, 1.2rem) + env(safe-area-inset-bottom, 0px));
   z-index: 20;
   border: 0;
   background: rgba(255, 255, 255, 0.9);
@@ -826,8 +828,9 @@ body {
 
 .floating-controls {
   position: fixed;
-  left: clamp(0.7rem, 2vw, 1.1rem);
-  bottom: clamp(0.8rem, 2vw, 1.2rem);
+  left: calc(clamp(0.7rem, 2vw, 1.1rem) + env(safe-area-inset-left, 0px));
+  bottom: calc(clamp(0.8rem, 2vw, 1.2rem) + env(safe-area-inset-bottom, 0px));
+  padding-right: env(safe-area-inset-right, 0px);
   display: flex;
   flex-wrap: wrap;
   gap: 0.5rem;
@@ -951,12 +954,13 @@ body {
   }
 
   #card-scene {
-    min-height: auto;
+    min-height: 100svh;
+    min-height: 100dvh;
     gap: var(--space-sm);
   }
 
   #right-tree {
-    min-height: clamp(330px, 56vh, 460px);
+    min-height: 100%;
     margin-top: 0;
   }
 
@@ -984,12 +988,12 @@ body {
 
 @media (max-width: 480px) {
   .floating-controls {
-    right: 0.7rem;
-    left: 0.7rem;
+    right: calc(0.7rem + env(safe-area-inset-right, 0px));
+    left: calc(0.7rem + env(safe-area-inset-left, 0px));
   }
 
   #scene {
-    width: 100vw;
+    width: 100%;
     padding-inline: 0.85rem;
   }
 

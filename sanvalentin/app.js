@@ -20,6 +20,7 @@ const musicToggleButton = document.querySelector("#music-toggle");
 const themeToggleButton = document.querySelector("#theme-toggle");
 const muteToggleButton = document.querySelector("#mute-toggle");
 const restartButton = document.querySelector("#restart-button");
+const reducedMotionMediaQuery = window.matchMedia("(prefers-reduced-motion: reduce)");
 
 const START_DATE = "2016-09-09T00:00:00";
 const startDate = new Date(START_DATE);
@@ -50,6 +51,7 @@ let musicShouldBeOn = false;
 let hasUserInteractedForMusic = false;
 let isMuted = false;
 let activeRunToken = 0;
+let prefersReducedMotion = reducedMotionMediaQuery.matches;
 
 const fallingHeartPool = [];
 const beepAudio = new Audio("data:audio/wav;base64,UklGRjgAAABXQVZFZm10IBAAAAABAAEARKwAAIhYAQACABAAZGF0YRQAAAAAABw9XL+fbj0NAAAAAA==");
@@ -112,6 +114,11 @@ async function syncMusicWithPreference() {
 function registerMusicGesture() {
   hasUserInteractedForMusic = true;
   syncMusicWithPreference();
+}
+
+function updateReducedMotionPreference(event) {
+  prefersReducedMotion = event.matches;
+  if (prefersReducedMotion) resetParallax();
 }
 
 function updateMuteToggleUI() {
@@ -222,13 +229,14 @@ function buildFallingHeartPool() {
 }
 
 function startFallingHeartShower() {
-  if (heartShowerHasStarted || !fallingHeartsLayer) return;
+  if (prefersReducedMotion || heartShowerHasStarted || !fallingHeartsLayer) return;
   heartShowerHasStarted = true;
   if (fallingHeartPool.length === 0) buildFallingHeartPool();
   fallingHeartPool.forEach((n, i) => setTimeout(() => configureAndLaunchFallingHeart(n), i * 120));
 }
 
 function updateParallax(event) {
+  if (prefersReducedMotion) return;
   if (!window.matchMedia("(hover: hover) and (pointer: fine)").matches) return;
   const hearts = treeCanopy?.querySelectorAll(".canopy-heart") ?? [];
   const xRatio = (event.clientX / window.innerWidth - 0.5) * 2;
@@ -278,6 +286,14 @@ function typePoem(lines, config = typewriterConfig, runToken) {
   poemHasStarted = true;
   poemContainer.textContent = "";
   if (finalDedication) { finalDedication.textContent = ""; finalDedication.classList.remove("is-visible"); }
+  if (prefersReducedMotion) {
+    poemContainer.textContent = lines.join("\n");
+    if (finalDedication) {
+      finalDedication.textContent = "Eres mi lugar favorito en el mundo. 💘";
+      finalDedication.classList.add("is-visible");
+    }
+    return;
+  }
   let lineIndex = 0; let charIndex = 0;
   const typeNextCharacter = () => {
     if (runToken !== activeRunToken) return;
@@ -311,6 +327,17 @@ function showMessageView() {
 }
 
 async function runIntroSequence(runToken) {
+  if (prefersReducedMotion) {
+    if (!transitionTo(STATES.MORPH)) return;
+    heartButton.disabled = true; heart.classList.add("is-morphing"); ground.classList.add("is-visible");
+    if (runToken !== activeRunToken || !transitionTo(STATES.FALLING)) return;
+    heartButton.classList.add("is-falling");
+    if (runToken !== activeRunToken || !transitionTo(STATES.TREE)) return;
+    showTree();
+    if (runToken !== activeRunToken || !transitionTo(STATES.REVEAL_MESSAGE)) return;
+    showMessageView();
+    return;
+  }
   if (!transitionTo(STATES.MORPH)) return;
   heartButton.disabled = true; heart.classList.add("is-morphing"); ground.classList.add("is-visible");
   await waitForMotionEnd({ element: heart, eventName: "transitionend", timeoutMs: PHASE_TIMEOUTS_MS.morph, filter: (e) => e.propertyName === "transform" });
@@ -345,7 +372,6 @@ function resetExperience() {
 }
 
 heartButton?.addEventListener("click", () => {
-  registerMusicGesture();
   if (currentState !== STATES.INTRO) return;
   const runToken = ++activeRunToken;
   runIntroSequence(runToken);
@@ -358,7 +384,8 @@ window.addEventListener("pointermove", updateParallax, { passive: true });
 window.addEventListener("pointerleave", resetParallax);
 
 if (backgroundMusic) backgroundMusic.volume = DEFAULT_MUSIC_VOLUME;
-musicShouldBeOn = localStorage.getItem(MUSIC_STORAGE_KEY) === "true";
+if (backgroundMusic) backgroundMusic.pause();
+musicShouldBeOn = false;
 isMuted = localStorage.getItem(MUTE_STORAGE_KEY) === "true";
 document.documentElement.dataset.theme = localStorage.getItem(THEME_STORAGE_KEY) === "night" ? "night" : "day";
 updateMusicToggleUI();
@@ -372,3 +399,9 @@ window.addEventListener("resize", () => {
   if (heartShowerResizeTimeoutId) clearTimeout(heartShowerResizeTimeoutId);
   heartShowerResizeTimeoutId = setTimeout(buildFallingHeartPool, 180);
 });
+
+if (typeof reducedMotionMediaQuery.addEventListener === "function") {
+  reducedMotionMediaQuery.addEventListener("change", updateReducedMotionPreference);
+} else if (typeof reducedMotionMediaQuery.addListener === "function") {
+  reducedMotionMediaQuery.addListener(updateReducedMotionPreference);
+}

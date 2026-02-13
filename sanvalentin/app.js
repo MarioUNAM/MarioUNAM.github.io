@@ -60,6 +60,9 @@ const fallingHeartTimers = new WeakMap();
 let activeFallingHeartCount = 0;
 const HEART_PALETTE_CLASSES = ["is-blush", "is-petal", "is-fuchsia-soft", "is-coral-soft", "is-rose", "is-red-soft"];
 const HEART_PALETTE_VARS = ["var(--heart-1)", "var(--heart-2)", "var(--heart-3)", "var(--heart-4)", "var(--heart-5)", "var(--heart-6)"];
+const CANOPY_HEART_DENSITY = 88;
+const CANOPY_HORIZONTAL_SPREAD = 29;
+const CANOPY_VERTICAL_SPREAD = 27;
 
 const pickHeartPaletteItem = (palette) => palette[Math.floor(Math.random() * palette.length)];
 const beepAudio = new Audio("data:audio/wav;base64,UklGRjgAAABXQVZFZm10IBAAAAABAAEARKwAAIhYAQACABAAZGF0YRQAAAAAABw9XL+fbj0NAAAAAA==");
@@ -191,7 +194,8 @@ function playTreeBell() {
 
 function getCanopyHeartCount() {
   const viewportFactor = Math.min(window.innerWidth, 1200) / 1200;
-  return Math.round(30 + (80 - 30) * viewportFactor);
+  const minHearts = Math.round(CANOPY_HEART_DENSITY * 0.64);
+  return Math.round(minHearts + (CANOPY_HEART_DENSITY - minHearts) * viewportFactor);
 }
 
 function isPointInsideHeartMask(x, y) {
@@ -199,10 +203,13 @@ function isPointInsideHeartMask(x, y) {
 }
 
 function getRandomPointInHeartMask() {
-  for (let i = 0; i < 200; i += 1) {
-    const x = randomBetween(-1.2, 1.2);
-    const y = randomBetween(-1.3, 1.2);
-    if (isPointInsideHeartMask(x, y)) return { x, y };
+  for (let i = 0; i < 220; i += 1) {
+    const x = randomBetween(-1.18, 1.18);
+    const y = randomBetween(-1.28, 1.18);
+    if (isPointInsideHeartMask(x, y)) {
+      const yBias = y < 0 ? 1.03 : 0.97;
+      return { x: x * 0.99, y: y * yBias };
+    }
   }
   return { x: 0, y: 0 };
 }
@@ -214,8 +221,8 @@ function buildCanopyHearts(count) {
     const point = getRandomPointInHeartMask();
     const heartNode = document.createElement("span");
     heartNode.className = `canopy-heart ${HEART_PALETTE_CLASSES[i % HEART_PALETTE_CLASSES.length]}`;
-    heartNode.style.left = `${(50 + point.x * 30).toFixed(2)}%`;
-    heartNode.style.top = `${(58 - point.y * 28).toFixed(2)}%`;
+    heartNode.style.left = `${(50 + point.x * CANOPY_HORIZONTAL_SPREAD).toFixed(2)}%`;
+    heartNode.style.top = `${(58 - point.y * CANOPY_VERTICAL_SPREAD).toFixed(2)}%`;
     heartNode.style.setProperty("--heart-scale", randomBetween(0.92, 1.08).toFixed(2));
     heartNode.style.animationDelay = `${randomBetween(0, 1.4).toFixed(2)}s`;
     treeCanopy.append(heartNode);

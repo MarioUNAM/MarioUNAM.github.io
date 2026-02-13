@@ -5,10 +5,11 @@ const heartButton = document.querySelector("#heart-button");
 const heart = document.querySelector(".heart");
 const ground = document.querySelector("#ground");
 const loveTree = document.querySelector("#love-tree");
+const elapsedYears = document.querySelector("#elapsed-years");
+const elapsedMonths = document.querySelector("#elapsed-months");
 const elapsedDays = document.querySelector("#elapsed-days");
 const elapsedHours = document.querySelector("#elapsed-hours");
 const elapsedMinutes = document.querySelector("#elapsed-minutes");
-const elapsedSeconds = document.querySelector("#elapsed-seconds");
 const counterMessage = document.querySelector("#counter-message");
 const treeCanopy = document.querySelector(".tree-canopy");
 const poemContainer = document.querySelector("#poem");
@@ -16,7 +17,8 @@ const fallingHeartsLayer = document.querySelector("#falling-hearts-layer");
 const backgroundMusic = document.querySelector("#bg-music");
 const musicToggleButton = document.querySelector("#music-toggle");
 
-const START_DATE = "2024-02-14T00:00:00";
+// Sin sufijo Z para mantener interpretación en hora local del navegador.
+const START_DATE = "2016-09-09T00:00:00";
 const startDate = new Date(START_DATE);
 const MUSIC_STORAGE_KEY = "musicOn";
 const DEFAULT_MUSIC_VOLUME = 0.25;
@@ -367,46 +369,93 @@ function startFallingHeartShower() {
   });
 }
 
-function getElapsedParts(fromDate) {
-  const diffMs = Date.now() - fromDate.getTime();
-
-  if (Number.isNaN(fromDate.getTime()) || diffMs < 0) {
+function getCalendarElapsedParts(fromDate, toDate = new Date()) {
+  if (Number.isNaN(fromDate.getTime()) || toDate.getTime() < fromDate.getTime()) {
     return {
+      years: 0,
+      months: 0,
       days: 0,
       hours: 0,
       minutes: 0,
-      seconds: 0,
       isFuture: true,
     };
   }
 
-  const totalSeconds = Math.floor(diffMs / 1000);
-
-  const days = Math.floor(totalSeconds / (24 * 60 * 60));
-  const hours = Math.floor((totalSeconds % (24 * 60 * 60)) / (60 * 60));
-  const minutes = Math.floor((totalSeconds % (60 * 60)) / 60);
-  const seconds = totalSeconds % 60;
-
-  return {
-    days,
-    hours,
-    minutes,
-    seconds,
+  const cursor = new Date(fromDate.getTime());
+  const elapsed = {
+    years: 0,
+    months: 0,
+    days: 0,
+    hours: 0,
+    minutes: 0,
     isFuture: false,
   };
+
+  elapsed.years = toDate.getFullYear() - cursor.getFullYear();
+  cursor.setFullYear(cursor.getFullYear() + elapsed.years);
+  if (cursor > toDate) {
+    elapsed.years -= 1;
+    cursor.setFullYear(cursor.getFullYear() - 1);
+  }
+
+  elapsed.months = toDate.getMonth() - cursor.getMonth();
+  if (elapsed.months < 0) {
+    elapsed.months += 12;
+  }
+  cursor.setMonth(cursor.getMonth() + elapsed.months);
+  if (cursor > toDate) {
+    elapsed.months -= 1;
+    cursor.setMonth(cursor.getMonth() - 1);
+  }
+
+  while (true) {
+    const nextDay = new Date(cursor.getTime());
+    nextDay.setDate(nextDay.getDate() + 1);
+    if (nextDay > toDate) {
+      break;
+    }
+
+    elapsed.days += 1;
+    cursor.setTime(nextDay.getTime());
+  }
+
+  while (true) {
+    const nextHour = new Date(cursor.getTime());
+    nextHour.setHours(nextHour.getHours() + 1);
+    if (nextHour > toDate) {
+      break;
+    }
+
+    elapsed.hours += 1;
+    cursor.setTime(nextHour.getTime());
+  }
+
+  while (true) {
+    const nextMinute = new Date(cursor.getTime());
+    nextMinute.setMinutes(nextMinute.getMinutes() + 1);
+    if (nextMinute > toDate) {
+      break;
+    }
+
+    elapsed.minutes += 1;
+    cursor.setTime(nextMinute.getTime());
+  }
+
+  return elapsed;
 }
 
 function updateElapsedCounter() {
-  if (!elapsedDays || !elapsedHours || !elapsedMinutes || !elapsedSeconds) {
+  if (!elapsedYears || !elapsedMonths || !elapsedDays || !elapsedHours || !elapsedMinutes) {
     return;
   }
 
-  const elapsed = getElapsedParts(startDate);
+  const elapsed = getCalendarElapsedParts(startDate);
 
+  elapsedYears.textContent = String(elapsed.years);
+  elapsedMonths.textContent = String(elapsed.months);
   elapsedDays.textContent = String(elapsed.days);
   elapsedHours.textContent = String(elapsed.hours);
   elapsedMinutes.textContent = String(elapsed.minutes);
-  elapsedSeconds.textContent = String(elapsed.seconds);
 
   if (counterMessage) {
     counterMessage.textContent = elapsed.isFuture ? "La fecha aún no llega 💖" : "";
@@ -465,7 +514,7 @@ function showMessageView() {
   updateElapsedCounter();
 
   if (!elapsedCounterIntervalId) {
-    elapsedCounterIntervalId = window.setInterval(updateElapsedCounter, 1000);
+    elapsedCounterIntervalId = window.setInterval(updateElapsedCounter, 60000);
   }
 
   typePoem(poemLines);

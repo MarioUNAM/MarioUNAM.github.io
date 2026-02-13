@@ -49,6 +49,26 @@ function getCanopyHeartCount() {
   return Math.round(minHearts + (maxHearts - minHearts) * viewportFactor);
 }
 
+function isPointInsideHeartMask(x, y) {
+  const heartEquation = (x * x + y * y - 1) ** 3 - x * x * y * y * y;
+  return heartEquation <= 0;
+}
+
+function getRandomPointInHeartMask() {
+  const maxAttempts = 200;
+
+  for (let attempt = 0; attempt < maxAttempts; attempt += 1) {
+    const x = randomBetween(-1.2, 1.2);
+    const y = randomBetween(-1.3, 1.2);
+
+    if (isPointInsideHeartMask(x, y)) {
+      return { x, y };
+    }
+  }
+
+  return { x: 0, y: 0 };
+}
+
 function buildCanopyHearts(count) {
   if (!treeCanopy) {
     return;
@@ -56,17 +76,23 @@ function buildCanopyHearts(count) {
 
   treeCanopy.innerHTML = "";
 
-  const colors = ["is-red", "is-pink", "is-coral"];
+  const colors = [
+    "is-blush",
+    "is-petal",
+    "is-fuchsia-soft",
+    "is-coral-soft",
+    "is-rose",
+    "is-red-soft",
+  ];
 
   for (let index = 0; index < count; index += 1) {
     const heartNode = document.createElement("span");
-    const angle = randomBetween(0, Math.PI * 2);
-    const radius = Math.sqrt(Math.random());
+    const point = getRandomPointInHeartMask();
 
-    // Distribución orgánica dentro de una elipse (más llena al centro).
-    const x = 50 + Math.cos(angle) * radius * randomBetween(26, 47);
-    const y = 56 + Math.sin(angle) * radius * randomBetween(22, 44);
-    const size = randomBetween(0.82, 1.18);
+    // Escala puntos dentro de una máscara de corazón para mantener la silueta.
+    const x = 50 + point.x * 30;
+    const y = 58 - point.y * 28;
+    const size = randomBetween(0.92, 1.08);
 
     heartNode.className = `canopy-heart ${colors[index % colors.length]}`;
     heartNode.style.left = `${x.toFixed(2)}%`;
@@ -101,11 +127,11 @@ function configureAndLaunchFallingHeart(heartNode) {
     ? Math.max(0, canopyRect.top - layerRect.top + canopyRect.height * randomBetween(0.08, 0.32))
     : layerRect.height * 0.2;
 
-  const size = randomBetween(8, 16);
+  const size = randomBetween(10, 14);
   const distance = randomBetween(layerRect.height * 0.58, layerRect.height * 0.98);
   const durationMs = randomBetween(4200, 7600);
   const drift = randomBetween(-26, 26);
-  const colors = ["#e11d74", "#ec4899", "#fb7185", "#f43f5e"];
+  const colors = ["#f49bc0", "#de5d98", "#ee7d83", "#d95f7a", "#cb4e69"];
 
   heartNode.classList.remove("is-active");
   heartNode.style.left = `${originCenterX.toFixed(1)}px`;

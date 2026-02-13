@@ -3,9 +3,18 @@
   --bg-top: #fff6ed;
   --bg-bottom: #ffe1ec;
   --text: #3d1028;
-  --primary: #e11d74;
-  --primary-dark: #be185d;
   --focus: #4c1d95;
+
+  /* Paleta armónica san valentín (pastel → acento). */
+  --rose-pastel: #f8b9cf;
+  --petal-pink: #f49bc0;
+  --fuchsia-soft: #de5d98;
+  --coral-soft: #ee7d83;
+  --rose-medium: #d95f7a;
+  --red-soft: #cb4e69;
+
+  --primary: var(--fuchsia-soft);
+  --primary-dark: #b0467b;
 }
 
 * {
@@ -89,7 +98,7 @@ body {
 }
 
 #right-tree .tree-trunk {
-  height: 110px;
+  height: 112px;
 }
 
 #right-tree .tree-canopy {
@@ -98,7 +107,7 @@ body {
   margin-bottom: -16px;
   transform: rotate(-45deg);
   border-radius: 22px;
-  background: linear-gradient(160deg, #f43f8f, #e11d74);
+  background: linear-gradient(160deg, var(--petal-pink), var(--fuchsia-soft));
   box-shadow: 0 12px 20px rgba(190, 24, 93, 0.25);
 }
 
@@ -242,12 +251,25 @@ body {
 }
 
 .tree-trunk {
-  width: 28px;
-  height: 92px;
+  width: 30px;
+  height: 96px;
   margin: 0 auto;
-  border-radius: 12px;
-  background: linear-gradient(180deg, #8c5a3b, #6f4128);
-  box-shadow: inset 0 -8px 16px rgba(0, 0, 0, 0.16);
+  border-radius: 12px 12px 10px 10px;
+  background: linear-gradient(180deg, #9a6948 0%, #7a4c31 58%, #673c26 100%);
+  box-shadow: inset 0 -7px 14px rgba(0, 0, 0, 0.15), inset 0 4px 6px rgba(255, 229, 204, 0.18);
+  position: relative;
+}
+
+.tree-trunk::after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  bottom: -6px;
+  transform: translateX(-50%);
+  width: 40px;
+  height: 10px;
+  border-radius: 999px;
+  background: rgba(98, 58, 37, 0.45);
 }
 
 .tree-canopy {
@@ -263,11 +285,11 @@ body {
   position: absolute;
   width: var(--heart-size);
   height: var(--heart-size);
-  background: #e11d74;
+  background: var(--fuchsia-soft);
   transform: translate(-50%, -50%) rotate(-45deg) scale(var(--heart-scale));
   transform-origin: center;
   border-radius: 7px;
-  box-shadow: 0 5px 12px rgba(190, 24, 93, 0.22);
+  box-shadow: 0 5px 12px rgba(173, 69, 113, 0.2);
   animation: canopy-pulse 2.6s ease-in-out infinite;
 }
 
@@ -291,16 +313,28 @@ body {
   left: calc(var(--heart-size) * 0.5);
 }
 
-.canopy-heart.is-red {
-  background: #e11d74;
+.canopy-heart.is-blush {
+  background: var(--rose-pastel);
 }
 
-.canopy-heart.is-pink {
-  background: #ec4899;
+.canopy-heart.is-petal {
+  background: var(--petal-pink);
 }
 
-.canopy-heart.is-coral {
-  background: #fb7185;
+.canopy-heart.is-fuchsia-soft {
+  background: var(--fuchsia-soft);
+}
+
+.canopy-heart.is-coral-soft {
+  background: var(--coral-soft);
+}
+
+.canopy-heart.is-rose {
+  background: var(--rose-medium);
+}
+
+.canopy-heart.is-red-soft {
+  background: var(--red-soft);
 }
 
 @keyframes heart-fall {
@@ -343,7 +377,7 @@ body {
 
 .falling-heart {
   --heart-size: 14px;
-  --heart-color: #ec4899;
+  --heart-color: var(--petal-pink);
   --fall-distance: 360px;
   --fall-duration: 6s;
   --drift-x: 18px;
@@ -494,8 +528,8 @@ body {
   }
 
   .tree-trunk {
-    width: 24px;
-    height: 84px;
+    width: 26px;
+    height: 86px;
   }
 
   .tree-canopy {

@@ -25,19 +25,29 @@
         </section>
 
         <section id="message-view" class="view" aria-hidden="true">
-          <h2>Poema</h2>
-          <div id="poem" class="poem" aria-live="polite"></div>
+          <div id="card-scene">
+            <div id="left-message">
+              <h2>Poema</h2>
+              <div id="poem" class="poem" aria-live="polite"></div>
 
-          <div class="counter-wrapper">
-            <h3>Juntos desde</h3>
-            <p class="counter">
-              Mi amor por ti comenzó hace:
-              <span id="elapsed-days">##</span> días
-              <span id="elapsed-hours">##</span> horas
-              <span id="elapsed-minutes">##</span> minutos
-              <span id="elapsed-seconds">##</span> segundos
-            </p>
-            <p id="counter-message" class="counter" aria-live="polite"></p>
+              <div class="counter-wrapper">
+                <h3>Juntos desde</h3>
+                <p class="counter">
+                  Mi amor por ti comenzó hace:
+                  <span id="elapsed-days">##</span> días
+                  <span id="elapsed-hours">##</span> horas
+                  <span id="elapsed-minutes">##</span> minutos
+                  <span id="elapsed-seconds">##</span> segundos
+                </p>
+                <p id="counter-message" class="counter" aria-live="polite"></p>
+              </div>
+            </div>
+
+            <div id="right-tree" aria-hidden="true">
+              <div class="tree-trunk"></div>
+              <div class="tree-canopy"></div>
+              <div class="ground-line"></div>
+            </div>
           </div>
         </section>
       </div>

@@ -520,6 +520,41 @@ body {
   line-height: 1.65;
 }
 
+.counter-values {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: clamp(0.35rem, 1vw, 0.65rem);
+  margin-top: clamp(0.25rem, 0.8vw, 0.45rem);
+}
+
+.counter-unit {
+  display: grid;
+  justify-items: center;
+  gap: 0.12rem;
+  padding: clamp(0.28rem, 0.85vw, 0.45rem) clamp(0.28rem, 0.8vw, 0.42rem);
+  border-radius: 0.65rem;
+  background: rgba(255, 255, 255, 0.75);
+  border: 1px solid rgba(127, 41, 83, 0.24);
+  min-width: 0;
+}
+
+.counter-number {
+  color: #52152f;
+  font-size: clamp(0.9rem, 1.05vw, 1.2rem);
+  font-weight: 800;
+  line-height: 1.1;
+  font-variant-numeric: tabular-nums;
+}
+
+.counter-label {
+  color: #7f2953;
+  font-size: clamp(0.66rem, 0.65vw, 0.78rem);
+  font-weight: 700;
+  line-height: 1.15;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+
 
 .falling-hearts-layer {
   position: absolute;
@@ -894,6 +929,24 @@ body {
   #left-message h3 {
     font-size: 0.92rem;
   }
+
+  .counter-values {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0.5rem;
+  }
+
+  .counter-unit {
+    min-height: 3.2rem;
+    padding: 0.42rem 0.35rem;
+  }
+
+  .counter-number {
+    font-size: clamp(1rem, 4.3vw, 1.18rem);
+  }
+
+  .counter-label {
+    font-size: clamp(0.68rem, 2.8vw, 0.78rem);
+  }
 }
 
 
@@ -908,6 +961,16 @@ body {
 :root[data-theme="night"] .counter,
 :root[data-theme="night"] .counter-wrapper h3,
 :root[data-theme="night"] .poem-title,
-:root[data-theme="night"] .final-dedication {
+:root[data-theme="night"] .final-dedication,
+:root[data-theme="night"] .counter-label {
   color: #ffe3f6;
+}
+
+:root[data-theme="night"] .counter-unit {
+  background: rgba(255, 214, 240, 0.12);
+  border-color: rgba(255, 214, 240, 0.46);
+}
+
+:root[data-theme="night"] .counter-number {
+  color: #fff0fa;
 }

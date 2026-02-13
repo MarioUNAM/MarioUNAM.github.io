@@ -50,11 +50,28 @@
                 <h3>Juntos desde</h3>
                 <p class="counter">
                   Mi amor por ti comenzó hace:
-                  <span id="elapsed-years">##</span> años,
-                  <span id="elapsed-months">##</span> meses,
-                  <span id="elapsed-days">##</span> días,
-                  <span id="elapsed-hours">##</span> horas y
-                  <span id="elapsed-minutes">##</span> minutos.
+                  <span class="counter-values" role="list" aria-label="Tiempo transcurrido">
+                    <span class="counter-unit" role="listitem">
+                      <span id="elapsed-years" class="counter-number">##</span>
+                      <span class="counter-label">años</span>
+                    </span>
+                    <span class="counter-unit" role="listitem">
+                      <span id="elapsed-months" class="counter-number">##</span>
+                      <span class="counter-label">meses</span>
+                    </span>
+                    <span class="counter-unit" role="listitem">
+                      <span id="elapsed-days" class="counter-number">##</span>
+                      <span class="counter-label">días</span>
+                    </span>
+                    <span class="counter-unit" role="listitem">
+                      <span id="elapsed-hours" class="counter-number">##</span>
+                      <span class="counter-label">horas</span>
+                    </span>
+                    <span class="counter-unit" role="listitem">
+                      <span id="elapsed-minutes" class="counter-number">##</span>
+                      <span class="counter-label">minutos</span>
+                    </span>
+                  </span>
                 </p>
                 <p id="counter-message" class="counter" aria-live="polite"></p>
               </div>

@@ -316,6 +316,12 @@ function resetParallax() {
   });
 }
 
+function setTextContentIfChanged(node, nextValue) {
+  if (!node) return;
+  const normalizedValue = String(nextValue);
+  if (node.textContent !== normalizedValue) node.textContent = normalizedValue;
+}
+
 function getCalendarElapsedParts(fromDate, toDate = new Date()) {
   if (Number.isNaN(fromDate.getTime()) || toDate.getTime() < fromDate.getTime()) return { years: 0, months: 0, days: 0, hours: 0, minutes: 0, isFuture: true };
   const c = new Date(fromDate.getTime());
@@ -331,12 +337,12 @@ function getCalendarElapsedParts(fromDate, toDate = new Date()) {
 function updateElapsedCounter() {
   if (!elapsedYears || !elapsedMonths || !elapsedDays || !elapsedHours || !elapsedMinutes) return;
   const elapsed = getCalendarElapsedParts(startDate);
-  elapsedYears.textContent = String(elapsed.years);
-  elapsedMonths.textContent = String(elapsed.months);
-  elapsedDays.textContent = String(elapsed.days);
-  elapsedHours.textContent = String(elapsed.hours);
-  elapsedMinutes.textContent = String(elapsed.minutes);
-  if (counterMessage) counterMessage.textContent = elapsed.isFuture ? "La fecha aún no llega 💖" : "";
+  setTextContentIfChanged(elapsedYears, elapsed.years);
+  setTextContentIfChanged(elapsedMonths, elapsed.months);
+  setTextContentIfChanged(elapsedDays, elapsed.days);
+  setTextContentIfChanged(elapsedHours, elapsed.hours);
+  setTextContentIfChanged(elapsedMinutes, elapsed.minutes);
+  setTextContentIfChanged(counterMessage, elapsed.isFuture ? "La fecha aún no llega 💖" : "");
 }
 
 function showTree() { heartButton.classList.add("is-hidden"); loveTree.classList.add("is-visible"); playTreeBell(); }

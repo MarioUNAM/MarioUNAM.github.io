@@ -64,6 +64,7 @@ let prefersReducedMotion = reducedMotionMediaQuery.matches;
 let shouldSkipMicroIntro = false;
 let microIntroTimeoutId = null;
 let microIntroHasFinished = false;
+let hasTreeReachedFinalState = false;
 
 const fallingHeartPool = [];
 const fallingHeartTimers = new WeakMap();
@@ -260,7 +261,7 @@ function getRandomPointInHeartMask() {
 }
 
 function buildCanopyHearts(count) {
-  if (!treeCanopy) return;
+  if (!treeCanopy || hasTreeReachedFinalState) return;
   treeCanopy.innerHTML = "";
   for (let i = 0; i < count; i += 1) {
     const point = getRandomPointInHeartMask();
@@ -547,6 +548,7 @@ function startMicroIntro() {
     return;
   }
   microIntroHasFinished = false;
+  hasTreeReachedFinalState = false;
   microIntro.classList.remove("is-hidden");
   microIntro.classList.add("is-active");
   microIntro.setAttribute("aria-hidden", "false");
@@ -563,6 +565,12 @@ function showTree() {
   heartButton.classList.add("is-hidden");
   loveTree.classList.add("is-visible");
   playTreeBell();
+}
+
+function lockTreeAsFinalState() {
+  if (!loveTree || hasTreeReachedFinalState) return;
+  hasTreeReachedFinalState = true;
+  loveTree.classList.add("tree--final");
 }
 
 function typePoem(lines, config = typewriterConfig, runToken) {
@@ -602,7 +610,8 @@ function typePoem(lines, config = typewriterConfig, runToken) {
 }
 
 function showMessageView() {
-  introView.classList.remove("is-active"); introView.setAttribute("aria-hidden", "true");
+  lockTreeAsFinalState();
+  introView.classList.add("is-active"); introView.setAttribute("aria-hidden", "false");
   messageView.classList.add("is-active"); messageView.setAttribute("aria-hidden", "false");
   scene.classList.add("show-message"); updateElapsedCounter();
   if (!elapsedCounterIntervalId) elapsedCounterIntervalId = setInterval(updateElapsedCounter, 60000);
@@ -650,7 +659,7 @@ function resetExperience() {
   heartButton.classList.remove("is-hidden", "is-falling");
   heart.classList.remove("is-morphing");
   ground.classList.remove("is-visible");
-  loveTree.classList.remove("is-visible");
+  loveTree.classList.remove("is-visible", "tree--final");
   scene.classList.remove("show-message");
   introView.classList.add("is-active");
   introView.setAttribute("aria-hidden", "false");
@@ -660,6 +669,7 @@ function resetExperience() {
   if (finalDedication) { finalDedication.textContent = ""; finalDedication.classList.remove("is-visible"); }
   fallingHeartPool.forEach((h) => { h.classList.remove("is-active"); clearFallingHeartTimer(h); });
   microIntroHasFinished = false;
+  hasTreeReachedFinalState = false;
   hideMicroIntroOverlay();
 }
 
@@ -717,7 +727,7 @@ if (shouldSkipMicroIntro) {
 
 window.addEventListener("resize", () => {
   resizeParticlesCanvas();
-  buildCanopyHearts(getCanopyHeartCount());
+  if (!hasTreeReachedFinalState) buildCanopyHearts(getCanopyHeartCount());
   if (heartShowerResizeTimeoutId) clearTimeout(heartShowerResizeTimeoutId);
   heartShowerResizeTimeoutId = setTimeout(buildFallingHeartPool, 180);
 });

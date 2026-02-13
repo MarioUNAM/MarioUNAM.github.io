@@ -242,27 +242,40 @@ body {
 
 
 .scene-track {
-  display: flex;
-  width: 200%;
-  transform: translateX(0);
-  transition: transform 980ms var(--motion-ease);
-}
-
-#scene.show-message .scene-track {
-  transform: translateX(-50%);
+  position: relative;
+  width: 100%;
+  min-height: 100svh;
+  min-height: 100dvh;
 }
 
 .view {
-  width: 50%;
-  flex: 0 0 50%;
+  width: 100%;
   min-height: 100svh;
   min-height: 100dvh;
   text-align: center;
   padding: 0 var(--space-sm);
 }
 
+#intro-view {
+  position: relative;
+  z-index: 1;
+}
+
 #message-view {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
   text-align: left;
+  opacity: 0;
+  transform: translateX(12%);
+  pointer-events: none;
+  transition: opacity 760ms var(--motion-ease), transform 860ms var(--motion-ease);
+}
+
+#scene.show-message #message-view {
+  opacity: 1;
+  transform: translateX(0);
+  pointer-events: auto;
 }
 
 #card-scene {
@@ -337,7 +350,7 @@ body {
   position: relative;
   z-index: 1;
   min-height: 100%;
-  display: flex;
+  display: none;
   flex-direction: column;
   justify-content: flex-end;
   align-items: center;
@@ -491,6 +504,12 @@ body {
 
 .love-tree.is-visible {
   animation: tree-appear 1040ms var(--tree-ease) forwards;
+}
+
+.love-tree.tree--final {
+  opacity: 1;
+  animation: none;
+  transform: translateY(0) rotate(0deg) scaleX(1) scaleY(1);
 }
 
 .tree-trunk {

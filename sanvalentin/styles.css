@@ -338,7 +338,7 @@ body {
   flex-direction: column;
   justify-content: flex-end;
   align-items: center;
-  transform: scaleX(-1);
+  transform: rotate(0deg) scaleX(1) scaleY(1);
   transform-origin: center bottom;
 }
 
@@ -480,7 +480,7 @@ body {
   width: min(74%, 260px);
   margin: 0 auto;
   opacity: 0;
-  transform: translateY(36px) scale(0.72);
+  transform: translateY(36px) rotate(0deg) scaleX(0.72) scaleY(0.72);
   transform-origin: center bottom;
   pointer-events: none;
 }
@@ -735,12 +735,12 @@ body {
 @keyframes tree-appear {
   0% {
     opacity: 0;
-    transform: translateY(36px) scale(0.72);
+    transform: translateY(36px) rotate(0deg) scaleX(0.72) scaleY(0.72);
   }
 
   100% {
     opacity: 1;
-    transform: translateY(0) scale(1);
+    transform: translateY(0) rotate(0deg) scaleX(1) scaleY(1);
   }
 }
 
@@ -927,7 +927,7 @@ body {
   .love-tree,
   .love-tree.is-visible {
     opacity: 1;
-    transform: none;
+    transform: translateY(0) rotate(0deg) scaleX(1) scaleY(1);
   }
 }
 

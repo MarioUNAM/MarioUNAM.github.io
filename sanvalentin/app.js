@@ -549,7 +549,17 @@ function startMicroIntro() {
   microIntroTimeoutId = setTimeout(finishMicroIntro, MICRO_INTRO_DURATION_MS);
 }
 
-function showTree() { heartButton.classList.add("is-hidden"); loveTree.classList.add("is-visible"); playTreeBell(); }
+function normalizeTreeTransform() {
+  if (!loveTree) return;
+  loveTree.style.transform = "translateY(0) rotate(0deg) scaleX(1) scaleY(1)";
+}
+
+function showTree() {
+  normalizeTreeTransform();
+  heartButton.classList.add("is-hidden");
+  loveTree.classList.add("is-visible");
+  playTreeBell();
+}
 
 function typePoem(lines, config = typewriterConfig, runToken) {
   if (!poemContainer || poemHasStarted) return;

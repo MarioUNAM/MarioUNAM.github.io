@@ -729,7 +729,9 @@ body {
   --spawn-y: 0px;
   --fall-distance: 360px;
   --fall-duration: 6s;
-  --drift-x: 18px;
+  --drift-x: -36px;
+  --drift-y: 8px;
+  --spin-deg: 0deg;
   position: absolute;
   left: 0;
   top: 0;
@@ -738,7 +740,7 @@ body {
   background: var(--heart-color);
   border-radius: 4px;
   opacity: 0;
-  transform: translate3d(var(--spawn-x), var(--spawn-y), 0) rotate(-45deg) scale(var(--heart-scale));
+  transform: translate3d(var(--spawn-x), var(--spawn-y), 0) rotate(calc(-45deg + var(--spin-deg))) scale(var(--heart-scale));
   will-change: transform, opacity;
   contain: layout paint;
 }
@@ -829,20 +831,21 @@ body {
 @keyframes falling-heart {
   0% {
     opacity: 0;
-    transform: translate3d(var(--spawn-x), var(--spawn-y), 0) rotate(-45deg) scale(var(--heart-scale));
+    transform: translate3d(var(--spawn-x), var(--spawn-y), 0) rotate(calc(-45deg + var(--spin-deg) * -0.25)) scale(var(--heart-scale));
   }
 
-  12% {
-    opacity: 0.95;
+  14% {
+    opacity: 0.92;
   }
 
-  50% {
-    transform: translate3d(calc(var(--spawn-x) + var(--drift-x)), calc(var(--spawn-y) + var(--fall-distance) * 0.48), 0) rotate(-45deg) scale(var(--heart-scale));
+  48% {
+    opacity: 0.66;
+    transform: translate3d(calc(var(--spawn-x) + var(--drift-x) * 0.62), calc(var(--spawn-y) + var(--fall-distance) * 0.48 + var(--drift-y)), 0) rotate(calc(-45deg + var(--spin-deg) * 0.4)) scale(var(--heart-scale));
   }
 
   100% {
     opacity: 0;
-    transform: translate3d(calc(var(--spawn-x) + var(--drift-x) * -0.8), calc(var(--spawn-y) + var(--fall-distance)), 0) rotate(-45deg) scale(var(--heart-scale));
+    transform: translate3d(calc(var(--spawn-x) + var(--drift-x)), calc(var(--spawn-y) + var(--fall-distance) + var(--drift-y) * 1.5), 0) rotate(calc(-45deg + var(--spin-deg))) scale(var(--heart-scale));
   }
 }
 

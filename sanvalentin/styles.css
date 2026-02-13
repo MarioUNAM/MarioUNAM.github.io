@@ -351,6 +351,7 @@ body {
 }
 
 #right-tree .tree-canopy {
+  --canopy-right-lobe-x: 47%;
   width: var(--tree-width);
   height: var(--tree-height);
   margin-top: -12px;
@@ -378,7 +379,7 @@ body {
 
 #right-tree .tree-canopy::after {
   top: 0;
-  left: 50%;
+  left: var(--canopy-right-lobe-x);
 }
 
 .ground-line {
@@ -970,6 +971,7 @@ body {
   }
 
   #right-tree .tree-canopy {
+    --canopy-right-lobe-x: 46%;
     width: min(92vw, 380px);
     height: min(76vw, 300px);
   }
@@ -1017,6 +1019,10 @@ body {
   .tree-canopy {
     width: min(100%, 180px);
     height: 145px;
+  }
+
+  #right-tree .tree-canopy {
+    --canopy-right-lobe-x: 45%;
   }
 
   #left-message {

@@ -131,9 +131,20 @@ async function syncMusicWithPreference() {
   updateMusicToggleUI();
 }
 
+
+function ensureBackgroundMusicSource() {
+  if (!backgroundMusic || backgroundMusic.dataset.sourceReady === "true") return;
+  const musicSource = backgroundMusic.dataset.src;
+  if (!musicSource) return;
+  backgroundMusic.src = musicSource;
+  backgroundMusic.dataset.sourceReady = "true";
+  backgroundMusic.load();
+}
+
 function registerMusicGesture() {
   if (hasUserInteractedForMusic) return;
   hasUserInteractedForMusic = true;
+  ensureBackgroundMusicSource();
   syncMusicWithPreference();
   updateMusicToggleUI();
 }
@@ -452,6 +463,7 @@ heartButton?.addEventListener("click", () => {
   runIntroSequence(runToken);
 });
 musicToggleButton?.addEventListener("click", () => {
+  ensureBackgroundMusicSource();
   registerMusicGesture();
   setMusicPreference(!musicShouldBeOn);
   syncMusicWithPreference();

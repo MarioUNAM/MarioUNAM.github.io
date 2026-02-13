@@ -1,6 +1,8 @@
 const introView = document.querySelector("#intro-view");
 const messageView = document.querySelector("#message-view");
 const heartButton = document.querySelector("#heart-button");
+const heart = document.querySelector(".heart");
+const ground = document.querySelector("#ground");
 const counter = document.querySelector("#counter");
 
 const anniversaryDate = new Date("2024-02-14T00:00:00");
@@ -30,4 +32,25 @@ function showMessageView() {
   counter.textContent = formatElapsedTime(anniversaryDate);
 }
 
-heartButton.addEventListener("click", showMessageView);
+let isAnimating = false;
+
+heartButton.addEventListener("click", () => {
+  if (isAnimating) {
+    return;
+  }
+
+  isAnimating = true;
+  heartButton.disabled = true;
+
+  heart.classList.add("is-morphing");
+  heartButton.classList.add("is-falling");
+  ground.classList.add("is-visible");
+
+  heartButton.addEventListener(
+    "animationend",
+    () => {
+      showMessageView();
+    },
+    { once: true },
+  );
+});

@@ -26,6 +26,17 @@
   --primary: var(--fuchsia-soft);
   --primary-dark: #b0467b;
   --motion-ease: cubic-bezier(0.22, 0.61, 0.36, 1);
+
+  /* Escala global responsive */
+  --space-xs: clamp(0.4rem, 0.9vw, 0.7rem);
+  --space-sm: clamp(0.7rem, 1.5vw, 1.2rem);
+  --space-md: clamp(1rem, 2.2vw, 1.8rem);
+  --space-lg: clamp(1.6rem, 3.8vw, 2.8rem);
+  --font-main: clamp(1.02rem, 1.1vw, 1.24rem);
+  --font-title: clamp(1.6rem, 2.4vw, 2.4rem);
+  --heart-base: clamp(118px, 11vw, 172px);
+  --tree-width: clamp(340px, 40vw, 540px);
+  --tree-height: clamp(290px, 35vw, 450px);
 }
 
 * {
@@ -82,6 +93,7 @@ body {
   display: grid;
   place-items: center;
   font-family: var(--font-sans);
+  font-size: var(--font-main);
   background: linear-gradient(160deg, var(--bg-top), var(--bg-bottom));
   color: var(--text);
 }
@@ -128,7 +140,7 @@ body {
 
 #scene {
   width: min(98vw, 1220px);
-  padding: clamp(0.7rem, 2vw, 1.4rem);
+  padding: var(--space-md);
   overflow: hidden;
   position: relative;
   isolation: isolate;
@@ -151,7 +163,7 @@ body {
   width: 50%;
   flex: 0 0 50%;
   text-align: center;
-  padding: 0 clamp(0.2rem, 2vw, 1rem);
+  padding: 0 var(--space-sm);
 }
 
 #message-view {
@@ -171,17 +183,15 @@ body {
 #left-message {
   display: flex;
   flex-direction: column;
-  gap: clamp(0.65rem, 1.2vw, 1rem);
+  gap: var(--space-sm);
   position: relative;
   z-index: 2;
   width: min(100%, 390px);
-  padding: clamp(0.95rem, 1.6vw, 1.3rem);
+  padding: var(--space-md);
   margin-left: auto;
-  border-radius: 1rem;
-  border: 1px solid rgba(90, 26, 59, 0.18);
-  background: rgba(255, 255, 255, 0.66);
-  backdrop-filter: blur(5px);
-  box-shadow: 0 10px 24px rgba(130, 65, 92, 0.14), 0 3px 10px rgba(130, 65, 92, 0.08);
+  border-radius: clamp(0.8rem, 1.2vw, 1.1rem);
+  border: 0;
+  background: rgba(255, 255, 255, 0.72);
 }
 
 #left-message h2,
@@ -193,7 +203,7 @@ body {
   margin: 0;
   color: #5a1a3b;
   font-family: var(--font-serif);
-  font-size: clamp(0.98rem, 1vw, 1.18rem);
+  font-size: clamp(1rem, 1.05vw, 1.2rem);
   font-style: italic;
   line-height: 1.55;
 }
@@ -207,7 +217,7 @@ body {
   margin: 0;
   color: #4b1430;
   font-family: var(--font-serif);
-  font-size: clamp(1.35rem, 1.85vw, 1.95rem);
+  font-size: var(--font-title);
   font-weight: 700;
   letter-spacing: 0.02em;
   line-height: 1.15;
@@ -231,7 +241,7 @@ body {
 #right-tree {
   position: relative;
   z-index: 1;
-  min-height: clamp(420px, 72vh, 740px);
+  min-height: clamp(460px, 78vh, 820px);
   display: flex;
   flex-direction: column;
   justify-content: flex-end;
@@ -241,22 +251,22 @@ body {
 }
 
 #right-tree .tree-trunk {
-  width: clamp(36px, 3.1vw, 44px);
-  height: clamp(140px, 16vw, 182px);
+  width: clamp(40px, 3.4vw, 52px);
+  height: clamp(158px, 18vw, 210px);
   margin-bottom: -20px;
   position: relative;
   z-index: 1;
 }
 
 #right-tree .tree-canopy {
-  width: clamp(300px, 34vw, 460px);
-  height: clamp(250px, 30vw, 390px);
+  width: var(--tree-width);
+  height: var(--tree-height);
   margin-top: -12px;
   margin-bottom: -10px;
   transform: rotate(-45deg);
   border-radius: 22px;
   background: linear-gradient(160deg, var(--heart-2), var(--heart-3));
-  box-shadow: 0 12px 20px rgba(190, 24, 93, 0.25);
+  box-shadow: none;
 }
 
 #right-tree .tree-canopy::before,
@@ -282,7 +292,7 @@ body {
 .ground-line {
   width: min(100%, 320px);
   height: 4px;
-  margin-top: 0.35rem;
+  margin-top: var(--space-xs);
   border-radius: 999px;
   background: rgba(90, 26, 59, 0.35);
 }
@@ -303,12 +313,12 @@ body {
 .heart {
   display: inline-block;
   position: relative;
-  width: 140px;
-  height: 128px;
+  width: var(--heart-base);
+  height: calc(var(--heart-base) * 0.91);
   transform: rotate(-45deg);
   background: var(--heart-3);
   border-radius: 16px;
-  box-shadow: 0 16px 30px rgba(190, 24, 93, 0.25);
+  box-shadow: none;
   transition: transform 220ms var(--motion-ease), background-color 220ms var(--motion-ease), box-shadow 220ms var(--motion-ease);
 }
 
@@ -322,20 +332,20 @@ body {
 .heart::after {
   content: "";
   position: absolute;
-  width: 140px;
-  height: 128px;
+  width: var(--heart-base);
+  height: calc(var(--heart-base) * 0.91);
   border-radius: 50%;
   background: inherit;
 }
 
 .heart::before {
-  top: -70px;
+  top: calc(var(--heart-base) * -0.5);
   left: 0;
 }
 
 .heart::after {
   top: 0;
-  left: 70px;
+  left: calc(var(--heart-base) * 0.5);
 }
 
 .heart-button:hover .heart {
@@ -360,7 +370,7 @@ body {
 #ground {
   width: min(90%, 380px);
   height: 8px;
-  margin: 1.25rem auto 0;
+  margin: var(--space-md) auto 0;
   border-radius: 999px;
   background: rgba(90, 26, 59, 0.35);
   transform: scaleX(0.05);
@@ -499,8 +509,8 @@ body {
 }
 
 .intro-label {
-  margin: 1.25rem 0 0;
-  font-size: clamp(1.5rem, 4vw, 2.2rem);
+  margin: var(--space-md) 0 0;
+  font-size: clamp(1.7rem, 4.2vw, 2.5rem);
   font-weight: 700;
   letter-spacing: 0.04em;
   text-transform: uppercase;
@@ -510,8 +520,8 @@ body {
   margin: 0;
   color: #4a1830;
   font-family: var(--font-serif);
-  font-size: clamp(0.98rem, 0.92vw, 1.12rem);
-  line-height: 1.82;
+  font-size: clamp(1.02rem, 1.08vw, 1.22rem);
+  line-height: 1.9;
   white-space: pre-line;
 }
 
@@ -537,7 +547,7 @@ body {
 .counter-wrapper h3 {
   color: #6a2145;
   font-family: var(--font-sans);
-  font-size: clamp(0.94rem, 0.88vw, 1.05rem);
+  font-size: clamp(0.98rem, 0.95vw, 1.12rem);
   font-weight: 700;
   line-height: 1.35;
 }
@@ -546,7 +556,7 @@ body {
   margin: 0;
   color: #7f2953;
   font-family: var(--font-sans);
-  font-size: clamp(0.9rem, 0.85vw, 1rem);
+  font-size: clamp(0.96rem, 0.95vw, 1.08rem);
   font-weight: 600;
   line-height: 1.65;
 }
@@ -554,18 +564,18 @@ body {
 .counter-values {
   display: grid;
   grid-template-columns: repeat(5, minmax(0, 1fr));
-  gap: clamp(0.35rem, 1vw, 0.65rem);
-  margin-top: clamp(0.25rem, 0.8vw, 0.45rem);
+  gap: var(--space-xs);
+  margin-top: var(--space-xs);
 }
 
 .counter-unit {
   display: grid;
   justify-items: center;
   gap: 0.12rem;
-  padding: clamp(0.28rem, 0.85vw, 0.45rem) clamp(0.28rem, 0.8vw, 0.42rem);
+  padding: clamp(0.32rem, 0.9vw, 0.5rem) clamp(0.34rem, 0.85vw, 0.5rem);
   border-radius: 0.65rem;
-  background: rgba(255, 255, 255, 0.75);
-  border: 1px solid rgba(127, 41, 83, 0.24);
+  background: transparent;
+  border: 0;
   min-width: 0;
 }
 
@@ -720,15 +730,15 @@ body {
   right: clamp(0.8rem, 2vw, 1.2rem);
   bottom: clamp(0.8rem, 2vw, 1.2rem);
   z-index: 20;
-  border: 1px solid rgba(90, 26, 59, 0.35);
-  background: rgba(255, 255, 255, 0.78);
+  border: 0;
+  background: rgba(255, 255, 255, 0.9);
   color: #5a1a3b;
   border-radius: 999px;
   padding: 0.58rem 0.9rem;
   font: 600 0.9rem/1 var(--font-sans);
   letter-spacing: 0.01em;
-  backdrop-filter: blur(4px);
-  box-shadow: 0 8px 18px rgba(90, 26, 59, 0.14);
+  backdrop-filter: none;
+  box-shadow: none;
   cursor: pointer;
   transition: background-color 180ms var(--motion-ease), color 180ms var(--motion-ease), border-color 180ms var(--motion-ease), transform 180ms var(--motion-ease);
 }
@@ -762,14 +772,14 @@ body {
 }
 
 .floating-controls button {
-  border: 1px solid rgba(90, 26, 59, 0.35);
-  background: rgba(255, 255, 255, 0.78);
+  border: 0;
+  background: rgba(255, 255, 255, 0.9);
   color: #5a1a3b;
   border-radius: 999px;
   padding: 0.55rem 0.85rem;
   font: 600 0.84rem/1 var(--font-sans);
-  backdrop-filter: blur(4px);
-  box-shadow: 0 8px 18px rgba(90, 26, 59, 0.12);
+  backdrop-filter: none;
+  box-shadow: none;
 }
 
 
@@ -841,16 +851,16 @@ body {
   .heart,
   .heart::before,
   .heart::after {
-    width: 120px;
-    height: 108px;
+    width: clamp(108px, 31vw, 132px);
+    height: clamp(98px, 28vw, 120px);
   }
 
   .heart::before {
-    top: -58px;
+    top: clamp(-64px, -14vw, -52px);
   }
 
   .heart::after {
-    left: 58px;
+    left: clamp(52px, 14vw, 64px);
   }
 
   .love-tree {
@@ -873,28 +883,28 @@ body {
 
   #card-scene {
     min-height: auto;
-    gap: 0.75rem;
+    gap: var(--space-sm);
   }
 
   #right-tree {
-    min-height: 300px;
+    min-height: clamp(330px, 56vh, 460px);
     margin-top: 0;
   }
 
   #right-tree .tree-trunk {
-    width: 30px;
-    height: 110px;
+    width: clamp(32px, 7vw, 40px);
+    height: clamp(120px, 22vw, 150px);
   }
 
   #right-tree .tree-canopy {
-    width: min(88vw, 330px);
-    height: min(70vw, 270px);
+    width: min(92vw, 380px);
+    height: min(76vw, 300px);
   }
 
   #left-message {
     width: 100%;
     margin-left: 0;
-    background: rgba(255, 255, 255, 0.75);
+    background: rgba(255, 255, 255, 0.78);
   }
 
   .poem,
@@ -921,16 +931,16 @@ body {
   .heart,
   .heart::before,
   .heart::after {
-    width: 96px;
-    height: 88px;
+    width: clamp(100px, 31vw, 120px);
+    height: clamp(92px, 28vw, 108px);
   }
 
   .heart::before {
-    top: -46px;
+    top: clamp(-58px, -13vw, -46px);
   }
 
   .heart::after {
-    left: 46px;
+    left: clamp(46px, 13vw, 58px);
   }
 
   .love-tree {
@@ -984,7 +994,6 @@ body {
 
 :root[data-theme="night"] #left-message {
   background: rgba(38, 14, 40, 0.68);
-  border-color: rgba(248, 184, 221, 0.24);
 }
 
 :root[data-theme="night"] .dedication,
@@ -999,8 +1008,7 @@ body {
 }
 
 :root[data-theme="night"] .counter-unit {
-  background: rgba(255, 214, 240, 0.12);
-  border-color: rgba(255, 214, 240, 0.46);
+  background: transparent;
 }
 
 :root[data-theme="night"] .counter-number {

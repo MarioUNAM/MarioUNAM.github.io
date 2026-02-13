@@ -152,42 +152,56 @@ body {
 }
 
 .tree-canopy {
+  position: relative;
   margin: -10px auto 0;
   width: min(92%, 240px);
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 0.5rem;
-  justify-items: center;
+  height: 190px;
 }
 
 .canopy-heart {
-  position: relative;
-  width: 32px;
-  height: 32px;
+  --heart-size: 26px;
+  --heart-scale: 1;
+  position: absolute;
+  width: var(--heart-size);
+  height: var(--heart-size);
   background: #e11d74;
-  transform: rotate(-45deg);
-  border-radius: 8px;
-  box-shadow: 0 5px 12px rgba(190, 24, 93, 0.25);
+  transform: translate(-50%, -50%) rotate(-45deg) scale(var(--heart-scale));
+  transform-origin: center;
+  border-radius: 7px;
+  box-shadow: 0 5px 12px rgba(190, 24, 93, 0.22);
+  animation: canopy-pulse 2.6s ease-in-out infinite;
 }
 
 .canopy-heart::before,
 .canopy-heart::after {
   content: "";
   position: absolute;
-  width: 32px;
-  height: 32px;
+  width: var(--heart-size);
+  height: var(--heart-size);
   background: inherit;
   border-radius: 50%;
 }
 
 .canopy-heart::before {
-  top: -16px;
+  top: calc(var(--heart-size) * -0.5);
   left: 0;
 }
 
 .canopy-heart::after {
   top: 0;
-  left: 16px;
+  left: calc(var(--heart-size) * 0.5);
+}
+
+.canopy-heart.is-red {
+  background: #e11d74;
+}
+
+.canopy-heart.is-pink {
+  background: #ec4899;
+}
+
+.canopy-heart.is-coral {
+  background: #fb7185;
 }
 
 @keyframes heart-fall {
@@ -227,5 +241,17 @@ body {
   100% {
     opacity: 1;
     transform: translateY(0) scale(1);
+  }
+}
+
+
+@keyframes canopy-pulse {
+  0%,
+  100% {
+    filter: brightness(1);
+  }
+
+  50% {
+    filter: brightness(1.12);
   }
 }

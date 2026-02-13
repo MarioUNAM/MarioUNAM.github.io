@@ -1,4 +1,5 @@
 const introView = document.querySelector("#intro-view");
+const scene = document.querySelector("#scene");
 const messageView = document.querySelector("#message-view");
 const heartButton = document.querySelector("#heart-button");
 const heart = document.querySelector(".heart");
@@ -71,11 +72,11 @@ function showTree() {
 
 function showMessageView() {
   introView.classList.remove("is-active");
-  introView.hidden = true;
-
-  messageView.hidden = false;
+  introView.setAttribute("aria-hidden", "true");
   messageView.classList.add("is-active");
+  messageView.setAttribute("aria-hidden", "false");
 
+  scene.classList.add("show-message");
   counter.textContent = formatElapsedTime(anniversaryDate);
 }
 

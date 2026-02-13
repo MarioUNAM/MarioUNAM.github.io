@@ -1,10 +1,11 @@
 :root {
   color-scheme: light;
-  --bg: #fff0f6;
-  --bg-accent: #ffe3ec;
+  --bg-top: #ff9ac3;
+  --bg-bottom: #ffd3e6;
   --text: #5a1a3b;
   --primary: #e11d74;
   --primary-dark: #be185d;
+  --focus: #4c1d95;
 }
 
 * {
@@ -17,7 +18,7 @@ body {
   display: grid;
   place-items: center;
   font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
-  background: radial-gradient(circle at top, var(--bg-accent), var(--bg));
+  background: linear-gradient(160deg, var(--bg-top), var(--bg-bottom));
   color: var(--text);
 }
 
@@ -27,55 +28,71 @@ body {
 }
 
 .view {
-  background: rgba(255, 255, 255, 0.8);
-  border-radius: 1rem;
-  padding: 1.5rem;
   text-align: center;
-  box-shadow: 0 10px 24px rgba(190, 24, 93, 0.12);
 }
 
 .heart-button {
   border: 0;
   background: transparent;
   cursor: pointer;
-  margin-bottom: 0.75rem;
+  margin: 0;
+  padding: 1rem;
+  border-radius: 1rem;
 }
 
 .heart {
   display: inline-block;
   position: relative;
-  width: 64px;
-  height: 58px;
+  width: 140px;
+  height: 128px;
   transform: rotate(-45deg);
   background: var(--primary);
-  border-radius: 8px;
-  transition: transform 180ms ease, background-color 180ms ease;
+  border-radius: 16px;
+  box-shadow: 0 16px 30px rgba(190, 24, 93, 0.25);
+  transition: transform 180ms ease, background-color 180ms ease, box-shadow 180ms ease;
 }
 
 .heart::before,
 .heart::after {
   content: "";
   position: absolute;
-  width: 64px;
-  height: 58px;
+  width: 140px;
+  height: 128px;
   border-radius: 50%;
   background: inherit;
 }
 
 .heart::before {
-  top: -32px;
+  top: -70px;
   left: 0;
 }
 
 .heart::after {
   top: 0;
-  left: 32px;
+  left: 70px;
 }
 
-.heart-button:hover .heart,
-.heart-button:focus-visible .heart {
-  transform: rotate(-45deg) scale(1.08);
+.heart-button:hover .heart {
+  transform: rotate(-45deg) scale(1.06);
   background: var(--primary-dark);
+}
+
+.heart-button:focus-visible {
+  outline: 4px solid var(--focus);
+  outline-offset: 6px;
+}
+
+.heart-button:focus-visible .heart {
+  transform: rotate(-45deg) scale(1.06);
+  background: var(--primary-dark);
+}
+
+.intro-label {
+  margin: 1.25rem 0 0;
+  font-size: clamp(1.5rem, 4vw, 2.2rem);
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
 }
 
 .poem {
@@ -86,10 +103,4 @@ body {
 .counter {
   font-weight: 700;
   color: var(--primary-dark);
-}
-
-@media (min-width: 768px) {
-  .view {
-    padding: 2rem;
-  }
 }

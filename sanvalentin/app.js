@@ -15,6 +15,7 @@ const treeCanopy = document.querySelector(".tree-canopy");
 const poemContainer = document.querySelector("#poem");
 const finalDedication = document.querySelector("#final-dedication");
 const fallingHeartsLayer = document.querySelector("#falling-hearts-layer");
+const particlesCanvas = document.querySelector("#particles-layer");
 const backgroundMusic = document.querySelector("#bg-music");
 const musicToggleButton = document.querySelector("#music-toggle");
 const themeToggleButton = document.querySelector("#theme-toggle");
@@ -63,6 +64,14 @@ const HEART_PALETTE_VARS = ["var(--heart-1)", "var(--heart-2)", "var(--heart-3)"
 const CANOPY_HEART_DENSITY = 88;
 const CANOPY_HORIZONTAL_SPREAD = 29;
 const CANOPY_VERTICAL_SPREAD = 27;
+const PARTICLE_COLORS = ["rgba(248, 185, 207, 0.72)", "rgba(244, 155, 192, 0.7)", "rgba(222, 93, 152, 0.68)", "rgba(238, 125, 131, 0.64)"];
+const PARTICLE_POOL_SIZE = 120;
+
+let particleContext = null;
+let particleAnimationFrameId = null;
+const particles = [];
+let particleCanvasWidth = 0;
+let particleCanvasHeight = 0;
 
 const pickHeartPaletteItem = (palette) => palette[Math.floor(Math.random() * palette.length)];
 const beepAudio = new Audio("data:audio/wav;base64,UklGRjgAAABXQVZFZm10IBAAAAABAAEARKwAAIhYAQACABAAZGF0YRQAAAAAABw9XL+fbj0NAAAAAA==");
@@ -154,7 +163,14 @@ function registerMusicGesture() {
 
 function updateReducedMotionPreference(event) {
   prefersReducedMotion = event.matches;
-  if (prefersReducedMotion) resetParallax();
+  if (prefersReducedMotion) {
+    resetParallax();
+    if (particleAnimationFrameId) cancelAnimationFrame(particleAnimationFrameId);
+    particleAnimationFrameId = null;
+    if (particleContext) particleContext.clearRect(0, 0, particleCanvasWidth, particleCanvasHeight);
+    return;
+  }
+  initializeParticles();
 }
 
 function updateMuteToggleUI() {
@@ -343,6 +359,103 @@ function resetParallax() {
   });
 }
 
+function getParticleEmitterCenterX() {
+  const canopyRect = treeCanopy?.getBoundingClientRect();
+  if (!canopyRect) return window.innerWidth * 0.5;
+  return canopyRect.left + canopyRect.width * 0.5;
+}
+
+function spawnParticle(particle, warmStart = false) {
+  const centerX = getParticleEmitterCenterX();
+  const spread = window.innerWidth * 0.55;
+  const topBand = Math.max(24, window.innerHeight * 0.2);
+  particle.x = centerX + randomBetween(-spread, spread);
+  particle.y = randomBetween(-topBand, warmStart ? window.innerHeight * 0.9 : topBand);
+  particle.baseSize = randomBetween(1.4, 4.8);
+  particle.size = particle.baseSize;
+  particle.opacity = randomBetween(0.35, 0.88);
+  particle.color = pickHeartPaletteItem(PARTICLE_COLORS);
+  particle.rotation = randomBetween(0, Math.PI * 2);
+  particle.spin = randomBetween(-0.018, 0.018);
+  particle.verticalSpeed = randomBetween(22, 78);
+  particle.horizontalDrift = randomBetween(-32, 32);
+  particle.wobbleFrequency = randomBetween(0.7, 2.4);
+  particle.wobbleAmplitude = randomBetween(3, 20);
+  particle.life = randomBetween(8, 16);
+  particle.elapsed = warmStart ? randomBetween(0, particle.life) : 0;
+}
+
+function resizeParticlesCanvas() {
+  if (!particlesCanvas || !particleContext) return;
+  const ratio = getEffectivePixelRatio();
+  particleCanvasWidth = Math.max(1, Math.floor(window.innerWidth));
+  particleCanvasHeight = Math.max(1, Math.floor(window.innerHeight));
+  particlesCanvas.width = Math.floor(particleCanvasWidth * ratio);
+  particlesCanvas.height = Math.floor(particleCanvasHeight * ratio);
+  particleContext.setTransform(ratio, 0, 0, ratio, 0, 0);
+}
+
+function drawParticleShape(particle) {
+  if (!particleContext) return;
+  particleContext.save();
+  particleContext.translate(particle.x, particle.y);
+  particleContext.rotate(particle.rotation);
+  particleContext.scale(1, 0.92);
+  particleContext.fillStyle = particle.color;
+  particleContext.globalAlpha = particle.opacity;
+  particleContext.beginPath();
+  particleContext.arc(-particle.size * 0.25, -particle.size * 0.1, particle.size * 0.55, 0, Math.PI * 2);
+  particleContext.arc(particle.size * 0.25, -particle.size * 0.1, particle.size * 0.55, 0, Math.PI * 2);
+  particleContext.moveTo(-particle.size * 0.86, particle.size * 0.12);
+  particleContext.lineTo(0, particle.size * 1.05);
+  particleContext.lineTo(particle.size * 0.86, particle.size * 0.12);
+  particleContext.closePath();
+  particleContext.fill();
+  particleContext.restore();
+}
+
+function tickParticles(timestamp) {
+  if (!particleContext || prefersReducedMotion) return;
+  const lastTimestamp = tickParticles.lastTimestamp ?? timestamp;
+  const deltaSeconds = Math.min(0.05, (timestamp - lastTimestamp) / 1000);
+  tickParticles.lastTimestamp = timestamp;
+
+  particleContext.clearRect(0, 0, particleCanvasWidth, particleCanvasHeight);
+
+  particles.forEach((particle) => {
+    particle.elapsed += deltaSeconds;
+    if (particle.elapsed > particle.life || particle.y > particleCanvasHeight + 30 || particle.x < -40 || particle.x > particleCanvasWidth + 40) {
+      spawnParticle(particle);
+      return;
+    }
+    const lifeRatio = particle.elapsed / particle.life;
+    particle.rotation += particle.spin;
+    particle.y += particle.verticalSpeed * deltaSeconds;
+    particle.x += particle.horizontalDrift * deltaSeconds + Math.sin(particle.elapsed * particle.wobbleFrequency) * particle.wobbleAmplitude * deltaSeconds;
+    particle.opacity = Math.max(0, 0.85 - lifeRatio * 0.78);
+    particle.size = particle.baseSize * (0.88 + Math.sin(particle.elapsed * 1.6) * 0.15);
+    drawParticleShape(particle);
+  });
+
+  particleAnimationFrameId = requestAnimationFrame(tickParticles);
+}
+
+function initializeParticles() {
+  if (!particlesCanvas || prefersReducedMotion) return;
+  particleContext = particlesCanvas.getContext("2d", { alpha: true });
+  if (!particleContext) return;
+  resizeParticlesCanvas();
+  particles.length = 0;
+  for (let i = 0; i < PARTICLE_POOL_SIZE; i += 1) {
+    const particle = {};
+    spawnParticle(particle, true);
+    particles.push(particle);
+  }
+  if (particleAnimationFrameId) cancelAnimationFrame(particleAnimationFrameId);
+  tickParticles.lastTimestamp = undefined;
+  particleAnimationFrameId = requestAnimationFrame(tickParticles);
+}
+
 function setTextContentIfChanged(node, nextValue) {
   if (!node) return;
   const normalizedValue = String(nextValue);
@@ -498,10 +611,12 @@ document.documentElement.dataset.theme = localStorage.getItem(THEME_STORAGE_KEY)
 updateMusicToggleUI();
 updateMuteToggleUI();
 updateThemeToggleUI();
+initializeParticles();
 buildCanopyHearts(getCanopyHeartCount());
 buildFallingHeartPool();
 
 window.addEventListener("resize", () => {
+  resizeParticlesCanvas();
   buildCanopyHearts(getCanopyHeartCount());
   if (heartShowerResizeTimeoutId) clearTimeout(heartShowerResizeTimeoutId);
   heartShowerResizeTimeoutId = setTimeout(buildFallingHeartPool, 180);

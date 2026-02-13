@@ -27,8 +27,14 @@
         <section id="message-view" class="view" aria-hidden="true">
           <div id="card-scene">
             <div id="left-message">
-              <h2>Poema</h2>
-              <div id="poem" class="poem" aria-live="polite"></div>
+              <header class="dedication-header">
+                <p class="dedication">Para el amor de mi vida:</p>
+              </header>
+
+              <section class="poem-body" aria-label="Poema de amor">
+                <h2 class="poem-title">Poema</h2>
+                <div id="poem" class="poem" aria-live="polite"></div>
+              </section>
 
               <div class="counter-wrapper">
                 <h3>Juntos desde</h3>
@@ -41,6 +47,8 @@
                 </p>
                 <p id="counter-message" class="counter" aria-live="polite"></p>
               </div>
+
+              <p class="signature">Con todo mi amor, Mario.</p>
             </div>
 
             <div id="right-tree" aria-hidden="true">

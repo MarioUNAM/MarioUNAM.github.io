@@ -4,6 +4,8 @@
   --bg-bottom: #ffe1ec;
   --text: #3d1028;
   --focus: #4c1d95;
+  --font-serif: "Cormorant Garamond", "Garamond", "Times New Roman", serif;
+  --font-sans: "Inter", "Segoe UI", "Helvetica Neue", Arial, sans-serif;
 
   /* Paleta armónica san valentín (pastel → acento). */
   --rose-pastel: #f8b9cf;
@@ -26,7 +28,7 @@ body {
   min-height: 100vh;
   display: grid;
   place-items: center;
-  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+  font-family: var(--font-sans);
   background: linear-gradient(160deg, var(--bg-top), var(--bg-bottom));
   color: var(--text);
 }
@@ -74,7 +76,7 @@ body {
 #left-message {
   display: flex;
   flex-direction: column;
-  gap: 0.8rem;
+  gap: clamp(0.85rem, 1.8vw, 1.25rem);
 }
 
 #left-message h2,
@@ -82,9 +84,43 @@ body {
   margin: 0;
 }
 
+.dedication {
+  margin: 0;
+  color: #5a1a3b;
+  font-family: var(--font-serif);
+  font-size: clamp(1.05rem, 1.6vw, 1.35rem);
+  font-style: italic;
+  line-height: 1.55;
+}
+
+.poem-body {
+  display: grid;
+  gap: clamp(0.35rem, 1.2vw, 0.75rem);
+}
+
+.poem-title {
+  margin: 0;
+  color: #4b1430;
+  font-family: var(--font-serif);
+  font-size: clamp(1.55rem, 3vw, 2.2rem);
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  line-height: 1.15;
+}
+
 #left-message .counter-wrapper {
   display: grid;
-  gap: 0.4rem;
+  gap: clamp(0.35rem, 1.1vw, 0.65rem);
+  margin-top: clamp(0.2rem, 1vw, 0.45rem);
+}
+
+.signature {
+  margin: clamp(0.15rem, 1vw, 0.5rem) 0 0;
+  color: #5a1a3b;
+  font-family: var(--font-serif);
+  font-size: clamp(1rem, 1.5vw, 1.2rem);
+  font-style: italic;
+  line-height: 1.5;
 }
 
 #right-tree {
@@ -356,14 +392,29 @@ body {
 }
 
 .poem {
-  line-height: 1.5;
+  margin: 0;
+  color: #4a1830;
+  font-family: var(--font-serif);
+  font-size: clamp(1.05rem, 1.7vw, 1.35rem);
+  line-height: 1.82;
   white-space: pre-line;
-  font-size: 1rem;
+}
+
+.counter-wrapper h3 {
+  color: #6a2145;
+  font-family: var(--font-sans);
+  font-size: clamp(1rem, 1.45vw, 1.2rem);
+  font-weight: 700;
+  line-height: 1.35;
 }
 
 .counter {
-  font-weight: 700;
-  color: var(--primary-dark);
+  margin: 0;
+  color: #7f2953;
+  font-family: var(--font-sans);
+  font-size: clamp(0.95rem, 1.4vw, 1.15rem);
+  font-weight: 600;
+  line-height: 1.65;
 }
 
 

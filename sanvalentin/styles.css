@@ -98,6 +98,77 @@ body {
   color: var(--text);
 }
 
+
+.micro-intro {
+  position: fixed;
+  inset: 0;
+  z-index: 30;
+  display: grid;
+  place-items: center;
+  padding: var(--space-md);
+  background: rgba(18, 5, 20, 0.44);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 320ms var(--motion-ease);
+}
+
+.micro-intro.is-active {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.micro-intro.is-hidden {
+  display: none;
+}
+
+.micro-intro__content {
+  width: min(92vw, 520px);
+  border-radius: 1rem;
+  background: rgba(255, 249, 252, 0.95);
+  color: #5a1a3b;
+  padding: clamp(1rem, 2vw, 1.3rem);
+  text-align: center;
+  box-shadow: 0 12px 30px rgba(50, 17, 37, 0.2);
+}
+
+.micro-intro__dedication {
+  margin: 0;
+  font-family: var(--font-serif);
+  font-size: clamp(1.2rem, 2.2vw, 1.6rem);
+  opacity: 0;
+  animation: micro-dedication-fade 1700ms var(--motion-ease) forwards;
+}
+
+.micro-intro__actions {
+  margin-top: 0.8rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.8rem;
+  flex-wrap: wrap;
+}
+
+.micro-intro__preference {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.9rem;
+}
+
+#micro-intro-skip {
+  border: 0;
+  border-radius: 999px;
+  padding: 0.45rem 0.9rem;
+  background: rgba(222, 93, 152, 0.92);
+  color: #fff;
+  font: 600 0.88rem/1 var(--font-sans);
+}
+
+@keyframes micro-dedication-fade {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
 #intro-view {
   min-height: 100vh;
   min-height: 100svh;
@@ -823,6 +894,12 @@ body {
   .heart-button.is-falling,
   #ground,
   #ground.is-visible {
+    animation: none !important;
+    transition: none !important;
+  }
+
+  .micro-intro,
+  .micro-intro__dedication {
     animation: none !important;
     transition: none !important;
   }

@@ -21,6 +21,9 @@ const musicToggleButton = document.querySelector("#music-toggle");
 const themeToggleButton = document.querySelector("#theme-toggle");
 const muteToggleButton = document.querySelector("#mute-toggle");
 const restartButton = document.querySelector("#restart-button");
+const microIntro = document.querySelector("#micro-intro");
+const microIntroSkipButton = document.querySelector("#micro-intro-skip");
+const microIntroHideNextCheckbox = document.querySelector("#micro-intro-hide-next");
 const reducedMotionMediaQuery = window.matchMedia("(prefers-reduced-motion: reduce)");
 
 const START_DATE = "2016-09-09T00:00:00";
@@ -28,7 +31,9 @@ const startDate = new Date(START_DATE);
 const MUSIC_STORAGE_KEY = "musicOn";
 const THEME_STORAGE_KEY = "themeMode";
 const MUTE_STORAGE_KEY = "globalMute";
+const MICRO_INTRO_STORAGE_KEY = "skipMicroIntro";
 const DEFAULT_MUSIC_VOLUME = 0.2;
+const MICRO_INTRO_DURATION_MS = 2000;
 
 const STATES = { INTRO: "intro", MORPH: "morph", FALLING: "falling", TREE: "tree", REVEAL_MESSAGE: "revealMessage" };
 const PHASE_TIMEOUTS_MS = { morph: 760, falling: 1560, tree: 1200 };
@@ -55,6 +60,9 @@ let hasUserInteractedForMusic = false;
 let isMuted = false;
 let activeRunToken = 0;
 let prefersReducedMotion = reducedMotionMediaQuery.matches;
+let shouldSkipMicroIntro = false;
+let microIntroTimeoutId = null;
+let microIntroHasFinished = false;
 
 const fallingHeartPool = [];
 const fallingHeartTimers = new WeakMap();
@@ -485,6 +493,45 @@ function updateElapsedCounter() {
   setTextContentIfChanged(counterMessage, elapsed.isFuture ? "La fecha aún no llega 💖" : "");
 }
 
+function setMicroIntroPreference(nextValue) {
+  shouldSkipMicroIntro = Boolean(nextValue);
+  localStorage.setItem(MICRO_INTRO_STORAGE_KEY, String(shouldSkipMicroIntro));
+  if (microIntroHideNextCheckbox) microIntroHideNextCheckbox.checked = shouldSkipMicroIntro;
+}
+
+function hideMicroIntroOverlay() {
+  if (!microIntro) return;
+  microIntro.classList.remove("is-active");
+  microIntro.classList.add("is-hidden");
+  microIntro.setAttribute("aria-hidden", "true");
+}
+
+function finishMicroIntro() {
+  if (microIntroHasFinished) return;
+  microIntroHasFinished = true;
+  if (microIntroTimeoutId) {
+    clearTimeout(microIntroTimeoutId);
+    microIntroTimeoutId = null;
+  }
+  hideMicroIntroOverlay();
+  if (currentState === STATES.INTRO) {
+    const runToken = ++activeRunToken;
+    runIntroSequence(runToken);
+  }
+}
+
+function startMicroIntro() {
+  if (!microIntro) {
+    finishMicroIntro();
+    return;
+  }
+  microIntroHasFinished = false;
+  microIntro.classList.remove("is-hidden");
+  microIntro.classList.add("is-active");
+  microIntro.setAttribute("aria-hidden", "false");
+  microIntroTimeoutId = setTimeout(finishMicroIntro, MICRO_INTRO_DURATION_MS);
+}
+
 function showTree() { heartButton.classList.add("is-hidden"); loveTree.classList.add("is-visible"); playTreeBell(); }
 
 function typePoem(lines, config = typewriterConfig, runToken) {
@@ -575,7 +622,14 @@ function resetExperience() {
   if (poemContainer) poemContainer.textContent = "";
   if (finalDedication) { finalDedication.textContent = ""; finalDedication.classList.remove("is-visible"); }
   fallingHeartPool.forEach((h) => { h.classList.remove("is-active"); clearFallingHeartTimer(h); });
+  microIntroHasFinished = false;
+  hideMicroIntroOverlay();
 }
+
+microIntroSkipButton?.addEventListener("click", finishMicroIntro);
+microIntroHideNextCheckbox?.addEventListener("change", (event) => {
+  setMicroIntroPreference(event.currentTarget.checked);
+});
 
 heartButton?.addEventListener("click", () => {
   if (currentState !== STATES.INTRO) return;
@@ -608,12 +662,20 @@ if (backgroundMusic) backgroundMusic.pause();
 musicShouldBeOn = localStorage.getItem(MUSIC_STORAGE_KEY) === "true";
 isMuted = localStorage.getItem(MUTE_STORAGE_KEY) === "true";
 document.documentElement.dataset.theme = localStorage.getItem(THEME_STORAGE_KEY) === "night" ? "night" : "day";
+shouldSkipMicroIntro = localStorage.getItem(MICRO_INTRO_STORAGE_KEY) === "true";
+if (microIntroHideNextCheckbox) microIntroHideNextCheckbox.checked = shouldSkipMicroIntro;
 updateMusicToggleUI();
 updateMuteToggleUI();
 updateThemeToggleUI();
 initializeParticles();
 buildCanopyHearts(getCanopyHeartCount());
 buildFallingHeartPool();
+
+if (shouldSkipMicroIntro) {
+  finishMicroIntro();
+} else {
+  startMicroIntro();
+}
 
 window.addEventListener("resize", () => {
   resizeParticlesCanvas();

@@ -27,7 +27,7 @@ const startDate = new Date(START_DATE);
 const MUSIC_STORAGE_KEY = "musicOn";
 const THEME_STORAGE_KEY = "themeMode";
 const MUTE_STORAGE_KEY = "globalMute";
-const DEFAULT_MUSIC_VOLUME = 0.25;
+const DEFAULT_MUSIC_VOLUME = 0.2;
 
 const STATES = { INTRO: "intro", MORPH: "morph", FALLING: "falling", TREE: "tree", REVEAL_MESSAGE: "revealMessage" };
 const PHASE_TIMEOUTS_MS = { morph: 760, falling: 1560, tree: 1200 };
@@ -99,9 +99,11 @@ function waitForMotionEnd({ element, eventName, timeoutMs, filter = () => true }
 
 function updateMusicToggleUI() {
   if (!musicToggleButton) return;
-  musicToggleButton.classList.toggle("is-active", musicShouldBeOn);
-  musicToggleButton.setAttribute("aria-pressed", String(musicShouldBeOn));
-  musicToggleButton.textContent = musicShouldBeOn ? "❚❚ Música" : "▶ Música";
+  const isPlaying = musicShouldBeOn && hasUserInteractedForMusic && !isMuted;
+  musicToggleButton.classList.toggle("is-active", isPlaying);
+  musicToggleButton.setAttribute("aria-pressed", String(isPlaying));
+  musicToggleButton.setAttribute("aria-label", isPlaying ? "Pausar música de fondo" : "Reproducir música de fondo");
+  musicToggleButton.textContent = isPlaying ? "Pausar música" : "Reproducir música";
 }
 
 function setMusicPreference(nextValue) {
@@ -111,7 +113,10 @@ function setMusicPreference(nextValue) {
 }
 
 async function syncMusicWithPreference() {
-  if (!backgroundMusic || !hasUserInteractedForMusic) return;
+  if (!backgroundMusic || !hasUserInteractedForMusic) {
+    updateMusicToggleUI();
+    return;
+  }
   if (musicShouldBeOn && !isMuted) {
     try {
       backgroundMusic.volume = DEFAULT_MUSIC_VOLUME;
@@ -119,14 +124,18 @@ async function syncMusicWithPreference() {
     } catch (_error) {
       setMusicPreference(false);
     }
+    updateMusicToggleUI();
     return;
   }
   backgroundMusic.pause();
+  updateMusicToggleUI();
 }
 
 function registerMusicGesture() {
+  if (hasUserInteractedForMusic) return;
   hasUserInteractedForMusic = true;
   syncMusicWithPreference();
+  updateMusicToggleUI();
 }
 
 function updateReducedMotionPreference(event) {
@@ -442,16 +451,29 @@ heartButton?.addEventListener("click", () => {
   const runToken = ++activeRunToken;
   runIntroSequence(runToken);
 });
-musicToggleButton?.addEventListener("click", () => { registerMusicGesture(); setMusicPreference(!musicShouldBeOn); syncMusicWithPreference(); });
+musicToggleButton?.addEventListener("click", () => {
+  registerMusicGesture();
+  setMusicPreference(!musicShouldBeOn);
+  syncMusicWithPreference();
+});
+musicToggleButton?.addEventListener("keydown", (event) => {
+  if (event.key !== "Enter" && event.key !== " " && event.key !== "Space") return;
+  event.preventDefault();
+  musicToggleButton.click();
+});
 themeToggleButton?.addEventListener("click", toggleTheme);
 muteToggleButton?.addEventListener("click", () => setMutePreference(!isMuted));
 restartButton?.addEventListener("click", resetExperience);
 window.addEventListener("pointermove", updateParallax, { passive: true });
 window.addEventListener("pointerleave", resetParallax);
 
+window.addEventListener("pointerdown", registerMusicGesture, { passive: true, once: true });
+window.addEventListener("touchstart", registerMusicGesture, { passive: true, once: true });
+window.addEventListener("keydown", registerMusicGesture, { once: true });
+
 if (backgroundMusic) backgroundMusic.volume = DEFAULT_MUSIC_VOLUME;
 if (backgroundMusic) backgroundMusic.pause();
-musicShouldBeOn = false;
+musicShouldBeOn = localStorage.getItem(MUSIC_STORAGE_KEY) === "true";
 isMuted = localStorage.getItem(MUTE_STORAGE_KEY) === "true";
 document.documentElement.dataset.theme = localStorage.getItem(THEME_STORAGE_KEY) === "night" ? "night" : "day";
 updateMusicToggleUI();

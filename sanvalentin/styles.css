@@ -679,6 +679,11 @@ body {
   box-shadow: 0 8px 18px rgba(90, 26, 59, 0.12);
 }
 
+
+.floating-controls button:focus-visible {
+  outline: 3px solid var(--focus);
+  outline-offset: 3px;
+}
 .floating-controls button.is-active {
   background: rgba(222, 93, 152, 0.9);
   border-color: rgba(176, 70, 123, 0.9);
@@ -707,10 +712,10 @@ body {
     scroll-behavior: auto !important;
   }
 
-  .falling-hearts-layer {
-    display: none;
-  }
-
+  .scene-track,
+  .stars-layer,
+  .canopy-heart,
+  .final-dedication,
   .love-tree,
   .love-tree.is-visible,
   .heart,
@@ -720,6 +725,10 @@ body {
   #ground.is-visible {
     animation: none !important;
     transition: none !important;
+  }
+
+  .falling-hearts-layer {
+    display: none;
   }
 
   .love-tree,

@@ -36,7 +36,8 @@ const DEFAULT_MUSIC_VOLUME = 0.2;
 const MICRO_INTRO_DURATION_MS = 2000;
 
 const STATES = { INTRO: "intro", MORPH: "morph", FALLING: "falling", TREE: "tree", REVEAL_MESSAGE: "revealMessage" };
-const PHASE_TIMEOUTS_MS = { morph: 760, falling: 1560, tree: 1200 };
+const PHASE_TIMEOUTS_MS = { morph: 900, falling: 1620, tree: 1280 };
+const PHASE_DELAYS_MS = { afterMorph: 90, afterFalling: 120, afterTree: 80 };
 const VALID_TRANSITIONS = {
   [STATES.INTRO]: [STATES.MORPH],
   [STATES.MORPH]: [STATES.FALLING],
@@ -131,6 +132,9 @@ function waitForMotionEnd({ element, eventName, timeoutMs, filter = () => true }
     window.setTimeout(finish, timeoutMs);
   });
 }
+
+
+const waitForPhaseDelay = (delayMs) => new Promise((resolve) => window.setTimeout(resolve, delayMs));
 
 function updateMusicToggleUI() {
   if (!musicToggleButton) return;
@@ -620,13 +624,19 @@ async function runIntroSequence(runToken) {
   }
   if (!transitionTo(STATES.MORPH)) return;
   heartButton.disabled = true; heart.classList.add("is-morphing"); ground.classList.add("is-visible");
-  await waitForMotionEnd({ element: heart, eventName: "transitionend", timeoutMs: PHASE_TIMEOUTS_MS.morph, filter: (e) => e.propertyName === "transform" });
+  await Promise.all([
+    waitForMotionEnd({ element: heart, eventName: "transitionend", timeoutMs: PHASE_TIMEOUTS_MS.morph, filter: (e) => e.propertyName === "transform" }),
+    waitForMotionEnd({ element: ground, eventName: "transitionend", timeoutMs: PHASE_TIMEOUTS_MS.morph, filter: (e) => e.propertyName === "transform" }),
+  ]);
+  await waitForPhaseDelay(PHASE_DELAYS_MS.afterMorph);
   if (runToken !== activeRunToken || !transitionTo(STATES.FALLING)) return;
   heartButton.classList.add("is-falling");
   await waitForMotionEnd({ element: heartButton, eventName: "animationend", timeoutMs: PHASE_TIMEOUTS_MS.falling, filter: (e) => e.animationName === "heart-fall" });
+  await waitForPhaseDelay(PHASE_DELAYS_MS.afterFalling);
   if (runToken !== activeRunToken || !transitionTo(STATES.TREE)) return;
   showTree();
   await waitForMotionEnd({ element: loveTree, eventName: "animationend", timeoutMs: PHASE_TIMEOUTS_MS.tree, filter: (e) => e.animationName === "tree-appear" });
+  await waitForPhaseDelay(PHASE_DELAYS_MS.afterTree);
   if (runToken !== activeRunToken || !transitionTo(STATES.REVEAL_MESSAGE)) return;
   showMessageView();
 }

@@ -17,6 +17,30 @@ const fallingHeartsLayer = document.querySelector("#falling-hearts-layer");
 const START_DATE = "2024-02-14T00:00:00";
 const startDate = new Date(START_DATE);
 
+const STATES = {
+  INTRO: "intro",
+  MORPH: "morph",
+  FALLING: "falling",
+  TREE: "tree",
+  REVEAL_MESSAGE: "revealMessage",
+};
+
+const PHASE_TIMEOUTS_MS = {
+  morph: 760,
+  falling: 1560,
+  tree: 1200,
+};
+
+const VALID_TRANSITIONS = {
+  [STATES.INTRO]: [STATES.MORPH],
+  [STATES.MORPH]: [STATES.FALLING],
+  [STATES.FALLING]: [STATES.TREE],
+  [STATES.TREE]: [STATES.REVEAL_MESSAGE],
+  [STATES.REVEAL_MESSAGE]: [],
+};
+
+let currentState = STATES.INTRO;
+
 // Contenido configurable del poema.
 const poemLines = [
   "Eres luz en mis mañanas,",
@@ -39,6 +63,52 @@ const fallingHeartPool = [];
 
 function randomBetween(min, max) {
   return Math.random() * (max - min) + min;
+}
+
+function transitionTo(nextState) {
+  const allowedStates = VALID_TRANSITIONS[currentState] ?? [];
+  if (!allowedStates.includes(nextState)) {
+    return false;
+  }
+
+  currentState = nextState;
+  return true;
+}
+
+function waitForMotionEnd({
+  element,
+  eventName,
+  timeoutMs,
+  filter = () => true,
+}) {
+  return new Promise((resolve) => {
+    let isDone = false;
+
+    const finish = () => {
+      if (isDone) {
+        return;
+      }
+
+      isDone = true;
+      element.removeEventListener(eventName, onMotionEnd);
+      window.clearTimeout(fallbackTimeoutId);
+      resolve();
+    };
+
+    const onMotionEnd = (event) => {
+      if (event.target !== element || !filter(event)) {
+        return;
+      }
+
+      finish();
+    };
+
+    element.addEventListener(eventName, onMotionEnd);
+
+    const fallbackTimeoutId = window.setTimeout(() => {
+      finish();
+    }, timeoutMs);
+  });
 }
 
 function getCanopyHeartCount() {
@@ -102,7 +172,6 @@ function buildCanopyHearts(count) {
     treeCanopy.append(heartNode);
   }
 }
-
 
 function getFallingHeartPoolSize() {
   const area = window.innerWidth * window.innerHeight;
@@ -266,7 +335,7 @@ function typePoem(lines, config = typewriterConfig) {
     if (charIndex < currentLine.length) {
       poemContainer.textContent += currentLine[charIndex];
       charIndex += 1;
-      setTimeout(typeNextCharacter, config.letterDelayMs);
+      window.setTimeout(typeNextCharacter, config.letterDelayMs);
       return;
     }
 
@@ -275,7 +344,7 @@ function typePoem(lines, config = typewriterConfig) {
 
     if (lineIndex < lines.length) {
       poemContainer.textContent += "\n";
-      setTimeout(typeNextCharacter, config.lineDelayMs);
+      window.setTimeout(typeNextCharacter, config.lineDelayMs);
     }
   };
 
@@ -294,35 +363,66 @@ function showMessageView() {
   if (!elapsedCounterIntervalId) {
     elapsedCounterIntervalId = window.setInterval(updateElapsedCounter, 1000);
   }
+
   typePoem(poemLines);
   startFallingHeartShower();
 }
 
-let isAnimating = false;
-
-heartButton.addEventListener("click", () => {
-  if (isAnimating) {
+async function runIntroSequence() {
+  if (!transitionTo(STATES.MORPH)) {
     return;
   }
 
-  isAnimating = true;
   heartButton.disabled = true;
-
   heart.classList.add("is-morphing");
-  heartButton.classList.add("is-falling");
   ground.classList.add("is-visible");
 
-  heartButton.addEventListener(
-    "animationend",
-    () => {
-      showTree();
+  await waitForMotionEnd({
+    element: heart,
+    eventName: "transitionend",
+    timeoutMs: PHASE_TIMEOUTS_MS.morph,
+    filter: (event) => event.propertyName === "transform",
+  });
 
-      setTimeout(() => {
-        showMessageView();
-      }, 1050);
-    },
-    { once: true },
-  );
+  if (!transitionTo(STATES.FALLING)) {
+    return;
+  }
+
+  heartButton.classList.add("is-falling");
+
+  await waitForMotionEnd({
+    element: heartButton,
+    eventName: "animationend",
+    timeoutMs: PHASE_TIMEOUTS_MS.falling,
+    filter: (event) => event.animationName === "heart-fall",
+  });
+
+  if (!transitionTo(STATES.TREE)) {
+    return;
+  }
+
+  showTree();
+
+  await waitForMotionEnd({
+    element: loveTree,
+    eventName: "animationend",
+    timeoutMs: PHASE_TIMEOUTS_MS.tree,
+    filter: (event) => event.animationName === "tree-appear",
+  });
+
+  if (!transitionTo(STATES.REVEAL_MESSAGE)) {
+    return;
+  }
+
+  showMessageView();
+}
+
+heartButton.addEventListener("click", () => {
+  if (currentState !== STATES.INTRO) {
+    return;
+  }
+
+  runIntroSequence();
 });
 
 buildCanopyHearts(getCanopyHeartCount());

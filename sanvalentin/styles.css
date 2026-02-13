@@ -17,6 +17,7 @@
 
   --primary: var(--fuchsia-soft);
   --primary-dark: #b0467b;
+  --motion-ease: cubic-bezier(0.22, 0.61, 0.36, 1);
 }
 
 * {
@@ -45,7 +46,7 @@ body {
   display: flex;
   width: 200%;
   transform: translateX(0);
-  transition: transform 900ms cubic-bezier(0.22, 0.61, 0.36, 1);
+  transition: transform 980ms var(--motion-ease);
 }
 
 #scene.show-message .scene-track {
@@ -197,13 +198,13 @@ body {
   background: var(--primary);
   border-radius: 16px;
   box-shadow: 0 16px 30px rgba(190, 24, 93, 0.25);
-  transition: transform 180ms ease, background-color 180ms ease, box-shadow 180ms ease;
+  transition: transform 220ms var(--motion-ease), background-color 220ms var(--motion-ease), box-shadow 220ms var(--motion-ease);
 }
 
 .heart.is-morphing {
   border-radius: 50%;
   transform: rotate(0deg) scale(0.82);
-  transition: transform 420ms ease, border-radius 420ms ease;
+  transition: transform 520ms var(--motion-ease), border-radius 520ms var(--motion-ease);
 }
 
 .heart::before,
@@ -242,7 +243,7 @@ body {
 }
 
 .heart-button.is-falling {
-  animation: heart-fall 1100ms cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
+  animation: heart-fall 1280ms var(--motion-ease) forwards;
 }
 
 #ground {
@@ -254,7 +255,7 @@ body {
   transform: scaleX(0.05);
   transform-origin: center;
   opacity: 0;
-  transition: transform 480ms ease-out, opacity 320ms ease-out;
+  transition: transform 560ms var(--motion-ease), opacity 460ms var(--motion-ease);
 }
 
 #ground.is-visible {
@@ -283,7 +284,7 @@ body {
 }
 
 .love-tree.is-visible {
-  animation: tree-appear 900ms cubic-bezier(0.2, 0.85, 0.3, 1) forwards;
+  animation: tree-appear 980ms var(--motion-ease) forwards;
 }
 
 .tree-trunk {
@@ -326,7 +327,7 @@ body {
   transform-origin: center;
   border-radius: 7px;
   box-shadow: 0 5px 12px rgba(173, 69, 113, 0.2);
-  animation: canopy-pulse 2.6s ease-in-out infinite;
+  animation: canopy-pulse 2.8s var(--motion-ease) infinite;
 }
 
 .canopy-heart::before,

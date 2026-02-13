@@ -1,0 +1,37 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>San Valentín</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <main id="scene" aria-live="polite">
+      <section id="intro-view" class="view is-active">
+        <button id="heart-button" class="heart-button" aria-label="Abrir mensaje de San Valentín">
+          <span class="heart" aria-hidden="true"></span>
+        </button>
+        <h1>Para ti, mi amor</h1>
+        <p>Toca el corazón para descubrir tu sorpresa.</p>
+      </section>
+
+      <section id="message-view" class="view" hidden>
+        <h2>Poema</h2>
+        <p class="poem">
+          Eres luz en mis mañanas,
+          calma dulce en tempestad,
+          cada latido me recuerda
+          que contigo es hogar.
+        </p>
+
+        <div class="counter-wrapper">
+          <h3>Juntos desde</h3>
+          <p id="counter" class="counter">Calculando...</p>
+        </div>
+      </section>
+    </main>
+
+    <script src="app.js"></script>
+  </body>
+</html>

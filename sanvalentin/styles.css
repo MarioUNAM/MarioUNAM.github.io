@@ -26,6 +26,9 @@
   --primary: var(--fuchsia-soft);
   --primary-dark: #b0467b;
   --motion-ease: cubic-bezier(0.22, 0.61, 0.36, 1);
+  --morph-ease: cubic-bezier(0.28, 0.84, 0.42, 1);
+  --fall-ease: cubic-bezier(0.2, 0.72, 0.3, 1);
+  --tree-ease: cubic-bezier(0.19, 0.88, 0.32, 1);
 
   /* Escala global responsive */
   --space-xs: clamp(0.4rem, 0.9vw, 0.7rem);
@@ -427,8 +430,9 @@ body {
 }
 
 .heart.is-morphing {
-  transform: translateZ(0) scale(0.82);
-  transition: transform 520ms var(--motion-ease);
+  transform: translate3d(0, -6px, 0) scale(0.88);
+  opacity: 0.94;
+  transition: transform 560ms var(--morph-ease), opacity 520ms var(--morph-ease);
 }
 
 .heart-button:hover .heart {
@@ -447,7 +451,7 @@ body {
 }
 
 .heart-button.is-falling {
-  animation: heart-fall 1280ms var(--motion-ease) forwards;
+  animation: heart-fall 1280ms var(--fall-ease) forwards;
 }
 
 #ground {
@@ -486,7 +490,7 @@ body {
 }
 
 .love-tree.is-visible {
-  animation: tree-appear 980ms var(--motion-ease) forwards;
+  animation: tree-appear 1040ms var(--tree-ease) forwards;
 }
 
 .tree-trunk {
@@ -585,11 +589,18 @@ body {
 
 @keyframes heart-fall {
   0% {
-    transform: translateY(0);
+    opacity: 1;
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+
+  46% {
+    opacity: 1;
+    transform: translate3d(0, 116px, 0) scale(0.98);
   }
 
   100% {
-    transform: translateY(230px);
+    opacity: 0.92;
+    transform: translate3d(0, 230px, 0) scale(0.96);
   }
 }
 
@@ -735,12 +746,17 @@ body {
 @keyframes tree-appear {
   0% {
     opacity: 0;
-    transform: translateY(36px) rotate(0deg) scaleX(0.72) scaleY(0.72);
+    transform: translate3d(0, 34px, 0) scale(0.78);
+  }
+
+  58% {
+    opacity: 0.78;
+    transform: translate3d(0, 10px, 0) scale(0.93);
   }
 
   100% {
     opacity: 1;
-    transform: translateY(0) rotate(0deg) scaleX(1) scaleY(1);
+    transform: translate3d(0, 0, 0) scale(1);
   }
 }
 

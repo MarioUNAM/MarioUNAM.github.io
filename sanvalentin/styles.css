@@ -7,13 +7,21 @@
   --font-serif: "Cormorant Garamond", "Garamond", "Times New Roman", serif;
   --font-sans: "Inter", "Segoe UI", "Helvetica Neue", Arial, sans-serif;
 
+  /* Paleta de corazones (rosa/rojo/coral). */
+  --heart-1: #f8b9cf;
+  --heart-2: #f49bc0;
+  --heart-3: #de5d98;
+  --heart-4: #ee7d83;
+  --heart-5: #d95f7a;
+  --heart-6: #cb4e69;
+
   /* Paleta armónica san valentín (pastel → acento). */
-  --rose-pastel: #f8b9cf;
-  --petal-pink: #f49bc0;
-  --fuchsia-soft: #de5d98;
-  --coral-soft: #ee7d83;
-  --rose-medium: #d95f7a;
-  --red-soft: #cb4e69;
+  --rose-pastel: var(--heart-1);
+  --petal-pink: var(--heart-2);
+  --fuchsia-soft: var(--heart-3);
+  --coral-soft: var(--heart-4);
+  --rose-medium: var(--heart-5);
+  --red-soft: var(--heart-6);
 
   --primary: var(--fuchsia-soft);
   --primary-dark: #b0467b;
@@ -216,7 +224,7 @@ body {
   margin-bottom: -16px;
   transform: rotate(-45deg);
   border-radius: 22px;
-  background: linear-gradient(160deg, var(--petal-pink), var(--fuchsia-soft));
+  background: linear-gradient(160deg, var(--heart-2), var(--heart-3));
   box-shadow: 0 12px 20px rgba(190, 24, 93, 0.25);
 }
 
@@ -267,7 +275,7 @@ body {
   width: 140px;
   height: 128px;
   transform: rotate(-45deg);
-  background: var(--primary);
+  background: var(--heart-3);
   border-radius: 16px;
   box-shadow: 0 16px 30px rgba(190, 24, 93, 0.25);
   transition: transform 220ms var(--motion-ease), background-color 220ms var(--motion-ease), box-shadow 220ms var(--motion-ease);
@@ -301,7 +309,7 @@ body {
 
 .heart-button:hover .heart {
   transform: rotate(-45deg) scale(1.06);
-  background: var(--primary-dark);
+  background: var(--heart-5);
 }
 
 .heart-button:focus-visible {
@@ -311,7 +319,7 @@ body {
 
 .heart-button:focus-visible .heart {
   transform: rotate(-45deg) scale(1.06);
-  background: var(--primary-dark);
+  background: var(--heart-5);
 }
 
 .heart-button.is-falling {
@@ -397,7 +405,7 @@ body {
   position: absolute;
   width: var(--heart-size);
   height: var(--heart-size);
-  background: var(--fuchsia-soft);
+  background: var(--heart-3);
   transform: translate(calc(-50% + var(--parallax-x)), calc(-50% + var(--parallax-y))) rotate(-45deg) scale(var(--heart-scale));
   transform-origin: center;
   border-radius: 7px;
@@ -426,27 +434,27 @@ body {
 }
 
 .canopy-heart.is-blush {
-  background: var(--rose-pastel);
+  background: var(--heart-1);
 }
 
 .canopy-heart.is-petal {
-  background: var(--petal-pink);
+  background: var(--heart-2);
 }
 
 .canopy-heart.is-fuchsia-soft {
-  background: var(--fuchsia-soft);
+  background: var(--heart-3);
 }
 
 .canopy-heart.is-coral-soft {
-  background: var(--coral-soft);
+  background: var(--heart-4);
 }
 
 .canopy-heart.is-rose {
-  background: var(--rose-medium);
+  background: var(--heart-5);
 }
 
 .canopy-heart.is-red-soft {
-  background: var(--red-soft);
+  background: var(--heart-6);
 }
 
 @keyframes heart-fall {
@@ -523,7 +531,7 @@ body {
 
 .falling-heart {
   --heart-size: 14px;
-  --heart-color: var(--petal-pink);
+  --heart-color: var(--heart-2);
   --fall-distance: 360px;
   --fall-duration: 6s;
   --drift-x: 18px;

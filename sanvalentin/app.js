@@ -54,6 +54,10 @@ let activeRunToken = 0;
 let prefersReducedMotion = reducedMotionMediaQuery.matches;
 
 const fallingHeartPool = [];
+const HEART_PALETTE_CLASSES = ["is-blush", "is-petal", "is-fuchsia-soft", "is-coral-soft", "is-rose", "is-red-soft"];
+const HEART_PALETTE_VARS = ["var(--heart-1)", "var(--heart-2)", "var(--heart-3)", "var(--heart-4)", "var(--heart-5)", "var(--heart-6)"];
+
+const pickHeartPaletteItem = (palette) => palette[Math.floor(Math.random() * palette.length)];
 const beepAudio = new Audio("data:audio/wav;base64,UklGRjgAAABXQVZFZm10IBAAAAABAAEARKwAAIhYAQACABAAZGF0YRQAAAAAABw9XL+fbj0NAAAAAA==");
 beepAudio.volume = 0.15;
 
@@ -177,11 +181,10 @@ function getRandomPointInHeartMask() {
 function buildCanopyHearts(count) {
   if (!treeCanopy) return;
   treeCanopy.innerHTML = "";
-  const colors = ["is-blush", "is-petal", "is-fuchsia-soft", "is-coral-soft", "is-rose", "is-red-soft"];
   for (let i = 0; i < count; i += 1) {
     const point = getRandomPointInHeartMask();
     const heartNode = document.createElement("span");
-    heartNode.className = `canopy-heart ${colors[i % colors.length]}`;
+    heartNode.className = `canopy-heart ${HEART_PALETTE_CLASSES[i % HEART_PALETTE_CLASSES.length]}`;
     heartNode.style.left = `${(50 + point.x * 30).toFixed(2)}%`;
     heartNode.style.top = `${(58 - point.y * 28).toFixed(2)}%`;
     heartNode.style.setProperty("--heart-scale", randomBetween(0.92, 1.08).toFixed(2));
@@ -206,7 +209,7 @@ function configureAndLaunchFallingHeart(heartNode) {
   heartNode.style.left = `${x.toFixed(1)}px`;
   heartNode.style.top = `${y.toFixed(1)}px`;
   heartNode.style.setProperty("--heart-size", `${randomBetween(10, 14).toFixed(1)}px`);
-  heartNode.style.setProperty("--heart-color", ["#f49bc0", "#de5d98", "#ee7d83", "#d95f7a", "#cb4e69"][Math.floor(Math.random() * 5)]);
+  heartNode.style.setProperty("--heart-color", pickHeartPaletteItem(HEART_PALETTE_VARS));
   heartNode.style.setProperty("--fall-distance", `${randomBetween(layerRect.height * 0.58, layerRect.height * 0.98).toFixed(1)}px`);
   heartNode.style.setProperty("--fall-duration", `${(durationMs / 1000).toFixed(2)}s`);
   heartNode.style.setProperty("--drift-x", `${randomBetween(-26, 26).toFixed(1)}px`);

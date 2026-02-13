@@ -118,6 +118,78 @@ body {
   opacity: 1;
 }
 
+
+.heart-button.is-hidden {
+  pointer-events: none;
+}
+
+.heart-button.is-hidden .heart,
+.heart-button.is-hidden .heart::before,
+.heart-button.is-hidden .heart::after {
+  opacity: 0;
+}
+
+.love-tree {
+  width: min(74%, 260px);
+  margin: 0.75rem auto 0;
+  opacity: 0;
+  transform: translateY(36px) scale(0.72);
+  transform-origin: center bottom;
+  pointer-events: none;
+}
+
+.love-tree.is-visible {
+  animation: tree-appear 900ms cubic-bezier(0.2, 0.85, 0.3, 1) forwards;
+}
+
+.tree-trunk {
+  width: 28px;
+  height: 92px;
+  margin: 0 auto;
+  border-radius: 12px;
+  background: linear-gradient(180deg, #8c5a3b, #6f4128);
+  box-shadow: inset 0 -8px 16px rgba(0, 0, 0, 0.16);
+}
+
+.tree-canopy {
+  margin: -10px auto 0;
+  width: min(92%, 240px);
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0.5rem;
+  justify-items: center;
+}
+
+.canopy-heart {
+  position: relative;
+  width: 32px;
+  height: 32px;
+  background: #e11d74;
+  transform: rotate(-45deg);
+  border-radius: 8px;
+  box-shadow: 0 5px 12px rgba(190, 24, 93, 0.25);
+}
+
+.canopy-heart::before,
+.canopy-heart::after {
+  content: "";
+  position: absolute;
+  width: 32px;
+  height: 32px;
+  background: inherit;
+  border-radius: 50%;
+}
+
+.canopy-heart::before {
+  top: -16px;
+  left: 0;
+}
+
+.canopy-heart::after {
+  top: 0;
+  left: 16px;
+}
+
 @keyframes heart-fall {
   0% {
     transform: translateY(0);
@@ -144,4 +216,16 @@ body {
 .counter {
   font-weight: 700;
   color: var(--primary-dark);
+}
+
+@keyframes tree-appear {
+  0% {
+    opacity: 0;
+    transform: translateY(36px) scale(0.72);
+  }
+
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
 }

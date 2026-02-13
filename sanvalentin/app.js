@@ -3,6 +3,7 @@ const messageView = document.querySelector("#message-view");
 const heartButton = document.querySelector("#heart-button");
 const heart = document.querySelector(".heart");
 const ground = document.querySelector("#ground");
+const loveTree = document.querySelector("#love-tree");
 const counter = document.querySelector("#counter");
 
 const anniversaryDate = new Date("2024-02-14T00:00:00");
@@ -20,6 +21,11 @@ function formatElapsedTime(fromDate) {
   const totalMinutes = Math.floor(diffMs / (1000 * 60)) % 60;
 
   return `${totalDays} días, ${totalHours} horas y ${totalMinutes} minutos`;
+}
+
+function showTree() {
+  heartButton.classList.add("is-hidden");
+  loveTree.classList.add("is-visible");
 }
 
 function showMessageView() {
@@ -49,7 +55,11 @@ heartButton.addEventListener("click", () => {
   heartButton.addEventListener(
     "animationend",
     () => {
-      showMessageView();
+      showTree();
+
+      setTimeout(() => {
+        showMessageView();
+      }, 1050);
     },
     { once: true },
   );

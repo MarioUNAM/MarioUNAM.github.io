@@ -11,7 +11,7 @@ const elapsedDays = document.querySelector("#elapsed-days");
 const elapsedHours = document.querySelector("#elapsed-hours");
 const elapsedMinutes = document.querySelector("#elapsed-minutes");
 const counterMessage = document.querySelector("#counter-message");
-const treeCanopy = document.querySelector(".tree-canopy");
+const treeCanopy = document.querySelector("#tree-canopy");
 const poemContainer = document.querySelector("#poem");
 const finalDedication = document.querySelector("#final-dedication");
 const fallingHeartsLayer = document.querySelector("#falling-hearts-layer");
@@ -304,8 +304,12 @@ function configureAndLaunchFallingHeart(heartNode) {
   }
   const layerRect = fallingHeartsLayer.getBoundingClientRect();
   const canopyRect = treeCanopy?.getBoundingClientRect();
-  const x = canopyRect ? canopyRect.left - layerRect.left + canopyRect.width * randomBetween(0.28, 0.72) : layerRect.width * randomBetween(0.32, 0.68);
-  const y = canopyRect ? Math.max(0, canopyRect.top - layerRect.top + canopyRect.height * randomBetween(0.08, 0.32)) : layerRect.height * 0.2;
+  const canopySpawnXMin = canopyRect ? canopyRect.left - layerRect.left : layerRect.width * 0.32;
+  const canopySpawnXMax = canopyRect ? canopyRect.right - layerRect.left : layerRect.width * 0.68;
+  const canopySpawnYMin = canopyRect ? canopyRect.top - layerRect.top : layerRect.height * 0.08;
+  const canopySpawnYMax = canopyRect ? canopyRect.bottom - layerRect.top : layerRect.height * 0.32;
+  const x = randomBetween(canopySpawnXMin, canopySpawnXMax);
+  const y = Math.max(0, randomBetween(canopySpawnYMin, canopySpawnYMax));
   const durationMs = randomBetween(4200, 7600);
   heartNode.classList.remove("is-active");
   heartNode.style.setProperty("--spawn-x", `${x.toFixed(1)}px`);
@@ -315,7 +319,9 @@ function configureAndLaunchFallingHeart(heartNode) {
   heartNode.style.setProperty("--heart-scale", randomBetween(0.9, 1.08).toFixed(2));
   heartNode.style.setProperty("--fall-distance", `${randomBetween(layerRect.height * 0.58, layerRect.height * 0.98).toFixed(1)}px`);
   heartNode.style.setProperty("--fall-duration", `${(durationMs / 1000).toFixed(2)}s`);
-  heartNode.style.setProperty("--drift-x", `${randomBetween(-26, 26).toFixed(1)}px`);
+  heartNode.style.setProperty("--drift-x", `${randomBetween(-68, -22).toFixed(1)}px`);
+  heartNode.style.setProperty("--drift-y", `${randomBetween(-18, 22).toFixed(1)}px`);
+  heartNode.style.setProperty("--spin-deg", `${randomBetween(-16, 16).toFixed(1)}deg`);
   heartNode.classList.remove("is-active");
   requestAnimationFrame(() => {
     if (!heartShowerHasStarted || !fallingHeartEmitterEnabled || !isMessagePhaseVisible()) return;

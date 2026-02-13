@@ -532,6 +532,9 @@ body {
 .falling-heart {
   --heart-size: 14px;
   --heart-color: var(--heart-2);
+  --heart-scale: 1;
+  --spawn-x: 0px;
+  --spawn-y: 0px;
   --fall-distance: 360px;
   --fall-duration: 6s;
   --drift-x: 18px;
@@ -543,8 +546,9 @@ body {
   background: var(--heart-color);
   border-radius: 4px;
   opacity: 0;
-  transform: translate3d(0, 0, 0) rotate(-45deg);
+  transform: translate3d(var(--spawn-x), var(--spawn-y), 0) rotate(-45deg) scale(var(--heart-scale));
   will-change: transform, opacity;
+  contain: layout paint;
 }
 
 .falling-heart::before,
@@ -569,6 +573,10 @@ body {
 
 .falling-heart.is-active {
   animation: falling-heart var(--fall-duration) linear forwards;
+}
+
+.falling-heart:not(.is-enabled) {
+  opacity: 0;
 }
 
 @keyframes tree-appear {
@@ -623,7 +631,7 @@ body {
 @keyframes falling-heart {
   0% {
     opacity: 0;
-    transform: translate3d(0, 0, 0) rotate(-45deg);
+    transform: translate3d(var(--spawn-x), var(--spawn-y), 0) rotate(-45deg) scale(var(--heart-scale));
   }
 
   12% {
@@ -631,12 +639,12 @@ body {
   }
 
   50% {
-    transform: translate3d(var(--drift-x), calc(var(--fall-distance) * 0.48), 0) rotate(-45deg);
+    transform: translate3d(calc(var(--spawn-x) + var(--drift-x)), calc(var(--spawn-y) + var(--fall-distance) * 0.48), 0) rotate(-45deg) scale(var(--heart-scale));
   }
 
   100% {
     opacity: 0;
-    transform: translate3d(calc(var(--drift-x) * -0.8), var(--fall-distance), 0) rotate(-45deg);
+    transform: translate3d(calc(var(--spawn-x) + var(--drift-x) * -0.8), calc(var(--spawn-y) + var(--fall-distance)), 0) rotate(-45deg) scale(var(--heart-scale));
   }
 }
 

@@ -5,11 +5,16 @@ const heartButton = document.querySelector("#heart-button");
 const heart = document.querySelector(".heart");
 const ground = document.querySelector("#ground");
 const loveTree = document.querySelector("#love-tree");
-const counter = document.querySelector("#counter");
+const elapsedDays = document.querySelector("#elapsed-days");
+const elapsedHours = document.querySelector("#elapsed-hours");
+const elapsedMinutes = document.querySelector("#elapsed-minutes");
+const elapsedSeconds = document.querySelector("#elapsed-seconds");
+const counterMessage = document.querySelector("#counter-message");
 const treeCanopy = document.querySelector(".tree-canopy");
 const poemContainer = document.querySelector("#poem");
 
-const anniversaryDate = new Date("2024-02-14T00:00:00");
+const START_DATE = "2024-02-14T00:00:00";
+const startDate = new Date(START_DATE);
 
 // Contenido configurable del poema.
 const poemLines = [
@@ -25,6 +30,7 @@ const typewriterConfig = {
 };
 
 let poemHasStarted = false;
+let elapsedCounterIntervalId = null;
 
 function randomBetween(min, max) {
   return Math.random() * (max - min) + min;
@@ -66,19 +72,50 @@ function buildCanopyHearts(count) {
   }
 }
 
-function formatElapsedTime(fromDate) {
-  const now = new Date();
-  const diffMs = now - fromDate;
+function getElapsedParts(fromDate) {
+  const diffMs = Date.now() - fromDate.getTime();
 
-  if (diffMs < 0) {
-    return "Aún no llega la fecha 💖";
+  if (Number.isNaN(fromDate.getTime()) || diffMs < 0) {
+    return {
+      days: 0,
+      hours: 0,
+      minutes: 0,
+      seconds: 0,
+      isFuture: true,
+    };
   }
 
-  const totalDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
-  const totalHours = Math.floor(diffMs / (1000 * 60 * 60)) % 24;
-  const totalMinutes = Math.floor(diffMs / (1000 * 60)) % 60;
+  const totalSeconds = Math.floor(diffMs / 1000);
 
-  return `${totalDays} días, ${totalHours} horas y ${totalMinutes} minutos`;
+  const days = Math.floor(totalSeconds / (24 * 60 * 60));
+  const hours = Math.floor((totalSeconds % (24 * 60 * 60)) / (60 * 60));
+  const minutes = Math.floor((totalSeconds % (60 * 60)) / 60);
+  const seconds = totalSeconds % 60;
+
+  return {
+    days,
+    hours,
+    minutes,
+    seconds,
+    isFuture: false,
+  };
+}
+
+function updateElapsedCounter() {
+  if (!elapsedDays || !elapsedHours || !elapsedMinutes || !elapsedSeconds) {
+    return;
+  }
+
+  const elapsed = getElapsedParts(startDate);
+
+  elapsedDays.textContent = String(elapsed.days);
+  elapsedHours.textContent = String(elapsed.hours);
+  elapsedMinutes.textContent = String(elapsed.minutes);
+  elapsedSeconds.textContent = String(elapsed.seconds);
+
+  if (counterMessage) {
+    counterMessage.textContent = elapsed.isFuture ? "La fecha aún no llega 💖" : "";
+  }
 }
 
 function showTree() {
@@ -130,7 +167,11 @@ function showMessageView() {
   messageView.setAttribute("aria-hidden", "false");
 
   scene.classList.add("show-message");
-  counter.textContent = formatElapsedTime(anniversaryDate);
+  updateElapsedCounter();
+
+  if (!elapsedCounterIntervalId) {
+    elapsedCounterIntervalId = window.setInterval(updateElapsedCounter, 1000);
+  }
   typePoem(poemLines);
 }
 

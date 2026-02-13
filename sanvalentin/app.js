@@ -7,8 +7,24 @@ const ground = document.querySelector("#ground");
 const loveTree = document.querySelector("#love-tree");
 const counter = document.querySelector("#counter");
 const treeCanopy = document.querySelector(".tree-canopy");
+const poemContainer = document.querySelector("#poem");
 
 const anniversaryDate = new Date("2024-02-14T00:00:00");
+
+// Contenido configurable del poema.
+const poemLines = [
+  "Eres luz en mis mañanas,",
+  "calma dulce en tempestad,",
+  "cada latido me recuerda",
+  "que contigo es hogar.",
+];
+
+const typewriterConfig = {
+  letterDelayMs: 45,
+  lineDelayMs: 350,
+};
+
+let poemHasStarted = false;
 
 function randomBetween(min, max) {
   return Math.random() * (max - min) + min;
@@ -70,6 +86,43 @@ function showTree() {
   loveTree.classList.add("is-visible");
 }
 
+function typePoem(lines, config = typewriterConfig) {
+  if (!poemContainer || poemHasStarted) {
+    return;
+  }
+
+  poemHasStarted = true;
+  poemContainer.textContent = "";
+
+  let lineIndex = 0;
+  let charIndex = 0;
+
+  const typeNextCharacter = () => {
+    if (lineIndex >= lines.length) {
+      return;
+    }
+
+    const currentLine = lines[lineIndex];
+
+    if (charIndex < currentLine.length) {
+      poemContainer.textContent += currentLine[charIndex];
+      charIndex += 1;
+      setTimeout(typeNextCharacter, config.letterDelayMs);
+      return;
+    }
+
+    lineIndex += 1;
+    charIndex = 0;
+
+    if (lineIndex < lines.length) {
+      poemContainer.textContent += "\n";
+      setTimeout(typeNextCharacter, config.lineDelayMs);
+    }
+  };
+
+  typeNextCharacter();
+}
+
 function showMessageView() {
   introView.classList.remove("is-active");
   introView.setAttribute("aria-hidden", "true");
@@ -78,6 +131,7 @@ function showMessageView() {
 
   scene.classList.add("show-message");
   counter.textContent = formatElapsedTime(anniversaryDate);
+  typePoem(poemLines);
 }
 
 let isAnimating = false;

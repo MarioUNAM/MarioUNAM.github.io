@@ -67,13 +67,17 @@ let microIntroHasFinished = false;
 let hasTreeReachedFinalState = false;
 
 const fallingHeartPool = [];
-const fallingHeartTimers = new WeakMap();
 let activeFallingHeartCount = 0;
+let fallingHeartEmitterRafId = null;
+let lastFallingHeartEmitAt = 0;
+let nextFallingHeartIndex = 0;
+let fallingHeartEmitterEnabled = false;
 const HEART_PALETTE_CLASSES = ["is-blush", "is-petal", "is-fuchsia-soft", "is-coral-soft", "is-rose", "is-red-soft"];
 const HEART_PALETTE_VARS = ["var(--heart-1)", "var(--heart-2)", "var(--heart-3)", "var(--heart-4)", "var(--heart-5)", "var(--heart-6)"];
 const CANOPY_HEART_DENSITY = 88;
 const CANOPY_HORIZONTAL_SPREAD = 29;
 const CANOPY_VERTICAL_SPREAD = 27;
+const FALLING_HEART_EMIT_INTERVAL_MS = 110;
 const PARTICLE_POOL_SIZE = 120;
 let particlePalette = ["rgba(248, 185, 207, 0.72)", "rgba(244, 155, 192, 0.7)", "rgba(222, 93, 152, 0.68)", "rgba(238, 125, 131, 0.64)"];
 
@@ -282,28 +286,20 @@ function getFallingHeartPoolSize() {
   return Math.round(10 + (42 - 10) * areaRatio * dprPenalty);
 }
 
-function clearFallingHeartTimer(heartNode) {
-  const timerId = fallingHeartTimers.get(heartNode);
-  if (!timerId) return;
-  clearTimeout(timerId);
-  fallingHeartTimers.delete(heartNode);
+function isMessagePhaseVisible() {
+  return Boolean(messageView?.classList.contains("is-active") && messageView?.getAttribute("aria-hidden") !== "true");
 }
 
-function scheduleFallingHeart(heartNode, delayMs = 0) {
-  clearFallingHeartTimer(heartNode);
-  const timerId = setTimeout(() => {
-    fallingHeartTimers.delete(heartNode);
-    configureAndLaunchFallingHeart(heartNode);
-  }, delayMs);
-  fallingHeartTimers.set(heartNode, timerId);
+function getFallingHeartPoolNode(index) {
+  if (!fallingHeartPool.length) return null;
+  return fallingHeartPool[index % fallingHeartPool.length] ?? null;
 }
 
 function configureAndLaunchFallingHeart(heartNode) {
-  if (!fallingHeartsLayer || !heartNode || !heartShowerHasStarted) return;
+  if (!fallingHeartsLayer || !heartNode || !heartShowerHasStarted || !fallingHeartEmitterEnabled || !isMessagePhaseVisible()) return;
   const heartIndex = Number(heartNode.dataset.poolIndex || -1);
   if (heartIndex >= activeFallingHeartCount) {
     heartNode.classList.remove("is-active");
-    clearFallingHeartTimer(heartNode);
     return;
   }
   const layerRect = fallingHeartsLayer.getBoundingClientRect();
@@ -320,8 +316,58 @@ function configureAndLaunchFallingHeart(heartNode) {
   heartNode.style.setProperty("--fall-distance", `${randomBetween(layerRect.height * 0.58, layerRect.height * 0.98).toFixed(1)}px`);
   heartNode.style.setProperty("--fall-duration", `${(durationMs / 1000).toFixed(2)}s`);
   heartNode.style.setProperty("--drift-x", `${randomBetween(-26, 26).toFixed(1)}px`);
-  requestAnimationFrame(() => heartNode.classList.add("is-active"));
-  scheduleFallingHeart(heartNode, durationMs + randomBetween(240, 1800));
+  heartNode.classList.remove("is-active");
+  requestAnimationFrame(() => {
+    if (!heartShowerHasStarted || !fallingHeartEmitterEnabled || !isMessagePhaseVisible()) return;
+    heartNode.classList.add("is-active");
+  });
+}
+
+function onFallingHeartIteration(event) {
+  if (!(event.currentTarget instanceof HTMLElement)) return;
+  configureAndLaunchFallingHeart(event.currentTarget);
+}
+
+function emitFallingHeartFromPool() {
+  for (let i = 0; i < activeFallingHeartCount; i += 1) {
+    const poolIndex = (nextFallingHeartIndex + i) % Math.max(1, activeFallingHeartCount);
+    const heartNode = getFallingHeartPoolNode(poolIndex);
+    if (!heartNode || !heartNode.classList.contains("is-enabled")) continue;
+    nextFallingHeartIndex = (poolIndex + 1) % Math.max(1, activeFallingHeartCount);
+    if (!heartNode.classList.contains("is-active")) configureAndLaunchFallingHeart(heartNode);
+    break;
+  }
+}
+
+function tickFallingHeartEmitter(timestamp) {
+  if (!heartShowerHasStarted || !fallingHeartEmitterEnabled) {
+    fallingHeartEmitterRafId = null;
+    return;
+  }
+  if (isMessagePhaseVisible() && timestamp - lastFallingHeartEmitAt >= FALLING_HEART_EMIT_INTERVAL_MS) {
+    emitFallingHeartFromPool();
+    lastFallingHeartEmitAt = timestamp;
+  }
+  fallingHeartEmitterRafId = requestAnimationFrame(tickFallingHeartEmitter);
+}
+
+function startFallingHeartEmitter() {
+  if (!heartShowerHasStarted || fallingHeartEmitterEnabled) return;
+  fallingHeartEmitterEnabled = true;
+  lastFallingHeartEmitAt = 0;
+  if (!fallingHeartEmitterRafId) fallingHeartEmitterRafId = requestAnimationFrame(tickFallingHeartEmitter);
+}
+
+function pauseFallingHeartEmitter() {
+  fallingHeartEmitterEnabled = false;
+  if (fallingHeartEmitterRafId) cancelAnimationFrame(fallingHeartEmitterRafId);
+  fallingHeartEmitterRafId = null;
+}
+
+function teardownFallingHeartEmitter() {
+  pauseFallingHeartEmitter();
+  heartShowerHasStarted = false;
+  fallingHeartPool.forEach((heartNode) => heartNode.classList.remove("is-active"));
 }
 
 function syncFallingHeartsActivity() {
@@ -330,12 +376,9 @@ function syncFallingHeartsActivity() {
     heartNode.classList.toggle("is-enabled", isActiveNode);
     if (!isActiveNode) {
       heartNode.classList.remove("is-active");
-      clearFallingHeartTimer(heartNode);
       return;
     }
-    if (heartShowerHasStarted && !heartNode.classList.contains("is-active") && !fallingHeartTimers.has(heartNode)) {
-      scheduleFallingHeart(heartNode, index * 85);
-    }
+    if (heartShowerHasStarted && fallingHeartEmitterEnabled && !heartNode.classList.contains("is-active") && isMessagePhaseVisible()) configureAndLaunchFallingHeart(heartNode);
   });
 }
 
@@ -348,6 +391,7 @@ function buildFallingHeartPool() {
     n.className = "falling-heart";
     n.setAttribute("aria-hidden", "true");
     n.dataset.poolIndex = String(fallingHeartPool.length);
+    n.addEventListener("animationiteration", onFallingHeartIteration);
     fallingHeartsLayer.append(n);
     fallingHeartPool.push(n);
   }
@@ -358,6 +402,7 @@ function startFallingHeartShower() {
   if (prefersReducedMotion || heartShowerHasStarted || !fallingHeartsLayer) return;
   heartShowerHasStarted = true;
   if (fallingHeartPool.length === 0) buildFallingHeartPool();
+  startFallingHeartEmitter();
   syncFallingHeartsActivity();
 }
 
@@ -617,6 +662,7 @@ function showMessageView() {
   if (!elapsedCounterIntervalId) elapsedCounterIntervalId = setInterval(updateElapsedCounter, 60000);
   typePoem(poemLines, typewriterConfig, activeRunToken);
   startFallingHeartShower();
+  startFallingHeartEmitter();
 }
 
 async function runIntroSequence(runToken) {
@@ -654,7 +700,7 @@ function resetExperience() {
   activeRunToken += 1;
   currentState = STATES.INTRO;
   poemHasStarted = false;
-  heartShowerHasStarted = false;
+  pauseFallingHeartEmitter();
   heartButton.disabled = false;
   heartButton.classList.remove("is-hidden", "is-falling");
   heart.classList.remove("is-morphing");
@@ -667,7 +713,7 @@ function resetExperience() {
   messageView.setAttribute("aria-hidden", "true");
   if (poemContainer) poemContainer.textContent = "";
   if (finalDedication) { finalDedication.textContent = ""; finalDedication.classList.remove("is-visible"); }
-  fallingHeartPool.forEach((h) => { h.classList.remove("is-active"); clearFallingHeartTimer(h); });
+  fallingHeartPool.forEach((h) => { h.classList.remove("is-active"); });
   microIntroHasFinished = false;
   hasTreeReachedFinalState = false;
   hideMicroIntroOverlay();
@@ -703,6 +749,7 @@ window.addEventListener("pointerleave", resetParallax);
 window.addEventListener("pointerdown", registerMusicGesture, { passive: true, once: true });
 window.addEventListener("touchstart", registerMusicGesture, { passive: true, once: true });
 window.addEventListener("keydown", registerMusicGesture, { once: true });
+window.addEventListener("pagehide", teardownFallingHeartEmitter);
 
 if (backgroundMusic) backgroundMusic.volume = DEFAULT_MUSIC_VOLUME;
 if (backgroundMusic) backgroundMusic.pause();

@@ -34,6 +34,36 @@ body {
   color: var(--text);
 }
 
+@media (hover: hover) and (pointer: fine) {
+  body {
+    cursor: url("./assets/cursor-heart.svg") 7 2, auto;
+  }
+
+  a,
+  .heart-button,
+  #music-toggle,
+  [role="button"] {
+    cursor: url("./assets/cursor-heart.svg") 7 2, pointer;
+  }
+
+  input,
+  select,
+  button {
+    cursor: auto;
+  }
+
+  textarea,
+  input[type="text"],
+  input[type="email"],
+  input[type="search"],
+  input[type="password"],
+  input[type="url"],
+  input[type="tel"],
+  input[type="number"] {
+    cursor: text;
+  }
+}
+
 #scene {
   width: min(94vw, 720px);
   padding: clamp(1rem, 3vw, 1.5rem);

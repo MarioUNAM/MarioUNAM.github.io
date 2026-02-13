@@ -72,8 +72,8 @@ const HEART_PALETTE_VARS = ["var(--heart-1)", "var(--heart-2)", "var(--heart-3)"
 const CANOPY_HEART_DENSITY = 88;
 const CANOPY_HORIZONTAL_SPREAD = 29;
 const CANOPY_VERTICAL_SPREAD = 27;
-const PARTICLE_COLORS = ["rgba(248, 185, 207, 0.72)", "rgba(244, 155, 192, 0.7)", "rgba(222, 93, 152, 0.68)", "rgba(238, 125, 131, 0.64)"];
 const PARTICLE_POOL_SIZE = 120;
+let particlePalette = ["rgba(248, 185, 207, 0.72)", "rgba(244, 155, 192, 0.7)", "rgba(222, 93, 152, 0.68)", "rgba(238, 125, 131, 0.64)"];
 
 let particleContext = null;
 let particleAnimationFrameId = null;
@@ -87,6 +87,21 @@ beepAudio.volume = 0.15;
 
 const randomBetween = (min, max) => Math.random() * (max - min) + min;
 
+
+function getParticlePaletteFromTheme() {
+  const rootStyles = getComputedStyle(document.documentElement);
+  const palette = [
+    rootStyles.getPropertyValue("--particle-1").trim(),
+    rootStyles.getPropertyValue("--particle-2").trim(),
+    rootStyles.getPropertyValue("--particle-3").trim(),
+    rootStyles.getPropertyValue("--particle-4").trim(),
+  ].filter(Boolean);
+  return palette.length > 0 ? palette : particlePalette;
+}
+
+function syncThemePalettes() {
+  particlePalette = getParticlePaletteFromTheme();
+}
 
 function getEffectivePixelRatio() {
   return Math.min(3, Math.max(1, window.devicePixelRatio || 1));
@@ -208,7 +223,9 @@ function toggleTheme() {
   document.documentElement.dataset.theme = isNight ? "day" : "night";
   localStorage.setItem(THEME_STORAGE_KEY, document.documentElement.dataset.theme);
   updateThemeToggleUI();
+  syncThemePalettes();
 }
+
 
 function playTreeBell() {
   if (isMuted) return;
@@ -382,7 +399,7 @@ function spawnParticle(particle, warmStart = false) {
   particle.baseSize = randomBetween(1.4, 4.8);
   particle.size = particle.baseSize;
   particle.opacity = randomBetween(0.35, 0.88);
-  particle.color = pickHeartPaletteItem(PARTICLE_COLORS);
+  particle.color = pickHeartPaletteItem(particlePalette);
   particle.rotation = randomBetween(0, Math.PI * 2);
   particle.spin = randomBetween(-0.018, 0.018);
   particle.verticalSpeed = randomBetween(22, 78);
@@ -667,6 +684,7 @@ if (microIntroHideNextCheckbox) microIntroHideNextCheckbox.checked = shouldSkipM
 updateMusicToggleUI();
 updateMuteToggleUI();
 updateThemeToggleUI();
+syncThemePalettes();
 initializeParticles();
 buildCanopyHearts(getCanopyHeartCount());
 buildFallingHeartPool();

@@ -37,10 +37,29 @@
   --heart-base: clamp(118px, 11vw, 172px);
   --tree-width: clamp(340px, 40vw, 540px);
   --tree-height: clamp(290px, 35vw, 450px);
+
+  --particle-1: rgba(248, 185, 207, 0.72);
+  --particle-2: rgba(244, 155, 192, 0.7);
+  --particle-3: rgba(222, 93, 152, 0.68);
+  --particle-4: rgba(238, 125, 131, 0.64);
 }
 
 * {
   box-sizing: border-box;
+}
+
+:root[data-theme='day'] {
+  --heart-1: #d46b8d;
+  --heart-2: #c84a81;
+  --heart-3: #b73a84;
+  --heart-4: #b93f62;
+  --heart-5: #9b274f;
+  --heart-6: #7d1538;
+
+  --particle-1: rgba(155, 37, 79, 0.72);
+  --particle-2: rgba(183, 58, 132, 0.68);
+  --particle-3: rgba(200, 74, 129, 0.66);
+  --particle-4: rgba(125, 21, 56, 0.62);
 }
 
 
@@ -338,7 +357,7 @@ body {
   margin-bottom: -10px;
   transform: rotate(-45deg);
   border-radius: 22px;
-  background: linear-gradient(160deg, var(--heart-2), var(--heart-3));
+  background: linear-gradient(160deg, var(--heart-2), var(--heart-6));
   box-shadow: none;
 }
 
@@ -527,6 +546,10 @@ body {
   animation: canopy-pulse 2.8s var(--motion-ease) infinite;
 }
 
+.bg-heart {
+  background: var(--heart-4);
+}
+
 .canopy-heart::before,
 .canopy-heart::after {
   content: "";
@@ -672,7 +695,7 @@ body {
 
 .falling-heart {
   --heart-size: 14px;
-  --heart-color: var(--heart-2);
+  --heart-color: var(--heart-4);
   --heart-scale: 1;
   --spawn-x: 0px;
   --spawn-y: 0px;

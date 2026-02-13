@@ -47,6 +47,8 @@ let poemHasStarted = false;
 let elapsedCounterIntervalId = null;
 let heartShowerHasStarted = false;
 let heartShowerResizeTimeoutId = null;
+let parallaxRafId = null;
+let latestPointerEvent = null;
 let musicShouldBeOn = false;
 let hasUserInteractedForMusic = false;
 let isMuted = false;
@@ -54,6 +56,8 @@ let activeRunToken = 0;
 let prefersReducedMotion = reducedMotionMediaQuery.matches;
 
 const fallingHeartPool = [];
+const fallingHeartTimers = new WeakMap();
+let activeFallingHeartCount = 0;
 const HEART_PALETTE_CLASSES = ["is-blush", "is-petal", "is-fuchsia-soft", "is-coral-soft", "is-rose", "is-red-soft"];
 const HEART_PALETTE_VARS = ["var(--heart-1)", "var(--heart-2)", "var(--heart-3)", "var(--heart-4)", "var(--heart-5)", "var(--heart-6)"];
 
@@ -62,6 +66,11 @@ const beepAudio = new Audio("data:audio/wav;base64,UklGRjgAAABXQVZFZm10IBAAAAABA
 beepAudio.volume = 0.15;
 
 const randomBetween = (min, max) => Math.random() * (max - min) + min;
+
+
+function getEffectivePixelRatio() {
+  return Math.min(3, Math.max(1, window.devicePixelRatio || 1));
+}
 
 function transitionTo(nextState) {
   const allowedStates = VALID_TRANSITIONS[currentState] ?? [];
@@ -195,60 +204,108 @@ function buildCanopyHearts(count) {
 
 function getFallingHeartPoolSize() {
   const area = window.innerWidth * window.innerHeight;
-  return Math.round(14 + (54 - 14) * (Math.min(area, 1920 * 1080) / (1920 * 1080)));
+  const areaRatio = Math.min(area, 1920 * 1080) / (1920 * 1080);
+  const dprPenalty = 1 / getEffectivePixelRatio();
+  return Math.round(10 + (42 - 10) * areaRatio * dprPenalty);
+}
+
+function clearFallingHeartTimer(heartNode) {
+  const timerId = fallingHeartTimers.get(heartNode);
+  if (!timerId) return;
+  clearTimeout(timerId);
+  fallingHeartTimers.delete(heartNode);
+}
+
+function scheduleFallingHeart(heartNode, delayMs = 0) {
+  clearFallingHeartTimer(heartNode);
+  const timerId = setTimeout(() => {
+    fallingHeartTimers.delete(heartNode);
+    configureAndLaunchFallingHeart(heartNode);
+  }, delayMs);
+  fallingHeartTimers.set(heartNode, timerId);
 }
 
 function configureAndLaunchFallingHeart(heartNode) {
   if (!fallingHeartsLayer || !heartNode || !heartShowerHasStarted) return;
+  const heartIndex = Number(heartNode.dataset.poolIndex || -1);
+  if (heartIndex >= activeFallingHeartCount) {
+    heartNode.classList.remove("is-active");
+    clearFallingHeartTimer(heartNode);
+    return;
+  }
   const layerRect = fallingHeartsLayer.getBoundingClientRect();
   const canopyRect = treeCanopy?.getBoundingClientRect();
   const x = canopyRect ? canopyRect.left - layerRect.left + canopyRect.width * randomBetween(0.28, 0.72) : layerRect.width * randomBetween(0.32, 0.68);
   const y = canopyRect ? Math.max(0, canopyRect.top - layerRect.top + canopyRect.height * randomBetween(0.08, 0.32)) : layerRect.height * 0.2;
   const durationMs = randomBetween(4200, 7600);
   heartNode.classList.remove("is-active");
-  heartNode.style.left = `${x.toFixed(1)}px`;
-  heartNode.style.top = `${y.toFixed(1)}px`;
+  heartNode.style.setProperty("--spawn-x", `${x.toFixed(1)}px`);
+  heartNode.style.setProperty("--spawn-y", `${y.toFixed(1)}px`);
   heartNode.style.setProperty("--heart-size", `${randomBetween(10, 14).toFixed(1)}px`);
   heartNode.style.setProperty("--heart-color", pickHeartPaletteItem(HEART_PALETTE_VARS));
+  heartNode.style.setProperty("--heart-scale", randomBetween(0.9, 1.08).toFixed(2));
   heartNode.style.setProperty("--fall-distance", `${randomBetween(layerRect.height * 0.58, layerRect.height * 0.98).toFixed(1)}px`);
   heartNode.style.setProperty("--fall-duration", `${(durationMs / 1000).toFixed(2)}s`);
   heartNode.style.setProperty("--drift-x", `${randomBetween(-26, 26).toFixed(1)}px`);
   requestAnimationFrame(() => heartNode.classList.add("is-active"));
-  setTimeout(() => configureAndLaunchFallingHeart(heartNode), durationMs + randomBetween(240, 1800));
+  scheduleFallingHeart(heartNode, durationMs + randomBetween(240, 1800));
+}
+
+function syncFallingHeartsActivity() {
+  fallingHeartPool.forEach((heartNode, index) => {
+    const isActiveNode = index < activeFallingHeartCount;
+    heartNode.classList.toggle("is-enabled", isActiveNode);
+    if (!isActiveNode) {
+      heartNode.classList.remove("is-active");
+      clearFallingHeartTimer(heartNode);
+      return;
+    }
+    if (heartShowerHasStarted && !heartNode.classList.contains("is-active") && !fallingHeartTimers.has(heartNode)) {
+      scheduleFallingHeart(heartNode, index * 85);
+    }
+  });
 }
 
 function buildFallingHeartPool() {
   if (!fallingHeartsLayer) return;
-  const desiredCount = getFallingHeartPoolSize();
-  while (fallingHeartPool.length < desiredCount) {
+  activeFallingHeartCount = getFallingHeartPoolSize();
+  const poolCapacity = Math.max(52, activeFallingHeartCount);
+  while (fallingHeartPool.length < poolCapacity) {
     const n = document.createElement("span");
     n.className = "falling-heart";
     n.setAttribute("aria-hidden", "true");
+    n.dataset.poolIndex = String(fallingHeartPool.length);
     fallingHeartsLayer.append(n);
     fallingHeartPool.push(n);
-    if (heartShowerHasStarted) configureAndLaunchFallingHeart(n);
   }
-  while (fallingHeartPool.length > desiredCount) fallingHeartPool.pop()?.remove();
+  syncFallingHeartsActivity();
 }
 
 function startFallingHeartShower() {
   if (prefersReducedMotion || heartShowerHasStarted || !fallingHeartsLayer) return;
   heartShowerHasStarted = true;
   if (fallingHeartPool.length === 0) buildFallingHeartPool();
-  fallingHeartPool.forEach((n, i) => setTimeout(() => configureAndLaunchFallingHeart(n), i * 120));
+  syncFallingHeartsActivity();
 }
 
-function updateParallax(event) {
-  if (prefersReducedMotion) return;
+function flushParallax() {
+  parallaxRafId = null;
+  if (!latestPointerEvent || prefersReducedMotion) return;
   if (!window.matchMedia("(hover: hover) and (pointer: fine)").matches) return;
   const hearts = treeCanopy?.querySelectorAll(".canopy-heart") ?? [];
-  const xRatio = (event.clientX / window.innerWidth - 0.5) * 2;
-  const yRatio = (event.clientY / window.innerHeight - 0.5) * 2;
+  const xRatio = (latestPointerEvent.clientX / window.innerWidth - 0.5) * 2;
+  const yRatio = (latestPointerEvent.clientY / window.innerHeight - 0.5) * 2;
   hearts.forEach((node, i) => {
     const depth = 2 + (i % 5) * 0.8;
     node.style.setProperty("--parallax-x", `${(-xRatio * depth).toFixed(2)}px`);
     node.style.setProperty("--parallax-y", `${(-yRatio * depth).toFixed(2)}px`);
   });
+}
+
+function updateParallax(event) {
+  latestPointerEvent = event;
+  if (parallaxRafId || prefersReducedMotion) return;
+  parallaxRafId = requestAnimationFrame(flushParallax);
 }
 
 function resetParallax() {
@@ -371,7 +428,7 @@ function resetExperience() {
   messageView.setAttribute("aria-hidden", "true");
   if (poemContainer) poemContainer.textContent = "";
   if (finalDedication) { finalDedication.textContent = ""; finalDedication.classList.remove("is-visible"); }
-  fallingHeartPool.forEach((h) => h.classList.remove("is-active"));
+  fallingHeartPool.forEach((h) => { h.classList.remove("is-active"); clearFallingHeartTimer(h); });
 }
 
 heartButton?.addEventListener("click", () => {

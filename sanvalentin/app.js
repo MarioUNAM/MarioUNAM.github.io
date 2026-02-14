@@ -36,17 +36,30 @@ const MUSIC_STORAGE_KEY = "musicOn";
 const MICRO_INTRO_STORAGE_KEY = "skipMicroIntro";
 const INTENSITY_STORAGE_KEY = "visualIntensity";
 const DEFAULT_MUSIC_VOLUME = 0.2;
-const STATES = { IDLE: "idle", INTRO: "intro", MORPH: "morph", FALLING: "falling", TREE: "tree", REVEAL_MESSAGE: "revealMessage" };
-const TREE_SUBSTATES = { POPULATE_CANOPY: "tree_populate_canopy", LARGE_CENTER_READY: "tree_large_center_ready" };
+const STATES = {
+  IDLE: "idle",
+  HEART_TO_SEED_FAST: "heart_to_seed_fast",
+  SEED_FALL: "seed_fall",
+  FRACTAL_GROW_SLOW: "fractal_grow_slow",
+  CANOPY_FILL_FAST: "canopy_fill_fast",
+  TREE_SCALEUP_FAST: "tree_scaleup_fast",
+  TREE_MOVE_RIGHT_NORMAL: "tree_move_right_normal",
+  LEAVES_FALL_SLOW: "leaves_fall_slow",
+  LETTER_VISIBLE: "letter_visible",
+};
 const INTENSITY_LEVELS = { SOFT: "soft", NORMAL: "normal" };
-const PHASE_TIMEOUTS_MS = { morph: 760, falling: 1240, tree: 1320 };
-const PHASE_DELAYS_MS = { afterMorph: 60, afterFalling: 70, afterTree: 60 };
+const PHASE_TIMEOUTS_MS = { morph: 760, falling: 1240, tree: 1320, canopy: 520, sceneMove: 760 };
+const TIMELINE_DURATIONS_MS = { treeScaleupFast: 220, leavesFallSlow: 1320 };
 const VALID_TRANSITIONS = {
-  [STATES.INTRO]: [STATES.MORPH],
-  [STATES.MORPH]: [STATES.FALLING],
-  [STATES.FALLING]: [STATES.TREE],
-  [STATES.TREE]: [STATES.REVEAL_MESSAGE],
-  [STATES.REVEAL_MESSAGE]: [],
+  [STATES.IDLE]: [STATES.HEART_TO_SEED_FAST],
+  [STATES.HEART_TO_SEED_FAST]: [STATES.SEED_FALL],
+  [STATES.SEED_FALL]: [STATES.FRACTAL_GROW_SLOW],
+  [STATES.FRACTAL_GROW_SLOW]: [STATES.CANOPY_FILL_FAST],
+  [STATES.CANOPY_FILL_FAST]: [STATES.TREE_SCALEUP_FAST],
+  [STATES.TREE_SCALEUP_FAST]: [STATES.TREE_MOVE_RIGHT_NORMAL],
+  [STATES.TREE_MOVE_RIGHT_NORMAL]: [STATES.LEAVES_FALL_SLOW],
+  [STATES.LEAVES_FALL_SLOW]: [STATES.LETTER_VISIBLE],
+  [STATES.LETTER_VISIBLE]: [],
 };
 
 let currentState = STATES.IDLE;
@@ -77,7 +90,7 @@ let fallingLayoutCacheAt = 0;
 
 function getActiveTreeCanopy() {
   const messageCanopy = document.querySelector("#tree-panel .tree-canopy");
-  if (currentState === STATES.REVEAL_MESSAGE && messageCanopy) return messageCanopy;
+  if (currentState === STATES.LETTER_VISIBLE && messageCanopy) return messageCanopy;
   return treeCanopy ?? messageCanopy ?? null;
 }
 
@@ -100,7 +113,17 @@ function keepLoveHeadingPersistent() {
 
 function syncPhaseProgress(phase) {
   if (!phaseProgress || phaseProgressSteps.length === 0) return;
-  const phaseMap = { idle: "intro", intro: "intro", morph: "intro", falling: "intro", tree: "tree", revealMessage: "revealMessage" };
+  const phaseMap = {
+    idle: "intro",
+    heart_to_seed_fast: "intro",
+    seed_fall: "intro",
+    fractal_grow_slow: "tree",
+    canopy_fill_fast: "tree",
+    tree_scaleup_fast: "tree",
+    tree_move_right_normal: "revealMessage",
+    leaves_fall_slow: "revealMessage",
+    letter_visible: "revealMessage",
+  };
   const activeStep = phaseMap[phase] ?? "intro";
   phaseProgressSteps.forEach((stepNode) => {
     const isActive = stepNode.dataset.phaseStep === activeStep;
@@ -123,7 +146,7 @@ function setLeavesActiveClass(isActive) {
 
 function shouldEnableLeavesForCurrentPhase() {
   const scenePhase = scene?.dataset.phase;
-  return scenePhase === TREE_SUBSTATES.LARGE_CENTER_READY || scenePhase === STATES.REVEAL_MESSAGE;
+  return scenePhase === STATES.LEAVES_FALL_SLOW || scenePhase === STATES.LETTER_VISIBLE;
 }
 
 const fallingHeartPool = [];
@@ -350,8 +373,14 @@ function waitForMotionEnd({ element, eventName, timeoutMs, filter = () => true }
   });
 }
 
+function waitForTimelineFinished(animation, fallbackMs) {
+  if (!animation || !animation.finished) return Promise.resolve();
+  return Promise.race([
+    animation.finished.catch(() => {}),
+    new Promise((resolve) => window.setTimeout(resolve, fallbackMs)),
+  ]);
+}
 
-const waitForPhaseDelay = (delayMs) => new Promise((resolve) => window.setTimeout(resolve, delayMs));
 
 function updateMusicToggleUI() {
   if (!musicToggleButton) return;
@@ -911,35 +940,15 @@ function showTree() {
   window.setTimeout(playTreeBell, 360);
 }
 
-function hasSeedTouchedGround() {
-  if (!heart || !ground) return false;
-  const seedRect = heart.getBoundingClientRect();
-  const groundRect = ground.getBoundingClientRect();
-  const horizontalOverlap = seedRect.right >= groundRect.left && seedRect.left <= groundRect.right;
-  const verticalTouch = seedRect.bottom >= groundRect.top;
-  return horizontalOverlap && verticalTouch;
-}
-
 function waitForSeedLanding() {
   return new Promise((resolve) => {
     let finished = false;
-    let rafId = 0;
     const finish = () => {
       if (finished) return;
       finished = true;
       heartButton.removeEventListener("animationend", onAnimationEnd);
-      if (rafId) cancelAnimationFrame(rafId);
       heartButton.classList.add("is-landed");
       resolve();
-    };
-
-    const tickCollision = () => {
-      if (finished) return;
-      if (hasSeedTouchedGround()) {
-        finish();
-        return;
-      }
-      rafId = requestAnimationFrame(tickCollision);
     };
 
     const onAnimationEnd = (event) => {
@@ -948,9 +957,22 @@ function waitForSeedLanding() {
     };
 
     heartButton.addEventListener("animationend", onAnimationEnd);
-    rafId = requestAnimationFrame(tickCollision);
     window.setTimeout(finish, PHASE_TIMEOUTS_MS.falling);
   });
+}
+
+function waitForCanopyFill() {
+  if (prefersReducedMotion) return Promise.resolve();
+  const hearts = Array.from(treeCanopy?.querySelectorAll(".canopy-heart") ?? []);
+  if (hearts.length === 0) return Promise.resolve();
+  return Promise.all(
+    hearts.map((node) => waitForMotionEnd({
+      element: node,
+      eventName: "animationend",
+      timeoutMs: PHASE_TIMEOUTS_MS.canopy,
+      filter: (event) => event.animationName === "canopy-heart-rise",
+    })),
+  );
 }
 
 function lockTreeAsFinalState() {
@@ -998,7 +1020,6 @@ function typePoem(lines, config = typewriterConfig, runToken) {
 function showMessageView() {
   keepLoveHeadingPersistent();
   lockTreeAsFinalState();
-  syncScenePhase(STATES.REVEAL_MESSAGE);
   introView.classList.add("is-active"); introView.setAttribute("aria-hidden", "false");
   messageView.classList.add("is-active"); messageView.setAttribute("aria-hidden", "false");
   updateElapsedCounter();
@@ -1008,10 +1029,19 @@ function showMessageView() {
   startFallingHeartEmitter();
 }
 
-const INTRO_FLOW_SEQUENCE = [STATES.MORPH, STATES.FALLING, STATES.TREE, STATES.REVEAL_MESSAGE];
+const INTRO_FLOW_SEQUENCE = [
+  STATES.HEART_TO_SEED_FAST,
+  STATES.SEED_FALL,
+  STATES.FRACTAL_GROW_SLOW,
+  STATES.CANOPY_FILL_FAST,
+  STATES.TREE_SCALEUP_FAST,
+  STATES.TREE_MOVE_RIGHT_NORMAL,
+  STATES.LEAVES_FALL_SLOW,
+  STATES.LETTER_VISIBLE,
+];
 
 const INTRO_FLOW_MACHINE = {
-  [STATES.MORPH]: {
+  [STATES.HEART_TO_SEED_FAST]: {
     enter: () => {
       heartButton.disabled = true;
       heart.classList.add("is-morphing", "is-seed");
@@ -1024,33 +1054,61 @@ const INTRO_FLOW_MACHINE = {
         waitForMotionEnd({ element: ground, eventName: "transitionend", timeoutMs: PHASE_TIMEOUTS_MS.morph, filter: (e) => e.propertyName === "transform" }),
       ]);
     },
-    delayMs: PHASE_DELAYS_MS.afterMorph,
   },
-  [STATES.FALLING]: {
+  [STATES.SEED_FALL]: {
     enter: () => {
       heartButton.classList.add("is-falling");
       playMilestoneCue("falling");
       if (prefersReducedMotion) heartButton.classList.add("is-landed");
     },
     wait: () => (prefersReducedMotion ? Promise.resolve() : waitForSeedLanding()),
-    delayMs: PHASE_DELAYS_MS.afterFalling,
   },
-  [STATES.TREE]: {
+  [STATES.FRACTAL_GROW_SLOW]: {
     enter: () => {
       showTree();
-      syncScenePhase(TREE_SUBSTATES.POPULATE_CANOPY);
     },
-    wait: async () => {
-      if (!prefersReducedMotion) {
-        await waitForMotionEnd({ element: loveTree, eventName: "animationend", timeoutMs: PHASE_TIMEOUTS_MS.tree, filter: (e) => e.animationName === "tree-grow" });
-      }
-      if (!isTreeFull()) await waitForPhaseDelay(PHASE_DELAYS_MS.afterTree);
-      if (!hasTreeReachedFinalState) buildCanopyHearts(getCanopyHeartCount());
-      syncScenePhase(TREE_SUBSTATES.LARGE_CENTER_READY);
-      startLeavesEmitter();
-    },
+    wait: () => (prefersReducedMotion ? Promise.resolve() : waitForMotionEnd({ element: loveTree, eventName: "animationend", timeoutMs: PHASE_TIMEOUTS_MS.tree, filter: (e) => e.animationName === "tree-grow" })),
   },
-  [STATES.REVEAL_MESSAGE]: {
+  [STATES.CANOPY_FILL_FAST]: {
+    enter: () => {
+      if (!hasTreeReachedFinalState) buildCanopyHearts(getCanopyHeartCount());
+    },
+    wait: () => waitForCanopyFill(),
+  },
+  [STATES.TREE_SCALEUP_FAST]: {
+    enter: () => {
+      const animation = loveTree?.animate([
+        { transform: "translateY(0) rotate(0deg) scale(0.94)", offset: 0 },
+        { transform: "translateY(0) rotate(0deg) scale(1)", offset: 1 },
+      ], {
+        duration: TIMELINE_DURATIONS_MS.treeScaleupFast,
+        easing: "cubic-bezier(0.22, 0.86, 0.34, 1)",
+        fill: "forwards",
+      });
+      INTRO_FLOW_MACHINE[STATES.TREE_SCALEUP_FAST].animation = animation;
+    },
+    wait: () => waitForTimelineFinished(INTRO_FLOW_MACHINE[STATES.TREE_SCALEUP_FAST].animation, TIMELINE_DURATIONS_MS.treeScaleupFast + 40),
+  },
+  [STATES.TREE_MOVE_RIGHT_NORMAL]: {
+    enter: () => {
+      syncScenePhase(STATES.TREE_MOVE_RIGHT_NORMAL);
+    },
+    wait: () => (prefersReducedMotion
+      ? Promise.resolve()
+      : waitForMotionEnd({ element: document.querySelector(".scene-track"), eventName: "transitionend", timeoutMs: PHASE_TIMEOUTS_MS.sceneMove, filter: (event) => event.propertyName === "transform" })),
+  },
+  [STATES.LEAVES_FALL_SLOW]: {
+    enter: () => {
+      startLeavesEmitter();
+      const animation = loveTree?.animate([{ opacity: 1 }, { opacity: 1 }], {
+        duration: TIMELINE_DURATIONS_MS.leavesFallSlow,
+        easing: "linear",
+      });
+      INTRO_FLOW_MACHINE[STATES.LEAVES_FALL_SLOW].animation = animation;
+    },
+    wait: () => waitForTimelineFinished(INTRO_FLOW_MACHINE[STATES.LEAVES_FALL_SLOW].animation, TIMELINE_DURATIONS_MS.leavesFallSlow + 40),
+  },
+  [STATES.LETTER_VISIBLE]: {
     enter: () => {
       showMessageView();
     },
@@ -1066,12 +1124,11 @@ async function runIntroStateMachine(runToken) {
     phase?.enter?.();
     await phase?.wait?.();
     if (runToken !== activeRunToken) return;
-    if (phase?.delayMs) await waitForPhaseDelay(phase.delayMs);
   }
 }
 
 function startIntroStateMachine() {
-  if (currentState !== STATES.INTRO || introMachineInFlight) return;
+  if (currentState !== STATES.IDLE || introMachineInFlight) return;
   const runToken = ++activeRunToken;
   introMachineInFlight = true;
   runIntroStateMachine(runToken).finally(() => {
@@ -1091,10 +1148,7 @@ function handleHeartStart(event) {
   if (scene) scene.classList.add("is-started");
   heartButton.disabled = true;
   if (!microIntroHasFinished) finishMicroIntro();
-  if (currentState === STATES.IDLE) {
-    currentState = STATES.INTRO;
-    syncScenePhase(STATES.INTRO);
-  }
+  if (currentState !== STATES.IDLE) return;
   startIntroStateMachine();
 }
 

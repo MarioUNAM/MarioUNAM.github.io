@@ -232,7 +232,7 @@ body {
 
 #scene:not(.is-started) #message-view,
 #scene:not(.is-started) #tree,
-#scene:not(.is-started) #ground,
+#scene:not(.is-started) #ground-line,
 #scene:not(.is-started) #falling-hearts-layer {
   opacity: 0;
   visibility: hidden;
@@ -260,7 +260,7 @@ body {
   visibility: hidden;
   pointer-events: none;
   transform: translateX(-50%) translateY(36px) scale(0.72);
-  transform-origin: center bottom;
+  transform-origin: bottom center;
   transition: transform var(--t-phase-morph) var(--motion-ease), opacity var(--t-medium) var(--motion-ease), visibility var(--t-medium) var(--motion-ease);
 }
 
@@ -405,10 +405,10 @@ body {
   justify-content: flex-end;
   align-items: center;
   transform: rotate(0deg) scaleX(1) scaleY(1);
-  transform-origin: center bottom;
+  transform-origin: bottom center;
 }
 
-.ground-line {
+.tree-panel-ground {
   width: min(100%, 320px);
   height: 4px;
   margin-top: var(--space-xs);
@@ -511,7 +511,7 @@ body {
   transform: translate3d(0, 226px, 0) scale(0.72);
 }
 
-#ground {
+#ground-line {
   width: min(90%, 380px);
   height: 8px;
   margin: var(--space-md) auto 0;
@@ -523,7 +523,7 @@ body {
   transition: transform var(--t-medium) var(--motion-ease), opacity var(--t-medium) var(--motion-ease);
 }
 
-#ground.is-visible {
+#ground-line.is-visible {
   transform: scaleX(1);
   opacity: 1;
 }
@@ -541,6 +541,7 @@ body {
   width: min(74%, 260px);
   margin: 0 auto;
   pointer-events: none;
+  transform-origin: bottom center;
 }
 
 .love-tree.is-visible {
@@ -548,7 +549,7 @@ body {
 }
 
 .love-tree.is-growing .tree-trunk {
-  transform-origin: center bottom;
+  transform-origin: bottom center;
   animation: trunk-grow var(--t-medium) var(--tree-ease) both;
 }
 
@@ -575,7 +576,7 @@ body {
 .tree-trunk {
   width: 30px;
   height: 96px;
-  transform-origin: center bottom;
+  transform-origin: bottom center;
   margin: 0 auto;
   border-radius: 12px 12px 10px 10px;
   background: linear-gradient(180deg, #9a6948 0%, #7a4c31 58%, #673c26 100%);
@@ -1045,8 +1046,8 @@ body {
   .heart.heart-shrink,
   .heart.seed-form,
   .heart-button.is-falling,
-  #ground,
-  #ground.is-visible {
+  #ground-line,
+  #ground-line.is-visible {
     animation: none !important;
     transition: none !important;
   }

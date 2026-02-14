@@ -251,11 +251,6 @@ export function initAnimations({ observer, stateMachine, states, domListeners, r
     if (treeEl) {
       treeEl.dataset.seedImpactX = String(impactX);
       treeEl.dataset.seedGroundY = String(groundY);
-
-      const treeRect = treeEl.getBoundingClientRect();
-      const localImpactX = impactX - treeRect.left;
-      const impactRatioX = treeRect.width > 0 ? clamp01(localImpactX / treeRect.width) : 0.5;
-      treeEl.style.transformOrigin = `${impactRatioX * 100}% 100%`;
     }
   };
 
@@ -396,7 +391,6 @@ export function initAnimations({ observer, stateMachine, states, domListeners, r
       groundLineEl.style.transform = '';
     }
     if (treeEl) {
-      treeEl.style.transformOrigin = '';
       delete treeEl.dataset.seedImpactX;
       delete treeEl.dataset.seedGroundY;
     }

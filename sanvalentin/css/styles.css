@@ -148,6 +148,8 @@ select {
 
 [data-role="tree"] {
   opacity: 0;
+  transform-origin: bottom center;
+  transition: opacity 200ms ease;
 }
 
 .letter-view {

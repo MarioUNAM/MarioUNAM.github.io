@@ -6,11 +6,26 @@ import { initParticles } from './modules/particles.js';
 import { initCounter } from './modules/counter.js';
 import { initAudio } from './modules/audio.js';
 
-const observer = createObserver();
-const machine = createStateMachine(STATES.INIT, observer);
+function bootstrapApp() {
+  const observer = createObserver();
+  const stateMachine = createStateMachine(STATES.INIT, observer);
+  const sharedDependencies = {
+    observer,
+    stateMachine,
+    states: STATES,
+  };
 
-initAnimations({ observer, machine });
-initTree({ observer, machine });
-initParticles({ observer, machine });
-initCounter({ observer, machine });
-initAudio({ observer, machine });
+  const animations = initAnimations(sharedDependencies);
+  initTree(sharedDependencies);
+  initParticles(sharedDependencies);
+  initCounter(sharedDependencies);
+  initAudio(sharedDependencies);
+
+  if (animations?.introReady) {
+    stateMachine.transition(STATES.HEART_IDLE, {
+      source: 'intro-listeners-ready',
+    });
+  }
+}
+
+bootstrapApp();

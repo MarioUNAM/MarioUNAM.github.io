@@ -1,4 +1,6 @@
-export function initAnimations({ observer }) {
+export function initAnimations({ observer, stateMachine, states }) {
+  const introRoot = document.querySelector('.app');
+
   const unsubscribeOnState = observer.subscribe(
     observer.lifecycle.STATE_CHANGED,
     ({ to }) => {
@@ -16,5 +18,21 @@ export function initAnimations({ observer }) {
     },
   );
 
+  const handleIntroInteraction = () => {
+    if (stateMachine.getState() === states.HEART_IDLE) {
+      observer.emit(observer.lifecycle.ANIMATION_START, {
+        scope: 'intro',
+        state: states.HEART_IDLE,
+      });
+    }
+  };
+
+  introRoot?.addEventListener('click', handleIntroInteraction);
+
+  observer.registerCleanup(() => {
+    introRoot?.removeEventListener('click', handleIntroInteraction);
+  });
   observer.registerCleanup(unsubscribeOnState);
+
+  return { introReady: true };
 }

@@ -419,9 +419,18 @@ body {
 }
 
 .heart.is-morphing {
-  transform: translate3d(0, -6px, 0) scale(0.88);
-  opacity: 0.94;
-  transition: transform 560ms var(--morph-ease), opacity 520ms var(--morph-ease);
+  transform: translate3d(0, -4px, 0) scale(0.84);
+  opacity: 0.96;
+  transition: transform 460ms var(--morph-ease), opacity 420ms var(--morph-ease), border-radius 420ms var(--morph-ease);
+}
+
+.heart.is-seed {
+  border-radius: 58% 42% 62% 38% / 45% 55% 52% 48%;
+  transform: translate3d(0, -2px, 0) scale(0.68) rotate(-8deg);
+}
+
+.heart.is-seed img {
+  filter: saturate(0.68) hue-rotate(18deg) brightness(0.86);
 }
 
 .heart-button:hover .heart {
@@ -440,7 +449,11 @@ body {
 }
 
 .heart-button.is-falling {
-  animation: heart-fall 1280ms var(--fall-ease) forwards;
+  animation: heart-fall 1120ms var(--fall-ease) forwards;
+}
+
+.heart-button.is-landed .heart {
+  transform: translate3d(0, 226px, 0) scale(0.72);
 }
 
 #ground {
@@ -479,7 +492,27 @@ body {
 }
 
 .love-tree.is-visible {
-  animation: tree-appear 1040ms var(--tree-ease) forwards;
+  animation: tree-grow 1220ms var(--tree-ease) forwards;
+}
+
+.love-tree.is-growing .tree-trunk {
+  transform-origin: center bottom;
+  animation: trunk-grow 520ms var(--tree-ease) both;
+}
+
+.love-tree.is-growing .tree-branch {
+  stroke-dasharray: var(--branch-length, 120);
+  stroke-dashoffset: var(--branch-length, 120);
+  animation: branch-draw 620ms var(--tree-ease) forwards;
+}
+
+.love-tree.is-growing .tree-canopy {
+  animation: canopy-rise 680ms var(--tree-ease) 340ms both, tree-glow 3.2s ease-in-out 1.02s infinite;
+}
+
+.love-tree.is-growing .canopy-heart {
+  opacity: 0;
+  animation: canopy-heart-rise 300ms var(--tree-ease) forwards, canopy-pulse 2.8s var(--motion-ease) 1.08s infinite;
 }
 
 .love-tree.tree--final {
@@ -491,6 +524,7 @@ body {
 .tree-trunk {
   width: 30px;
   height: 96px;
+  transform-origin: center bottom;
   margin: 0 auto;
   border-radius: 12px 12px 10px 10px;
   background: linear-gradient(180deg, #9a6948 0%, #7a4c31 58%, #673c26 100%);
@@ -537,6 +571,7 @@ body {
   stroke-linecap: round;
   stroke-linejoin: round;
   vector-effect: non-scaling-stroke;
+  --branch-length: 120;
 }
 
 .tree-branch:nth-child(3n) {
@@ -617,14 +652,14 @@ body {
     transform: translate3d(0, 0, 0) scale(1);
   }
 
-  46% {
-    opacity: 1;
-    transform: translate3d(0, 116px, 0) scale(0.98);
+  58% {
+    opacity: 0.98;
+    transform: translate3d(0, 138px, 0) scale(0.86);
   }
 
   100% {
-    opacity: 0.92;
-    transform: translate3d(0, 230px, 0) scale(0.96);
+    opacity: 0.95;
+    transform: translate3d(0, 226px, 0) scale(0.72);
   }
 }
 
@@ -770,21 +805,43 @@ body {
   opacity: 0;
 }
 
-@keyframes tree-appear {
+@keyframes tree-grow {
   0% {
     opacity: 0;
-    transform: translate3d(0, 34px, 0) scale(0.78);
+    transform: translate3d(0, 30px, 0) scale(0.74);
   }
 
-  58% {
-    opacity: 0.78;
-    transform: translate3d(0, 10px, 0) scale(0.93);
+  45% {
+    opacity: 0.8;
+    transform: translate3d(0, 8px, 0) scale(0.9);
   }
 
   100% {
     opacity: 1;
     transform: translate3d(0, 0, 0) scale(1);
   }
+}
+
+@keyframes trunk-grow {
+  0% { transform: scaleY(0.1) scaleX(0.76); opacity: 0.35; }
+  65% { transform: scaleY(1.06) scaleX(0.92); opacity: 0.9; }
+  100% { transform: scaleY(1) scaleX(1); opacity: 1; }
+}
+
+@keyframes branch-draw {
+  from { stroke-dashoffset: var(--branch-length, 120); opacity: 0.35; }
+  to { stroke-dashoffset: 0; opacity: 1; }
+}
+
+@keyframes canopy-rise {
+  0% { transform: translateY(16px) scale(0.72); opacity: 0.15; }
+  70% { transform: translateY(-4px) scale(1.02); opacity: 0.95; }
+  100% { transform: translateY(0) scale(1); opacity: 1; }
+}
+
+@keyframes canopy-heart-rise {
+  from { opacity: 0; transform: translate(calc(-50% + var(--parallax-x)), calc(-42% + var(--parallax-y))) rotate(-45deg) scale(calc(var(--heart-scale) * 0.45)); }
+  to { opacity: 1; transform: translate(calc(-50% + var(--parallax-x)), calc(-50% + var(--parallax-y))) rotate(-45deg) scale(var(--heart-scale)); }
 }
 
 

@@ -24,6 +24,7 @@ const restartButton = document.querySelector("#restart-button");
 const microIntro = document.querySelector("#micro-intro");
 const microIntroSkipButton = document.querySelector("#micro-intro-skip");
 const microIntroHideNextCheckbox = document.querySelector("#micro-intro-hide-next");
+const loveHeading = document.querySelector("#love-heading");
 const reducedMotionMediaQuery = window.matchMedia("(prefers-reduced-motion: reduce)");
 
 const START_DATE = "2016-09-09T00:00:00";
@@ -66,9 +67,19 @@ let microIntroTimeoutId = null;
 let microIntroHasFinished = false;
 let hasTreeReachedFinalState = false;
 
+
+function keepLoveHeadingPersistent() {
+  if (!loveHeading) return;
+  loveHeading.removeAttribute("hidden");
+  loveHeading.setAttribute("aria-hidden", "false");
+  loveHeading.style.display = "block";
+  loveHeading.style.visibility = "visible";
+}
+
 function syncScenePhase(phase) {
   if (!scene) return;
   scene.dataset.phase = phase;
+  keepLoveHeadingPersistent();
 }
 
 const fallingHeartPool = [];
@@ -667,6 +678,7 @@ function typePoem(lines, config = typewriterConfig, runToken) {
 }
 
 function showMessageView() {
+  keepLoveHeadingPersistent();
   lockTreeAsFinalState();
   introView.classList.add("is-active"); introView.setAttribute("aria-hidden", "false");
   messageView.classList.add("is-active"); messageView.setAttribute("aria-hidden", "false");
@@ -709,6 +721,7 @@ async function runIntroSequence(runToken) {
 }
 
 function resetExperience() {
+  keepLoveHeadingPersistent();
   activeRunToken += 1;
   currentState = STATES.INTRO;
   syncScenePhase(STATES.INTRO);
@@ -774,6 +787,7 @@ updateMusicToggleUI();
 updateMuteToggleUI();
 updateThemeToggleUI();
 syncThemePalettes();
+keepLoveHeadingPersistent();
 syncScenePhase(currentState);
 initializeParticles();
 buildCanopyHearts(getCanopyHeartCount());

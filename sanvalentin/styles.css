@@ -229,6 +229,22 @@ body {
   }
 }
 
+
+#love-heading {
+  position: fixed;
+  top: clamp(0.8rem, 2.2vw, 1.5rem);
+  left: clamp(0.8rem, 2.4vw, 1.8rem);
+  margin: 0;
+  padding: 0.35rem 0.7rem;
+  color: #5a1a3b;
+  font-family: var(--font-serif);
+  font-size: clamp(0.96rem, 1.2vw, 1.25rem);
+  font-style: italic;
+  line-height: 1.4;
+  z-index: 20;
+  pointer-events: none;
+}
+
 #scene {
   width: 100%;
   min-height: 100svh;

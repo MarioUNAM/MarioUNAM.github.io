@@ -1,3 +1,10 @@
+/**
+ * Contrato de eventos del observador:
+ * - `state:changed`: payload { from, to, payload } emitido por stateMachine.
+ * - `app:reset`: payload opcional con estado inicial o sin payload en reset global.
+ * - `animation:start`: payload libre del módulo de animaciones.
+ * - `animation:end`: payload libre del módulo de animaciones.
+ */
 export const LIFECYCLE_EVENTS = Object.freeze({
   STATE_CHANGED: 'state:changed',
   APP_RESET: 'app:reset',
@@ -5,41 +12,54 @@ export const LIFECYCLE_EVENTS = Object.freeze({
   ANIMATION_END: 'animation:end',
 });
 
-export function createObserver() {
-  const listeners = new Map();
-  const cleanups = new Set();
+/**
+ * @typedef {(payload?: unknown) => void} EventHandler
+ * @typedef {() => void} CleanupHandler
+ */
 
-  function getEventListeners(eventName) {
-    if (!listeners.has(eventName)) {
-      listeners.set(eventName, new Set());
+/**
+ * Crea un bus de eventos simple con manejo de cleanup.
+ */
+export function createObserver() {
+  /** @type {Map<string, Set<EventHandler>>} */
+  const listenersByEvent = new Map();
+  /** @type {Set<CleanupHandler>} */
+  const cleanupHandlers = new Set();
+
+  /** @param {string} eventName */
+  function ensureEventListeners(eventName) {
+    if (!listenersByEvent.has(eventName)) {
+      listenersByEvent.set(eventName, new Set());
     }
 
-    return listeners.get(eventName);
+    return listenersByEvent.get(eventName);
   }
 
+  /** @param {string} eventName @param {EventHandler} handler */
   function unsubscribe(eventName, handler) {
-    const eventListeners = listeners.get(eventName);
+    const eventListeners = listenersByEvent.get(eventName);
     if (!eventListeners) {
       return false;
     }
 
-    const didDelete = eventListeners.delete(handler);
+    const wasRemoved = eventListeners.delete(handler);
 
     if (eventListeners.size === 0) {
-      listeners.delete(eventName);
+      listenersByEvent.delete(eventName);
     }
 
-    return didDelete;
+    return wasRemoved;
   }
 
+  /** @param {string} eventName @param {EventHandler} handler */
   function subscribe(eventName, handler) {
-    getEventListeners(eventName).add(handler);
-
+    ensureEventListeners(eventName).add(handler);
     return () => unsubscribe(eventName, handler);
   }
 
+  /** @param {string} eventName @param {unknown} payload */
   function emit(eventName, payload) {
-    const eventListeners = listeners.get(eventName);
+    const eventListeners = listenersByEvent.get(eventName);
     if (!eventListeners) {
       return 0;
     }
@@ -51,19 +71,19 @@ export function createObserver() {
     return eventListeners.size;
   }
 
+  /** @param {CleanupHandler} cleanupHandler */
   function registerCleanup(cleanupHandler) {
-    cleanups.add(cleanupHandler);
-
-    return () => cleanups.delete(cleanupHandler);
+    cleanupHandlers.add(cleanupHandler);
+    return () => cleanupHandlers.delete(cleanupHandler);
   }
 
   function flushCleanups() {
-    [...cleanups].forEach((cleanupHandler) => cleanupHandler());
-    cleanups.clear();
+    [...cleanupHandlers].forEach((cleanupHandler) => cleanupHandler());
+    cleanupHandlers.clear();
   }
 
   function clearListeners() {
-    listeners.clear();
+    listenersByEvent.clear();
   }
 
   return {

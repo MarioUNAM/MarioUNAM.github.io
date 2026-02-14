@@ -3,91 +3,275 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>San Valentín</title>
-    <link rel="stylesheet" href="css/styles.css" />
+    <title>Te amo mucho Rosita hermosa</title>
+    <style>
+      :root {
+        --night-900: #080813;
+        --night-800: #111126;
+        --night-700: #1a1a36;
+        --rose-300: #ff8eb7;
+        --rose-200: #ffb3cf;
+        --rose-100: #ffd9e8;
+        --text: #f5f0ff;
+        --muted: #c8bddf;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        min-height: 100vh;
+        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+        color: var(--text);
+        background:
+          radial-gradient(circle at 15% 20%, rgba(255, 179, 207, 0.13), transparent 40%),
+          radial-gradient(circle at 80% 10%, rgba(255, 142, 183, 0.15), transparent 35%),
+          linear-gradient(160deg, var(--night-900), var(--night-800) 55%, var(--night-700));
+        display: grid;
+        place-items: center;
+        overflow-x: hidden;
+      }
+
+      .petals {
+        position: fixed;
+        inset: 0;
+        pointer-events: none;
+        z-index: 0;
+      }
+
+      .petal {
+        position: absolute;
+        color: var(--rose-200);
+        opacity: 0.35;
+        animation: drift linear infinite;
+        filter: drop-shadow(0 0 8px rgba(255, 179, 207, 0.3));
+      }
+
+      @keyframes drift {
+        from {
+          transform: translate3d(0, -10vh, 0) rotate(0deg);
+        }
+        to {
+          transform: translate3d(8vw, 110vh, 0) rotate(260deg);
+        }
+      }
+
+      .card {
+        position: relative;
+        z-index: 1;
+        width: min(920px, 92vw);
+        background: rgba(10, 10, 24, 0.72);
+        border: 1px solid rgba(255, 217, 232, 0.25);
+        backdrop-filter: blur(8px);
+        border-radius: 24px;
+        padding: clamp(1.2rem, 2vw, 2rem);
+        box-shadow: 0 20px 60px rgba(5, 2, 18, 0.5);
+      }
+
+      h1 {
+        margin: 0;
+        font-size: clamp(1.8rem, 4vw, 3rem);
+        text-align: center;
+        color: var(--rose-100);
+        letter-spacing: 0.04em;
+      }
+
+      .subtitle {
+        text-align: center;
+        color: var(--muted);
+        margin-top: 0.5rem;
+        margin-bottom: 1.5rem;
+      }
+
+      .layout {
+        display: grid;
+        gap: 1.3rem;
+        grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+        align-items: start;
+      }
+
+      .poem,
+      .counter,
+      .photo {
+        background: rgba(255, 255, 255, 0.03);
+        border: 1px solid rgba(255, 217, 232, 0.2);
+        border-radius: 18px;
+        padding: 1rem;
+      }
+
+      .poem p {
+        margin: 0;
+        line-height: 1.7;
+        color: #f8efff;
+        white-space: pre-line;
+      }
+
+      .counter-grid {
+        margin-top: 0.9rem;
+        display: grid;
+        grid-template-columns: repeat(3, minmax(70px, 1fr));
+        gap: 0.7rem;
+      }
+
+      .time-box {
+        border-radius: 14px;
+        padding: 0.7rem 0.5rem;
+        text-align: center;
+        background: rgba(255, 142, 183, 0.08);
+        border: 1px solid rgba(255, 179, 207, 0.35);
+      }
+
+      .time-box strong {
+        display: block;
+        font-size: clamp(1.15rem, 2.7vw, 1.6rem);
+        color: var(--rose-100);
+      }
+
+      .time-box span {
+        font-size: 0.8rem;
+        color: var(--muted);
+      }
+
+      .photo-frame {
+        aspect-ratio: 4 / 5;
+        border-radius: 14px;
+        border: 2px dashed rgba(255, 179, 207, 0.45);
+        display: grid;
+        place-items: center;
+        color: var(--muted);
+        text-align: center;
+        padding: 1rem;
+      }
+
+      .footer-note {
+        margin-top: 1rem;
+        text-align: center;
+        color: var(--rose-200);
+      }
+    </style>
   </head>
   <body>
-    <main class="app" aria-live="polite">
-      <section class="scene" aria-label="Escena principal">
-        <button
-          type="button"
-          class="heart-trigger"
-          data-role="heart"
-          aria-label="Corazón clickeable"
-        >
-          ❤️
-        </button>
+    <div class="petals" aria-hidden="true"></div>
 
-        <div class="seed" data-role="seed" aria-hidden="true">🌱</div>
-      </section>
+    <main class="card">
+      <h1>Te amo mucho Rosita hermosa ❤️</h1>
+      <p class="subtitle">Desde el 9 de septiembre de 2016, y cada segundo más.</p>
 
-      <section
-        id="love-card"
-        class="letter-view"
-        data-role="letter"
-        aria-label="Carta de San Valentín"
-      >
-        <div id="card-left">
-          <h2>Para ti, con amor</h2>
-          <p
-            data-role="typewriter"
-            data-typewriter-text="Desde que llegaste, todo florece más bonito. Gracias por elegirme cada día; te amo infinito. 💖"
-            aria-live="polite"
-          ></p>
-          <p data-role="dedication">Gracias por iluminar mi vida cada día. 💖</p>
+      <section class="layout">
+        <article class="poem">
+          <h2>Poema para ti 🌹</h2>
+          <p>
+Entre la noche suave y su silencio,
+tu nombre brilla como luna en calma;
+cuando sonríes, todo tiene sentido,
+y mi corazón descansa en tu alma.
 
-          <section data-role="counter-card" aria-live="polite" aria-label="Tiempo juntos">
-            <h3>Desde 2016-09-09</h3>
-            <dl data-role="counter-value" class="counter-grid" aria-label="Tiempo transcurrido">
-              <div class="counter-item">
-                <dt>Años</dt>
-                <dd>--</dd>
-              </div>
-              <div class="counter-item">
-                <dt>Meses</dt>
-                <dd>--</dd>
-              </div>
-              <div class="counter-item">
-                <dt>Días</dt>
-                <dd>--</dd>
-              </div>
-              <div class="counter-item">
-                <dt>Horas</dt>
-                <dd>--</dd>
-              </div>
-              <div class="counter-item">
-                <dt>Minutos</dt>
-                <dd>--</dd>
-              </div>
-            </dl>
-          </section>
-        </div>
+Te elijo en cada amanecer,
+en cada paso, en cada latido;
+mi amor por ti no sabe retroceder,
+es infinito, tierno y decidido.
+          </p>
+        </article>
 
-        <div id="card-right" aria-label="Árbol decorativo">
-          <div class="tree-viewport">
-            <div id="tree">
-              <div id="tree-canopy" data-role="tree" aria-live="off"></div>
-            </div>
-            <div class="ground-line" data-role="ground-line" aria-hidden="true"></div>
+        <article class="counter">
+          <h2>Nuestro tiempo juntos ⏳</h2>
+          <p>Han pasado:</p>
+          <div class="counter-grid" id="counter"></div>
+        </article>
+
+        <article class="photo">
+          <h2>Nuestra foto 📷</h2>
+          <div class="photo-frame">
+            Aquí puedes colocar su foto favorita.
+            <br />
+            (Después reemplazamos este espacio por una imagen)
           </div>
-        </div>
+        </article>
       </section>
 
-      <footer class="controls" aria-label="Controles de reproducción">
-        <audio id="bg-music" preload="metadata" aria-label="Música de fondo">
-          <source src="assets/music.mp3" type="audio/mpeg" />
-        </audio>
-
-        <button type="button" data-audio-toggle aria-pressed="false" aria-label="Reproducir música">
-          <span data-audio-toggle-label>Reproducir música</span>
-        </button>
-
-        <button type="button" data-action="revive-animation" aria-label="Revivir animación">
-          Revivir animación
-        </button>
-      </footer>
+      <p class="footer-note">Siempre tú, siempre nosotros. 🌙🌹</p>
     </main>
 
-    <script type="module" src="js/main.js"></script>
+    <script>
+      const startDate = new Date("2016-09-09T00:00:00");
+      const counter = document.getElementById("counter");
+
+      const units = [
+        ["years", "Años"],
+        ["months", "Meses"],
+        ["days", "Días"],
+        ["hours", "Horas"],
+        ["minutes", "Minutos"],
+        ["seconds", "Segundos"]
+      ];
+
+      function getDiffParts(fromDate, toDate) {
+        let years = toDate.getFullYear() - fromDate.getFullYear();
+        let months = toDate.getMonth() - fromDate.getMonth();
+        let days = toDate.getDate() - fromDate.getDate();
+        let hours = toDate.getHours() - fromDate.getHours();
+        let minutes = toDate.getMinutes() - fromDate.getMinutes();
+        let seconds = toDate.getSeconds() - fromDate.getSeconds();
+
+        if (seconds < 0) {
+          seconds += 60;
+          minutes -= 1;
+        }
+        if (minutes < 0) {
+          minutes += 60;
+          hours -= 1;
+        }
+        if (hours < 0) {
+          hours += 24;
+          days -= 1;
+        }
+        if (days < 0) {
+          const prevMonthDays = new Date(toDate.getFullYear(), toDate.getMonth(), 0).getDate();
+          days += prevMonthDays;
+          months -= 1;
+        }
+        if (months < 0) {
+          months += 12;
+          years -= 1;
+        }
+
+        return { years, months, days, hours, minutes, seconds };
+      }
+
+      function renderCounter() {
+        const now = new Date();
+        const diff = getDiffParts(startDate, now);
+
+        counter.innerHTML = units
+          .map(([key, label]) => `
+            <div class="time-box">
+              <strong>${diff[key]}</strong>
+              <span>${label}</span>
+            </div>
+          `)
+          .join("");
+      }
+
+      function createPetals() {
+        const petalsWrap = document.querySelector(".petals");
+
+        for (let i = 0; i < 16; i += 1) {
+          const petal = document.createElement("span");
+          petal.className = "petal";
+          petal.textContent = i % 3 === 0 ? "🌹" : "❀";
+          petal.style.left = `${Math.random() * 100}vw`;
+          petal.style.animationDuration = `${10 + Math.random() * 12}s`;
+          petal.style.animationDelay = `${Math.random() * -16}s`;
+          petal.style.fontSize = `${1 + Math.random() * 1.4}rem`;
+          petalsWrap.appendChild(petal);
+        }
+      }
+
+      renderCounter();
+      createPetals();
+      setInterval(renderCounter, 1000);
+    </script>
   </body>
 </html>

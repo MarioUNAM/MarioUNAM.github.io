@@ -40,6 +40,104 @@
         overflow-x: hidden;
       }
 
+      body.intro-active {
+        overflow: hidden;
+      }
+
+      .intro-screen {
+        position: fixed;
+        inset: 0;
+        background: #000;
+        display: grid;
+        place-items: center;
+        z-index: 10;
+        transition: opacity 0.9s ease, visibility 0.9s ease;
+      }
+
+      .intro-screen.hidden {
+        opacity: 0;
+        visibility: hidden;
+        pointer-events: none;
+      }
+
+      .intro-button {
+        border: 0;
+        background: transparent;
+        display: grid;
+        place-items: center;
+        gap: 0.8rem;
+        cursor: pointer;
+        color: #ffdce9;
+        font-family: inherit;
+      }
+
+      .intro-heart {
+        width: 96px;
+        aspect-ratio: 1;
+        position: relative;
+        transform: rotate(-45deg);
+        background: #f9003f;
+        box-shadow: 0 0 30px rgba(249, 0, 63, 0.45);
+        animation: heartbeat 1.1s infinite;
+      }
+
+      .intro-heart::before,
+      .intro-heart::after {
+        content: "";
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        border-radius: 50%;
+        background: #f9003f;
+      }
+
+      .intro-heart::before {
+        top: -50%;
+        left: 0;
+      }
+
+      .intro-heart::after {
+        left: 50%;
+        top: 0;
+      }
+
+      .intro-tip {
+        margin: 0;
+        font-size: 0.95rem;
+        letter-spacing: 0.03em;
+      }
+
+      .intro-heart.exploding {
+        animation: heartExplode 0.95s ease forwards;
+      }
+
+      @keyframes heartbeat {
+        0%,
+        100% {
+          transform: rotate(-45deg) scale(1);
+        }
+        20% {
+          transform: rotate(-45deg) scale(1.08);
+        }
+        40% {
+          transform: rotate(-45deg) scale(0.96);
+        }
+        60% {
+          transform: rotate(-45deg) scale(1.14);
+        }
+      }
+
+      @keyframes heartExplode {
+        0% {
+          transform: rotate(-45deg) scale(1.05);
+          opacity: 1;
+        }
+        100% {
+          transform: rotate(-45deg) scale(13);
+          opacity: 0;
+        }
+      }
+
       .petals {
         position: fixed;
         inset: 0;
@@ -124,7 +222,8 @@
       .counter,
       .photo,
       .story,
-      .interactive {
+      .interactive,
+      .recommendations {
         background: rgba(255, 255, 255, 0.03);
         border: 1px solid rgba(255, 217, 232, 0.2);
         border-radius: 18px;
@@ -153,7 +252,8 @@
       .counter h2,
       .photo h2,
       .story h2,
-      .interactive h2 {
+      .interactive h2,
+      .recommendations h2 {
         margin-top: 0;
         color: var(--sky-200);
       }
@@ -226,6 +326,17 @@
         margin-bottom: 0;
       }
 
+      .recommendations ul {
+        margin: 0;
+        padding-left: 1rem;
+        display: grid;
+        gap: 0.55rem;
+      }
+
+      .recommendations li::marker {
+        content: "💗 ";
+      }
+
       .burst-heart {
         position: fixed;
         font-size: 1.2rem;
@@ -253,6 +364,13 @@
     </style>
   </head>
   <body>
+    <div class="intro-screen" id="introScreen">
+      <button class="intro-button" id="introButton" type="button" aria-label="Abrir carta romántica">
+        <span class="intro-heart" id="introHeart" aria-hidden="true"></span>
+        <p class="intro-tip">Haz click en mi corazón para entrar ✨</p>
+      </button>
+    </div>
+
     <div class="petals" aria-hidden="true"></div>
 
     <main class="card">
@@ -274,6 +392,7 @@ fuego suave cuando hay frío,
 mi lugar favorito en el mundo,
 mi hogar, mi amor, mi destino.
           </p>
+          <p><strong>Autor:</strong> Con todo mi amor, Mario.</p>
         </article>
 
         <article class="counter">
@@ -307,6 +426,16 @@ mi hogar, mi amor, mi destino.
           <div class="love-meter" aria-hidden="true"><div class="love-fill" id="loveFill"></div></div>
           <p id="loveMessage">Nivel de amor: infinito en progreso.</p>
         </article>
+
+        <article class="recommendations">
+          <h2>Detalles cute para nosotros 🧸</h2>
+          <ul>
+            <li>Noche de pelis románticas con manta, palomitas y chocolatito caliente.</li>
+            <li>Crear una playlist "Nuestro amor" y bailarla en la sala.</li>
+            <li>Esconder notitas de amor en lugares sorpresa durante la semana.</li>
+            <li>Tomarnos una foto mensual para hacer nuestro álbum eterno.</li>
+          </ul>
+        </article>
       </section>
 
       <p class="footer-note">Siempre tú, siempre nosotros. 🌙🌹</p>
@@ -318,6 +447,9 @@ mi hogar, mi amor, mi destino.
       const loveButton = document.getElementById("loveButton");
       const loveFill = document.getElementById("loveFill");
       const loveMessage = document.getElementById("loveMessage");
+      const introScreen = document.getElementById("introScreen");
+      const introButton = document.getElementById("introButton");
+      const introHeart = document.getElementById("introHeart");
       let pulses = 18;
 
       const units = [
@@ -414,6 +546,15 @@ mi hogar, mi amor, mi destino.
         burstHearts(rect.left + rect.width / 2, rect.top + rect.height / 2);
       });
 
+      introButton.addEventListener("click", () => {
+        introHeart.classList.add("exploding");
+        setTimeout(() => {
+          introScreen.classList.add("hidden");
+          document.body.classList.remove("intro-active");
+        }, 700);
+      });
+
+      document.body.classList.add("intro-active");
       renderCounter();
       createPetals();
       setInterval(renderCounter, 1000);

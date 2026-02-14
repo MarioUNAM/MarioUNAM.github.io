@@ -19,7 +19,6 @@ const fallingHeartsLayer = document.querySelector("#falling-hearts-layer");
 const particlesCanvas = document.querySelector("#particles-layer");
 const backgroundMusic = document.querySelector("#bg-music");
 const musicToggleButton = document.querySelector("#music-toggle");
-const themeToggleButton = document.querySelector("#theme-toggle");
 const muteToggleButton = document.querySelector("#mute-toggle");
 const restartButton = document.querySelector("#restart-button");
 const microIntro = document.querySelector("#micro-intro");
@@ -32,7 +31,6 @@ const POEM_TITLE = "Nuestro árbol de amor";
 const START_DATE = "2016-09-09T00:00:00";
 const startDate = new Date(START_DATE);
 const MUSIC_STORAGE_KEY = "musicOn";
-const THEME_STORAGE_KEY = "themeMode";
 const MUTE_STORAGE_KEY = "globalMute";
 const MICRO_INTRO_STORAGE_KEY = "skipMicroIntro";
 const DEFAULT_MUSIC_VOLUME = 0.2;
@@ -237,22 +235,6 @@ function setMutePreference(nextValue) {
   localStorage.setItem(MUTE_STORAGE_KEY, String(isMuted));
   updateMuteToggleUI();
   syncMusicWithPreference();
-}
-
-function updateThemeToggleUI() {
-  const isNight = document.documentElement.dataset.theme === "night";
-  if (!themeToggleButton) return;
-  themeToggleButton.classList.toggle("is-active", isNight);
-  themeToggleButton.setAttribute("aria-pressed", String(isNight));
-  themeToggleButton.textContent = isNight ? "🌅 Modo día" : "🌙 Noche romántica";
-}
-
-function toggleTheme() {
-  const isNight = document.documentElement.dataset.theme === "night";
-  document.documentElement.dataset.theme = isNight ? "day" : "night";
-  localStorage.setItem(THEME_STORAGE_KEY, document.documentElement.dataset.theme);
-  updateThemeToggleUI();
-  syncThemePalettes();
 }
 
 
@@ -768,7 +750,6 @@ musicToggleButton?.addEventListener("keydown", (event) => {
   event.preventDefault();
   musicToggleButton.click();
 });
-themeToggleButton?.addEventListener("click", toggleTheme);
 muteToggleButton?.addEventListener("click", () => setMutePreference(!isMuted));
 restartButton?.addEventListener("click", resetExperience);
 window.addEventListener("pointermove", updateParallax, { passive: true });
@@ -783,12 +764,10 @@ if (backgroundMusic) backgroundMusic.volume = DEFAULT_MUSIC_VOLUME;
 if (backgroundMusic) backgroundMusic.pause();
 musicShouldBeOn = localStorage.getItem(MUSIC_STORAGE_KEY) === "true";
 isMuted = localStorage.getItem(MUTE_STORAGE_KEY) === "true";
-document.documentElement.dataset.theme = localStorage.getItem(THEME_STORAGE_KEY) === "night" ? "night" : "day";
 shouldSkipMicroIntro = localStorage.getItem(MICRO_INTRO_STORAGE_KEY) === "true";
 if (microIntroHideNextCheckbox) microIntroHideNextCheckbox.checked = shouldSkipMicroIntro;
 updateMusicToggleUI();
 updateMuteToggleUI();
-updateThemeToggleUI();
 syncThemePalettes();
 keepLoveHeadingPersistent();
 syncScenePhase(currentState);

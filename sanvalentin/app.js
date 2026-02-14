@@ -378,6 +378,18 @@ function cleanupPreviousPhaseArtifacts() {
   callbacks.forEach((callback) => callback());
 }
 
+function cleanupTreeConstructionArtifacts() {
+  if (!loveTree) return;
+  const temporarySelectors = [
+    "[data-tree-temp]",
+    ".tree-construction-temp",
+    ".tree-fractal-temp",
+    ".tree-build-layer",
+    ".tree-trunk-build-overlay",
+  ];
+  loveTree.querySelectorAll(temporarySelectors.join(", ")).forEach((node) => node.remove());
+}
+
 function setPhaseTimeout(callback, timeoutMs) {
   const timeoutId = window.setTimeout(callback, timeoutMs);
   registerPhaseCleanup(() => window.clearTimeout(timeoutId));
@@ -1041,6 +1053,7 @@ function anchorTreeToSeedImpact() {
 }
 
 function showTree() {
+  cleanupTreeConstructionArtifacts();
   anchorTreeToSeedImpact();
   setTreeTransform({ shiftX: 0, shiftY: 0, scale: 1 });
   heartButton.classList.add("is-hidden");
@@ -1161,6 +1174,7 @@ function waitForCanopyFill() {
 }
 
 function canopy_fill_complete() {
+  cleanupTreeConstructionArtifacts();
   syncScenePhase(STATES.CANOPY_FILL_FAST);
 }
 
@@ -1198,6 +1212,7 @@ function start_leaf_fall_diagonal() {
 
 function lockTreeAsFinalState() {
   if (!loveTree || hasTreeReachedFinalState) return;
+  cleanupTreeConstructionArtifacts();
   hasTreeReachedFinalState = true;
   loveTree.classList.add("tree--final");
 }
@@ -1367,6 +1382,7 @@ function resetExperience() {
   keepLoveHeadingPersistent();
   activeRunToken += 1;
   cleanupPreviousPhaseArtifacts();
+  cleanupTreeConstructionArtifacts();
   currentState = STATES.IDLE;
   syncScenePhase(STATES.IDLE);
   hasStarted = false;

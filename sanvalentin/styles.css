@@ -594,6 +594,14 @@ body {
   position: relative;
 }
 
+.tree-trunk::before,
+.tree-trunk::after,
+.tree-canopy::before,
+.tree-canopy::after {
+  content: none;
+  display: none;
+}
+
 .tree-canopy {
   position: relative;
   margin: 0 auto;

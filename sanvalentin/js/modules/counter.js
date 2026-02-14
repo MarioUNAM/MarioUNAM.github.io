@@ -78,7 +78,14 @@ export function calculateCalendarDiff(startValue, endValue = new Date()) {
 
 function formatCounter(diff) {
   const sign = diff.isNegative ? '-' : '';
-  return `${sign}${diff.years} años, ${diff.months} meses, ${diff.days} días, ${diff.hours} horas y ${diff.minutes} minutos`;
+
+  return {
+    years: `${sign}${diff.years}`,
+    months: `${sign}${diff.months}`,
+    days: `${sign}${diff.days}`,
+    hours: `${sign}${diff.hours}`,
+    minutes: `${sign}${diff.minutes}`,
+  };
 }
 
 function ensureCounterCard(appRoot) {
@@ -95,8 +102,32 @@ function ensureCounterCard(appRoot) {
   const title = document.createElement('h2');
   setText(title, 'Desde 2016-09-09');
 
-  const value = document.createElement('p');
+  const value = document.createElement('dl');
   setAttr(value, 'data-role', 'counter-value');
+  value.className = 'counter-grid';
+
+  const units = [
+    ['Años', '--'],
+    ['Meses', '--'],
+    ['Días', '--'],
+    ['Horas', '--'],
+    ['Minutos', '--'],
+  ];
+
+  units.forEach(([label, placeholder], index) => {
+    const item = document.createElement('div');
+    item.className = 'counter-item';
+
+    const term = document.createElement('dt');
+    setText(term, label);
+
+    const description = document.createElement('dd');
+    setText(description, placeholder);
+    setAttr(description, 'data-counter-unit', String(index));
+
+    item.append(term, description);
+    value.append(item);
+  });
 
   counterCard.append(title, value);
   appRoot?.append(counterCard);
@@ -109,7 +140,28 @@ export function renderCounter(target, diff) {
     return false;
   }
 
-  return setText(target, formatCounter(diff));
+  const formatted = formatCounter(diff);
+  const values = [
+    formatted.years,
+    formatted.months,
+    formatted.days,
+    formatted.hours,
+    formatted.minutes,
+  ];
+
+  const units = target.querySelectorAll('dd');
+  if (!units.length) {
+    return setText(
+      target,
+      `${formatted.years} años, ${formatted.months} meses, ${formatted.days} días, ${formatted.hours} horas y ${formatted.minutes} minutos`,
+    );
+  }
+
+  units.forEach((unit, index) => {
+    setText(unit, values[index] ?? '--');
+  });
+
+  return true;
 }
 
 export function initCounter({ observer, stateMachine, states, initialDate = DEFAULT_INITIAL_DATE }) {
@@ -155,7 +207,17 @@ export function initCounter({ observer, stateMachine, states, initialDate = DEFA
   }
 
   function resetVisual() {
-    setText(counterValue, '-- años, -- meses, -- días, -- horas y -- minutos');
+    if (!counterValue) {
+      return;
+    }
+
+    const units = counterValue.querySelectorAll('dd');
+    if (!units.length) {
+      setText(counterValue, '-- años, -- meses, -- días, -- horas y -- minutos');
+      return;
+    }
+
+    units.forEach((unit) => setText(unit, '--'));
   }
 
   const unsubscribeOnStateChanged = observer.subscribe(

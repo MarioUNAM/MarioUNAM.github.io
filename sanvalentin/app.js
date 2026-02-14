@@ -171,6 +171,8 @@ let particleCanvasHeight = 0;
 let particleAnchorCache = [];
 let particleAnchorCacheAt = 0;
 let leavesEmitterActive = false;
+let finalCanopyEmitterOrigin = null;
+let isFinalCanopyEmitterOriginReady = false;
 
 const pickHeartPaletteItem = (palette) => palette[Math.floor(Math.random() * palette.length)];
 
@@ -458,8 +460,25 @@ function pauseLeavesEmitter() {
   if (particleContext) particleContext.clearRect(0, 0, particleCanvasWidth, particleCanvasHeight);
 }
 
+function updateFinalCanopyEmitterOrigin() {
+  const activeCanopy = getActiveTreeCanopy();
+  const canopyRect = activeCanopy?.getBoundingClientRect();
+  if (!canopyRect) {
+    finalCanopyEmitterOrigin = null;
+    isFinalCanopyEmitterOriginReady = false;
+    return;
+  }
+  finalCanopyEmitterOrigin = {
+    x: canopyRect.left + canopyRect.width * 0.5,
+    y: canopyRect.top + canopyRect.height * 0.5,
+  };
+  isFinalCanopyEmitterOriginReady = true;
+  particleAnchorCache = [];
+  particleAnchorCacheAt = 0;
+}
+
 function startLeavesEmitter() {
-  if (prefersReducedMotion) return;
+  if (prefersReducedMotion || !isFinalCanopyEmitterOriginReady) return;
   leavesEmitterActive = true;
   setLeavesActiveClass(true);
   initializeParticles();
@@ -691,10 +710,15 @@ function getParticleAnchorPoints() {
 }
 
 function seedParticleAtBranch(particle) {
-  const anchors = getParticleAnchorPoints();
-  const anchor = anchors[Math.floor(Math.random() * anchors.length)] ?? { x: window.innerWidth * 0.5, y: window.innerHeight * 0.2 };
-  particle.anchorX = anchor.x + randomBetween(-14, 14);
-  particle.anchorY = anchor.y + randomBetween(-8, 10);
+  if (isFinalCanopyEmitterOriginReady && finalCanopyEmitterOrigin) {
+    particle.anchorX = finalCanopyEmitterOrigin.x + randomBetween(-26, 26);
+    particle.anchorY = finalCanopyEmitterOrigin.y + randomBetween(-14, 14);
+  } else {
+    const anchors = getParticleAnchorPoints();
+    const anchor = anchors[Math.floor(Math.random() * anchors.length)] ?? { x: window.innerWidth * 0.5, y: window.innerHeight * 0.2 };
+    particle.anchorX = anchor.x + randomBetween(-14, 14);
+    particle.anchorY = anchor.y + randomBetween(-8, 10);
+  }
   particle.x = particle.anchorX;
   particle.y = particle.anchorY;
   particle.baseSize = randomBetween(1.6, 4.9);
@@ -1071,9 +1095,12 @@ const INTRO_FLOW_MACHINE = {
     enter: () => {
       syncScenePhase(STATES.TREE_MOVE_RIGHT_NORMAL);
     },
-    wait: () => (prefersReducedMotion
-      ? Promise.resolve()
-      : waitForMotionEnd({ element: document.querySelector(".scene-track"), eventName: "transitionend", timeoutMs: PHASE_TIMEOUTS_MS.sceneMove, filter: (event) => event.propertyName === "transform" })),
+    wait: async () => {
+      if (!prefersReducedMotion) {
+        await waitForMotionEnd({ element: document.querySelector(".scene-track"), eventName: "transitionend", timeoutMs: PHASE_TIMEOUTS_MS.sceneMove, filter: (event) => event.propertyName === "transform" });
+      }
+      updateFinalCanopyEmitterOrigin();
+    },
   },
   [STATES.LEAVES_FALL_SLOW]: {
     enter: () => {
@@ -1153,6 +1180,8 @@ function resetExperience() {
   if (finalDedication) { finalDedication.textContent = ""; finalDedication.classList.remove("is-visible"); }
   fallingHeartPool.forEach((h) => { h.classList.remove("is-active"); });
   fallingLayoutCache = null;
+  finalCanopyEmitterOrigin = null;
+  isFinalCanopyEmitterOriginReady = false;
   microIntroHasFinished = false;
   hasTreeReachedFinalState = false;
   if (scene) scene.classList.remove("is-started");

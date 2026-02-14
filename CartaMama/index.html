@@ -112,6 +112,47 @@
       white-space: pre-wrap; /* respeta saltos de línea */
     }
 
+    .memory-toggle {
+      margin-top: 14px;
+      border: 1px solid rgba(0,0,0,0.2);
+      background: rgba(255,255,255,0.55);
+      color: #6b4f3b;
+      font-size: 0.75rem;
+      padding: 5px 10px;
+      border-radius: 999px;
+      cursor: pointer;
+      transition: background 0.3s ease, color 0.3s ease;
+    }
+
+    .memory-toggle:hover {
+      background: rgba(255,255,255,0.8);
+      color: #4c3425;
+    }
+
+    .memory-panel {
+      margin-top: 10px;
+      padding-left: 12px;
+      border-left: 2px solid rgba(107,79,59,0.25);
+      color: #6b4f3b;
+      font-size: 0.86rem;
+      line-height: 1.35;
+      max-height: 0;
+      opacity: 0;
+      transform: translateY(-4px);
+      overflow: hidden;
+      transition: max-height 0.45s ease, opacity 0.45s ease, transform 0.45s ease;
+    }
+
+    .memory-panel.open {
+      max-height: 90px;
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    .memory-panel.no-animate {
+      transition: none;
+    }
+
     .envelope.open .flap {
       transform: translateX(-50%) rotateX(-180deg);
       border-top-color: #d4ac0d;
@@ -172,9 +213,39 @@ Te admiro muchísimo y me siento muy afortunado de tener esta relación tan chid
 Te amo mucho 😘.
         
 ¡Feliz Día de las Madres! 🌷👩‍👦
+        <button class="memory-toggle" type="button" aria-expanded="false" aria-controls="memory-panel">Ver recuerdo</button>
+        <div id="memory-panel" class="memory-panel" role="status" aria-live="polite">
+          📅 10 de mayo de 2026 — Gracias por seguir siendo mi lugar seguro, mamá.
+        </div>
       </div>
     </div>
   </div>
+
+  <script>
+    const memoryToggle = document.querySelector('.memory-toggle');
+    const memoryPanel = document.getElementById('memory-panel');
+    const memoryStateKey = 'carta-memory-open';
+
+    if (memoryToggle && memoryPanel) {
+      const isMemoryOpen = sessionStorage.getItem(memoryStateKey) === 'true';
+
+      if (isMemoryOpen) {
+        memoryPanel.classList.add('no-animate', 'open');
+        memoryToggle.setAttribute('aria-expanded', 'true');
+        memoryToggle.textContent = 'Ocultar recuerdo';
+        requestAnimationFrame(() => memoryPanel.classList.remove('no-animate'));
+      }
+
+      memoryToggle.addEventListener('click', (event) => {
+        event.stopPropagation();
+        const nowOpen = !memoryPanel.classList.contains('open');
+        memoryPanel.classList.toggle('open', nowOpen);
+        memoryToggle.setAttribute('aria-expanded', String(nowOpen));
+        memoryToggle.textContent = nowOpen ? 'Ocultar recuerdo' : 'Ver recuerdo';
+        sessionStorage.setItem(memoryStateKey, String(nowOpen));
+      });
+    }
+  </script>
 
 </body>
 </html>

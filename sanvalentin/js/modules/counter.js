@@ -1,18 +1,182 @@
 import { qs, setAttr, setText } from '../utils/dom.js';
 
-export function initCounter({ observer, stateMachine }) {
+const DEFAULT_INITIAL_DATE = '2016-09-09T00:00:00';
+const UPDATE_INTERVAL_MS = 60_000;
+
+function toDate(value) {
+  if (value instanceof Date) {
+    return new Date(value.getTime());
+  }
+
+  const parsedDate = new Date(value ?? DEFAULT_INITIAL_DATE);
+  if (Number.isNaN(parsedDate.getTime())) {
+    return new Date(DEFAULT_INITIAL_DATE);
+  }
+
+  return parsedDate;
+}
+
+function addYears(date, years) {
+  const nextDate = new Date(date.getTime());
+  nextDate.setFullYear(nextDate.getFullYear() + years);
+  return nextDate;
+}
+
+function addMonths(date, months) {
+  const nextDate = new Date(date.getTime());
+  nextDate.setMonth(nextDate.getMonth() + months);
+  return nextDate;
+}
+
+export function calculateCalendarDiff(startValue, endValue = new Date()) {
+  let startDate = toDate(startValue);
+  let endDate = toDate(endValue);
+  let isNegative = false;
+
+  if (startDate > endDate) {
+    [startDate, endDate] = [endDate, startDate];
+    isNegative = true;
+  }
+
+  let cursor = new Date(startDate.getTime());
+  let years = endDate.getFullYear() - cursor.getFullYear();
+  let candidateDate = addYears(cursor, years);
+
+  if (candidateDate > endDate) {
+    years -= 1;
+    candidateDate = addYears(cursor, years);
+  }
+
+  cursor = candidateDate;
+
+  let months =
+    (endDate.getFullYear() - cursor.getFullYear()) * 12 +
+    (endDate.getMonth() - cursor.getMonth());
+  candidateDate = addMonths(cursor, months);
+
+  if (candidateDate > endDate) {
+    months -= 1;
+    candidateDate = addMonths(cursor, months);
+  }
+
+  cursor = candidateDate;
+
+  const remainingMs = endDate.getTime() - cursor.getTime();
+  const days = Math.floor(remainingMs / 86_400_000);
+  const hours = Math.floor((remainingMs % 86_400_000) / 3_600_000);
+  const minutes = Math.floor((remainingMs % 3_600_000) / 60_000);
+
+  return {
+    years,
+    months,
+    days,
+    hours,
+    minutes,
+    isNegative,
+  };
+}
+
+function formatCounter(diff) {
+  const sign = diff.isNegative ? '-' : '';
+  return `${sign}${diff.years} años, ${diff.months} meses, ${diff.days} días, ${diff.hours} horas y ${diff.minutes} minutos`;
+}
+
+function ensureCounterCard(appRoot) {
+  let counterCard = qs('[data-role="counter-card"]', appRoot);
+
+  if (counterCard) {
+    return counterCard;
+  }
+
+  counterCard = document.createElement('section');
+  setAttr(counterCard, 'data-role', 'counter-card');
+  setAttr(counterCard, 'aria-live', 'polite');
+
+  const title = document.createElement('h2');
+  setText(title, 'Desde 2016-09-09');
+
+  const value = document.createElement('p');
+  setAttr(value, 'data-role', 'counter-value');
+
+  counterCard.append(title, value);
+  appRoot?.append(counterCard);
+
+  return counterCard;
+}
+
+export function renderCounter(target, diff) {
+  if (!target) {
+    return false;
+  }
+
+  return setText(target, formatCounter(diff));
+}
+
+export function initCounter({ observer, stateMachine, initialDate = DEFAULT_INITIAL_DATE }) {
   const appRoot = qs('.app');
   const stateLabel = qs('[data-role="state-label"]', appRoot);
+  const counterCard = ensureCounterCard(appRoot);
+  const counterValue = qs('[data-role="counter-value"]', counterCard);
+
+  let timerId = null;
+  const startDate = toDate(initialDate);
+
+  function updateCounter() {
+    const diff = calculateCalendarDiff(startDate);
+    renderCounter(counterValue, diff);
+  }
+
+  function scheduleNextTick() {
+    const now = Date.now();
+    const delay = UPDATE_INTERVAL_MS - (now % UPDATE_INTERVAL_MS) || UPDATE_INTERVAL_MS;
+
+    timerId = window.setTimeout(() => {
+      updateCounter();
+      scheduleNextTick();
+    }, delay);
+  }
+
+  function start() {
+    if (timerId != null) {
+      return;
+    }
+
+    updateCounter();
+    scheduleNextTick();
+  }
+
+  function stop() {
+    if (timerId == null) {
+      return;
+    }
+
+    window.clearTimeout(timerId);
+    timerId = null;
+  }
+
+  function resetVisual() {
+    setText(counterValue, '-- años, -- meses, -- días, -- horas y -- minutos');
+  }
 
   const unsubscribeOnStateChanged = observer.subscribe(
     observer.lifecycle.STATE_CHANGED,
     ({ to }) => {
-      // Base hook for counter logic.
       stateMachine.getState();
       setAttr(appRoot, 'data-state', to);
       setText(stateLabel, to);
     },
   );
 
-  observer.registerCleanup(unsubscribeOnStateChanged);
+  observer.registerCleanup(() => {
+    stop();
+    unsubscribeOnStateChanged();
+  });
+
+  start();
+
+  return {
+    start,
+    stop,
+    resetVisual,
+  };
 }

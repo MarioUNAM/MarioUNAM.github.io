@@ -19,3 +19,29 @@ body {
 .app {
   text-align: center;
 }
+
+.app--with-particles {
+  position: relative;
+  overflow: hidden;
+  min-width: min(520px, 92vw);
+  min-height: 320px;
+}
+
+.particle-layer {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 5;
+}
+
+.particle-leaf {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 12px;
+  height: 10px;
+  border-radius: 70% 30% 70% 30%;
+  background: radial-gradient(circle at 25% 20%, #ffc7d9 0%, #ec6b90 70%);
+  transform-origin: center;
+  will-change: transform, opacity;
+}

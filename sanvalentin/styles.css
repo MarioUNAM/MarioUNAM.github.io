@@ -23,8 +23,6 @@
   --rose-medium: var(--heart-5);
   --red-soft: var(--heart-6);
 
-  --primary: #f472b6;
-  --primary-dark: #db2777;
   --t-fast: 220ms;
   --t-medium: 460ms;
   --t-phase-morph: 760ms;

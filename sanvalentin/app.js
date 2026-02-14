@@ -88,8 +88,6 @@ let fallingHeartEmitterEnabled = false;
 const HEART_PALETTE_CLASSES = ["is-blush", "is-petal", "is-fuchsia-soft", "is-coral-soft", "is-rose", "is-red-soft"];
 const HEART_PALETTE_VARS = ["var(--heart-1)", "var(--heart-2)", "var(--heart-3)", "var(--heart-4)", "var(--heart-5)", "var(--heart-6)"];
 const CANOPY_HEART_DENSITY = 88;
-const CANOPY_HORIZONTAL_SPREAD = 29;
-const CANOPY_VERTICAL_SPREAD = 27;
 const FALLING_HEART_EMIT_INTERVAL_MS = 110;
 const PARTICLE_POOL_SIZE = 120;
 let particlePalette = ["rgba(248, 185, 207, 0.72)", "rgba(244, 155, 192, 0.7)", "rgba(222, 93, 152, 0.68)", "rgba(238, 125, 131, 0.64)"];
@@ -105,6 +103,116 @@ const beepAudio = new Audio("data:audio/wav;base64,UklGRjgAAABXQVZFZm10IBAAAAABA
 beepAudio.volume = 0.15;
 
 const randomBetween = (min, max) => Math.random() * (max - min) + min;
+
+const treeRenderer = (() => {
+  const SVG_NS = "http://www.w3.org/2000/svg";
+  const TREE_SEED = 94721;
+  const BRANCH_LEVELS = 6;
+
+  function createSeededRandom(seed) {
+    let state = seed >>> 0;
+    return () => {
+      state = (state * 1664525 + 1013904223) >>> 0;
+      return state / 4294967296;
+    };
+  }
+
+  function branchPath(segment) {
+    const dx = segment.to.x - segment.from.x;
+    const dy = segment.to.y - segment.from.y;
+    const c1x = segment.from.x + dx * 0.24 + segment.curve * 0.62;
+    const c1y = segment.from.y + dy * 0.34;
+    const c2x = segment.from.x + dx * 0.76 + segment.curve;
+    const c2y = segment.from.y + dy * 0.76;
+    return `M ${segment.from.x.toFixed(2)} ${segment.from.y.toFixed(2)} C ${c1x.toFixed(2)} ${c1y.toFixed(2)}, ${c2x.toFixed(2)} ${c2y.toFixed(2)}, ${segment.to.x.toFixed(2)} ${segment.to.y.toFixed(2)}`;
+  }
+
+  function createGeometry() {
+    const rand = createSeededRandom(TREE_SEED);
+    const segments = [];
+    const branchTips = [];
+    const branchSubPoints = [];
+
+    function grow(node, length, angle, depth, thickness, curveBias) {
+      if (depth > BRANCH_LEVELS || length < 14) {
+        branchTips.push({ x: node.x, y: node.y, depth });
+        return;
+      }
+
+      const jitter = (rand() - 0.5) * 0.18;
+      const theta = angle + jitter;
+      const to = {
+        x: node.x + Math.cos(theta) * length,
+        y: node.y + Math.sin(theta) * length,
+      };
+
+      const curve = curveBias * (0.85 + rand() * 0.5) + (rand() - 0.5) * 10;
+      segments.push({ from: node, to, thickness, curve, depth });
+
+      const subSamples = 1 + Math.floor(rand() * 2);
+      for (let i = 0; i < subSamples; i += 1) {
+        const t = 0.45 + rand() * 0.4;
+        branchSubPoints.push({
+          x: node.x + (to.x - node.x) * t + curve * 0.08,
+          y: node.y + (to.y - node.y) * t,
+          depth,
+        });
+      }
+
+      const childCount = depth < 2 ? 2 : rand() > 0.26 ? 3 : 2;
+      const spread = 0.46 - depth * 0.034;
+      for (let i = 0; i < childCount; i += 1) {
+        const offset = childCount === 2
+          ? (i === 0 ? -spread : spread)
+          : -spread + (i * spread * 2) / (childCount - 1);
+        grow(to, length * (0.73 + rand() * 0.08), theta + offset + (rand() - 0.5) * 0.1, depth + 1, thickness * 0.74, curve * 0.5 + offset * 9);
+      }
+    }
+
+    grow({ x: 160, y: 252 }, 72, -Math.PI / 2, 0, 20, 0);
+    return { segments, branchTips, branchSubPoints };
+  }
+
+  function render(container, heartCount) {
+    if (!container) return;
+    container.innerHTML = "";
+    container.classList.add("tree-canopy--rendered");
+
+    const geometry = createGeometry();
+    const svg = document.createElementNS(SVG_NS, "svg");
+    svg.setAttribute("viewBox", "0 0 320 265");
+    svg.setAttribute("class", "tree-branches");
+    svg.setAttribute("preserveAspectRatio", "xMidYMid meet");
+    svg.setAttribute("aria-hidden", "true");
+
+    geometry.segments.forEach((segment) => {
+      const path = document.createElementNS(SVG_NS, "path");
+      path.setAttribute("d", branchPath(segment));
+      path.setAttribute("class", "tree-branch");
+      path.style.strokeWidth = `${Math.max(1.4, segment.thickness)}px`;
+      svg.append(path);
+    });
+
+    container.append(svg);
+
+    const points = [...geometry.branchTips, ...geometry.branchSubPoints]
+      .sort((a, b) => b.depth - a.depth)
+      .slice(0, heartCount);
+    points.forEach((point, index) => {
+      const heartNode = document.createElement("span");
+      heartNode.className = `canopy-heart ${HEART_PALETTE_CLASSES[index % HEART_PALETTE_CLASSES.length]}`;
+      const jitterX = randomBetween(-8, 8);
+      const jitterY = randomBetween(-5, 6);
+      heartNode.style.left = `${((point.x + jitterX) / 320 * 100).toFixed(2)}%`;
+      heartNode.style.top = `${((point.y + jitterY) / 265 * 100).toFixed(2)}%`;
+      heartNode.style.setProperty("--heart-scale", randomBetween(0.62, 1.14).toFixed(2));
+      heartNode.style.animationDelay = `${randomBetween(0, 1.4).toFixed(2)}s`;
+      container.append(heartNode);
+    });
+  }
+
+  return { render };
+})();
 
 if (poemTitle) poemTitle.textContent = POEM_TITLE;
 
@@ -231,35 +339,12 @@ function getCanopyHeartCount() {
   return Math.round(minHearts + (CANOPY_HEART_DENSITY - minHearts) * viewportFactor);
 }
 
-function isPointInsideHeartMask(x, y) {
-  return (x * x + y * y - 1) ** 3 - x * x * y * y * y <= 0;
-}
-
-function getRandomPointInHeartMask() {
-  for (let i = 0; i < 220; i += 1) {
-    const x = randomBetween(-1.18, 1.18);
-    const y = randomBetween(-1.28, 1.18);
-    if (isPointInsideHeartMask(x, y)) {
-      const yBias = y < 0 ? 1.03 : 0.97;
-      return { x: x * 0.99, y: y * yBias };
-    }
-  }
-  return { x: 0, y: 0 };
-}
-
 function buildCanopyHearts(count) {
   if (!treeCanopy || hasTreeReachedFinalState) return;
-  treeCanopy.innerHTML = "";
-  for (let i = 0; i < count; i += 1) {
-    const point = getRandomPointInHeartMask();
-    const heartNode = document.createElement("span");
-    heartNode.className = `canopy-heart ${HEART_PALETTE_CLASSES[i % HEART_PALETTE_CLASSES.length]}`;
-    heartNode.style.left = `${(50 + point.x * CANOPY_HORIZONTAL_SPREAD).toFixed(2)}%`;
-    heartNode.style.top = `${(58 - point.y * CANOPY_VERTICAL_SPREAD).toFixed(2)}%`;
-    heartNode.style.setProperty("--heart-scale", randomBetween(0.92, 1.08).toFixed(2));
-    heartNode.style.animationDelay = `${randomBetween(0, 1.4).toFixed(2)}s`;
-    treeCanopy.append(heartNode);
-  }
+  treeRenderer.render(treeCanopy, count);
+
+  const messageCanopy = document.querySelector("#tree-panel .tree-canopy");
+  if (messageCanopy) treeRenderer.render(messageCanopy, Math.round(count * 0.88));
 }
 
 function getFallingHeartPoolSize() {

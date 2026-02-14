@@ -7,9 +7,59 @@
     <link rel="stylesheet" href="css/styles.css" />
   </head>
   <body>
-    <main class="app">
-      <h1>San Valentín</h1>
-      <p>Estructura base inicializada.</p>
+    <main class="app" aria-live="polite">
+      <header class="intro" aria-label="Introducción">
+        <h1>San Valentín</h1>
+        <p>Haz clic en el corazón para iniciar la animación.</p>
+        <button type="button" data-action="skip-intro" aria-label="Saltar introducción">
+          Saltar
+        </button>
+      </header>
+
+      <section class="scene" aria-label="Escena principal">
+        <button
+          type="button"
+          class="heart-trigger"
+          data-role="heart"
+          aria-label="Corazón clickeable"
+        >
+          ❤️
+        </button>
+
+        <div class="seed" data-role="seed" aria-hidden="true">🌱</div>
+        <div class="ground-line" aria-hidden="true"></div>
+
+        <section class="tree-container" aria-label="Contenedor del árbol">
+          <div data-role="tree" aria-live="off"></div>
+        </section>
+      </section>
+
+      <section class="letter-view" data-role="letter" aria-label="Carta de San Valentín">
+        <h2>Para ti, con amor</h2>
+        <p data-role="typewriter" aria-live="polite"></p>
+        <p data-role="dedication">Gracias por iluminar mi vida cada día. 💖</p>
+
+        <section data-role="counter-card" aria-live="polite" aria-label="Tiempo juntos">
+          <h3>Desde 2016-09-09</h3>
+          <p data-role="counter-value">-- años, -- meses, -- días, -- horas y -- minutos</p>
+        </section>
+      </section>
+
+      <p data-role="state-label" class="sr-only" aria-live="polite"></p>
+
+      <footer class="controls" aria-label="Controles de reproducción">
+        <audio id="bg-music" preload="metadata" aria-label="Música de fondo">
+          <source src="assets/music.mp3" type="audio/mpeg" />
+        </audio>
+
+        <button type="button" data-audio-toggle aria-pressed="false" aria-label="Reproducir música">
+          <span data-audio-toggle-label>Reproducir música</span>
+        </button>
+
+        <button type="button" data-action="revive-animation" aria-label="Revivir animación">
+          Revivir animación
+        </button>
+      </footer>
     </main>
 
     <script type="module" src="js/main.js"></script>

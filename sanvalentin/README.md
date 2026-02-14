@@ -163,3 +163,13 @@ Pasos:
 Opcional:
 
 - Ajusta volumen base en `sanvalentin/js/modules/audio.js` con `baseVolume` (default `0.35`).
+
+## Definition of Done (pruebas manuales)
+
+1. **Layout final:** carta a la izquierda + árbol a la derecha dentro de la misma tarjeta.
+2. **Contador visible:** aparece abajo y dentro de la tarjeta.
+3. **Sin botón “Saltar”:** no existe en la UI.
+4. **Sin lista explicativa:** no existe lista de explicación en la interfaz final.
+5. **Reinicio consistente:** reiniciar 5 veces con “Revivir animación” y confirmar que el árbol siempre nace en el mismo `impactX/groundY` del impacto.
+6. **Sin desbordes visuales:** no hay elementos fuera de contenedores ni saltos de layout.
+7. **Compatibilidad GitHub Pages:** uso de rutas relativas y ausencia total de backend.

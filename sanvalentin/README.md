@@ -1,52 +1,165 @@
-# Checklist de pulido
+# San Valentín (sitio estático puro)
 
-- [ ] Balance visual entre texto y árbol.
-- [ ] Consistencia de colores en todos los corazones.
-- [ ] Fluidez sin tirones en móvil gama media.
-- [ ] Legibilidad del contador en pantallas pequeñas.
-- [ ] Música no invasiva y fácil de pausar.
-- [ ] Contraste y foco accesible.
-- [ ] Carga rápida (assets optimizados).
+Este proyecto está diseñado para funcionar como **HTML/CSS/JS estático**, sin backend y sin proceso de build.
 
-## Pruebas manuales de continuidad visual
+## Verificación rápida de estático puro
 
-1. Abrir `sanvalentin/index.html` y pulsar el corazón para iniciar la secuencia.
-2. Verificar que al pasar de árbol a carta ocurre un desplazamiento horizontal del contenedor principal (`translateX`), sin parpadeos ni desmontaje de elementos previos.
-3. Confirmar que durante el reveal se mantiene el mismo contexto visual: fondo degradado, suelo y árbol visibles/consistentes.
-4. Confirmar continuidad del árbol: misma forma, proporción y posición relativa durante transición y estado final.
-5. Confirmar continuidad de lluvia de hojas/corazones: no se reinicia abruptamente y sigue saliendo del área del árbol al enfocarse la carta.
-6. Pulsar “↺ Repetir animación” y validar que la continuidad se repite correctamente en un segundo ciclo.
+- **Rutas relativas:** `sanvalentin/index.html` carga `css/styles.css`, `js/main.js` y `assets/music.mp3` con rutas relativas (sin `/` absoluto ni URLs remotas).  
+- **Sin backend:** no hay llamadas `fetch`, `XMLHttpRequest` ni APIs de servidor en `sanvalentin/js/**`.  
+- **Sin build:** no existe `package.json` ni scripts de compilación para esta carpeta; se ejecuta directo en navegador.  
+- **Sin dependencias externas obligatorias:** no usa CDN ni librerías remotas; todo vive dentro de `sanvalentin/`.
 
-## Cambiar canción romántica
+> Nota: el audio es opcional para la experiencia principal. Si `assets/music.mp3` no existe, la animación y carta siguen funcionando.
 
-- **Archivo de audio recomendado:** coloca tu pista en `sanvalentin/assets/audio/cancion-romantica.mp3` (o `.ogg` como alternativa).
-- **Dónde se define la fuente en JS:** el reproductor se toma con `const backgroundMusic = document.querySelector("#bg-music");` en `sanvalentin/app.js` y luego carga la ruta desde `backgroundMusic.dataset.src` dentro de `ensureBackgroundMusicSource()`.
-- **Formatos y volumen sugeridos:** usa `.mp3` para compatibilidad principal y agrega versión `.ogg` como respaldo cuando sea posible. Mantén un volumen base cercano a `0.2` (constante `DEFAULT_MUSIC_VOLUME`) para que la música acompañe sin tapar efectos/lectura.
-- **Reemplazo sin romper autoplay por interacción:**
-  1. Cambia el `data-src` del `<audio id="bg-music">` en `sanvalentin/index.html` para apuntar a tu archivo (por ejemplo `./assets/audio/cancion-romantica.mp3`).
-  2. Conserva `preload="none"` y la inicialización por gesto (`registerMusicGesture()`), así la reproducción sigue iniciando sólo después de interacción del usuario y evita bloqueos del navegador.
+## Cómo abrir localmente
 
-## Máquina de estados (secuencia obligatoria)
+### Opción 1: doble clic (rápido)
+1. Abre `sanvalentin/index.html` en tu navegador.
+2. Si el navegador bloquea módulos por política local, usa la opción 2.
 
-La animación principal usa esta secuencia exacta:
+### Opción 2: servidor estático local (recomendado)
+Desde la raíz del repo:
 
-`idle` → `heart_to_seed_fast` → `seed_fall` → `fractal_grow_slow` → `canopy_fill_fast` → `tree_scaleup_fast` → `tree_move_right_normal` → `leaves_fall_slow` → `letter_visible`.
+```bash
+python3 -m http.server 8080
+```
 
-### Orden de ejecución y duración objetivo
+Luego abre:
 
-| Estado | Duración objetivo | Disparador de transición |
-| --- | --- | --- |
-| `heart_to_seed_fast` | ~760ms | `transitionend` de `transform` en `.heart` y `#ground`. |
-| `seed_fall` | ~1240ms | `animationend` de `heart-fall` en `#heart-button`. |
-| `fractal_grow_slow` | ~1320ms | `animationend` de `tree-grow` en `#love-tree`. |
-| `canopy_fill_fast` | ~220–520ms | `animationend` de `canopy-heart-rise` en cada `.canopy-heart`. |
-| `tree_scaleup_fast` | ~220ms | Promesa de timeline Web Animations API (`animation.finished`). |
-| `tree_move_right_normal` | ~760ms | `transitionend` de `transform` en `.scene-track`. |
-| `leaves_fall_slow` | ~1320ms | Promesa de timeline Web Animations API (`animation.finished`). |
-| `letter_visible` | inmediato | Estado final (sin transición saliente). |
+```text
+http://localhost:8080/sanvalentin/
+```
 
-### Notas de ajuste rápido
+No necesitas instalar nada adicional.
 
-- Duraciones JS: `PHASE_TIMEOUTS_MS` y `TIMELINE_DURATIONS_MS` en `sanvalentin/app.js`.
-- Duraciones CSS: `--t-phase-morph`, `--t-phase-fall`, `--t-phase-tree`, `--t-fast`, `--t-medium` en `sanvalentin/styles.css`.
-- Para mantener consistencia, cualquier cambio de duración debe ajustar **estilo + espera de evento/promesa** en la misma fase.
+## Estructura del proyecto
+
+```text
+sanvalentin/
+├── index.html                # Estructura principal (intro, escena, carta, audio)
+├── css/
+│   └── styles.css            # Estilos, layout y animaciones CSS
+├── assets/
+│   ├── cursor-heart.svg      # Cursor temático
+│   └── heart-main.svg        # Recurso gráfico del corazón
+├── js/
+│   ├── main.js               # Bootstrap y ensamblado de módulos
+│   ├── core/
+│   │   ├── observer.js       # Event bus (publish/subscribe)
+│   │   ├── orchestrator.js   # Registro y ciclo de vida de módulos
+│   │   └── stateMachine.js   # Máquina de estados y transiciones válidas
+│   ├── modules/
+│   │   ├── animations.js     # Timeline principal + typewriter + controles intro
+│   │   ├── tree.js           # Árbol SVG procedural
+│   │   ├── particles.js      # Partículas/hojas
+│   │   ├── counter.js        # Contador "tiempo juntos"
+│   │   └── audio.js          # Música de fondo y botón play/pause
+│   └── utils/
+│       ├── dom.js            # Helpers DOM seguros
+│       ├── liveResources.js  # Registro y cleanup de listeners/raf
+│       ├── math.js           # Utilidades matemáticas
+│       ├── raf.js            # requestAnimationFrame helpers
+│       └── timing.js         # Utilidades de timing
+└── README.md
+```
+
+## Mapa de estados
+
+Estados definidos en `js/core/stateMachine.js`:
+
+```text
+INIT
+  -> HEART_IDLE
+      -> HEART_TO_SEED
+          -> SEED_FALL
+              -> TREE_GROW
+                  -> TREE_FULL
+                      -> LETTER_VIEW
+```
+
+- `INIT`: app recién cargada.
+- `HEART_IDLE`: esperando clic en el corazón o acción de "Saltar".
+- `HEART_TO_SEED`: morph visual corazón → semilla.
+- `SEED_FALL`: caída de semilla.
+- `TREE_GROW`: crecimiento inicial del árbol.
+- `TREE_FULL`: árbol consolidado antes del reveal final.
+- `LETTER_VIEW`: carta visible + contador activo.
+
+## Eventos observer
+
+Eventos de ciclo de vida (en `js/core/observer.js`):
+
+- `state:changed`
+  - Emitido por la state machine cuando una transición es válida.
+  - Payload típico: `{ from, to, payload }`.
+- `app:reset`
+  - Emitido al reiniciar la app o limpiar módulos.
+- `animation:start`
+  - Emitido al iniciar secuencias de animación (intro o cambios de estado).
+- `animation:end`
+  - Emitido al terminar secuencias de animación.
+
+Uso típico:
+
+- `animations.js` escucha `state:changed` para activar typewriter cuando llega a `LETTER_VIEW`.
+- `counter.js` escucha `state:changed` para iniciar/detener contador según estado.
+- módulos registran cleanups para evitar fugas de listeners/RAF al reiniciar.
+
+## Cómo cambiar contenido (texto, fecha, canción)
+
+### 1) Cambiar textos principales
+Archivo: `sanvalentin/index.html`
+
+- Título de carta: `<h2>Para ti, con amor</h2>`.
+- Texto typewriter: atributo `data-typewriter-text` en `<p data-role="typewriter" ...>`.
+- Dedicatoria fija: `<p data-role="dedication">...</p>`.
+
+Ejemplo:
+
+```html
+<p
+  data-role="typewriter"
+  data-typewriter-text="Tu nuevo mensaje romántico aquí 💖"
+></p>
+```
+
+### 2) Cambiar fecha del contador
+
+Hay dos lugares recomendados:
+
+1. **Visual (encabezado de la tarjeta):**
+   - En `sanvalentin/index.html`, cambia el `<h3>` dentro de `data-role="counter-card"`.
+
+2. **Cálculo real del contador:**
+   - En `sanvalentin/js/modules/counter.js`, modifica `DEFAULT_INITIAL_DATE`.
+
+Ejemplo:
+
+```js
+const DEFAULT_INITIAL_DATE = '2020-02-14T00:00:00';
+```
+
+> Usa formato ISO (`YYYY-MM-DDTHH:mm:ss`) para evitar problemas de zona horaria.
+
+### 3) Cambiar canción
+
+Archivo: `sanvalentin/index.html`, bloque:
+
+```html
+<audio id="bg-music" preload="metadata">
+  <source src="assets/music.mp3" type="audio/mpeg" />
+</audio>
+```
+
+Pasos:
+
+1. Copia tu audio dentro de `sanvalentin/assets/` (por ejemplo `mi-cancion.mp3`).
+2. Cambia el `src` del `<source>`:
+
+```html
+<source src="assets/mi-cancion.mp3" type="audio/mpeg" />
+```
+
+Opcional:
+
+- Ajusta volumen base en `sanvalentin/js/modules/audio.js` con `baseVolume` (default `0.35`).

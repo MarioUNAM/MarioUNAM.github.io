@@ -194,11 +194,6 @@ export function initTree({ observer, stateMachine, states }) {
     }
   };
 
-  const moveToLetterView = () => {
-    treeNodes.wrapper.style.opacity = '1';
-    treeNodes.wrapper.style.transition = 'transform 450ms ease';
-    treeNodes.wrapper.style.transform = 'translate3d(-72px, -8px, 0) scale(0.72)';
-  };
 
   resetTree();
 
@@ -213,9 +208,6 @@ export function initTree({ observer, stateMachine, states }) {
       return;
     }
 
-    if (to === states.LETTER_VIEW) {
-      moveToLetterView();
-    }
   });
 
   const unsubscribeOnReset = observer.subscribe(observer.lifecycle.APP_RESET, resetTree);

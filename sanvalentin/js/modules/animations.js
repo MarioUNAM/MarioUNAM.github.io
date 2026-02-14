@@ -202,6 +202,8 @@ export function initAnimations({ observer, stateMachine, states, domListeners })
   const letterEl = qs('[data-role="letter"]', introRoot);
   const treeEl = qs('[data-role="tree"]', introRoot);
   const typewriterEl = qs('[data-role="typewriter"]', introRoot);
+  const counterCardEl = qs('[data-role="counter-card"]', introRoot);
+  const skipIntroButton = qs('[data-action="skip-intro"]', introRoot);
   const reviveButton = qs('[data-action="revive-animation"]', introRoot);
 
   const letterMessage =
@@ -218,6 +220,8 @@ export function initAnimations({ observer, stateMachine, states, domListeners })
     [heartEl, seedEl, letterEl, treeEl].forEach((node) => {
       applyVisual(node, { transform: '', opacity: '' });
     });
+
+    applyVisual(counterCardEl, { transform: '', opacity: '' });
   };
 
   const buildIntroSequence = () => [
@@ -254,35 +258,63 @@ export function initAnimations({ observer, stateMachine, states, domListeners })
       },
     },
     {
-      key: 'horizontal-transition-letter',
+      key: 'tree-grow',
       duration: DEFAULT_DURATIONS.HORIZONTAL_TO_LETTER,
       onStart: () => {
         stateMachine.transition(states.TREE_GROW, { source: 'timeline' });
       },
       update: ({ progress }) => {
         applyVisual(seedEl, {
-          transform: `translate3d(${lerp(0, 160, progress)}px, 140px, 0) scale(${lerp(1, 0.7, progress)})`,
+          transform: `translate3d(0, ${lerp(140, 112, progress)}px, 0) scale(${lerp(1, 0.7, progress)})`,
           opacity: 1 - progress,
+        });
+
+        applyVisual(treeEl, {
+          transform: `translate3d(0, ${lerp(42, 0, progress)}px, 0) scale(${lerp(0.72, 1, progress)})`,
+          opacity: progress,
+        });
+      },
+    },
+    {
+      key: 'tree-full',
+      duration: DEFAULT_DURATIONS.TREE_SCALE_SHIFT,
+      onStart: () => {
+        stateMachine.transition(states.TREE_FULL, { source: 'timeline' });
+      },
+      update: ({ progress }) => {
+        applyVisual(treeEl, {
+          transform: `translate3d(0, ${lerp(0, -8, progress)}px, 0) scale(${lerp(1, 1.03, progress)})`,
+          opacity: 1,
+        });
+      },
+    },
+    {
+      key: 'horizontal-transition-letter',
+      duration: DEFAULT_DURATIONS.HORIZONTAL_TO_LETTER,
+      onStart: () => {
+        stateMachine.transition(states.LETTER_VIEW, { source: 'timeline' });
+      },
+      update: ({ progress }) => {
+        applyVisual(treeEl, {
+          transform: `translate3d(${lerp(0, -72, progress)}px, ${lerp(-8, -16, progress)}px, 0) scale(${lerp(1.03, 0.72, progress)})`,
+          opacity: 1,
         });
 
         applyVisual(letterEl, {
           transform: `translate3d(${lerp(32, 0, progress)}px, 0, 0) scale(1)`,
           opacity: progress,
         });
-      },
-    },
-    {
-      key: 'tree-scale-shift',
-      duration: DEFAULT_DURATIONS.TREE_SCALE_SHIFT,
-      update: ({ progress }) => {
-        applyVisual(treeEl, {
-          transform: `translate3d(0, ${lerp(36, 0, progress)}px, 0) scale(${lerp(0.75, 1, progress)})`,
+
+        applyVisual(counterCardEl, {
+          transform: `translate3d(${lerp(16, 0, progress)}px, 0, 0)`,
           opacity: progress,
         });
       },
       onComplete: () => {
-        stateMachine.transition(states.TREE_FULL, { source: 'timeline' });
-        stateMachine.transition(states.LETTER_VIEW, { source: 'timeline' });
+        applyVisual(seedEl, {
+          transform: 'translate3d(-9999px, -9999px, 0)',
+          opacity: 0,
+        });
       },
     },
   ];
@@ -308,7 +340,22 @@ export function initAnimations({ observer, stateMachine, states, domListeners })
   };
 
   const handleIntroInteraction = () => {
+    if (stateMachine.getState() !== states.HEART_IDLE) {
+      return;
+    }
+
     runIntroSequence('heart-click');
+  };
+
+  const handleSkipIntro = (event) => {
+    event.preventDefault();
+    event.stopPropagation();
+
+    if (stateMachine.getState() !== states.HEART_IDLE) {
+      return;
+    }
+
+    runIntroSequence('skip-intro');
   };
 
   const handleReviveAnimation = (event) => {
@@ -348,7 +395,12 @@ export function initAnimations({ observer, stateMachine, states, domListeners })
     },
   );
 
-  const unsubscribeIntroClick = domListeners.on(introRoot, 'click', handleIntroInteraction);
+  const unsubscribeIntroClick = domListeners.on(heartEl, 'click', handleIntroInteraction);
+  const unsubscribeSkipIntroClick = domListeners.on(
+    skipIntroButton,
+    'click',
+    handleSkipIntro,
+  );
   const unsubscribeReviveClick = domListeners.on(
     reviveButton,
     'click',
@@ -367,6 +419,7 @@ export function initAnimations({ observer, stateMachine, states, domListeners })
   });
   observer.registerCleanup(unsubscribeReset);
   observer.registerCleanup(unsubscribeReviveClick);
+  observer.registerCleanup(unsubscribeSkipIntroClick);
   observer.registerCleanup(unsubscribeIntroClick);
   observer.registerCleanup(unsubscribeOnState);
 

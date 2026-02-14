@@ -18,7 +18,7 @@ function createParticleNode() {
 }
 
 function shouldRunForState(state, states) {
-  return state === states.TREE_FULL || state === states.LETTER_VIEW;
+  return state === states.LETTER_VIEW;
 }
 
 export function initParticles({ observer, stateMachine, states }) {

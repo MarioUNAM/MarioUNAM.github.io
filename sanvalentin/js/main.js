@@ -12,6 +12,11 @@ function bootstrapApp() {
   const stateMachine = createStateMachine(STATES.INIT, observer);
   const domListeners = createListenerRegistry();
 
+  const appRoot = document.querySelector('.app');
+  if (appRoot) {
+    appRoot.setAttribute('data-state', STATES.INIT);
+  }
+
   observer.registerCleanup(() => {
     domListeners.cleanupAll();
   });

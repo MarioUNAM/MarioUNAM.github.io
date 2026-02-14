@@ -112,7 +112,7 @@ export function renderCounter(target, diff) {
   return setText(target, formatCounter(diff));
 }
 
-export function initCounter({ observer, stateMachine, initialDate = DEFAULT_INITIAL_DATE }) {
+export function initCounter({ observer, stateMachine, states, initialDate = DEFAULT_INITIAL_DATE }) {
   const appRoot = qs('.app');
   const stateLabel = qs('[data-role="state-label"]', appRoot);
   const counterCard = ensureCounterCard(appRoot);
@@ -164,6 +164,14 @@ export function initCounter({ observer, stateMachine, initialDate = DEFAULT_INIT
       stateMachine.getState();
       setAttr(appRoot, 'data-state', to);
       setText(stateLabel, to);
+
+      if (to === states.LETTER_VIEW) {
+        start();
+        return;
+      }
+
+      stop();
+      resetVisual();
     },
   );
 
@@ -171,8 +179,6 @@ export function initCounter({ observer, stateMachine, initialDate = DEFAULT_INIT
     stop();
     unsubscribeOnStateChanged();
   });
-
-  start();
 
   return {
     start,

@@ -19,7 +19,6 @@ const fallingHeartsLayer = document.querySelector("#falling-hearts-layer");
 const particlesCanvas = document.querySelector("#particles-layer");
 const backgroundMusic = document.querySelector("#bg-music");
 const musicToggleButton = document.querySelector("#music-toggle");
-const muteToggleButton = document.querySelector("#mute-toggle");
 const restartButton = document.querySelector("#restart-button");
 const microIntro = document.querySelector("#micro-intro");
 const microIntroSkipButton = document.querySelector("#micro-intro-skip");
@@ -31,7 +30,6 @@ const POEM_TITLE = "Nuestro árbol de amor";
 const START_DATE = "2016-09-09T00:00:00";
 const startDate = new Date(START_DATE);
 const MUSIC_STORAGE_KEY = "musicOn";
-const MUTE_STORAGE_KEY = "globalMute";
 const MICRO_INTRO_STORAGE_KEY = "skipMicroIntro";
 const DEFAULT_MUSIC_VOLUME = 0.2;
 const MICRO_INTRO_DURATION_MS = 2000;
@@ -59,7 +57,6 @@ let parallaxRafId = null;
 let latestPointerEvent = null;
 let musicShouldBeOn = false;
 let hasUserInteractedForMusic = false;
-let isMuted = false;
 let activeRunToken = 0;
 let prefersReducedMotion = reducedMotionMediaQuery.matches;
 let shouldSkipMicroIntro = false;
@@ -161,7 +158,7 @@ const waitForPhaseDelay = (delayMs) => new Promise((resolve) => window.setTimeou
 
 function updateMusicToggleUI() {
   if (!musicToggleButton) return;
-  const isPlaying = musicShouldBeOn && hasUserInteractedForMusic && !isMuted;
+  const isPlaying = musicShouldBeOn && hasUserInteractedForMusic;
   musicToggleButton.classList.toggle("is-active", isPlaying);
   musicToggleButton.setAttribute("aria-pressed", String(isPlaying));
   musicToggleButton.setAttribute("aria-label", isPlaying ? "Pausar música de fondo" : "Reproducir música de fondo");
@@ -179,7 +176,7 @@ async function syncMusicWithPreference() {
     updateMusicToggleUI();
     return;
   }
-  if (musicShouldBeOn && !isMuted) {
+  if (musicShouldBeOn) {
     try {
       backgroundMusic.volume = DEFAULT_MUSIC_VOLUME;
       await backgroundMusic.play();
@@ -223,23 +220,7 @@ function updateReducedMotionPreference(event) {
   initializeParticles();
 }
 
-function updateMuteToggleUI() {
-  if (!muteToggleButton) return;
-  muteToggleButton.classList.toggle("is-active", isMuted);
-  muteToggleButton.setAttribute("aria-pressed", String(isMuted));
-  muteToggleButton.textContent = isMuted ? "🔇 Silenciado" : "🔔 Sonidos activos";
-}
-
-function setMutePreference(nextValue) {
-  isMuted = Boolean(nextValue);
-  localStorage.setItem(MUTE_STORAGE_KEY, String(isMuted));
-  updateMuteToggleUI();
-  syncMusicWithPreference();
-}
-
-
 function playTreeBell() {
-  if (isMuted) return;
   beepAudio.currentTime = 0;
   beepAudio.play().catch(() => {});
 }
@@ -750,7 +731,6 @@ musicToggleButton?.addEventListener("keydown", (event) => {
   event.preventDefault();
   musicToggleButton.click();
 });
-muteToggleButton?.addEventListener("click", () => setMutePreference(!isMuted));
 restartButton?.addEventListener("click", resetExperience);
 window.addEventListener("pointermove", updateParallax, { passive: true });
 window.addEventListener("pointerleave", resetParallax);
@@ -763,11 +743,9 @@ window.addEventListener("pagehide", teardownFallingHeartEmitter);
 if (backgroundMusic) backgroundMusic.volume = DEFAULT_MUSIC_VOLUME;
 if (backgroundMusic) backgroundMusic.pause();
 musicShouldBeOn = localStorage.getItem(MUSIC_STORAGE_KEY) === "true";
-isMuted = localStorage.getItem(MUTE_STORAGE_KEY) === "true";
 shouldSkipMicroIntro = localStorage.getItem(MICRO_INTRO_STORAGE_KEY) === "true";
 if (microIntroHideNextCheckbox) microIntroHideNextCheckbox.checked = shouldSkipMicroIntro;
 updateMusicToggleUI();
-updateMuteToggleUI();
 syncThemePalettes();
 keepLoveHeadingPersistent();
 syncScenePhase(currentState);

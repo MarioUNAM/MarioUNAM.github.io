@@ -904,11 +904,6 @@ body {
   outline: 3px solid var(--focus);
   outline-offset: 3px;
 }
-.floating-controls button.is-active {
-  background: rgba(222, 93, 152, 0.9);
-  border-color: rgba(176, 70, 123, 0.9);
-  color: #fff6fb;
-}
 
 @media (min-width: 760px) {
   #card-scene {

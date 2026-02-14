@@ -316,11 +316,15 @@ body {
   pointer-events: none;
 }
 
-#scene[data-phase="revealMessage"] .scene-track {
+#scene[data-phase="tree_move_right_normal"] .scene-track,
+#scene[data-phase="leaves_fall_slow"] .scene-track,
+#scene[data-phase="letter_visible"] .scene-track {
   transform: translateX(-50%);
 }
 
-#scene[data-phase="revealMessage"] #message-view {
+#scene[data-phase="tree_move_right_normal"] #message-view,
+#scene[data-phase="leaves_fall_slow"] #message-view,
+#scene[data-phase="letter_visible"] #message-view {
   pointer-events: auto;
 }
 
@@ -1086,7 +1090,9 @@ body {
     transform: translateY(0) rotate(0deg) scaleX(1) scaleY(1);
   }
 
-  #scene[data-phase="revealMessage"] .scene-track {
+  #scene[data-phase="tree_move_right_normal"] .scene-track,
+#scene[data-phase="leaves_fall_slow"] .scene-track,
+#scene[data-phase="letter_visible"] .scene-track {
     transform: translateX(-50%);
   }
 }

@@ -25,3 +25,28 @@
 - **Reemplazo sin romper autoplay por interacción:**
   1. Cambia el `data-src` del `<audio id="bg-music">` en `sanvalentin/index.html` para apuntar a tu archivo (por ejemplo `./assets/audio/cancion-romantica.mp3`).
   2. Conserva `preload="none"` y la inicialización por gesto (`registerMusicGesture()`), así la reproducción sigue iniciando sólo después de interacción del usuario y evita bloqueos del navegador.
+
+## Máquina de estados (secuencia obligatoria)
+
+La animación principal usa esta secuencia exacta:
+
+`idle` → `heart_to_seed_fast` → `seed_fall` → `fractal_grow_slow` → `canopy_fill_fast` → `tree_scaleup_fast` → `tree_move_right_normal` → `leaves_fall_slow` → `letter_visible`.
+
+### Orden de ejecución y duración objetivo
+
+| Estado | Duración objetivo | Disparador de transición |
+| --- | --- | --- |
+| `heart_to_seed_fast` | ~760ms | `transitionend` de `transform` en `.heart` y `#ground`. |
+| `seed_fall` | ~1240ms | `animationend` de `heart-fall` en `#heart-button`. |
+| `fractal_grow_slow` | ~1320ms | `animationend` de `tree-grow` en `#love-tree`. |
+| `canopy_fill_fast` | ~220–520ms | `animationend` de `canopy-heart-rise` en cada `.canopy-heart`. |
+| `tree_scaleup_fast` | ~220ms | Promesa de timeline Web Animations API (`animation.finished`). |
+| `tree_move_right_normal` | ~760ms | `transitionend` de `transform` en `.scene-track`. |
+| `leaves_fall_slow` | ~1320ms | Promesa de timeline Web Animations API (`animation.finished`). |
+| `letter_visible` | inmediato | Estado final (sin transición saliente). |
+
+### Notas de ajuste rápido
+
+- Duraciones JS: `PHASE_TIMEOUTS_MS` y `TIMELINE_DURATIONS_MS` en `sanvalentin/app.js`.
+- Duraciones CSS: `--t-phase-morph`, `--t-phase-fall`, `--t-phase-tree`, `--t-fast`, `--t-medium` en `sanvalentin/styles.css`.
+- Para mantener consistencia, cualquier cambio de duración debe ajustar **estilo + espera de evento/promesa** en la misma fase.

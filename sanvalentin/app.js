@@ -20,7 +20,6 @@ const particlesCanvas = document.querySelector("#particles-layer");
 const backgroundMusic = document.querySelector("#bg-music");
 const musicToggleButton = document.querySelector("#music-toggle");
 const restartButton = document.querySelector("#restart-button");
-const intensityToggleButton = document.querySelector("#intensity-toggle");
 const microIntro = document.querySelector("#micro-intro");
 const microIntroSkipButton = document.querySelector("#micro-intro-skip");
 const microIntroHideNextCheckbox = document.querySelector("#micro-intro-hide-next");
@@ -32,7 +31,6 @@ const START_DATE = "2016-09-09T00:00:00";
 const startDate = new Date(START_DATE);
 const MUSIC_STORAGE_KEY = "musicOn";
 const MICRO_INTRO_STORAGE_KEY = "skipMicroIntro";
-const INTENSITY_STORAGE_KEY = "visualIntensity";
 const DEFAULT_MUSIC_VOLUME = 0.2;
 const STATES = {
   IDLE: "idle",
@@ -45,7 +43,7 @@ const STATES = {
   LEAVES_FALL_SLOW: "leaves_fall_slow",
   LETTER_VISIBLE: "letter_visible",
 };
-const INTENSITY_LEVELS = { SOFT: "soft", NORMAL: "normal" };
+const DEFAULT_VISUAL_INTENSITY_MULTIPLIER = 0.62;
 const PHASE_TIMEOUTS_MS = { morph: 760, falling: 1240, tree: 1320, canopy: 520, sceneMove: 760 };
 const TIMELINE_DURATIONS_MS = { treeScaleupFast: 220, leavesFallSlow: 1320 };
 const VALID_TRANSITIONS = {
@@ -75,7 +73,6 @@ let hasUserInteractedForMusic = false;
 let activeRunToken = 0;
 let prefersReducedMotion = reducedMotionMediaQuery.matches;
 let shouldSkipMicroIntro = false;
-let visualIntensity = INTENSITY_LEVELS.NORMAL;
 let microIntroTimeoutId = null;
 let microIntroHasFinished = false;
 let hasStarted = false;
@@ -425,23 +422,7 @@ function playTreeBell() {
 }
 
 function getIntensityMultiplier() {
-  return visualIntensity === INTENSITY_LEVELS.SOFT ? 0.62 : 1;
-}
-
-function updateIntensityToggleUI() {
-  if (!intensityToggleButton) return;
-  const isSoft = visualIntensity === INTENSITY_LEVELS.SOFT;
-  intensityToggleButton.textContent = `✨ Intensidad: ${isSoft ? "Suave" : "Normal"}`;
-  intensityToggleButton.setAttribute("aria-label", `Intensidad visual ${isSoft ? "suave" : "normal"}`);
-}
-
-function setVisualIntensity(nextIntensity) {
-  visualIntensity = nextIntensity === INTENSITY_LEVELS.SOFT ? INTENSITY_LEVELS.SOFT : INTENSITY_LEVELS.NORMAL;
-  localStorage.setItem(INTENSITY_STORAGE_KEY, visualIntensity);
-  updateIntensityToggleUI();
-  if (!hasTreeReachedFinalState) buildCanopyHearts(getCanopyHeartCount());
-  buildFallingHeartPool();
-  if (!prefersReducedMotion && leavesEmitterActive) initializeParticles();
+  return DEFAULT_VISUAL_INTENSITY_MULTIPLIER;
 }
 
 function pauseLeavesEmitter() {
@@ -1172,10 +1153,6 @@ musicToggleButton?.addEventListener("keydown", (event) => {
   musicToggleButton.click();
 });
 restartButton?.addEventListener("click", resetExperience);
-intensityToggleButton?.addEventListener("click", () => {
-  const next = visualIntensity === INTENSITY_LEVELS.NORMAL ? INTENSITY_LEVELS.SOFT : INTENSITY_LEVELS.NORMAL;
-  setVisualIntensity(next);
-});
 window.addEventListener("pointermove", updateParallax, { passive: true });
 window.addEventListener("pointerleave", resetParallax);
 
@@ -1188,10 +1165,8 @@ if (backgroundMusic) backgroundMusic.volume = DEFAULT_MUSIC_VOLUME;
 if (backgroundMusic) backgroundMusic.pause();
 musicShouldBeOn = localStorage.getItem(MUSIC_STORAGE_KEY) === "true";
 shouldSkipMicroIntro = localStorage.getItem(MICRO_INTRO_STORAGE_KEY) === "true";
-visualIntensity = localStorage.getItem(INTENSITY_STORAGE_KEY) === INTENSITY_LEVELS.SOFT ? INTENSITY_LEVELS.SOFT : INTENSITY_LEVELS.NORMAL;
 if (microIntroHideNextCheckbox) microIntroHideNextCheckbox.checked = shouldSkipMicroIntro;
 updateMusicToggleUI();
-updateIntensityToggleUI();
 syncThemePalettes();
 keepLoveHeadingPersistent();
 syncScenePhase(currentState);

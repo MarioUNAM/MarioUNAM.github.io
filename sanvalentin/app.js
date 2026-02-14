@@ -63,6 +63,11 @@ let shouldSkipMicroIntro = false;
 let microIntroTimeoutId = null;
 let microIntroHasFinished = false;
 let hasTreeReachedFinalState = false;
+let introMachineInFlight = false;
+let canopyHeartNodes = [];
+const FALLING_LAYOUT_CACHE_TTL_MS = 180;
+let fallingLayoutCache = null;
+let fallingLayoutCacheAt = 0;
 
 function getActiveTreeCanopy() {
   const messageCanopy = document.querySelector("#tree-panel .tree-canopy");
@@ -103,7 +108,7 @@ const HEART_PALETTE_CLASSES = ["is-blush", "is-petal", "is-fuchsia-soft", "is-co
 const HEART_PALETTE_VARS = ["var(--heart-1)", "var(--heart-2)", "var(--heart-3)", "var(--heart-4)", "var(--heart-5)", "var(--heart-6)"];
 const CANOPY_HEART_DENSITY = 88;
 const FALLING_HEART_EMIT_INTERVAL_MS = 110;
-const PARTICLE_POOL_SIZE = 140;
+const BASE_PARTICLE_POOL_SIZE = 140;
 const PARTICLE_ANCHOR_REFRESH_MS = 1200;
 const PARTICLE_FALL_INTERVAL_RANGE_MS = [2600, 5200];
 const PARTICLE_REGROW_DELAY_RANGE_MS = [800, 2200];
@@ -357,6 +362,10 @@ function playTreeBell() {
   beepAudio.play().catch(() => {});
 }
 
+function isLowPowerViewport() {
+  return window.matchMedia("(max-width: 768px), (pointer: coarse)").matches;
+}
+
 function getCanopyHeartCount() {
   const viewportFactor = Math.min(window.innerWidth, 1200) / 1200;
   const minHearts = Math.round(CANOPY_HEART_DENSITY * 0.64);
@@ -366,16 +375,20 @@ function getCanopyHeartCount() {
 function buildCanopyHearts(count) {
   if (!treeCanopy || hasTreeReachedFinalState) return;
   treeRenderer.render(treeCanopy, count);
+  canopyHeartNodes = Array.from(treeCanopy.querySelectorAll(".canopy-heart"));
 
   const messageCanopy = document.querySelector("#tree-panel .tree-canopy");
   if (messageCanopy) treeRenderer.render(messageCanopy, Math.round(count * 0.88));
+  fallingLayoutCache = null;
 }
 
 function getFallingHeartPoolSize() {
   const area = window.innerWidth * window.innerHeight;
   const areaRatio = Math.min(area, 1920 * 1080) / (1920 * 1080);
   const dprPenalty = 1 / getEffectivePixelRatio();
-  return Math.round(10 + (42 - 10) * areaRatio * dprPenalty);
+  const baseCount = Math.round(10 + (42 - 10) * areaRatio * dprPenalty);
+  if (isLowPowerViewport()) return Math.max(8, Math.min(24, Math.round(baseCount * 0.6)));
+  return baseCount;
 }
 
 function isMessagePhaseVisible() {
@@ -387,6 +400,25 @@ function getFallingHeartPoolNode(index) {
   return fallingHeartPool[index % fallingHeartPool.length] ?? null;
 }
 
+function getFallingLayoutSnapshot() {
+  const now = performance.now();
+  if (fallingLayoutCache && now - fallingLayoutCacheAt < FALLING_LAYOUT_CACHE_TTL_MS) return fallingLayoutCache;
+  if (!fallingHeartsLayer) return null;
+  const layerRect = fallingHeartsLayer.getBoundingClientRect();
+  const activeCanopy = getActiveTreeCanopy();
+  const canopyRect = activeCanopy?.getBoundingClientRect();
+  fallingLayoutCache = {
+    width: layerRect.width,
+    height: layerRect.height,
+    canopySpawnXMin: canopyRect ? canopyRect.left - layerRect.left : layerRect.width * 0.32,
+    canopySpawnXMax: canopyRect ? canopyRect.right - layerRect.left : layerRect.width * 0.68,
+    canopySpawnYMin: canopyRect ? canopyRect.top - layerRect.top : layerRect.height * 0.08,
+    canopySpawnYMax: canopyRect ? canopyRect.bottom - layerRect.top : layerRect.height * 0.32,
+  };
+  fallingLayoutCacheAt = now;
+  return fallingLayoutCache;
+}
+
 function configureAndLaunchFallingHeart(heartNode) {
   if (!fallingHeartsLayer || !heartNode || !heartShowerHasStarted || !fallingHeartEmitterEnabled || !isMessagePhaseVisible()) return;
   const heartIndex = Number(heartNode.dataset.poolIndex || -1);
@@ -394,15 +426,10 @@ function configureAndLaunchFallingHeart(heartNode) {
     heartNode.classList.remove("is-active");
     return;
   }
-  const layerRect = fallingHeartsLayer.getBoundingClientRect();
-  const activeCanopy = getActiveTreeCanopy();
-  const canopyRect = activeCanopy?.getBoundingClientRect();
-  const canopySpawnXMin = canopyRect ? canopyRect.left - layerRect.left : layerRect.width * 0.32;
-  const canopySpawnXMax = canopyRect ? canopyRect.right - layerRect.left : layerRect.width * 0.68;
-  const canopySpawnYMin = canopyRect ? canopyRect.top - layerRect.top : layerRect.height * 0.08;
-  const canopySpawnYMax = canopyRect ? canopyRect.bottom - layerRect.top : layerRect.height * 0.32;
-  const x = randomBetween(canopySpawnXMin, canopySpawnXMax);
-  const y = Math.max(0, randomBetween(canopySpawnYMin, canopySpawnYMax));
+  const layoutSnapshot = getFallingLayoutSnapshot();
+  if (!layoutSnapshot) return;
+  const x = randomBetween(layoutSnapshot.canopySpawnXMin, layoutSnapshot.canopySpawnXMax);
+  const y = Math.max(0, randomBetween(layoutSnapshot.canopySpawnYMin, layoutSnapshot.canopySpawnYMax));
   const durationMs = randomBetween(4200, 7600);
   heartNode.classList.remove("is-active");
   heartNode.style.setProperty("--spawn-x", `${x.toFixed(1)}px`);
@@ -410,7 +437,7 @@ function configureAndLaunchFallingHeart(heartNode) {
   heartNode.style.setProperty("--heart-size", `${randomBetween(10, 14).toFixed(1)}px`);
   heartNode.style.setProperty("--heart-color", pickHeartPaletteItem(HEART_PALETTE_VARS));
   heartNode.style.setProperty("--heart-scale", randomBetween(0.9, 1.08).toFixed(2));
-  heartNode.style.setProperty("--fall-distance", `${randomBetween(layerRect.height * 0.58, layerRect.height * 0.98).toFixed(1)}px`);
+  heartNode.style.setProperty("--fall-distance", `${randomBetween(layoutSnapshot.height * 0.58, layoutSnapshot.height * 0.98).toFixed(1)}px`);
   heartNode.style.setProperty("--fall-duration", `${(durationMs / 1000).toFixed(2)}s`);
   heartNode.style.setProperty("--drift-x", `${randomBetween(-68, -22).toFixed(1)}px`);
   heartNode.style.setProperty("--drift-y", `${randomBetween(-18, 22).toFixed(1)}px`);
@@ -509,7 +536,7 @@ function flushParallax() {
   parallaxRafId = null;
   if (!latestPointerEvent || prefersReducedMotion) return;
   if (!window.matchMedia("(hover: hover) and (pointer: fine)").matches) return;
-  const hearts = treeCanopy?.querySelectorAll(".canopy-heart") ?? [];
+  const hearts = canopyHeartNodes;
   const xRatio = (latestPointerEvent.clientX / window.innerWidth - 0.5) * 2;
   const yRatio = (latestPointerEvent.clientY / window.innerHeight - 0.5) * 2;
   hearts.forEach((node, i) => {
@@ -526,7 +553,7 @@ function updateParallax(event) {
 }
 
 function resetParallax() {
-  const hearts = treeCanopy?.querySelectorAll(".canopy-heart") ?? [];
+  const hearts = canopyHeartNodes;
   hearts.forEach((node) => {
     node.style.setProperty("--parallax-x", "0px");
     node.style.setProperty("--parallax-y", "0px");
@@ -536,8 +563,7 @@ function resetParallax() {
 function getParticleAnchorPoints() {
   const now = performance.now();
   if (particleAnchorCache.length > 0 && now - particleAnchorCacheAt < PARTICLE_ANCHOR_REFRESH_MS) return particleAnchorCache;
-  const canopyHearts = treeCanopy?.querySelectorAll(".canopy-heart") ?? [];
-  const selected = Array.from(canopyHearts);
+  const selected = canopyHeartNodes;
   if (selected.length > 0) {
     const stride = Math.max(1, Math.floor(selected.length / 24));
     particleAnchorCache = selected.filter((_, index) => index % stride === 0).map((node) => {
@@ -686,13 +712,21 @@ function tickParticles(timestamp) {
   particleAnimationFrameId = requestAnimationFrame(tickParticles);
 }
 
+function getParticlePoolSize() {
+  const dprPenalty = 1 / getEffectivePixelRatio();
+  const tunedBase = Math.round(BASE_PARTICLE_POOL_SIZE * (isLowPowerViewport() ? 0.52 : 1) * dprPenalty);
+  return Math.max(36, Math.min(BASE_PARTICLE_POOL_SIZE, tunedBase));
+}
+
 function initializeParticles() {
   if (!particlesCanvas || prefersReducedMotion) return;
   particleContext = particlesCanvas.getContext("2d", { alpha: true });
   if (!particleContext) return;
   resizeParticlesCanvas();
+  fallingLayoutCache = null;
   particles.length = 0;
-  for (let i = 0; i < PARTICLE_POOL_SIZE; i += 1) {
+  const particlePoolSize = getParticlePoolSize();
+  for (let i = 0; i < particlePoolSize; i += 1) {
     const particle = { phase: "resting" };
     seedParticleAtBranch(particle);
     if (Math.random() > PARTICLE_TARGET_RESTING_RATIO) startParticleFall(particle, performance.now());
@@ -754,8 +788,7 @@ function finishMicroIntro() {
   }
   hideMicroIntroOverlay();
   if (currentState === STATES.INTRO) {
-    const runToken = ++activeRunToken;
-    runIntroSequence(runToken);
+    startIntroStateMachine();
   }
 }
 
@@ -881,37 +914,70 @@ function showMessageView() {
   startFallingHeartEmitter();
 }
 
-async function runIntroSequence(runToken) {
-  if (prefersReducedMotion) {
-    if (!transitionTo(STATES.MORPH)) return;
-    heartButton.disabled = true; heart.classList.add("is-morphing", "is-seed"); ground.classList.add("is-visible");
-    if (runToken !== activeRunToken || !transitionTo(STATES.FALLING)) return;
-    heartButton.classList.add("is-falling", "is-landed");
-    if (runToken !== activeRunToken || !transitionTo(STATES.TREE)) return;
-    showTree();
-    if (runToken !== activeRunToken || !transitionTo(STATES.REVEAL_MESSAGE)) return;
-    showMessageView();
-    return;
+const INTRO_FLOW_SEQUENCE = [STATES.MORPH, STATES.FALLING, STATES.TREE, STATES.REVEAL_MESSAGE];
+
+const INTRO_FLOW_MACHINE = {
+  [STATES.MORPH]: {
+    enter: () => {
+      heartButton.disabled = true;
+      heart.classList.add("is-morphing", "is-seed");
+      ground.classList.add("is-visible");
+    },
+    wait: () => {
+      if (prefersReducedMotion) return Promise.resolve();
+      return Promise.all([
+        waitForMotionEnd({ element: heart, eventName: "transitionend", timeoutMs: PHASE_TIMEOUTS_MS.morph, filter: (e) => e.propertyName === "transform" }),
+        waitForMotionEnd({ element: ground, eventName: "transitionend", timeoutMs: PHASE_TIMEOUTS_MS.morph, filter: (e) => e.propertyName === "transform" }),
+      ]);
+    },
+    delayMs: PHASE_DELAYS_MS.afterMorph,
+  },
+  [STATES.FALLING]: {
+    enter: () => {
+      heartButton.classList.add("is-falling");
+      if (prefersReducedMotion) heartButton.classList.add("is-landed");
+    },
+    wait: () => (prefersReducedMotion ? Promise.resolve() : waitForSeedLanding()),
+    delayMs: PHASE_DELAYS_MS.afterFalling,
+  },
+  [STATES.TREE]: {
+    enter: () => {
+      showTree();
+    },
+    wait: async () => {
+      if (!prefersReducedMotion) {
+        await waitForMotionEnd({ element: loveTree, eventName: "animationend", timeoutMs: PHASE_TIMEOUTS_MS.tree, filter: (e) => e.animationName === "tree-grow" });
+      }
+      if (!isTreeFull()) await waitForPhaseDelay(PHASE_DELAYS_MS.afterTree);
+    },
+  },
+  [STATES.REVEAL_MESSAGE]: {
+    enter: () => {
+      showMessageView();
+    },
+    wait: () => Promise.resolve(),
+  },
+};
+
+async function runIntroStateMachine(runToken) {
+  for (const phaseState of INTRO_FLOW_SEQUENCE) {
+    if (runToken !== activeRunToken) return;
+    if (!transitionTo(phaseState)) return;
+    const phase = INTRO_FLOW_MACHINE[phaseState];
+    phase?.enter?.();
+    await phase?.wait?.();
+    if (runToken !== activeRunToken) return;
+    if (phase?.delayMs) await waitForPhaseDelay(phase.delayMs);
   }
-  if (!transitionTo(STATES.MORPH)) return;
-  heartButton.disabled = true; heart.classList.add("is-morphing", "is-seed"); ground.classList.add("is-visible");
-  await Promise.all([
-    waitForMotionEnd({ element: heart, eventName: "transitionend", timeoutMs: PHASE_TIMEOUTS_MS.morph, filter: (e) => e.propertyName === "transform" }),
-    waitForMotionEnd({ element: ground, eventName: "transitionend", timeoutMs: PHASE_TIMEOUTS_MS.morph, filter: (e) => e.propertyName === "transform" }),
-  ]);
-  await waitForPhaseDelay(PHASE_DELAYS_MS.afterMorph);
-  if (runToken !== activeRunToken || !transitionTo(STATES.FALLING)) return;
-  heartButton.classList.add("is-falling");
-  await waitForSeedLanding();
-  await waitForPhaseDelay(PHASE_DELAYS_MS.afterFalling);
-  if (runToken !== activeRunToken || !transitionTo(STATES.TREE)) return;
-  showTree();
-  await waitForMotionEnd({ element: loveTree, eventName: "animationend", timeoutMs: PHASE_TIMEOUTS_MS.tree, filter: (e) => e.animationName === "tree-grow" });
-  if (!isTreeFull()) {
-    await waitForPhaseDelay(PHASE_DELAYS_MS.afterTree);
-  }
-  if (runToken !== activeRunToken || !transitionTo(STATES.REVEAL_MESSAGE)) return;
-  showMessageView();
+}
+
+function startIntroStateMachine() {
+  if (currentState !== STATES.INTRO || introMachineInFlight) return;
+  const runToken = ++activeRunToken;
+  introMachineInFlight = true;
+  runIntroStateMachine(runToken).finally(() => {
+    if (runToken === activeRunToken) introMachineInFlight = false;
+  });
 }
 
 function resetExperience() {
@@ -920,6 +986,7 @@ function resetExperience() {
   currentState = STATES.INTRO;
   syncScenePhase(STATES.INTRO);
   poemHasStarted = false;
+  introMachineInFlight = false;
   pauseFallingHeartEmitter();
   heartButton.disabled = false;
   heartButton.classList.remove("is-hidden", "is-falling", "is-landed");
@@ -933,6 +1000,7 @@ function resetExperience() {
   if (poemContainer) poemContainer.textContent = "";
   if (finalDedication) { finalDedication.textContent = ""; finalDedication.classList.remove("is-visible"); }
   fallingHeartPool.forEach((h) => { h.classList.remove("is-active"); });
+  fallingLayoutCache = null;
   microIntroHasFinished = false;
   hasTreeReachedFinalState = false;
   hideMicroIntroOverlay();
@@ -945,8 +1013,7 @@ microIntroHideNextCheckbox?.addEventListener("change", (event) => {
 
 heartButton?.addEventListener("click", () => {
   if (currentState !== STATES.INTRO) return;
-  const runToken = ++activeRunToken;
-  runIntroSequence(runToken);
+  startIntroStateMachine();
 });
 musicToggleButton?.addEventListener("click", () => {
   ensureBackgroundMusicSource();
@@ -980,6 +1047,7 @@ syncScenePhase(currentState);
 initializeParticles();
 buildCanopyHearts(getCanopyHeartCount());
 buildFallingHeartPool();
+fallingLayoutCache = null;
 
 if (shouldSkipMicroIntro) {
   finishMicroIntro();
@@ -989,6 +1057,7 @@ if (shouldSkipMicroIntro) {
 
 window.addEventListener("resize", () => {
   resizeParticlesCanvas();
+  fallingLayoutCache = null;
   if (!hasTreeReachedFinalState) buildCanopyHearts(getCanopyHeartCount());
   if (heartShowerResizeTimeoutId) clearTimeout(heartShowerResizeTimeoutId);
   heartShowerResizeTimeoutId = setTimeout(buildFallingHeartPool, 180);

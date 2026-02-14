@@ -175,9 +175,15 @@ export function initCounter({ observer, stateMachine, states, initialDate = DEFA
     },
   );
 
+  const unsubscribeOnReset = observer.subscribe(observer.lifecycle.APP_RESET, () => {
+    stop();
+    resetVisual();
+  });
+
   observer.registerCleanup(() => {
     stop();
     unsubscribeOnStateChanged();
+    unsubscribeOnReset();
   });
 
   return {

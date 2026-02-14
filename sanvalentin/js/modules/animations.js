@@ -24,7 +24,7 @@ function applyVisual(node, { transform, opacity }) {
   }
 }
 
-function createProceduralTimeline() {
+function createProceduralTimeline(rafRegistry) {
   let activeAnimation = null;
   const completionCallbacks = new Set();
 
@@ -34,7 +34,7 @@ function createProceduralTimeline() {
     }
 
     activeAnimation.cancelled = true;
-    cancelAnimationFrame(activeAnimation.frameId);
+    rafRegistry.cancel(activeAnimation.frameId);
     activeAnimation = null;
     return true;
   }
@@ -105,10 +105,10 @@ function createProceduralTimeline() {
           runtime.elapsedInStep = 0;
         }
 
-        runtime.frameId = requestAnimationFrame(tick);
+        runtime.frameId = rafRegistry.request(tick);
       };
 
-      runtime.frameId = requestAnimationFrame(tick);
+      runtime.frameId = rafRegistry.request(tick);
     });
   }
 
@@ -195,7 +195,7 @@ function createTypewriter({ target, text, typingMs = 36, punctuationPauseMs = 14
   };
 }
 
-export function initAnimations({ observer, stateMachine, states, domListeners }) {
+export function initAnimations({ observer, stateMachine, states, domListeners, rafRegistry }) {
   const introRoot = qs('.app');
   const heartEl = qs('[data-role="heart"]', introRoot);
   const seedEl = qs('[data-role="seed"]', introRoot);
@@ -210,7 +210,7 @@ export function initAnimations({ observer, stateMachine, states, domListeners })
     typewriterEl?.dataset.typewriterText?.trim() ||
     'Me haces feliz incluso en los días más difíciles, y contigo todo se siente posible. Gracias por tanto amor. ❤️';
 
-  const timeline = createProceduralTimeline();
+  const timeline = createProceduralTimeline(rafRegistry);
   const typewriter = createTypewriter({
     target: typewriterEl,
     text: letterMessage,
@@ -362,6 +362,8 @@ export function initAnimations({ observer, stateMachine, states, domListeners })
     event.preventDefault();
     event.stopPropagation();
 
+    clearRuntimeBindings();
+    rafRegistry.cancelAll();
     timeline.cancelAll();
     typewriter.reset();
     resetVisuals();
@@ -371,41 +373,62 @@ export function initAnimations({ observer, stateMachine, states, domListeners })
       source: 'revive-animation',
     });
 
+    subscribeRuntimeBindings();
     runIntroSequence('revive-animation');
   };
 
-  const unsubscribeOnState = observer.subscribe(
-    observer.lifecycle.STATE_CHANGED,
-    ({ to }) => {
-      if (to === states.LETTER_VIEW) {
-        typewriter.play();
-      }
+  let runtimeUnsubscribers = [];
 
-      observer.emit(observer.lifecycle.ANIMATION_START, {
-        scope: 'animations',
-        state: to,
-      });
+  const clearRuntimeBindings = () => {
+    runtimeUnsubscribers.forEach((unsubscribe) => unsubscribe());
+    runtimeUnsubscribers = [];
+  };
 
-      requestAnimationFrame(() => {
-        observer.emit(observer.lifecycle.ANIMATION_END, {
+  const subscribeRuntimeBindings = () => {
+    clearRuntimeBindings();
+
+    const unsubscribeOnState = observer.subscribe(
+      observer.lifecycle.STATE_CHANGED,
+      ({ to }) => {
+        if (to === states.LETTER_VIEW) {
+          typewriter.play();
+        }
+
+        observer.emit(observer.lifecycle.ANIMATION_START, {
           scope: 'animations',
           state: to,
         });
-      });
-    },
-  );
 
-  const unsubscribeIntroClick = domListeners.on(heartEl, 'click', handleIntroInteraction);
-  const unsubscribeSkipIntroClick = domListeners.on(
-    skipIntroButton,
-    'click',
-    handleSkipIntro,
-  );
-  const unsubscribeReviveClick = domListeners.on(
-    reviveButton,
-    'click',
-    handleReviveAnimation,
-  );
+        rafRegistry.request(() => {
+          observer.emit(observer.lifecycle.ANIMATION_END, {
+            scope: 'animations',
+            state: to,
+          });
+        });
+      },
+    );
+
+    const unsubscribeIntroClick = domListeners.on(heartEl, 'click', handleIntroInteraction);
+    const unsubscribeSkipIntroClick = domListeners.on(
+      skipIntroButton,
+      'click',
+      handleSkipIntro,
+    );
+    const unsubscribeReviveClick = domListeners.on(
+      reviveButton,
+      'click',
+      handleReviveAnimation,
+    );
+
+    runtimeUnsubscribers = [
+      unsubscribeOnState,
+      unsubscribeIntroClick,
+      unsubscribeSkipIntroClick,
+      unsubscribeReviveClick,
+    ];
+  };
+
+  subscribeRuntimeBindings();
 
   const unsubscribeReset = observer.subscribe(observer.lifecycle.APP_RESET, () => {
     timeline.cancelAll();
@@ -414,14 +437,12 @@ export function initAnimations({ observer, stateMachine, states, domListeners })
   });
 
   observer.registerCleanup(() => {
+    clearRuntimeBindings();
+    rafRegistry.cancelAll();
     timeline.cancelAll();
     typewriter.cancel();
   });
   observer.registerCleanup(unsubscribeReset);
-  observer.registerCleanup(unsubscribeReviveClick);
-  observer.registerCleanup(unsubscribeSkipIntroClick);
-  observer.registerCleanup(unsubscribeIntroClick);
-  observer.registerCleanup(unsubscribeOnState);
 
   return {
     introReady: true,

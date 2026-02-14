@@ -21,7 +21,7 @@ function shouldRunForState(state, states) {
   return state === states.LETTER_VIEW;
 }
 
-export function initParticles({ observer, stateMachine, states }) {
+export function initParticles({ observer, stateMachine, states, rafRegistry }) {
   const appRoot = qs('.app');
   if (!appRoot) {
     return null;
@@ -142,7 +142,7 @@ export function initParticles({ observer, stateMachine, states }) {
       updateParticle(particle, dt);
     });
 
-    frameId = requestAnimationFrame(tick);
+    frameId = rafRegistry.request(tick);
   };
 
   const resize = () => {
@@ -160,7 +160,7 @@ export function initParticles({ observer, stateMachine, states }) {
     resize();
     isRunning = true;
     lastTimestamp = performance.now();
-    frameId = requestAnimationFrame(tick);
+    frameId = rafRegistry.request(tick);
     return true;
   };
 
@@ -170,7 +170,7 @@ export function initParticles({ observer, stateMachine, states }) {
     }
 
     isRunning = false;
-    cancelAnimationFrame(frameId);
+    rafRegistry.cancel(frameId);
     frameId = 0;
     return true;
   };

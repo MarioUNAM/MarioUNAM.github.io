@@ -105,7 +105,7 @@ function ensureCanopy(canopyGroup) {
   return circles;
 }
 
-export function initTree({ observer, stateMachine, states }) {
+export function initTree({ observer, stateMachine, states, rafRegistry }) {
   const appRoot = qs('.app');
   if (!appRoot) {
     return;
@@ -124,7 +124,7 @@ export function initTree({ observer, stateMachine, states }) {
       return;
     }
 
-    cancelAnimationFrame(growthFrameId);
+    rafRegistry.cancel(growthFrameId);
     growthFrameId = 0;
   };
 
@@ -172,10 +172,10 @@ export function initTree({ observer, stateMachine, states }) {
         return;
       }
 
-      growthFrameId = requestAnimationFrame(tick);
+      growthFrameId = rafRegistry.request(tick);
     };
 
-    growthFrameId = requestAnimationFrame(tick);
+    growthFrameId = rafRegistry.request(tick);
   };
 
   const fillCanopy = () => {

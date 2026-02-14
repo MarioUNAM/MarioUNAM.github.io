@@ -9,6 +9,7 @@ import { qs } from '../utils/dom.js';
  */
 
 const SVG_NS = 'http://www.w3.org/2000/svg';
+const TRUNK_STROKE_WIDTH = 14;
 const TREE_EVENTS = Object.freeze({
   GROWN: 'tree:grown',
   FULL: 'tree:full',
@@ -43,7 +44,7 @@ function createPersistentTree(host) {
   const trunk = createSvgNode('path', {
     d: 'M90 205 L90 125',
     stroke: '#5b3a29',
-    'stroke-width': '14',
+    'stroke-width': String(TRUNK_STROKE_WIDTH),
     'stroke-linecap': 'round',
     fill: 'none',
   });
@@ -132,11 +133,14 @@ export function initTree({ observer, stateMachine, states, rafRegistry, animatio
       return;
     }
 
-    const localImpactX = Math.min(hostRect.width - 14, Math.max(14, seedImpact.impactX - hostRect.left));
-    const localGroundY = Math.min(hostRect.height - 8, Math.max(hostRect.height * 0.55, seedImpact.groundY - hostRect.top));
+    const baseOffsetPx = TRUNK_STROKE_WIDTH / 2;
+    const xPadding = baseOffsetPx + 1;
+
+    const localImpactX = Math.min(hostRect.width - xPadding, Math.max(xPadding, seedImpact.impactX - hostRect.left));
+    const localGroundY = Math.min(hostRect.height - baseOffsetPx, Math.max(baseOffsetPx, seedImpact.groundY - hostRect.top));
 
     const svgX = (localImpactX / hostRect.width) * 180;
-    const svgGroundY = (localGroundY / hostRect.height) * 220;
+    const svgGroundY = ((localGroundY - baseOffsetPx) / hostRect.height) * 220;
     const trunkTopY = svgGroundY - 80;
 
     treeNodes.trunk.setAttribute('d', `M${svgX} ${svgGroundY} L${svgX} ${trunkTopY}`);
@@ -152,7 +156,7 @@ export function initTree({ observer, stateMachine, states, rafRegistry, animatio
       branchNode.setAttribute('d', branchDefinitions[index]);
     });
 
-    treeNodes.wrapper.style.transformOrigin = `${(svgX / 180) * 100}% 100%`;
+    treeNodes.wrapper.style.transformOrigin = 'bottom center';
   };
 
   let growthFrameId = 0;

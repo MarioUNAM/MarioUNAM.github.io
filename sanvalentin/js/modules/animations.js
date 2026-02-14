@@ -6,21 +6,27 @@ const DEFAULT_DURATIONS = Object.freeze({
   HORIZONTAL_TO_LETTER: 650,
 });
 
-const clamp01 = (value) => Math.min(1, Math.max(0, value));
-const lerp = (from, to, progress) => from + (to - from) * progress;
+const PHASE_CLASS_PREFIX = 'phase-';
+const PHASE_BY_STATE = Object.freeze({
+  INIT: 'init',
+  HEART_TO_SEED: 'heart-to-seed',
+  SEED_FALL: 'seed-fall',
+  TREE_GROW: 'tree-grow',
+  LETTER_VIEW: 'letter-view',
+});
 
-function applyVisual(node, { transform, opacity }) {
-  if (!node) {
+const clamp01 = (value) => Math.min(1, Math.max(0, value));
+
+function setPhaseClass(appRoot, phase) {
+  if (!appRoot) {
     return;
   }
 
-  if (transform !== undefined) {
-    node.style.transform = transform;
-  }
+  Object.values(PHASE_BY_STATE).forEach((phaseName) => {
+    appRoot.classList.remove(`${PHASE_CLASS_PREFIX}${phaseName}`);
+  });
 
-  if (opacity !== undefined) {
-    node.style.opacity = String(opacity);
-  }
+  appRoot.classList.add(`${PHASE_CLASS_PREFIX}${phase}`);
 }
 
 function createProceduralTimeline(rafRegistry) {
@@ -196,14 +202,12 @@ function createTypewriter({ target, text, typingMs = 36, punctuationPauseMs = 14
 
 export function initAnimations({ observer, stateMachine, states, domListeners, rafRegistry, animationContext }) {
   const introRoot = qs('.app');
-  const heartEl = qs('[data-role="heart"]', introRoot);
   const seedEl = qs('[data-role="seed"]', introRoot);
-  const letterEl = qs('[data-role="letter"]', introRoot);
-  const treeEl = qs('[data-role="tree"]', introRoot);
-  const typewriterEl = qs('[data-role="typewriter"]', introRoot);
-  const counterCardEl = qs('[data-role="counter-card"]', introRoot);
   const sceneEl = qs('.scene', introRoot);
+  const typewriterEl = qs('[data-role="typewriter"]', introRoot);
   const groundLineEl = qs('[data-role="ground-line"]', introRoot);
+  const treeEl = qs('[data-role="tree"]', introRoot);
+  const heartEl = qs('[data-role="heart"]', introRoot);
   const reviveButton = qs('[data-action="revive-animation"]', introRoot);
 
   const letterMessage =
@@ -217,17 +221,6 @@ export function initAnimations({ observer, stateMachine, states, domListeners, r
   });
 
   const context = animationContext || { seedImpact: null };
-
-  const FALL_DISTANCE = 140;
-
-  const getSeedImpactOffsetY = () => {
-    if (!sceneEl || !context.seedImpact) {
-      return FALL_DISTANCE;
-    }
-
-    const sceneRect = sceneEl.getBoundingClientRect();
-    return Math.max(0, context.seedImpact.groundY - sceneRect.top);
-  };
 
   const cacheSeedImpact = () => {
     if (!seedEl || !sceneEl || context.seedImpact) {
@@ -256,12 +249,17 @@ export function initAnimations({ observer, stateMachine, states, domListeners, r
     }
   };
 
-  const resetVisuals = () => {
-    [heartEl, seedEl, letterEl, treeEl].forEach((node) => {
-      applyVisual(node, { transform: '', opacity: '' });
-    });
+  const setPhaseByState = (state) => {
+    const phase = PHASE_BY_STATE[state];
+    if (!phase) {
+      return;
+    }
 
-    applyVisual(counterCardEl, { transform: '', opacity: '' });
+    setPhaseClass(introRoot, phase);
+  };
+
+  const resetVisuals = () => {
+    setPhaseByState(states.INIT);
   };
 
   const buildIntroSequence = () => [
@@ -271,30 +269,12 @@ export function initAnimations({ observer, stateMachine, states, domListeners, r
       onStart: () => {
         stateMachine.transition(states.HEART_TO_SEED, { source: 'timeline' });
       },
-      update: ({ progress }) => {
-        const inverse = 1 - progress;
-        applyVisual(heartEl, {
-          transform: `translate3d(0, ${lerp(0, -10, progress)}px, 0) scale(${lerp(1, 0.4, progress)})`,
-          opacity: inverse,
-        });
-
-        applyVisual(seedEl, {
-          transform: `translate3d(0, ${lerp(-18, 0, progress)}px, 0) scale(${lerp(0.3, 1, progress)})`,
-          opacity: progress,
-        });
-      },
     },
     {
       key: 'seed-fall',
       duration: DEFAULT_DURATIONS.SEED_FALL,
       onStart: () => {
         stateMachine.transition(states.SEED_FALL, { source: 'timeline' });
-      },
-      update: ({ progress }) => {
-        applyVisual(seedEl, {
-          transform: `translate3d(0, ${lerp(0, FALL_DISTANCE, progress)}px, 0) scale(1)`,
-          opacity: 1,
-        });
       },
       onComplete: () => {
         cacheSeedImpact();
@@ -306,47 +286,12 @@ export function initAnimations({ observer, stateMachine, states, domListeners, r
       onStart: () => {
         stateMachine.transition(states.TREE_GROW, { source: 'timeline' });
       },
-      update: ({ progress }) => {
-        const impactOffsetY = getSeedImpactOffsetY();
-
-        applyVisual(seedEl, {
-          transform: `translate3d(0, ${lerp(impactOffsetY, impactOffsetY - 28, progress)}px, 0) scale(${lerp(1, 0.7, progress)})`,
-          opacity: 1 - progress,
-        });
-
-        applyVisual(treeEl, {
-          transform: `translate3d(0, ${lerp(impactOffsetY - 98, 0, progress)}px, 0) scale(${lerp(0.72, 1, progress)})`,
-          opacity: progress,
-        });
-      },
     },
     {
       key: 'horizontal-transition-letter',
       duration: DEFAULT_DURATIONS.HORIZONTAL_TO_LETTER,
       onStart: () => {
         stateMachine.transition(states.LETTER_VIEW, { source: 'timeline' });
-      },
-      update: ({ progress }) => {
-        applyVisual(treeEl, {
-          transform: `translate3d(${lerp(0, -72, progress)}px, ${lerp(0, -16, progress)}px, 0) scale(${lerp(1, 0.72, progress)})`,
-          opacity: 1,
-        });
-
-        applyVisual(letterEl, {
-          transform: `translate3d(${lerp(32, 0, progress)}px, 0, 0) scale(1)`,
-          opacity: progress,
-        });
-
-        applyVisual(counterCardEl, {
-          transform: `translate3d(${lerp(16, 0, progress)}px, 0, 0)`,
-          opacity: progress,
-        });
-      },
-      onComplete: () => {
-        applyVisual(seedEl, {
-          transform: 'translate3d(-9999px, -9999px, 0)',
-          opacity: 0,
-        });
       },
     },
   ];
@@ -378,6 +323,7 @@ export function initAnimations({ observer, stateMachine, states, domListeners, r
 
     runIntroSequence('heart-click');
   };
+
   const handleReviveAnimation = (event) => {
     event.preventDefault();
     event.stopPropagation();
@@ -417,6 +363,8 @@ export function initAnimations({ observer, stateMachine, states, domListeners, r
     const unsubscribeOnState = observer.subscribe(
       observer.lifecycle.STATE_CHANGED,
       ({ to }) => {
+        setPhaseByState(to);
+
         if (to === states.LETTER_VIEW) {
           typewriter.play();
         }
@@ -449,6 +397,7 @@ export function initAnimations({ observer, stateMachine, states, domListeners, r
     ];
   };
 
+  resetVisuals();
   subscribeRuntimeBindings();
 
   const unsubscribeReset = observer.subscribe(observer.lifecycle.APP_RESET, () => {

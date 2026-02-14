@@ -74,6 +74,49 @@ select {
   align-content: center;
 }
 
+.app.phase-init {
+  --heart-opacity: 1;
+  --heart-transform: translate3d(0, 0, 0) scale(1);
+  --seed-opacity: 0;
+  --seed-transform: translate3d(-50%, 0, 0) scale(1);
+  --tree-opacity: 0;
+  --tree-transform: translate3d(0, 24px, 0) scale(0.85);
+  --letter-opacity: 0;
+  --letter-transform: translate3d(32px, 0, 0) scale(1);
+  --counter-opacity: 0;
+  --counter-transform: translate3d(16px, 0, 0);
+}
+
+.app.phase-heart-to-seed {
+  --heart-opacity: 0;
+  --heart-transform: translate3d(0, -10px, 0) scale(0.4);
+  --seed-opacity: 1;
+  --seed-transform: translate3d(-50%, 0, 0) scale(1);
+}
+
+.app.phase-seed-fall {
+  --seed-opacity: 1;
+  --seed-transform: translate3d(-50%, 140px, 0) scale(1);
+}
+
+.app.phase-tree-grow {
+  --seed-opacity: 0;
+  --seed-transform: translate3d(-50%, 112px, 0) scale(0.7);
+  --tree-opacity: 1;
+  --tree-transform: translate3d(0, 0, 0) scale(1);
+}
+
+.app.phase-letter-view {
+  --seed-opacity: 0;
+  --seed-transform: translate3d(-50%, 112px, 0) scale(0.7);
+  --tree-opacity: 1;
+  --tree-transform: translate3d(-72px, -16px, 0) scale(0.72);
+  --letter-opacity: 1;
+  --letter-transform: translate3d(0, 0, 0) scale(1);
+  --counter-opacity: 1;
+  --counter-transform: translate3d(0, 0, 0);
+}
+
 @supports (min-height: 100dvh) {
   .app {
     min-height: calc(100dvh - (var(--space-3) * 2));
@@ -121,6 +164,8 @@ select {
   display: grid;
   place-items: center;
   box-shadow: 0 8px 22px rgba(178, 23, 92, 0.18);
+  opacity: var(--heart-opacity, 1);
+  transform: var(--heart-transform, translate3d(0, 0, 0) scale(1));
 }
 
 .heart-trigger:hover {
@@ -131,8 +176,8 @@ select {
 .seed {
   position: absolute;
   inset: auto auto 22% 50%;
-  transform: translate(-50%, 0);
-  opacity: 0;
+  transform: var(--seed-transform, translate3d(-50%, 0, 0) scale(1));
+  opacity: var(--seed-opacity, 0);
   font-size: clamp(1.5rem, 2.4vw, 2rem);
 }
 
@@ -151,21 +196,23 @@ select {
 }
 
 [data-role="tree"] {
-  opacity: 0;
+  opacity: var(--tree-opacity, 0);
+  transform: var(--tree-transform, translate3d(0, 24px, 0) scale(0.85));
   transform-origin: bottom center;
-  transition: opacity 200ms ease;
+  transition: opacity 200ms ease, transform 200ms ease;
 }
 
 .letter-view {
   grid-area: letter;
-  opacity: 0;
-  transform: translate3d(32px, 0, 0);
+  opacity: var(--letter-opacity, 0);
+  transform: var(--letter-transform, translate3d(32px, 0, 0) scale(1));
   pointer-events: none;
   display: grid;
   grid-template-columns: 1fr;
   gap: var(--space-4);
   position: relative;
   overflow: hidden;
+  min-height: clamp(320px, 42vh, 460px);
   border-radius: calc(var(--radius) + 2px);
   border: 1px solid color-mix(in oklab, #7f9fd0 22%, #ffffff 78%);
   background:
@@ -181,6 +228,7 @@ select {
   gap: var(--space-2);
   min-width: 0;
   height: 100%;
+  min-height: clamp(220px, 28vh, 320px);
 }
 
 #card-right {
@@ -189,6 +237,7 @@ select {
   align-content: end;
   justify-items: center;
   min-width: 0;
+  min-height: clamp(220px, 28vh, 320px);
   padding: var(--space-2) var(--space-2) 0;
 }
 
@@ -196,7 +245,8 @@ select {
   position: relative;
   width: 100%;
   max-width: 280px;
-  height: clamp(200px, 28vh, 240px);
+  height: clamp(210px, 30vh, 250px);
+  min-height: 210px;
   overflow: hidden;
   display: grid;
   place-items: end center;
@@ -211,8 +261,8 @@ select {
 }
 
 [data-role="counter-card"] {
-  opacity: 0;
-  transform: translate3d(16px, 0, 0);
+  opacity: var(--counter-opacity, 0);
+  transform: var(--counter-transform, translate3d(16px, 0, 0));
 }
 
 .app[data-state="LETTER_VIEW"] .letter-view {
@@ -237,6 +287,7 @@ select {
 
 [data-role="counter-card"] {
   margin-top: auto;
+  min-height: clamp(130px, 18vh, 170px);
   padding: var(--space-3);
   border-radius: calc(var(--radius) - 6px);
   background: rgba(238, 245, 255, 0.09);
@@ -363,10 +414,6 @@ button:focus-visible,
 }
 
 @media (max-width: 899px) {
-  .letter-view {
-    transform: translate3d(0, 24px, 0);
-  }
-
   #card-right {
     width: 100%;
     padding: var(--space-1) 0 0;

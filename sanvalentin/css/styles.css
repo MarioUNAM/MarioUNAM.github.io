@@ -190,12 +190,21 @@ select {
   justify-items: center;
   min-width: 0;
   padding: var(--space-2) var(--space-2) 0;
+}
+
+#card-right .tree-viewport {
   position: relative;
+  width: 100%;
+  max-width: 280px;
+  height: clamp(200px, 28vh, 240px);
+  overflow: hidden;
+  display: grid;
+  place-items: end center;
 }
 
 #tree {
-  width: min(100%, 280px);
-  min-height: 200px;
+  width: 100%;
+  height: 100%;
   display: grid;
   place-items: end center;
   pointer-events: none;
@@ -363,9 +372,9 @@ button:focus-visible,
     padding: var(--space-1) 0 0;
   }
 
-  #tree {
-    width: min(100%, 240px);
-    min-height: 190px;
+  #card-right .tree-viewport {
+    max-width: 240px;
+    height: clamp(190px, 30vh, 220px);
   }
 
   .ground-line {

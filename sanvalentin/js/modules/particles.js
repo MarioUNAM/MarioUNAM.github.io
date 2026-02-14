@@ -45,16 +45,17 @@ function createParticleNode() {
  */
 export function initParticles({ observer, states, rafRegistry }) {
   const appRoot = qs('.app');
-  if (!appRoot) {
+  const letterRoot = qs('[data-role="letter"]', appRoot);
+  if (!appRoot || !letterRoot) {
     return null;
   }
 
-  appRoot.classList.add('app--with-particles');
+  letterRoot.classList.add('letter-view--with-particles');
 
   const layer = document.createElement('div');
   layer.className = 'particle-layer';
   layer.setAttribute('aria-hidden', 'true');
-  appRoot.appendChild(layer);
+  letterRoot.appendChild(layer);
 
   /** @type {Particle[]} */
   const pool = Array.from({ length: PARTICLE_POOL_SIZE }, () => {
@@ -76,7 +77,7 @@ export function initParticles({ observer, states, rafRegistry }) {
     };
   });
 
-  let bounds = { width: appRoot.clientWidth, height: appRoot.clientHeight };
+  let bounds = { width: letterRoot.clientWidth, height: letterRoot.clientHeight };
   let isRunning = false;
   let frameId = 0;
   let lastTimestamp = 0;
@@ -84,7 +85,7 @@ export function initParticles({ observer, states, rafRegistry }) {
   let spawnCursor = 0;
 
   const resize = () => {
-    bounds = { width: appRoot.clientWidth, height: appRoot.clientHeight };
+    bounds = { width: letterRoot.clientWidth, height: letterRoot.clientHeight };
   };
 
   /** @param {Particle} particle */

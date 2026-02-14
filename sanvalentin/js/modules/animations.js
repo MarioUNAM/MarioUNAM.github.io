@@ -203,7 +203,6 @@ export function initAnimations({ observer, stateMachine, states, domListeners, r
   const treeEl = qs('[data-role="tree"]', introRoot);
   const typewriterEl = qs('[data-role="typewriter"]', introRoot);
   const counterCardEl = qs('[data-role="counter-card"]', introRoot);
-  const skipIntroButton = qs('[data-action="skip-intro"]', introRoot);
   const reviveButton = qs('[data-action="revive-animation"]', introRoot);
 
   const letterMessage =
@@ -346,18 +345,6 @@ export function initAnimations({ observer, stateMachine, states, domListeners, r
 
     runIntroSequence('heart-click');
   };
-
-  const handleSkipIntro = (event) => {
-    event.preventDefault();
-    event.stopPropagation();
-
-    if (stateMachine.getState() !== states.HEART_IDLE) {
-      return;
-    }
-
-    runIntroSequence('skip-intro');
-  };
-
   const handleReviveAnimation = (event) => {
     event.preventDefault();
     event.stopPropagation();
@@ -409,11 +396,6 @@ export function initAnimations({ observer, stateMachine, states, domListeners, r
     );
 
     const unsubscribeIntroClick = domListeners.on(heartEl, 'click', handleIntroInteraction);
-    const unsubscribeSkipIntroClick = domListeners.on(
-      skipIntroButton,
-      'click',
-      handleSkipIntro,
-    );
     const unsubscribeReviveClick = domListeners.on(
       reviveButton,
       'click',
@@ -423,7 +405,6 @@ export function initAnimations({ observer, stateMachine, states, domListeners, r
     runtimeUnsubscribers = [
       unsubscribeOnState,
       unsubscribeIntroClick,
-      unsubscribeSkipIntroClick,
       unsubscribeReviveClick,
     ];
   };

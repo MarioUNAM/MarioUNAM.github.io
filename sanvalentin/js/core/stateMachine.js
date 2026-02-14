@@ -26,7 +26,7 @@ function buildStateError(type, details) {
   };
 }
 
-export function createStateMachine(initialState = STATES.INIT) {
+export function createStateMachine(initialState = STATES.INIT, observer) {
   let currentState = Object.values(STATES).includes(initialState)
     ? initialState
     : STATES.INIT;
@@ -62,13 +62,22 @@ export function createStateMachine(initialState = STATES.INIT) {
         return { ok: false, error };
       }
 
+      const previousState = currentState;
       currentState = to;
       lastPayload = payload;
+
+      observer?.emit(observer.lifecycle.STATE_CHANGED, {
+        from: previousState,
+        to: currentState,
+        payload: lastPayload,
+      });
+
       return { ok: true, state: currentState, payload: lastPayload };
     },
     reset() {
       currentState = STATES.INIT;
       lastPayload = undefined;
+      observer?.emit(observer.lifecycle.APP_RESET, { state: currentState });
       return currentState;
     },
   };

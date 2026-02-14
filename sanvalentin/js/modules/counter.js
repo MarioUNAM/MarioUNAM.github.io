@@ -180,15 +180,24 @@ export function initCounter({ observer, stateMachine, states, initialDate = DEFA
     resetVisual();
   });
 
-  observer.registerCleanup(() => {
+  const reset = () => {
     stop();
+    resetVisual();
+  };
+
+  const destroy = () => {
+    reset();
     unsubscribeOnStateChanged();
     unsubscribeOnReset();
-  });
+  };
+
+  observer.registerCleanup(destroy);
 
   return {
     start,
     stop,
     resetVisual,
+    reset,
+    destroy,
   };
 }

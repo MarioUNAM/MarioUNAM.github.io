@@ -202,7 +202,7 @@ export function initParticles({ observer, stateMachine, states, rafRegistry }) {
 
   window.addEventListener('resize', handleResize);
 
-  const cleanup = () => {
+  const destroy = () => {
     reset();
     window.removeEventListener('resize', handleResize);
     unsubscribeOnState();
@@ -210,13 +210,13 @@ export function initParticles({ observer, stateMachine, states, rafRegistry }) {
     layer.remove();
   };
 
-  observer.registerCleanup(cleanup);
+  observer.registerCleanup(destroy);
 
   return {
     start,
     stop,
     reset,
     resize,
-    cleanup,
+    destroy,
   };
 }

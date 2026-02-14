@@ -215,12 +215,22 @@ export function init(options = {}) {
 export function initAudio({ observer } = {}) {
   const controller = init();
 
+  const reset = () => {
+    controller.reset();
+  };
+
+  const destroy = () => {
+    controller.stop();
+    controller.cleanup();
+  };
+
   if (observer?.registerCleanup) {
-    observer.registerCleanup(() => {
-      controller.stop();
-      controller.cleanup();
-    });
+    observer.registerCleanup(destroy);
   }
 
-  return controller;
+  return {
+    ...controller,
+    reset,
+    destroy,
+  };
 }

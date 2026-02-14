@@ -212,12 +212,22 @@ export function initTree({ observer, stateMachine, states, rafRegistry }) {
 
   const unsubscribeOnReset = observer.subscribe(observer.lifecycle.APP_RESET, resetTree);
 
-  observer.registerCleanup(cancelGrowth);
-  observer.registerCleanup(unsubscribeOnState);
-  observer.registerCleanup(unsubscribeOnReset);
+  const reset = () => {
+    resetTree();
+  };
+
+  const destroy = () => {
+    cancelGrowth();
+    unsubscribeOnState();
+    unsubscribeOnReset();
+  };
+
+  observer.registerCleanup(destroy);
 
   return {
     events: TREE_EVENTS,
     element: treeNodes.wrapper,
+    reset,
+    destroy,
   };
 }

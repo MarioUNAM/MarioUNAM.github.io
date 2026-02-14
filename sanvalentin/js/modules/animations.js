@@ -436,18 +436,26 @@ export function initAnimations({ observer, stateMachine, states, domListeners, r
     resetVisuals();
   });
 
-  observer.registerCleanup(() => {
-    clearRuntimeBindings();
-    rafRegistry.cancelAll();
+  const reset = () => {
     timeline.cancelAll();
-    typewriter.cancel();
-  });
-  observer.registerCleanup(unsubscribeReset);
+    typewriter.reset();
+    resetVisuals();
+  };
+
+  const destroy = () => {
+    reset();
+    clearRuntimeBindings();
+    unsubscribeReset();
+  };
+
+  observer.registerCleanup(destroy);
 
   return {
     introReady: true,
     play: timeline.play,
     cancelAll: timeline.cancelAll,
     onComplete: timeline.onComplete,
+    reset,
+    destroy,
   };
 }

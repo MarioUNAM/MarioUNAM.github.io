@@ -5,24 +5,31 @@ import { initTree } from './modules/tree.js';
 import { initParticles } from './modules/particles.js';
 import { initCounter } from './modules/counter.js';
 import { initAudio } from './modules/audio.js';
-import { createListenerRegistry } from './utils/dom.js';
-import { createRafRegistry } from './utils/raf.js';
+import { createOrchestrator } from './core/orchestrator.js';
+import { createLiveResourceRegistry } from './utils/liveResources.js';
 
 function bootstrapApp() {
   const observer = createObserver();
   const stateMachine = createStateMachine(STATES.INIT, observer);
-  const domListeners = createListenerRegistry();
-  const rafRegistry = createRafRegistry();
+  const resources = createLiveResourceRegistry();
+  const subscribe = observer.subscribe.bind(observer);
+  observer.subscribe = (...args) => resources.trackSubscription(subscribe(...args));
+  observer.on = observer.subscribe;
+  const domListeners = {
+    on: resources.trackListener,
+    cleanupAll: resources.cleanupAll,
+  };
+  const rafRegistry = {
+    request: resources.requestAnimationFrame,
+    cancel: resources.cancelAnimationFrame,
+    cancelAll: resources.cleanupRaf,
+  };
+  const orchestrator = createOrchestrator({ observer, resources });
 
   const appRoot = document.querySelector('.app');
   if (appRoot) {
     appRoot.setAttribute('data-state', STATES.INIT);
   }
-
-  observer.registerCleanup(() => {
-    domListeners.cleanupAll();
-    rafRegistry.cancelAll();
-  });
 
   const sharedDependencies = {
     observer,
@@ -30,13 +37,25 @@ function bootstrapApp() {
     states: STATES,
     domListeners,
     rafRegistry,
+    resources,
+    orchestrator,
   };
 
   const animations = initAnimations(sharedDependencies);
-  initTree(sharedDependencies);
-  initParticles(sharedDependencies);
-  initCounter(sharedDependencies);
-  initAudio(sharedDependencies);
+  const tree = initTree(sharedDependencies);
+  const particles = initParticles(sharedDependencies);
+  const counter = initCounter(sharedDependencies);
+  const audio = initAudio(sharedDependencies);
+
+  orchestrator.registerModule('animations', animations);
+  orchestrator.registerModule('tree', tree);
+  orchestrator.registerModule('particles', particles);
+  orchestrator.registerModule('counter', counter);
+  orchestrator.registerModule('audio', audio);
+
+  domListeners.on(window, 'beforeunload', () => {
+    orchestrator.destroyAll();
+  });
 
   if (animations?.introReady) {
     stateMachine.transition(STATES.HEART_IDLE, {

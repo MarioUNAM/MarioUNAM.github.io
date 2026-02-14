@@ -26,8 +26,6 @@ const microIntroSkipButton = document.querySelector("#micro-intro-skip");
 const microIntroHideNextCheckbox = document.querySelector("#micro-intro-hide-next");
 const loveHeading = document.querySelector("#love-heading");
 const reducedMotionMediaQuery = window.matchMedia("(prefers-reduced-motion: reduce)");
-const phaseProgress = document.querySelector("#phase-progress");
-const phaseProgressSteps = Array.from(document.querySelectorAll("[data-phase-step]"));
 
 const POEM_TITLE = "Nuestro árbol de amor";
 const START_DATE = "2016-09-09T00:00:00";
@@ -109,32 +107,10 @@ function keepLoveHeadingPersistent() {
   loveHeading.style.visibility = "visible";
 }
 
-function syncPhaseProgress(phase) {
-  if (!phaseProgress || phaseProgressSteps.length === 0) return;
-  const phaseMap = {
-    idle: "intro",
-    heart_to_seed_fast: "intro",
-    seed_fall: "intro",
-    fractal_grow_slow: "tree",
-    canopy_fill_fast: "tree",
-    tree_scaleup_fast: "tree",
-    tree_move_right_normal: "revealMessage",
-    leaves_fall_slow: "revealMessage",
-    letter_visible: "revealMessage",
-  };
-  const activeStep = phaseMap[phase] ?? "intro";
-  phaseProgressSteps.forEach((stepNode) => {
-    const isActive = stepNode.dataset.phaseStep === activeStep;
-    stepNode.classList.toggle("is-active", isActive);
-    stepNode.setAttribute("aria-current", isActive ? "step" : "false");
-  });
-}
-
 function syncScenePhase(phase) {
   if (!scene) return;
   scene.dataset.phase = phase;
   keepLoveHeadingPersistent();
-  syncPhaseProgress(phase);
 }
 
 function setLeavesActiveClass(isActive) {

@@ -232,37 +232,6 @@ body {
 }
 
 
-.phase-progress {
-  position: fixed;
-  top: calc(clamp(0.8rem, 2.2vw, 1.4rem) + env(safe-area-inset-top, 0px));
-  right: calc(clamp(0.8rem, 2.2vw, 1.4rem) + env(safe-area-inset-right, 0px));
-  z-index: 20;
-  display: inline-flex;
-  gap: 0.32rem;
-  padding: 0.28rem 0.35rem;
-  border-radius: 999px;
-  background: rgba(255, 255, 255, 0.78);
-  color: #6f2147;
-  font: 600 0.7rem/1 var(--font-sans);
-  letter-spacing: 0.01em;
-}
-
-.phase-progress span {
-  display: inline-flex;
-  align-items: center;
-  border-radius: 999px;
-  padding: 0.22rem 0.5rem;
-  opacity: 0.56;
-  transition: opacity 180ms var(--motion-ease), background-color 180ms var(--motion-ease), color 180ms var(--motion-ease);
-}
-
-.phase-progress span.is-active {
-  opacity: 1;
-  color: #fff7fb;
-  background: rgba(222, 93, 152, 0.86);
-}
-
-
 #scene:not(.is-started) #message-view,
 #scene:not(.is-started) #tree,
 #scene:not(.is-started) #ground,
@@ -1147,14 +1116,6 @@ body {
 }
 
 @media (max-width: 480px) {
-  .phase-progress {
-    left: calc(0.7rem + env(safe-area-inset-left, 0px));
-    right: auto;
-    top: calc(0.7rem + env(safe-area-inset-top, 0px));
-    max-width: calc(100vw - 1.4rem);
-    overflow-x: auto;
-  }
-
   .floating-controls {
     right: calc(0.7rem + env(safe-area-inset-right, 0px));
     left: calc(0.7rem + env(safe-area-inset-left, 0px));

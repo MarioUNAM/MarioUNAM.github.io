@@ -88,53 +88,6 @@ function formatCounter(diff) {
   };
 }
 
-function ensureCounterCard(appRoot) {
-  let counterCard = qs('[data-role="counter-card"]', appRoot);
-
-  if (counterCard) {
-    return counterCard;
-  }
-
-  counterCard = document.createElement('section');
-  setAttr(counterCard, 'data-role', 'counter-card');
-  setAttr(counterCard, 'aria-live', 'polite');
-
-  const title = document.createElement('h2');
-  setText(title, 'Desde 2016-09-09');
-
-  const value = document.createElement('dl');
-  setAttr(value, 'data-role', 'counter-value');
-  value.className = 'counter-grid';
-
-  const units = [
-    ['Años', '--'],
-    ['Meses', '--'],
-    ['Días', '--'],
-    ['Horas', '--'],
-    ['Minutos', '--'],
-  ];
-
-  units.forEach(([label, placeholder], index) => {
-    const item = document.createElement('div');
-    item.className = 'counter-item';
-
-    const term = document.createElement('dt');
-    setText(term, label);
-
-    const description = document.createElement('dd');
-    setText(description, placeholder);
-    setAttr(description, 'data-counter-unit', String(index));
-
-    item.append(term, description);
-    value.append(item);
-  });
-
-  counterCard.append(title, value);
-  appRoot?.append(counterCard);
-
-  return counterCard;
-}
-
 export function renderCounter(target, diff) {
   if (!target) {
     return false;
@@ -166,8 +119,7 @@ export function renderCounter(target, diff) {
 
 export function initCounter({ observer, stateMachine, states, initialDate = DEFAULT_INITIAL_DATE }) {
   const appRoot = qs('.app');
-  const stateLabel = qs('[data-role="state-label"]', appRoot);
-  const counterCard = ensureCounterCard(appRoot);
+  const counterCard = qs('[data-role="counter-card"]', appRoot);
   const counterValue = qs('[data-role="counter-value"]', counterCard);
 
   let timerId = null;
@@ -225,7 +177,6 @@ export function initCounter({ observer, stateMachine, states, initialDate = DEFA
     ({ to }) => {
       stateMachine.getState();
       setAttr(appRoot, 'data-state', to);
-      setText(stateLabel, to);
 
       if (to === states.LETTER_VIEW) {
         start();

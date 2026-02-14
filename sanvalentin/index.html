@@ -4,101 +4,14 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>San Valentín</title>
-    <link rel="preload" href="styles.css" as="style" />
-    <link rel="stylesheet" href="styles.css" />
+    <link rel="stylesheet" href="css/styles.css" />
   </head>
   <body>
-    <audio id="bg-music" loop preload="none" data-src="../assets/audio/senora.mp3" aria-hidden="true"></audio>
-    <div id="stars-layer" class="stars-layer" aria-hidden="true"></div>
-    <canvas id="particles-layer" class="particles-layer" aria-hidden="true"></canvas>
-    <p id="love-heading">Para el amor de mi vida</p>
-
-    <section id="micro-intro" class="micro-intro" aria-live="polite">
-      <div class="micro-intro__content">
-        <p class="micro-intro__dedication">Una sorpresa para ti ✨</p>
-        <div class="micro-intro__actions">
-          <label class="micro-intro__preference">
-            <input id="micro-intro-hide-next" type="checkbox" />
-            No mostrar intro en próximas visitas
-          </label>
-          <button id="micro-intro-skip" type="button">Saltar</button>
-        </div>
-      </div>
-    </section>
-
-    <main id="scene" aria-live="polite">
-      <div id="falling-hearts-layer" class="falling-hearts-layer" aria-hidden="true"></div>
-      <div id="tree" class="love-tree" aria-hidden="true">
-        <div class="tree-trunk"></div>
-        <div id="tree-canopy" class="tree-canopy" aria-hidden="true"></div>
-      </div>
-      <div class="scene-track">
-        <section id="intro-view" class="view is-active">
-          <button id="heart-button" class="heart-button" aria-label="Iniciar experiencia de San Valentín">
-            <span class="heart" aria-hidden="true">
-              <img src="./assets/heart-main.svg" alt="" />
-            </span>
-          </button>
-
-          <div id="ground-line" aria-hidden="true"></div>
-          <p class="intro-label">San Valentín</p>
-        </section>
-
-        <section id="message-view" class="view" aria-hidden="true">
-          <div id="card-scene">
-            <div id="message-panel">
-              <section class="poem-body" aria-label="Poema de amor">
-                <h2 id="poem-title" class="poem-title"></h2>
-                <div id="poem" class="poem" aria-live="polite"></div>
-                <p id="final-dedication" class="final-dedication" aria-live="polite"></p>
-              </section>
-
-              <div class="counter-wrapper">
-                <p class="counter">
-                  Mi amor por ti comenzó hace:
-                  <span class="counter-values" role="list" aria-label="Tiempo transcurrido">
-                    <span class="counter-unit" role="listitem">
-                      <span id="elapsed-years" class="counter-number">##</span>
-                      <span class="counter-label">años</span>
-                    </span>
-                    <span class="counter-unit" role="listitem">
-                      <span id="elapsed-months" class="counter-number">##</span>
-                      <span class="counter-label">meses</span>
-                    </span>
-                    <span class="counter-unit" role="listitem">
-                      <span id="elapsed-days" class="counter-number">##</span>
-                      <span class="counter-label">días</span>
-                    </span>
-                    <span class="counter-unit" role="listitem">
-                      <span id="elapsed-hours" class="counter-number">##</span>
-                      <span class="counter-label">horas</span>
-                    </span>
-                    <span class="counter-unit" role="listitem">
-                      <span id="elapsed-minutes" class="counter-number">##</span>
-                      <span class="counter-label">minutos</span>
-                    </span>
-                  </span>
-                </p>
-                <p id="counter-message" class="counter" aria-live="polite"></p>
-              </div>
-
-              <p class="signature">Con todo mi amor, Mario.</p>
-            </div>
-
-            <div id="tree-panel" aria-hidden="true"><div class="tree-panel-ground"></div></div>
-          </div>
-        </section>
-      </div>
+    <main class="app">
+      <h1>San Valentín</h1>
+      <p>Estructura base inicializada.</p>
     </main>
 
-    <button id="music-toggle" type="button" aria-pressed="false" aria-label="Reproducir música de fondo" aria-live="polite">
-      Reproducir música
-    </button>
-
-    <div class="floating-controls">
-      <button id="restart-button" type="button" aria-label="Revivir animación desde semilla">↺ Revivir animación</button>
-    </div>
-
-    <script src="app.js" defer></script>
+    <script type="module" src="js/main.js"></script>
   </body>
 </html>

@@ -67,6 +67,15 @@ const PHASE_TIMEOUTS_MS = {
   sceneMove: INTRO_PHASE_TIMINGS_MS.tree_move_right,
 };
 
+const TREE_MOVE_TARGET_SCALE = 1.12;
+const DIAGONAL_LEAF_FALL_CONFIG = {
+  baseAngleRadians: Math.PI / 4,
+  angleVarianceRadians: Math.PI / 9,
+  baseSpeed: 290,
+  speedVariance: 120,
+  baseDistance: [window.innerHeight * 0.45, window.innerHeight * 0.88],
+};
+
 const TIMELINE_DURATIONS_MS = {
   treeScaleupFast: INTRO_PHASE_TIMINGS_MS.tree_scaleup,
   leavesFallSlow: INTRO_PHASE_TIMINGS_MS.leaves_fall,
@@ -78,7 +87,7 @@ const VALID_TRANSITIONS = {
   [STATES.HEART_TO_SEED_FAST]: [STATES.SEED_FALL],
   [STATES.SEED_FALL]: [STATES.FRACTAL_GROW_SLOW],
   [STATES.FRACTAL_GROW_SLOW]: [STATES.CANOPY_FILL_FAST],
-  [STATES.CANOPY_FILL_FAST]: [STATES.TREE_SCALEUP_FAST],
+  [STATES.CANOPY_FILL_FAST]: [STATES.TREE_MOVE_RIGHT_NORMAL],
   [STATES.TREE_SCALEUP_FAST]: [STATES.TREE_MOVE_RIGHT_NORMAL],
   [STATES.TREE_MOVE_RIGHT_NORMAL]: [STATES.LEAVES_FALL_SLOW],
   [STATES.LEAVES_FALL_SLOW]: [STATES.LETTER_VISIBLE],
@@ -176,6 +185,7 @@ let particleAnchorCacheAt = 0;
 let leavesEmitterActive = false;
 let finalCanopyEmitterOrigin = null;
 let isFinalCanopyEmitterOriginReady = false;
+let useDiagonalLeafFall = false;
 
 const pickHeartPaletteItem = (palette) => palette[Math.floor(Math.random() * palette.length)];
 
@@ -780,8 +790,22 @@ function startParticleFall(particle, timestamp) {
   particle.fallProgress = 0;
   particle.fallStartX = particle.anchorX;
   particle.fallStartY = particle.anchorY;
-  particle.fallTravelX = particle.horizontalDrift * randomBetween(1.25, 2.3);
-  particle.fallTravelY = particle.fallDistance;
+
+  if (useDiagonalLeafFall) {
+    const randomAngle = DIAGONAL_LEAF_FALL_CONFIG.baseAngleRadians + randomBetween(-DIAGONAL_LEAF_FALL_CONFIG.angleVarianceRadians, DIAGONAL_LEAF_FALL_CONFIG.angleVarianceRadians);
+    const speed = DIAGONAL_LEAF_FALL_CONFIG.baseSpeed + randomBetween(-DIAGONAL_LEAF_FALL_CONFIG.speedVariance, DIAGONAL_LEAF_FALL_CONFIG.speedVariance);
+    const distance = randomBetween(DIAGONAL_LEAF_FALL_CONFIG.baseDistance[0], DIAGONAL_LEAF_FALL_CONFIG.baseDistance[1]);
+    const distanceMultiplier = distance / Math.max(80, speed);
+
+    particle.fallTravelX = Math.cos(randomAngle) * speed * distanceMultiplier;
+    particle.fallTravelY = Math.sin(randomAngle) * speed * distanceMultiplier;
+    particle.spin = randomBetween(-0.045, 0.045);
+    particle.rotation = randomBetween(0, Math.PI * 2);
+  } else {
+    particle.fallTravelX = particle.horizontalDrift * randomBetween(1.25, 2.3);
+    particle.fallTravelY = particle.fallDistance;
+  }
+
   particle.fallAlphaStart = particle.opacity;
   particle.nextRegrowAt = timestamp + randomBetween(PARTICLE_REGROW_DELAY_RANGE_MS[0], PARTICLE_REGROW_DELAY_RANGE_MS[1]);
 }
@@ -1136,6 +1160,42 @@ function waitForCanopyFill() {
   );
 }
 
+function canopy_fill_complete() {
+  syncScenePhase(STATES.CANOPY_FILL_FAST);
+}
+
+async function tree_move_right_and_scale() {
+  syncScenePhase(STATES.TREE_MOVE_RIGHT_NORMAL);
+  setTreeTransform({ shiftX: getTreeMoveRightShiftX(), shiftY: 0, scale: TREE_MOVE_TARGET_SCALE });
+
+  if (prefersReducedMotion) {
+    updateFinalCanopyEmitterOrigin();
+    return;
+  }
+
+  await Promise.all([
+    waitForMotionEnd({
+      element: document.querySelector(".scene-track"),
+      eventName: "transitionend",
+      timeoutMs: PHASE_TIMEOUTS_MS.sceneMove,
+      filter: (event) => event.propertyName === "transform",
+    }),
+    waitForMotionEnd({
+      element: loveTree,
+      eventName: "transitionend",
+      timeoutMs: PHASE_TIMEOUTS_MS.sceneMove,
+      filter: (event) => event.propertyName === "transform",
+    }),
+  ]);
+
+  updateFinalCanopyEmitterOrigin();
+}
+
+function start_leaf_fall_diagonal() {
+  useDiagonalLeafFall = true;
+  startLeavesEmitter();
+}
+
 function lockTreeAsFinalState() {
   if (!loveTree || hasTreeReachedFinalState) return;
   hasTreeReachedFinalState = true;
@@ -1195,7 +1255,6 @@ const INTRO_FLOW_SEQUENCE = [
   STATES.SEED_FALL,
   STATES.FRACTAL_GROW_SLOW,
   STATES.CANOPY_FILL_FAST,
-  STATES.TREE_SCALEUP_FAST,
   STATES.TREE_MOVE_RIGHT_NORMAL,
   STATES.LEAVES_FALL_SLOW,
   STATES.LETTER_VISIBLE,
@@ -1231,54 +1290,18 @@ const INTRO_FLOW_MACHINE = {
     enter: () => {
       if (!hasTreeReachedFinalState) buildCanopyHearts(getCanopyHeartCount());
     },
-    wait: () => waitForCanopyFill(),
-  },
-  [STATES.TREE_SCALEUP_FAST]: {
-    enter: () => {
-      const runToken = activeRunToken;
-      let rafId = null;
-      const duration = TIMELINE_DURATIONS_MS.treeScaleupFast;
-      const easing = (t) => 1 - ((1 - t) ** 3);
-      const startAt = performance.now();
-      const animateScale = (now) => {
-        const elapsed = Math.min(1, (now - startAt) / duration);
-        const eased = easing(elapsed);
-        const scale = 0.94 + (1 - 0.94) * eased;
-        setTreeTransform({ shiftX: 0, shiftY: 0, scale });
-        if (elapsed < 1 && runToken === activeRunToken) {
-          rafId = requestAnimationFrame(animateScale);
-          return;
-        }
-        setTreeTransform({ shiftX: 0, shiftY: 0, scale: 1 });
-      };
-      rafId = requestAnimationFrame(animateScale);
-      INTRO_FLOW_MACHINE[STATES.TREE_SCALEUP_FAST].animation = {
-        cancel: () => {
-          if (rafId) cancelAnimationFrame(rafId);
-        },
-      };
-      registerPhaseCleanup(() => {
-        INTRO_FLOW_MACHINE[STATES.TREE_SCALEUP_FAST].animation?.cancel?.();
-        INTRO_FLOW_MACHINE[STATES.TREE_SCALEUP_FAST].animation = null;
-      });
+    wait: async () => {
+      await waitForCanopyFill();
+      canopy_fill_complete();
     },
-    wait: () => waitForTimelineFinished(INTRO_FLOW_MACHINE[STATES.TREE_SCALEUP_FAST].animation, TIMELINE_DURATIONS_MS.treeScaleupFast + 40),
   },
   [STATES.TREE_MOVE_RIGHT_NORMAL]: {
-    enter: () => {
-      setTreeTransform({ shiftX: getTreeMoveRightShiftX(), shiftY: 0, scale: 1 });
-      syncScenePhase(STATES.TREE_MOVE_RIGHT_NORMAL);
-    },
-    wait: async () => {
-      if (!prefersReducedMotion) {
-        await waitForMotionEnd({ element: document.querySelector(".scene-track"), eventName: "transitionend", timeoutMs: PHASE_TIMEOUTS_MS.sceneMove, filter: (event) => event.propertyName === "transform" });
-      }
-      updateFinalCanopyEmitterOrigin();
-    },
+    enter: () => {},
+    wait: () => tree_move_right_and_scale(),
   },
   [STATES.LEAVES_FALL_SLOW]: {
     enter: () => {
-      startLeavesEmitter();
+      start_leaf_fall_diagonal();
       const animation = loveTree?.animate([{ opacity: 1 }, { opacity: 1 }], {
         duration: TIMELINE_DURATIONS_MS.leavesFallSlow,
         easing: "linear",
@@ -1385,6 +1408,7 @@ function resetExperience() {
   isFinalCanopyEmitterOriginReady = false;
   microIntroHasFinished = false;
   hasTreeReachedFinalState = false;
+  useDiagonalLeafFall = false;
   if (scene) scene.classList.remove("is-started");
   hideMicroIntroOverlay();
 }

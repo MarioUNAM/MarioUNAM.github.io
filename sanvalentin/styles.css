@@ -267,7 +267,7 @@ body {
   --tree-scale: 0.72;
   transform: translate3d(calc(-50% + var(--tree-shift-x)), var(--tree-shift-y), 0) scale(var(--tree-scale));
   transform-origin: bottom center;
-  transition: transform var(--t-phase-morph) var(--motion-ease), opacity var(--t-medium) var(--motion-ease), visibility var(--t-medium) var(--motion-ease);
+  transition: transform var(--t-phase-morph) var(--tree-ease), opacity var(--t-medium) var(--motion-ease), visibility var(--t-medium) var(--motion-ease);
 }
 
 #scene.is-started #tree {

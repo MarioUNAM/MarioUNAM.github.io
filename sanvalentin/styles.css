@@ -83,7 +83,14 @@
   height: 100%;
   pointer-events: none;
   z-index: 1;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 280ms var(--motion-ease), visibility 280ms var(--motion-ease);
+}
+
+#scene.leaves-active .particles-layer {
   opacity: 0.82;
+  visibility: visible;
 }
 
 body {

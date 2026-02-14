@@ -37,6 +37,7 @@ const MICRO_INTRO_STORAGE_KEY = "skipMicroIntro";
 const INTENSITY_STORAGE_KEY = "visualIntensity";
 const DEFAULT_MUSIC_VOLUME = 0.2;
 const STATES = { IDLE: "idle", INTRO: "intro", MORPH: "morph", FALLING: "falling", TREE: "tree", REVEAL_MESSAGE: "revealMessage" };
+const TREE_SUBSTATES = { POPULATE_CANOPY: "tree_populate_canopy", LARGE_CENTER_READY: "tree_large_center_ready" };
 const INTENSITY_LEVELS = { SOFT: "soft", NORMAL: "normal" };
 const PHASE_TIMEOUTS_MS = { morph: 760, falling: 1240, tree: 1320 };
 const PHASE_DELAYS_MS = { afterMorph: 60, afterFalling: 70, afterTree: 60 };
@@ -115,6 +116,16 @@ function syncScenePhase(phase) {
   syncPhaseProgress(phase);
 }
 
+function setLeavesActiveClass(isActive) {
+  if (!scene) return;
+  scene.classList.toggle("leaves-active", isActive);
+}
+
+function shouldEnableLeavesForCurrentPhase() {
+  const scenePhase = scene?.dataset.phase;
+  return scenePhase === TREE_SUBSTATES.LARGE_CENTER_READY || scenePhase === STATES.REVEAL_MESSAGE;
+}
+
 const fallingHeartPool = [];
 let activeFallingHeartCount = 0;
 let fallingHeartEmitterRafId = null;
@@ -140,6 +151,7 @@ let particleCanvasWidth = 0;
 let particleCanvasHeight = 0;
 let particleAnchorCache = [];
 let particleAnchorCacheAt = 0;
+let leavesEmitterActive = false;
 
 const pickHeartPaletteItem = (palette) => palette[Math.floor(Math.random() * palette.length)];
 
@@ -398,13 +410,11 @@ function updateReducedMotionPreference(event) {
   prefersReducedMotion = event.matches;
   if (prefersReducedMotion) {
     resetParallax();
-    if (particleAnimationFrameId) cancelAnimationFrame(particleAnimationFrameId);
-    particleAnimationFrameId = null;
-    if (particleContext) particleContext.clearRect(0, 0, particleCanvasWidth, particleCanvasHeight);
+    pauseLeavesEmitter();
     if (heartShowerHasStarted) pauseFallingHeartEmitter();
     return;
   }
-  initializeParticles();
+  if (leavesEmitterActive || shouldEnableLeavesForCurrentPhase()) startLeavesEmitter();
 }
 
 function playTreeBell() {
@@ -428,7 +438,22 @@ function setVisualIntensity(nextIntensity) {
   updateIntensityToggleUI();
   if (!hasTreeReachedFinalState) buildCanopyHearts(getCanopyHeartCount());
   buildFallingHeartPool();
-  if (!prefersReducedMotion) initializeParticles();
+  if (!prefersReducedMotion && leavesEmitterActive) initializeParticles();
+}
+
+function pauseLeavesEmitter() {
+  leavesEmitterActive = false;
+  setLeavesActiveClass(false);
+  if (particleAnimationFrameId) cancelAnimationFrame(particleAnimationFrameId);
+  particleAnimationFrameId = null;
+  if (particleContext) particleContext.clearRect(0, 0, particleCanvasWidth, particleCanvasHeight);
+}
+
+function startLeavesEmitter() {
+  if (prefersReducedMotion) return;
+  leavesEmitterActive = true;
+  setLeavesActiveClass(true);
+  initializeParticles();
 }
 
 function isLowPowerViewport() {
@@ -563,6 +588,7 @@ function pauseFallingHeartEmitter() {
 
 function teardownFallingHeartEmitter() {
   pauseFallingHeartEmitter();
+  pauseLeavesEmitter();
   heartShowerHasStarted = false;
   fallingHeartPool.forEach((heartNode) => heartNode.classList.remove("is-active"));
 }
@@ -741,7 +767,7 @@ function enforceParticleBalance(timestamp) {
 }
 
 function tickParticles(timestamp) {
-  if (!particleContext || prefersReducedMotion) return;
+  if (!particleContext || prefersReducedMotion || !leavesEmitterActive) return;
   const lastTimestamp = tickParticles.lastTimestamp ?? timestamp;
   const deltaSeconds = Math.min(0.05, (timestamp - lastTimestamp) / 1000);
   tickParticles.lastTimestamp = timestamp;
@@ -1012,12 +1038,16 @@ const INTRO_FLOW_MACHINE = {
   [STATES.TREE]: {
     enter: () => {
       showTree();
+      syncScenePhase(TREE_SUBSTATES.POPULATE_CANOPY);
     },
     wait: async () => {
       if (!prefersReducedMotion) {
         await waitForMotionEnd({ element: loveTree, eventName: "animationend", timeoutMs: PHASE_TIMEOUTS_MS.tree, filter: (e) => e.animationName === "tree-grow" });
       }
       if (!isTreeFull()) await waitForPhaseDelay(PHASE_DELAYS_MS.afterTree);
+      if (!hasTreeReachedFinalState) buildCanopyHearts(getCanopyHeartCount());
+      syncScenePhase(TREE_SUBSTATES.LARGE_CENTER_READY);
+      startLeavesEmitter();
     },
   },
   [STATES.REVEAL_MESSAGE]: {
@@ -1077,6 +1107,7 @@ function resetExperience() {
   poemHasStarted = false;
   introMachineInFlight = false;
   pauseFallingHeartEmitter();
+  pauseLeavesEmitter();
   heartButton.disabled = false;
   heartButton.classList.remove("is-hidden", "is-falling", "is-landed");
   heart.classList.remove("is-morphing", "is-seed");
@@ -1138,7 +1169,7 @@ updateIntensityToggleUI();
 syncThemePalettes();
 keepLoveHeadingPersistent();
 syncScenePhase(currentState);
-initializeParticles();
+pauseLeavesEmitter();
 buildCanopyHearts(getCanopyHeartCount());
 buildFallingHeartPool();
 fallingLayoutCache = null;

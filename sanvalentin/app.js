@@ -103,6 +103,7 @@ let microIntroHasFinished = false;
 let hasStarted = false;
 let hasTreeReachedFinalState = false;
 let introMachineInFlight = false;
+let activePhaseCleanupCallbacks = [];
 let canopyHeartNodes = [];
 const FALLING_LAYOUT_CACHE_TTL_MS = 180;
 let fallingLayoutCache = null;
@@ -353,12 +354,45 @@ function transitionTo(nextState) {
   return true;
 }
 
+function registerPhaseCleanup(cleanupCallback) {
+  if (typeof cleanupCallback !== "function") return;
+  activePhaseCleanupCallbacks.push(cleanupCallback);
+}
+
+function cleanupPreviousPhaseArtifacts() {
+  if (activePhaseCleanupCallbacks.length === 0) return;
+  const callbacks = activePhaseCleanupCallbacks;
+  activePhaseCleanupCallbacks = [];
+  callbacks.forEach((callback) => callback());
+}
+
+function setPhaseTimeout(callback, timeoutMs) {
+  const timeoutId = window.setTimeout(callback, timeoutMs);
+  registerPhaseCleanup(() => window.clearTimeout(timeoutId));
+  return timeoutId;
+}
+
 function waitForMotionEnd({ element, eventName, timeoutMs, filter = () => true }) {
   return new Promise((resolve) => {
     let done = false;
+    let timeoutId = null;
     const finish = () => {
       if (done) return;
       done = true;
+      if (timeoutId) {
+        window.clearTimeout(timeoutId);
+        timeoutId = null;
+      }
+      element.removeEventListener(eventName, onMotionEnd);
+      resolve();
+    };
+    const cancel = () => {
+      if (done) return;
+      done = true;
+      if (timeoutId) {
+        window.clearTimeout(timeoutId);
+        timeoutId = null;
+      }
       element.removeEventListener(eventName, onMotionEnd);
       resolve();
     };
@@ -367,7 +401,8 @@ function waitForMotionEnd({ element, eventName, timeoutMs, filter = () => true }
       finish();
     };
     element.addEventListener(eventName, onMotionEnd);
-    window.setTimeout(finish, timeoutMs);
+    timeoutId = window.setTimeout(finish, timeoutMs);
+    registerPhaseCleanup(cancel);
   });
 }
 
@@ -939,17 +974,31 @@ function showTree() {
   heartButton.classList.add("is-hidden");
   loveTree.classList.add("is-visible", "is-growing");
   playMilestoneCue("sprout");
-  window.setTimeout(playTreeBell, 360);
 }
 
 function waitForSeedLanding() {
   return new Promise((resolve) => {
     let finished = false;
+    let timeoutId = null;
     const finish = () => {
       if (finished) return;
       finished = true;
+      if (timeoutId) {
+        window.clearTimeout(timeoutId);
+        timeoutId = null;
+      }
       heartButton.removeEventListener("animationend", onAnimationEnd);
       heartButton.classList.add("is-landed");
+      resolve();
+    };
+    const cancel = () => {
+      if (finished) return;
+      finished = true;
+      if (timeoutId) {
+        window.clearTimeout(timeoutId);
+        timeoutId = null;
+      }
+      heartButton.removeEventListener("animationend", onAnimationEnd);
       resolve();
     };
 
@@ -959,7 +1008,8 @@ function waitForSeedLanding() {
     };
 
     heartButton.addEventListener("animationend", onAnimationEnd);
-    window.setTimeout(finish, PHASE_TIMEOUTS_MS.falling);
+    timeoutId = window.setTimeout(finish, PHASE_TIMEOUTS_MS.falling);
+    registerPhaseCleanup(cancel);
   });
 }
 
@@ -1068,6 +1118,7 @@ const INTRO_FLOW_MACHINE = {
   [STATES.FRACTAL_GROW_SLOW]: {
     enter: () => {
       showTree();
+      setPhaseTimeout(playTreeBell, 360);
     },
     wait: () => (prefersReducedMotion ? Promise.resolve() : waitForMotionEnd({ element: loveTree, eventName: "animationend", timeoutMs: PHASE_TIMEOUTS_MS.tree, filter: (e) => e.animationName === "tree-grow" })),
   },
@@ -1088,6 +1139,10 @@ const INTRO_FLOW_MACHINE = {
         fill: "forwards",
       });
       INTRO_FLOW_MACHINE[STATES.TREE_SCALEUP_FAST].animation = animation;
+      registerPhaseCleanup(() => {
+        INTRO_FLOW_MACHINE[STATES.TREE_SCALEUP_FAST].animation?.cancel?.();
+        INTRO_FLOW_MACHINE[STATES.TREE_SCALEUP_FAST].animation = null;
+      });
     },
     wait: () => waitForTimelineFinished(INTRO_FLOW_MACHINE[STATES.TREE_SCALEUP_FAST].animation, TIMELINE_DURATIONS_MS.treeScaleupFast + 40),
   },
@@ -1110,6 +1165,10 @@ const INTRO_FLOW_MACHINE = {
         easing: "linear",
       });
       INTRO_FLOW_MACHINE[STATES.LEAVES_FALL_SLOW].animation = animation;
+      registerPhaseCleanup(() => {
+        INTRO_FLOW_MACHINE[STATES.LEAVES_FALL_SLOW].animation?.cancel?.();
+        INTRO_FLOW_MACHINE[STATES.LEAVES_FALL_SLOW].animation = null;
+      });
     },
     wait: () => waitForTimelineFinished(INTRO_FLOW_MACHINE[STATES.LEAVES_FALL_SLOW].animation, TIMELINE_DURATIONS_MS.leavesFallSlow + 40),
   },
@@ -1122,10 +1181,15 @@ const INTRO_FLOW_MACHINE = {
 };
 
 async function runIntroStateMachine(runToken) {
-  for (const phaseState of INTRO_FLOW_SEQUENCE) {
+  for (let index = 0; index < INTRO_FLOW_SEQUENCE.length; index += 1) {
+    const phaseState = INTRO_FLOW_SEQUENCE[index];
+    const expectedCurrentState = index === 0 ? STATES.IDLE : INTRO_FLOW_SEQUENCE[index - 1];
     if (runToken !== activeRunToken) return;
+    if (currentState !== expectedCurrentState) return;
+    cleanupPreviousPhaseArtifacts();
     if (!transitionTo(phaseState)) return;
     const phase = INTRO_FLOW_MACHINE[phaseState];
+    if (currentState !== phaseState) return;
     phase?.enter?.();
     await phase?.wait?.();
     if (runToken !== activeRunToken) return;
@@ -1160,11 +1224,24 @@ function handleHeartStart(event) {
 function resetExperience() {
   keepLoveHeadingPersistent();
   activeRunToken += 1;
+  cleanupPreviousPhaseArtifacts();
   currentState = STATES.IDLE;
   syncScenePhase(STATES.IDLE);
   hasStarted = false;
   poemHasStarted = false;
   introMachineInFlight = false;
+  if (elapsedCounterIntervalId) {
+    clearInterval(elapsedCounterIntervalId);
+    elapsedCounterIntervalId = null;
+  }
+  if (heartShowerResizeTimeoutId) {
+    clearTimeout(heartShowerResizeTimeoutId);
+    heartShowerResizeTimeoutId = null;
+  }
+  if (microIntroTimeoutId) {
+    clearTimeout(microIntroTimeoutId);
+    microIntroTimeoutId = null;
+  }
   pauseFallingHeartEmitter();
   pauseLeavesEmitter();
   heartButton.disabled = false;

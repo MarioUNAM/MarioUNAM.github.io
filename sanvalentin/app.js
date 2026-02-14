@@ -44,8 +44,33 @@ const STATES = {
   LETTER_VISIBLE: "letter_visible",
 };
 const DEFAULT_VISUAL_INTENSITY_MULTIPLIER = 0.62;
-const PHASE_TIMEOUTS_MS = { morph: 760, falling: 1240, tree: 1320, canopy: 520, sceneMove: 760 };
-const TIMELINE_DURATIONS_MS = { treeScaleupFast: 220, leavesFallSlow: 1320 };
+const TIME_TOKENS_MS = {
+  fast: 220,
+  normal: 760,
+  slow: 1320,
+};
+
+const INTRO_PHASE_TIMINGS_MS = {
+  heart_to_seed: TIME_TOKENS_MS.fast,
+  fractal_grow: TIME_TOKENS_MS.slow,
+  canopy_fill: TIME_TOKENS_MS.fast,
+  tree_scaleup: TIME_TOKENS_MS.fast,
+  tree_move_right: TIME_TOKENS_MS.normal,
+  leaves_fall: TIME_TOKENS_MS.slow,
+};
+
+const PHASE_TIMEOUTS_MS = {
+  morph: INTRO_PHASE_TIMINGS_MS.heart_to_seed,
+  falling: 1240,
+  tree: INTRO_PHASE_TIMINGS_MS.fractal_grow,
+  canopy: INTRO_PHASE_TIMINGS_MS.canopy_fill,
+  sceneMove: INTRO_PHASE_TIMINGS_MS.tree_move_right,
+};
+
+const TIMELINE_DURATIONS_MS = {
+  treeScaleupFast: INTRO_PHASE_TIMINGS_MS.tree_scaleup,
+  leavesFallSlow: INTRO_PHASE_TIMINGS_MS.leaves_fall,
+};
 const VALID_TRANSITIONS = {
   [STATES.IDLE]: [STATES.HEART_TO_SEED_FAST],
   [STATES.HEART_TO_SEED_FAST]: [STATES.SEED_FALL],

@@ -1,5 +1,7 @@
-export function initAnimations({ observer, stateMachine, states }) {
-  const introRoot = document.querySelector('.app');
+import { qs } from '../utils/dom.js';
+
+export function initAnimations({ observer, stateMachine, states, domListeners }) {
+  const introRoot = qs('.app');
 
   const unsubscribeOnState = observer.subscribe(
     observer.lifecycle.STATE_CHANGED,
@@ -27,11 +29,9 @@ export function initAnimations({ observer, stateMachine, states }) {
     }
   };
 
-  introRoot?.addEventListener('click', handleIntroInteraction);
+  const unsubscribeIntroClick = domListeners.on(introRoot, 'click', handleIntroInteraction);
 
-  observer.registerCleanup(() => {
-    introRoot?.removeEventListener('click', handleIntroInteraction);
-  });
+  observer.registerCleanup(unsubscribeIntroClick);
   observer.registerCleanup(unsubscribeOnState);
 
   return { introReady: true };

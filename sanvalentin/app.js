@@ -966,22 +966,38 @@ function startMicroIntro() {
   microIntro.setAttribute("aria-hidden", "false");
 }
 
+function setTreeTransform({ shiftX = 0, shiftY = 0, scale = 1 } = {}) {
+  if (!loveTree || !groundLine) return;
+
+  const treeRect = loveTree.getBoundingClientRect();
+  const lineRect = groundLine.getBoundingClientRect();
+  const trunkFootOffset = Math.abs(treeRect.bottom - lineRect.top);
+  const scaleCompensationY = (1 - scale) * trunkFootOffset;
+
+  loveTree.style.setProperty("--tree-shift-x", `${shiftX.toFixed(2)}px`);
+  loveTree.style.setProperty("--tree-shift-y", `${(shiftY + scaleCompensationY).toFixed(2)}px`);
+  loveTree.style.setProperty("--tree-scale", scale.toFixed(3));
+}
+
+function getTreeMoveRightShiftX() {
+  return Math.min(window.innerWidth * 0.42, 430);
+}
+
 function normalizeTreeTransform() {
-  if (!loveTree) return;
-  loveTree.style.transform = "translateX(-50%) translateY(0) scale(1)";
+  setTreeTransform({ shiftX: 0, shiftY: 0, scale: 1 });
 }
 
 function calculateTreeOriginFromSeedImpact() {
-  if (!heartButton || !groundLine || !loveTree) return null;
+  if (!heartButton || !groundLine || !introView) return null;
 
   const seedRect = heartButton.getBoundingClientRect();
   const lineRect = groundLine.getBoundingClientRect();
-  const treeRect = loveTree.getBoundingClientRect();
+  const introRect = introView.getBoundingClientRect();
 
   return {
-    x: seedRect.left + seedRect.width / 2,
-    y: lineRect.top + lineRect.height / 2,
-    treeHalfWidth: treeRect.width / 2,
+    x: seedRect.left + seedRect.width / 2 - introRect.left,
+    y: lineRect.top + lineRect.height / 2 - introRect.top,
+    introHeight: introRect.height,
   };
 }
 
@@ -993,16 +1009,16 @@ function anchorTreeToSeedImpact() {
     return;
   }
 
-  const leftPosition = origin.x - origin.treeHalfWidth;
-  const bottomPosition = Math.max(0, window.innerHeight - origin.y);
+  const bottomPosition = Math.max(0, origin.introHeight - origin.y);
 
-  loveTree.style.left = `${leftPosition.toFixed(2)}px`;
+  loveTree.style.left = `${origin.x.toFixed(2)}px`;
   loveTree.style.bottom = `${bottomPosition.toFixed(2)}px`;
-  loveTree.style.transform = "translateX(0) translateY(0) scale(1)";
+  normalizeTreeTransform();
 }
 
 function showTree() {
   anchorTreeToSeedImpact();
+  setTreeTransform({ shiftX: 0, shiftY: 0, scale: 1 });
   heartButton.classList.add("is-hidden");
   loveTree.classList.add("is-visible", "is-growing");
   playMilestoneCue("sprout");
@@ -1219,15 +1235,28 @@ const INTRO_FLOW_MACHINE = {
   },
   [STATES.TREE_SCALEUP_FAST]: {
     enter: () => {
-      const animation = loveTree?.animate([
-        { transform: "translateY(0) rotate(0deg) scale(0.94)", offset: 0 },
-        { transform: "translateY(0) rotate(0deg) scale(1)", offset: 1 },
-      ], {
-        duration: TIMELINE_DURATIONS_MS.treeScaleupFast,
-        easing: "cubic-bezier(0.22, 0.86, 0.34, 1)",
-        fill: "forwards",
-      });
-      INTRO_FLOW_MACHINE[STATES.TREE_SCALEUP_FAST].animation = animation;
+      const runToken = activeRunToken;
+      let rafId = null;
+      const duration = TIMELINE_DURATIONS_MS.treeScaleupFast;
+      const easing = (t) => 1 - ((1 - t) ** 3);
+      const startAt = performance.now();
+      const animateScale = (now) => {
+        const elapsed = Math.min(1, (now - startAt) / duration);
+        const eased = easing(elapsed);
+        const scale = 0.94 + (1 - 0.94) * eased;
+        setTreeTransform({ shiftX: 0, shiftY: 0, scale });
+        if (elapsed < 1 && runToken === activeRunToken) {
+          rafId = requestAnimationFrame(animateScale);
+          return;
+        }
+        setTreeTransform({ shiftX: 0, shiftY: 0, scale: 1 });
+      };
+      rafId = requestAnimationFrame(animateScale);
+      INTRO_FLOW_MACHINE[STATES.TREE_SCALEUP_FAST].animation = {
+        cancel: () => {
+          if (rafId) cancelAnimationFrame(rafId);
+        },
+      };
       registerPhaseCleanup(() => {
         INTRO_FLOW_MACHINE[STATES.TREE_SCALEUP_FAST].animation?.cancel?.();
         INTRO_FLOW_MACHINE[STATES.TREE_SCALEUP_FAST].animation = null;
@@ -1237,6 +1266,7 @@ const INTRO_FLOW_MACHINE = {
   },
   [STATES.TREE_MOVE_RIGHT_NORMAL]: {
     enter: () => {
+      setTreeTransform({ shiftX: getTreeMoveRightShiftX(), shiftY: 0, scale: 1 });
       syncScenePhase(STATES.TREE_MOVE_RIGHT_NORMAL);
     },
     wait: async () => {
@@ -1338,6 +1368,11 @@ function resetExperience() {
   resetHeartMorphStages();
   groundLine?.classList.remove("is-visible");
   loveTree.classList.remove("is-visible", "is-growing", "tree--final");
+  loveTree.style.removeProperty("--tree-shift-x");
+  loveTree.style.removeProperty("--tree-shift-y");
+  loveTree.style.removeProperty("--tree-scale");
+  loveTree.style.removeProperty("left");
+  loveTree.style.removeProperty("bottom");
   introView.classList.add("is-active");
   introView.setAttribute("aria-hidden", "false");
   messageView.classList.remove("is-active");

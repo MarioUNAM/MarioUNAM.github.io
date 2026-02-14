@@ -181,6 +181,9 @@ body {
   place-items: center;
   align-content: center;
   gap: clamp(0.75rem, 2.5vh, 1.5rem);
+  position: relative;
+  --ground-line-bottom: clamp(3.6rem, 10vh, 6.5rem);
+  --tree-ground-offset: 4px;
 }
 
 @media (hover: hover) and (pointer: fine) {
@@ -254,12 +257,15 @@ body {
 #tree {
   position: absolute;
   left: 50%;
-  bottom: clamp(4.5rem, 11vh, 7.8rem);
+  bottom: calc(var(--ground-line-bottom) + var(--tree-ground-offset));
   z-index: 3;
   opacity: 0;
   visibility: hidden;
   pointer-events: none;
-  transform: translateX(-50%) translateY(36px) scale(0.72);
+  --tree-shift-x: 0px;
+  --tree-shift-y: 36px;
+  --tree-scale: 0.72;
+  transform: translate3d(calc(-50% + var(--tree-shift-x)), var(--tree-shift-y), 0) scale(var(--tree-scale));
   transform-origin: bottom center;
   transition: transform var(--t-phase-morph) var(--motion-ease), opacity var(--t-medium) var(--motion-ease), visibility var(--t-medium) var(--motion-ease);
 }
@@ -271,7 +277,9 @@ body {
 #scene[data-phase="tree_move_right_normal"] #tree,
 #scene[data-phase="leaves_fall_slow"] #tree,
 #scene[data-phase="letter_visible"] #tree {
-  transform: translateX(min(42vw, 430px)) translateY(0) scale(1);
+  --tree-shift-x: min(42vw, 430px);
+  --tree-shift-y: 0px;
+  --tree-scale: 1;
 }
 
 
@@ -295,7 +303,6 @@ body {
 }
 
 #intro-view {
-  position: relative;
   z-index: 2;
 }
 
@@ -512,19 +519,22 @@ body {
 }
 
 #ground-line {
+  position: absolute;
+  left: 50%;
+  bottom: var(--ground-line-bottom);
   width: min(90%, 380px);
   height: 8px;
-  margin: var(--space-md) auto 0;
+  margin: 0;
   border-radius: 999px;
   background: rgba(90, 26, 59, 0.35);
-  transform: scaleX(0.05);
+  transform: translateX(-50%) scaleX(0.05);
   transform-origin: center;
   opacity: 0;
   transition: transform var(--t-medium) var(--motion-ease), opacity var(--t-medium) var(--motion-ease);
 }
 
 #ground-line.is-visible {
-  transform: scaleX(1);
+  transform: translateX(-50%) scaleX(1);
   opacity: 1;
 }
 

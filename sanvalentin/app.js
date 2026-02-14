@@ -89,7 +89,12 @@ const HEART_PALETTE_CLASSES = ["is-blush", "is-petal", "is-fuchsia-soft", "is-co
 const HEART_PALETTE_VARS = ["var(--heart-1)", "var(--heart-2)", "var(--heart-3)", "var(--heart-4)", "var(--heart-5)", "var(--heart-6)"];
 const CANOPY_HEART_DENSITY = 88;
 const FALLING_HEART_EMIT_INTERVAL_MS = 110;
-const PARTICLE_POOL_SIZE = 120;
+const PARTICLE_POOL_SIZE = 140;
+const PARTICLE_ANCHOR_REFRESH_MS = 1200;
+const PARTICLE_FALL_INTERVAL_RANGE_MS = [2600, 5200];
+const PARTICLE_REGROW_DELAY_RANGE_MS = [800, 2200];
+const PARTICLE_MIN_RESTING_RATIO = 0.58;
+const PARTICLE_TARGET_RESTING_RATIO = 0.7;
 let particlePalette = ["rgba(248, 185, 207, 0.72)", "rgba(244, 155, 192, 0.7)", "rgba(222, 93, 152, 0.68)", "rgba(238, 125, 131, 0.64)"];
 
 let particleContext = null;
@@ -97,6 +102,8 @@ let particleAnimationFrameId = null;
 const particles = [];
 let particleCanvasWidth = 0;
 let particleCanvasHeight = 0;
+let particleAnchorCache = [];
+let particleAnchorCacheAt = 0;
 
 const pickHeartPaletteItem = (palette) => palette[Math.floor(Math.random() * palette.length)];
 const beepAudio = new Audio("data:audio/wav;base64,UklGRjgAAABXQVZFZm10IBAAAAABAAEARKwAAIhYAQACABAAZGF0YRQAAAAAABw9XL+fbj0NAAAAAA==");
@@ -511,30 +518,70 @@ function resetParallax() {
   });
 }
 
-function getParticleEmitterCenterX() {
-  const canopyRect = treeCanopy?.getBoundingClientRect();
-  if (!canopyRect) return window.innerWidth * 0.5;
-  return canopyRect.left + canopyRect.width * 0.5;
+function getParticleAnchorPoints() {
+  const now = performance.now();
+  if (particleAnchorCache.length > 0 && now - particleAnchorCacheAt < PARTICLE_ANCHOR_REFRESH_MS) return particleAnchorCache;
+  const canopyHearts = treeCanopy?.querySelectorAll(".canopy-heart") ?? [];
+  const selected = Array.from(canopyHearts);
+  if (selected.length > 0) {
+    const stride = Math.max(1, Math.floor(selected.length / 24));
+    particleAnchorCache = selected.filter((_, index) => index % stride === 0).map((node) => {
+      const rect = node.getBoundingClientRect();
+      return {
+        x: rect.left + rect.width * 0.5,
+        y: rect.top + rect.height * 0.5,
+      };
+    });
+  } else {
+    const canopyRect = treeCanopy?.getBoundingClientRect();
+    if (canopyRect) {
+      particleAnchorCache = [{ x: canopyRect.left + canopyRect.width * 0.5, y: canopyRect.top + canopyRect.height * 0.45 }];
+    } else {
+      particleAnchorCache = [{ x: window.innerWidth * 0.5, y: Math.max(24, window.innerHeight * 0.2) }];
+    }
+  }
+  particleAnchorCacheAt = now;
+  return particleAnchorCache;
 }
 
-function spawnParticle(particle, warmStart = false) {
-  const centerX = getParticleEmitterCenterX();
-  const spread = window.innerWidth * 0.55;
-  const topBand = Math.max(24, window.innerHeight * 0.2);
-  particle.x = centerX + randomBetween(-spread, spread);
-  particle.y = randomBetween(-topBand, warmStart ? window.innerHeight * 0.9 : topBand);
-  particle.baseSize = randomBetween(1.4, 4.8);
+function seedParticleAtBranch(particle) {
+  const anchors = getParticleAnchorPoints();
+  const anchor = anchors[Math.floor(Math.random() * anchors.length)] ?? { x: window.innerWidth * 0.5, y: window.innerHeight * 0.2 };
+  particle.anchorX = anchor.x + randomBetween(-14, 14);
+  particle.anchorY = anchor.y + randomBetween(-8, 10);
+  particle.x = particle.anchorX;
+  particle.y = particle.anchorY;
+  particle.baseSize = randomBetween(1.6, 4.9);
   particle.size = particle.baseSize;
-  particle.opacity = randomBetween(0.35, 0.88);
-  particle.color = pickHeartPaletteItem(particlePalette);
   particle.rotation = randomBetween(0, Math.PI * 2);
-  particle.spin = randomBetween(-0.018, 0.018);
-  particle.verticalSpeed = randomBetween(22, 78);
-  particle.horizontalDrift = randomBetween(-32, 32);
-  particle.wobbleFrequency = randomBetween(0.7, 2.4);
-  particle.wobbleAmplitude = randomBetween(3, 20);
-  particle.life = randomBetween(8, 16);
-  particle.elapsed = warmStart ? randomBetween(0, particle.life) : 0;
+  particle.spin = randomBetween(-0.02, 0.02);
+  particle.color = pickHeartPaletteItem(particlePalette);
+  particle.verticalSpeed = randomBetween(28, 82);
+  particle.horizontalDrift = randomBetween(-25, 25);
+  particle.wobbleFrequency = randomBetween(0.8, 2.6);
+  particle.wobbleAmplitude = randomBetween(6, 22);
+  particle.fallDistance = randomBetween(window.innerHeight * 0.5, window.innerHeight * 0.9);
+  particle.fallInterval = randomBetween(PARTICLE_FALL_INTERVAL_RANGE_MS[0], PARTICLE_FALL_INTERVAL_RANGE_MS[1]);
+  particle.nextFallAt = performance.now() + randomBetween(150, particle.fallInterval);
+  particle.fallProgress = 0;
+  particle.opacity = randomBetween(0.46, 0.92);
+  particle.phase = "resting";
+}
+
+function startParticleFall(particle, timestamp) {
+  particle.phase = "falling";
+  particle.fallProgress = 0;
+  particle.fallStartX = particle.anchorX;
+  particle.fallStartY = particle.anchorY;
+  particle.fallTravelX = particle.horizontalDrift * randomBetween(1.25, 2.3);
+  particle.fallTravelY = particle.fallDistance;
+  particle.fallAlphaStart = particle.opacity;
+  particle.nextRegrowAt = timestamp + randomBetween(PARTICLE_REGROW_DELAY_RANGE_MS[0], PARTICLE_REGROW_DELAY_RANGE_MS[1]);
+}
+
+function regrowParticle(particle) {
+  seedParticleAtBranch(particle);
+  particle.nextFallAt = performance.now() + randomBetween(PARTICLE_FALL_INTERVAL_RANGE_MS[0], PARTICLE_FALL_INTERVAL_RANGE_MS[1]);
 }
 
 function resizeParticlesCanvas() {
@@ -545,6 +592,7 @@ function resizeParticlesCanvas() {
   particlesCanvas.width = Math.floor(particleCanvasWidth * ratio);
   particlesCanvas.height = Math.floor(particleCanvasHeight * ratio);
   particleContext.setTransform(ratio, 0, 0, ratio, 0, 0);
+  particleAnchorCache = [];
 }
 
 function drawParticleShape(particle) {
@@ -566,6 +614,19 @@ function drawParticleShape(particle) {
   particleContext.restore();
 }
 
+function enforceParticleBalance(timestamp) {
+  const restingCount = particles.reduce((count, particle) => count + (particle.phase === "resting" ? 1 : 0), 0);
+  const restingRatio = particles.length > 0 ? restingCount / particles.length : 0;
+  if (restingRatio < PARTICLE_MIN_RESTING_RATIO) {
+    const fallingParticles = particles.filter((particle) => particle.phase !== "resting");
+    const needed = Math.ceil(particles.length * PARTICLE_TARGET_RESTING_RATIO) - restingCount;
+    for (let i = 0; i < Math.min(needed, fallingParticles.length); i += 1) {
+      regrowParticle(fallingParticles[i]);
+      fallingParticles[i].nextFallAt = timestamp + randomBetween(PARTICLE_FALL_INTERVAL_RANGE_MS[0], PARTICLE_FALL_INTERVAL_RANGE_MS[1]);
+    }
+  }
+}
+
 function tickParticles(timestamp) {
   if (!particleContext || prefersReducedMotion) return;
   const lastTimestamp = tickParticles.lastTimestamp ?? timestamp;
@@ -575,20 +636,37 @@ function tickParticles(timestamp) {
   particleContext.clearRect(0, 0, particleCanvasWidth, particleCanvasHeight);
 
   particles.forEach((particle) => {
-    particle.elapsed += deltaSeconds;
-    if (particle.elapsed > particle.life || particle.y > particleCanvasHeight + 30 || particle.x < -40 || particle.x > particleCanvasWidth + 40) {
-      spawnParticle(particle);
+    particle.rotation += particle.spin;
+
+    if (particle.phase === "resting") {
+      particle.size = particle.baseSize * (0.92 + Math.sin(timestamp * 0.0016 + particle.anchorX * 0.01) * 0.1);
+      particle.opacity = Math.max(0.38, 0.7 + Math.sin(timestamp * 0.0012 + particle.anchorY * 0.01) * 0.2);
+      particle.x = particle.anchorX + Math.sin(timestamp * 0.001 + particle.anchorY * 0.02) * 1.6;
+      particle.y = particle.anchorY + Math.cos(timestamp * 0.0012 + particle.anchorX * 0.018) * 1.2;
+      if (timestamp >= particle.nextFallAt) startParticleFall(particle, timestamp);
+      drawParticleShape(particle);
       return;
     }
-    const lifeRatio = particle.elapsed / particle.life;
-    particle.rotation += particle.spin;
-    particle.y += particle.verticalSpeed * deltaSeconds;
-    particle.x += particle.horizontalDrift * deltaSeconds + Math.sin(particle.elapsed * particle.wobbleFrequency) * particle.wobbleAmplitude * deltaSeconds;
-    particle.opacity = Math.max(0, 0.85 - lifeRatio * 0.78);
-    particle.size = particle.baseSize * (0.88 + Math.sin(particle.elapsed * 1.6) * 0.15);
+
+    if (particle.phase === "regrowing") {
+      if (timestamp >= particle.nextRegrowAt) regrowParticle(particle);
+      return;
+    }
+
+    particle.fallProgress = Math.min(1, particle.fallProgress + deltaSeconds / (particle.fallInterval / 1000));
+    const eased = particle.fallProgress * particle.fallProgress;
+    particle.x = particle.fallStartX + particle.fallTravelX * eased + Math.sin((timestamp * 0.001 + particle.anchorX) * particle.wobbleFrequency) * particle.wobbleAmplitude * deltaSeconds;
+    particle.y = particle.fallStartY + particle.fallTravelY * eased;
+    particle.opacity = Math.max(0.04, particle.fallAlphaStart * (1 - particle.fallProgress * 0.9));
+    particle.size = particle.baseSize * (0.85 + Math.sin(particle.fallProgress * Math.PI * 2) * 0.12);
     drawParticleShape(particle);
+
+    if (particle.fallProgress >= 1 || particle.y > particleCanvasHeight + 32 || particle.x < -40 || particle.x > particleCanvasWidth + 40) {
+      particle.phase = "regrowing";
+    }
   });
 
+  enforceParticleBalance(timestamp);
   particleAnimationFrameId = requestAnimationFrame(tickParticles);
 }
 
@@ -599,8 +677,9 @@ function initializeParticles() {
   resizeParticlesCanvas();
   particles.length = 0;
   for (let i = 0; i < PARTICLE_POOL_SIZE; i += 1) {
-    const particle = {};
-    spawnParticle(particle, true);
+    const particle = { phase: "resting" };
+    seedParticleAtBranch(particle);
+    if (Math.random() > PARTICLE_TARGET_RESTING_RATIO) startParticleFall(particle, performance.now());
     particles.push(particle);
   }
   if (particleAnimationFrameId) cancelAnimationFrame(particleAnimationFrameId);

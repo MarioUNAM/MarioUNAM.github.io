@@ -64,6 +64,20 @@ let microIntroTimeoutId = null;
 let microIntroHasFinished = false;
 let hasTreeReachedFinalState = false;
 
+function getActiveTreeCanopy() {
+  const messageCanopy = document.querySelector("#tree-panel .tree-canopy");
+  if (currentState === STATES.REVEAL_MESSAGE && messageCanopy) return messageCanopy;
+  return treeCanopy ?? messageCanopy ?? null;
+}
+
+function isTreeFull() {
+  if (!loveTree) return false;
+  const canopyHearts = treeCanopy?.querySelectorAll(".canopy-heart").length ?? 0;
+  const targetHearts = Math.max(1, Math.round(getCanopyHeartCount() * 0.9));
+  const treeVisible = loveTree.classList.contains("is-visible");
+  return hasTreeReachedFinalState || (treeVisible && canopyHearts >= targetHearts);
+}
+
 
 function keepLoveHeadingPersistent() {
   if (!loveHeading) return;
@@ -381,7 +395,8 @@ function configureAndLaunchFallingHeart(heartNode) {
     return;
   }
   const layerRect = fallingHeartsLayer.getBoundingClientRect();
-  const canopyRect = treeCanopy?.getBoundingClientRect();
+  const activeCanopy = getActiveTreeCanopy();
+  const canopyRect = activeCanopy?.getBoundingClientRect();
   const canopySpawnXMin = canopyRect ? canopyRect.left - layerRect.left : layerRect.width * 0.32;
   const canopySpawnXMax = canopyRect ? canopyRect.right - layerRect.left : layerRect.width * 0.68;
   const canopySpawnYMin = canopyRect ? canopyRect.top - layerRect.top : layerRect.height * 0.08;
@@ -533,7 +548,8 @@ function getParticleAnchorPoints() {
       };
     });
   } else {
-    const canopyRect = treeCanopy?.getBoundingClientRect();
+    const activeCanopy = getActiveTreeCanopy();
+    const canopyRect = activeCanopy?.getBoundingClientRect();
     if (canopyRect) {
       particleAnchorCache = [{ x: canopyRect.left + canopyRect.width * 0.5, y: canopyRect.top + canopyRect.height * 0.45 }];
     } else {
@@ -855,6 +871,7 @@ function typePoem(lines, config = typewriterConfig, runToken) {
 function showMessageView() {
   keepLoveHeadingPersistent();
   lockTreeAsFinalState();
+  syncScenePhase(STATES.REVEAL_MESSAGE);
   introView.classList.add("is-active"); introView.setAttribute("aria-hidden", "false");
   messageView.classList.add("is-active"); messageView.setAttribute("aria-hidden", "false");
   updateElapsedCounter();
@@ -890,7 +907,9 @@ async function runIntroSequence(runToken) {
   if (runToken !== activeRunToken || !transitionTo(STATES.TREE)) return;
   showTree();
   await waitForMotionEnd({ element: loveTree, eventName: "animationend", timeoutMs: PHASE_TIMEOUTS_MS.tree, filter: (e) => e.animationName === "tree-grow" });
-  await waitForPhaseDelay(PHASE_DELAYS_MS.afterTree);
+  if (!isTreeFull()) {
+    await waitForPhaseDelay(PHASE_DELAYS_MS.afterTree);
+  }
   if (runToken !== activeRunToken || !transitionTo(STATES.REVEAL_MESSAGE)) return;
   showMessageView();
 }

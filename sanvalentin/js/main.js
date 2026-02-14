@@ -1,4 +1,4 @@
-import { createStateMachine } from './core/stateMachine.js';
+import { createStateMachine, STATES } from './core/stateMachine.js';
 import { createObserver } from './core/observer.js';
 import { initAnimations } from './modules/animations.js';
 import { initTree } from './modules/tree.js';
@@ -7,7 +7,7 @@ import { initCounter } from './modules/counter.js';
 import { initAudio } from './modules/audio.js';
 
 const observer = createObserver();
-const machine = createStateMachine('idle');
+const machine = createStateMachine(STATES.INIT);
 
 initAnimations({ observer, machine });
 initTree({ observer, machine });

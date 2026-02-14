@@ -24,9 +24,8 @@ const createSvgNode = (tagName, attributes = {}) => {
   return node;
 };
 
-function createPersistentTree(root) {
-  const wrapper = document.createElement('div');
-  wrapper.dataset.role = 'tree';
+function createPersistentTree(host) {
+  const wrapper = host;
   wrapper.style.width = '180px';
   wrapper.style.height = '220px';
   wrapper.style.margin = '0 auto';
@@ -65,8 +64,7 @@ function createPersistentTree(root) {
   const canopyGroup = createSvgNode('g');
   [trunk, ...branches, canopyGroup].forEach((node) => svg.appendChild(node));
 
-  wrapper.appendChild(svg);
-  root.appendChild(wrapper);
+  wrapper.replaceChildren(svg);
 
   return { wrapper, trunk, branches, canopyGroup };
 }
@@ -113,12 +111,12 @@ function ensureCanopy(canopyGroup) {
  * @param {{ observer: any, stateMachine: any, states: Record<string,string>, rafRegistry: any }} deps
  */
 export function initTree({ observer, stateMachine, states, rafRegistry }) {
-  const appRoot = qs('.app');
-  if (!appRoot) {
+  const treeHost = qs('[data-role="tree"]');
+  if (!treeHost) {
     return null;
   }
 
-  const treeNodes = getTreeNodes(appRoot);
+  const treeNodes = getTreeNodes(treeHost);
   const branchNodes = [treeNodes.trunk, ...treeNodes.branches];
 
   let growthFrameId = 0;

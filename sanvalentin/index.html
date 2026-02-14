@@ -32,22 +32,35 @@
         </button>
 
         <div class="seed" data-role="seed" aria-hidden="true">🌱</div>
-        <div class="ground-line" aria-hidden="true"></div>
-
-        <section class="tree-container" aria-label="Contenedor del árbol">
-          <div data-role="tree" aria-live="off"></div>
-        </section>
       </section>
 
-      <section class="letter-view" data-role="letter" aria-label="Carta de San Valentín">
-        <h2>Para ti, con amor</h2>
-        <p data-role="typewriter" data-typewriter-text="Desde que llegaste, todo florece más bonito. Gracias por elegirme cada día; te amo infinito. 💖" aria-live="polite"></p>
-        <p data-role="dedication">Gracias por iluminar mi vida cada día. 💖</p>
+      <section
+        id="love-card"
+        class="letter-view"
+        data-role="letter"
+        aria-label="Carta de San Valentín"
+      >
+        <div id="card-left">
+          <h2>Para ti, con amor</h2>
+          <p
+            data-role="typewriter"
+            data-typewriter-text="Desde que llegaste, todo florece más bonito. Gracias por elegirme cada día; te amo infinito. 💖"
+            aria-live="polite"
+          ></p>
+          <p data-role="dedication">Gracias por iluminar mi vida cada día. 💖</p>
 
-        <section data-role="counter-card" aria-live="polite" aria-label="Tiempo juntos">
-          <h3>Desde 2016-09-09</h3>
-          <p data-role="counter-value">-- años, -- meses, -- días, -- horas y -- minutos</p>
-        </section>
+          <section data-role="counter-card" aria-live="polite" aria-label="Tiempo juntos">
+            <h3>Desde 2016-09-09</h3>
+            <p data-role="counter-value">-- años, -- meses, -- días, -- horas y -- minutos</p>
+          </section>
+        </div>
+
+        <div id="card-right" aria-label="Árbol decorativo">
+          <div id="tree">
+            <div id="tree-canopy" data-role="tree" aria-live="off"></div>
+          </div>
+          <div class="ground-line" aria-hidden="true"></div>
+        </div>
       </section>
 
       <p data-role="state-label" class="sr-only" aria-live="polite"></p>

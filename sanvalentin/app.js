@@ -4,14 +4,14 @@ const messageView = document.querySelector("#message-view");
 const heartButton = document.querySelector("#heart-button");
 const heart = document.querySelector(".heart");
 const ground = document.querySelector("#ground");
-const loveTree = document.querySelector("#love-tree");
+const loveTree = document.querySelector("#tree");
 const elapsedYears = document.querySelector("#elapsed-years");
 const elapsedMonths = document.querySelector("#elapsed-months");
 const elapsedDays = document.querySelector("#elapsed-days");
 const elapsedHours = document.querySelector("#elapsed-hours");
 const elapsedMinutes = document.querySelector("#elapsed-minutes");
 const counterMessage = document.querySelector("#counter-message");
-const treeCanopy = loveTree?.querySelector(".tree-canopy") ?? document.querySelector("#tree-canopy");
+const treeCanopy = document.querySelector("#tree-canopy") ?? loveTree?.querySelector(".tree-canopy");
 const poemTitle = document.querySelector("#poem-title");
 const poemContainer = document.querySelector("#poem");
 const finalDedication = document.querySelector("#final-dedication");
@@ -89,9 +89,7 @@ let fallingLayoutCache = null;
 let fallingLayoutCacheAt = 0;
 
 function getActiveTreeCanopy() {
-  const messageCanopy = document.querySelector("#tree-panel .tree-canopy");
-  if (currentState === STATES.LETTER_VISIBLE && messageCanopy) return messageCanopy;
-  return treeCanopy ?? messageCanopy ?? null;
+  return treeCanopy ?? null;
 }
 
 function isTreeFull() {
@@ -501,8 +499,6 @@ function buildCanopyHearts(count) {
   treeRenderer.render(treeCanopy, count);
   canopyHeartNodes = Array.from(treeCanopy.querySelectorAll(".canopy-heart"));
 
-  const messageCanopy = document.querySelector("#tree-panel .tree-canopy");
-  if (messageCanopy) treeRenderer.render(messageCanopy, Math.round(count * 0.88));
   fallingLayoutCache = null;
 }
 
@@ -929,7 +925,7 @@ function startMicroIntro() {
 
 function normalizeTreeTransform() {
   if (!loveTree) return;
-  loveTree.style.transform = "translateY(0) rotate(0deg) scaleX(1) scaleY(1)";
+  loveTree.style.transform = "translateX(-50%) translateY(0) scale(1)";
 }
 
 function showTree() {

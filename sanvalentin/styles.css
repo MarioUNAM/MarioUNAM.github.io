@@ -264,7 +264,7 @@ body {
 
 
 #scene:not(.is-started) #message-view,
-#scene:not(.is-started) #love-tree,
+#scene:not(.is-started) #tree,
 #scene:not(.is-started) #ground,
 #scene:not(.is-started) #falling-hearts-layer {
   opacity: 0;
@@ -281,6 +281,30 @@ body {
   position: relative;
   isolation: isolate;
   z-index: 4;
+}
+
+
+#tree {
+  position: absolute;
+  left: 50%;
+  bottom: clamp(4.5rem, 11vh, 7.8rem);
+  z-index: 3;
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  transform: translateX(-50%) translateY(36px) scale(0.72);
+  transform-origin: center bottom;
+  transition: transform var(--t-phase-morph) var(--motion-ease), opacity var(--t-medium) var(--motion-ease), visibility var(--t-medium) var(--motion-ease);
+}
+
+#scene.is-started #tree {
+  visibility: visible;
+}
+
+#scene[data-phase="tree_move_right_normal"] #tree,
+#scene[data-phase="leaves_fall_slow"] #tree,
+#scene[data-phase="letter_visible"] #tree {
+  transform: translateX(min(42vw, 430px)) translateY(0) scale(1);
 }
 
 
@@ -417,22 +441,6 @@ body {
   transform-origin: center bottom;
 }
 
-#tree-panel .tree-trunk {
-  width: clamp(40px, 3.4vw, 52px);
-  height: clamp(158px, 18vw, 210px);
-  margin-bottom: -20px;
-  position: relative;
-  z-index: 1;
-}
-
-#tree-panel .tree-canopy {
-  width: var(--tree-width);
-  height: var(--tree-height);
-  margin-top: -8px;
-  margin-bottom: -10px;
-  box-shadow: none;
-}
-
 .ground-line {
   width: min(100%, 320px);
   height: 4px;
@@ -544,9 +552,6 @@ body {
 .love-tree {
   width: min(74%, 260px);
   margin: 0 auto;
-  opacity: 0;
-  transform: translateY(36px) rotate(0deg) scaleX(0.72) scaleY(0.72);
-  transform-origin: center bottom;
   pointer-events: none;
 }
 
@@ -577,7 +582,6 @@ body {
 .love-tree.tree--final {
   opacity: 1;
   animation: none;
-  transform: translateY(0) rotate(0deg) scaleX(1) scaleY(1);
 }
 
 .tree-trunk {
@@ -589,18 +593,6 @@ body {
   background: linear-gradient(180deg, #9a6948 0%, #7a4c31 58%, #673c26 100%);
   box-shadow: inset 0 -7px 14px rgba(0, 0, 0, 0.15), inset 0 4px 6px rgba(255, 229, 204, 0.18);
   position: relative;
-}
-
-.tree-trunk::after {
-  content: "";
-  position: absolute;
-  left: 50%;
-  bottom: -6px;
-  transform: translateX(-50%);
-  width: 40px;
-  height: 10px;
-  border-radius: 999px;
-  background: rgba(98, 58, 37, 0.45);
 }
 
 .tree-canopy {
@@ -869,17 +861,17 @@ body {
 @keyframes tree-grow {
   0% {
     opacity: 0;
-    transform: translate3d(0, 30px, 0) scale(0.74);
+    transform: translateX(-50%) translateY(30px) scale(0.74);
   }
 
   45% {
     opacity: 0.8;
-    transform: translate3d(0, 8px, 0) scale(0.9);
+    transform: translateX(-50%) translateY(8px) scale(0.9);
   }
 
   100% {
     opacity: 1;
-    transform: translate3d(0, 0, 0) scale(1);
+    transform: translateX(-50%) translateY(0) scale(1);
   }
 }
 

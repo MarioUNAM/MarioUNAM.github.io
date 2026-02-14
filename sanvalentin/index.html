@@ -27,6 +27,11 @@
     </section>
 
     <main id="scene" aria-live="polite">
+      <div id="phase-progress" class="phase-progress" role="status" aria-live="polite" aria-label="Progreso de la historia">
+        <span data-phase-step="intro" class="is-active">Semilla</span>
+        <span data-phase-step="tree">Crecimiento</span>
+        <span data-phase-step="revealMessage">Carta</span>
+      </div>
       <div id="falling-hearts-layer" class="falling-hearts-layer" aria-hidden="true"></div>
       <div class="scene-track">
         <section id="intro-view" class="view is-active">
@@ -101,7 +106,8 @@
     </button>
 
     <div class="floating-controls">
-      <button id="restart-button" type="button" aria-label="Repetir animación desde el inicio">↺ Repetir animación</button>
+      <button id="restart-button" type="button" aria-label="Revivir animación desde semilla">↺ Revivir animación</button>
+      <button id="intensity-toggle" type="button" aria-label="Cambiar intensidad visual" aria-live="polite">✨ Intensidad: Normal</button>
       <button id="theme-toggle" type="button" aria-pressed="false" aria-label="Activar noche romántica">🌙 Noche romántica</button>
     </div>
 

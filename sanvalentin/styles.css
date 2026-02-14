@@ -432,16 +432,21 @@ body {
 }
 
 .heart {
+  --heart-translate-y: 0px;
+  --heart-scale: 1;
+  --heart-rotate: 0deg;
+  --heart-radius: 0%;
   display: inline-block;
   position: relative;
   width: var(--heart-base);
   aspect-ratio: 1 / 1;
-  transform: translateZ(0) scale(1);
+  transform: translate3d(0, var(--heart-translate-y), 0) rotate(var(--heart-rotate)) scale(var(--heart-scale));
   transform-origin: center;
+  border-radius: var(--heart-radius);
   filter: drop-shadow(0 8px 14px rgba(122, 30, 70, 0.2)) drop-shadow(0 2px 4px rgba(122, 30, 70, 0.15));
-  transition: transform var(--t-fast) var(--motion-ease), filter var(--t-fast) var(--motion-ease);
+  transition: transform 140ms cubic-bezier(0.26, 0.72, 0.3, 1), border-radius 140ms cubic-bezier(0.22, 0.78, 0.26, 1), filter var(--t-fast) var(--motion-ease);
   backface-visibility: hidden;
-  will-change: transform;
+  will-change: transform, border-radius;
 }
 
 .heart img {
@@ -452,15 +457,31 @@ body {
   -webkit-user-drag: none;
 }
 
-.heart.is-morphing {
-  transform: translate3d(0, -4px, 0) scale(0.84);
-  opacity: 0.96;
-  transition: transform var(--t-medium) var(--morph-ease), opacity var(--t-medium) var(--morph-ease), border-radius var(--t-medium) var(--morph-ease);
+.heart.heart-soften {
+  --heart-translate-y: -1px;
+  --heart-scale: 0.94;
+  --heart-rotate: -1deg;
+  --heart-radius: 16% 14% 18% 14% / 16% 18% 14% 16%;
+  opacity: 0.98;
 }
 
+.heart.heart-shrink {
+  --heart-translate-y: -3px;
+  --heart-scale: 0.83;
+  --heart-rotate: -3deg;
+  --heart-radius: 34% 30% 40% 28% / 34% 40% 28% 32%;
+  opacity: 0.97;
+}
+
+.heart.seed-form,
 .heart.is-seed {
+  --heart-translate-y: -2px;
+  --heart-scale: 0.72;
+  --heart-rotate: -8deg;
+  --heart-radius: 58% 42% 62% 38% / 45% 55% 52% 48%;
   border-radius: 58% 42% 62% 38% / 45% 55% 52% 48%;
-  transform: translate3d(0, -2px, 0) scale(0.68) rotate(-8deg);
+  transition-duration: 180ms;
+  transition-timing-function: cubic-bezier(0.2, 0.78, 0.24, 1);
 }
 
 .heart.is-seed img {
@@ -468,7 +489,7 @@ body {
 }
 
 .heart-button:hover .heart {
-  transform: translateZ(0) scale(1.06);
+  --heart-scale: 1.06;
   filter: drop-shadow(0 10px 16px rgba(122, 30, 70, 0.24)) drop-shadow(0 3px 6px rgba(122, 30, 70, 0.18));
 }
 
@@ -478,7 +499,7 @@ body {
 }
 
 .heart-button:focus-visible .heart {
-  transform: translateZ(0) scale(1.06);
+  --heart-scale: 1.06;
   filter: drop-shadow(0 10px 16px rgba(122, 30, 70, 0.24)) drop-shadow(0 3px 6px rgba(122, 30, 70, 0.18));
 }
 
@@ -1020,7 +1041,9 @@ body {
   .love-tree,
   .love-tree.is-visible,
   .heart,
-  .heart.is-morphing,
+  .heart.heart-soften,
+  .heart.heart-shrink,
+  .heart.seed-form,
   .heart-button.is-falling,
   #ground,
   #ground.is-visible {

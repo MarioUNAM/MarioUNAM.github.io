@@ -71,6 +71,8 @@ const TIMELINE_DURATIONS_MS = {
   treeScaleupFast: INTRO_PHASE_TIMINGS_MS.tree_scaleup,
   leavesFallSlow: INTRO_PHASE_TIMINGS_MS.leaves_fall,
 };
+
+const HEART_MORPH_STAGES = ["heart-soften", "heart-shrink", "seed-form", "is-seed"];
 const VALID_TRANSITIONS = {
   [STATES.IDLE]: [STATES.HEART_TO_SEED_FAST],
   [STATES.HEART_TO_SEED_FAST]: [STATES.SEED_FALL],
@@ -976,6 +978,67 @@ function showTree() {
   playMilestoneCue("sprout");
 }
 
+function resetHeartMorphStages() {
+  if (!heart) return;
+  heart.classList.remove(...HEART_MORPH_STAGES);
+}
+
+function runHeartToSeedMorphSequence() {
+  if (!heart || prefersReducedMotion) {
+    heart?.classList.add("seed-form", "is-seed");
+    return Promise.resolve();
+  }
+
+  resetHeartMorphStages();
+
+  return new Promise((resolve) => {
+    let finished = false;
+    let timeoutId = null;
+
+    const cleanup = () => {
+      heart.removeEventListener("transitionend", onTransitionEnd);
+      if (timeoutId) {
+        window.clearTimeout(timeoutId);
+        timeoutId = null;
+      }
+    };
+
+    const finish = () => {
+      if (finished) return;
+      finished = true;
+      cleanup();
+      resolve();
+    };
+
+    const advanceToStage = (stageClass) => {
+      heart.classList.add(stageClass);
+    };
+
+    let stageIndex = 0;
+    const stageClasses = ["heart-soften", "heart-shrink", "seed-form"];
+
+    const onTransitionEnd = (event) => {
+      if (event.target !== heart || event.propertyName !== "transform") return;
+      if (stageIndex < stageClasses.length - 1) {
+        stageIndex += 1;
+        requestAnimationFrame(() => advanceToStage(stageClasses[stageIndex]));
+        return;
+      }
+      heart.classList.add("is-seed");
+      finish();
+    };
+
+    heart.addEventListener("transitionend", onTransitionEnd);
+    advanceToStage(stageClasses[stageIndex]);
+
+    timeoutId = window.setTimeout(finish, PHASE_TIMEOUTS_MS.morph + 420);
+    registerPhaseCleanup(() => {
+      cleanup();
+      finish();
+    });
+  });
+}
+
 function waitForSeedLanding() {
   return new Promise((resolve) => {
     let finished = false;
@@ -1096,16 +1159,12 @@ const INTRO_FLOW_MACHINE = {
   [STATES.HEART_TO_SEED_FAST]: {
     enter: () => {
       heartButton.disabled = true;
-      heart.classList.add("is-morphing", "is-seed");
       ground.classList.add("is-visible");
     },
-    wait: () => {
-      if (prefersReducedMotion) return Promise.resolve();
-      return Promise.all([
-        waitForMotionEnd({ element: heart, eventName: "transitionend", timeoutMs: PHASE_TIMEOUTS_MS.morph, filter: (e) => e.propertyName === "transform" }),
-        waitForMotionEnd({ element: ground, eventName: "transitionend", timeoutMs: PHASE_TIMEOUTS_MS.morph, filter: (e) => e.propertyName === "transform" }),
-      ]);
-    },
+    wait: () => Promise.all([
+      runHeartToSeedMorphSequence(),
+      waitForMotionEnd({ element: ground, eventName: "transitionend", timeoutMs: PHASE_TIMEOUTS_MS.morph, filter: (e) => e.propertyName === "transform" }),
+    ]),
   },
   [STATES.SEED_FALL]: {
     enter: () => {
@@ -1246,7 +1305,7 @@ function resetExperience() {
   pauseLeavesEmitter();
   heartButton.disabled = false;
   heartButton.classList.remove("is-hidden", "is-falling", "is-landed");
-  heart.classList.remove("is-morphing", "is-seed");
+  resetHeartMorphStages();
   ground.classList.remove("is-visible");
   loveTree.classList.remove("is-visible", "is-growing", "tree--final");
   introView.classList.add("is-active");

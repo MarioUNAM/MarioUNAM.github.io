@@ -11,7 +11,7 @@ const elapsedDays = document.querySelector("#elapsed-days");
 const elapsedHours = document.querySelector("#elapsed-hours");
 const elapsedMinutes = document.querySelector("#elapsed-minutes");
 const counterMessage = document.querySelector("#counter-message");
-const treeCanopy = document.querySelector("#tree-canopy");
+const treeCanopy = loveTree?.querySelector(".tree-canopy") ?? document.querySelector("#tree-canopy");
 const poemContainer = document.querySelector("#poem");
 const finalDedication = document.querySelector("#final-dedication");
 const fallingHeartsLayer = document.querySelector("#falling-hearts-layer");
@@ -66,6 +66,11 @@ let microIntroTimeoutId = null;
 let microIntroHasFinished = false;
 let hasTreeReachedFinalState = false;
 
+function syncScenePhase(phase) {
+  if (!scene) return;
+  scene.dataset.phase = phase;
+}
+
 const fallingHeartPool = [];
 let activeFallingHeartCount = 0;
 let fallingHeartEmitterRafId = null;
@@ -117,6 +122,7 @@ function transitionTo(nextState) {
   const allowedStates = VALID_TRANSITIONS[currentState] ?? [];
   if (!allowedStates.includes(nextState)) return false;
   currentState = nextState;
+  syncScenePhase(nextState);
   return true;
 }
 
@@ -664,7 +670,7 @@ function showMessageView() {
   lockTreeAsFinalState();
   introView.classList.add("is-active"); introView.setAttribute("aria-hidden", "false");
   messageView.classList.add("is-active"); messageView.setAttribute("aria-hidden", "false");
-  scene.classList.add("show-message"); updateElapsedCounter();
+  updateElapsedCounter();
   if (!elapsedCounterIntervalId) elapsedCounterIntervalId = setInterval(updateElapsedCounter, 60000);
   typePoem(poemLines, typewriterConfig, activeRunToken);
   startFallingHeartShower();
@@ -705,6 +711,7 @@ async function runIntroSequence(runToken) {
 function resetExperience() {
   activeRunToken += 1;
   currentState = STATES.INTRO;
+  syncScenePhase(STATES.INTRO);
   poemHasStarted = false;
   pauseFallingHeartEmitter();
   heartButton.disabled = false;
@@ -712,7 +719,6 @@ function resetExperience() {
   heart.classList.remove("is-morphing");
   ground.classList.remove("is-visible");
   loveTree.classList.remove("is-visible", "tree--final");
-  scene.classList.remove("show-message");
   introView.classList.add("is-active");
   introView.setAttribute("aria-hidden", "false");
   messageView.classList.remove("is-active");
@@ -768,6 +774,7 @@ updateMusicToggleUI();
 updateMuteToggleUI();
 updateThemeToggleUI();
 syncThemePalettes();
+syncScenePhase(currentState);
 initializeParticles();
 buildCanopyHearts(getCanopyHeartCount());
 buildFallingHeartPool();

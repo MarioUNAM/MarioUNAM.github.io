@@ -243,38 +243,41 @@ body {
 
 .scene-track {
   position: relative;
-  width: 100%;
+  width: 200%;
   min-height: 100svh;
   min-height: 100dvh;
+  display: flex;
+  transform: translateX(0);
+  transition: transform 860ms var(--motion-ease);
 }
 
 .view {
-  width: 100%;
+  width: 50%;
   min-height: 100svh;
   min-height: 100dvh;
+  flex: 0 0 50%;
   text-align: center;
   padding: 0 var(--space-sm);
 }
 
 #intro-view {
   position: relative;
-  z-index: 1;
+  z-index: 2;
 }
 
 #message-view {
-  position: absolute;
-  inset: 0;
-  z-index: 2;
+  position: relative;
+  z-index: 1;
   text-align: left;
-  opacity: 0;
-  transform: translateX(12%);
+  opacity: 1;
   pointer-events: none;
-  transition: opacity 760ms var(--motion-ease), transform 860ms var(--motion-ease);
 }
 
-#scene.show-message #message-view {
-  opacity: 1;
-  transform: translateX(0);
+#scene[data-phase="revealMessage"] .scene-track {
+  transform: translateX(-50%);
+}
+
+#scene[data-phase="revealMessage"] #message-view {
   pointer-events: auto;
 }
 
@@ -945,7 +948,6 @@ body {
     scroll-behavior: auto !important;
   }
 
-  .scene-track,
   .stars-layer,
   .canopy-heart,
   .final-dedication,
@@ -975,6 +977,10 @@ body {
   .love-tree.is-visible {
     opacity: 1;
     transform: translateY(0) rotate(0deg) scaleX(1) scaleY(1);
+  }
+
+  #scene[data-phase="revealMessage"] .scene-track {
+    transform: translateX(-50%);
   }
 }
 

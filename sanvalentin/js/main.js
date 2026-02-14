@@ -39,6 +39,9 @@ function bootstrapApp() {
     rafRegistry,
     resources,
     orchestrator,
+    animationContext: {
+      seedImpact: null,
+    },
   };
 
   const animations = initAnimations(sharedDependencies);

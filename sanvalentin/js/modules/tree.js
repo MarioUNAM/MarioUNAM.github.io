@@ -110,7 +110,7 @@ function ensureCanopy(canopyGroup) {
 /**
  * @param {{ observer: any, stateMachine: any, states: Record<string,string>, rafRegistry: any }} deps
  */
-export function initTree({ observer, stateMachine, states, rafRegistry }) {
+export function initTree({ observer, stateMachine, states, rafRegistry, animationContext }) {
   const treeHost = qs('[data-role="tree"]');
   if (!treeHost) {
     return null;
@@ -118,6 +118,42 @@ export function initTree({ observer, stateMachine, states, rafRegistry }) {
 
   const treeNodes = getTreeNodes(treeHost);
   const branchNodes = [treeNodes.trunk, ...treeNodes.branches];
+
+  const context = animationContext || { seedImpact: null };
+
+  const applyImpactLayout = () => {
+    const seedImpact = context.seedImpact;
+    if (!seedImpact) {
+      return;
+    }
+
+    const hostRect = treeHost.getBoundingClientRect();
+    if (hostRect.width <= 0 || hostRect.height <= 0) {
+      return;
+    }
+
+    const localImpactX = Math.min(hostRect.width - 14, Math.max(14, seedImpact.impactX - hostRect.left));
+    const localGroundY = Math.min(hostRect.height - 8, Math.max(hostRect.height * 0.55, seedImpact.groundY - hostRect.top));
+
+    const svgX = (localImpactX / hostRect.width) * 180;
+    const svgGroundY = (localGroundY / hostRect.height) * 220;
+    const trunkTopY = svgGroundY - 80;
+
+    treeNodes.trunk.setAttribute('d', `M${svgX} ${svgGroundY} L${svgX} ${trunkTopY}`);
+
+    const branchDefinitions = [
+      `M${svgX} ${trunkTopY + 20} C${svgX - 10} ${trunkTopY + 13} ${svgX - 18} ${trunkTopY + 1} ${svgX - 24} ${trunkTopY - 11}`,
+      `M${svgX} ${trunkTopY + 15} C${svgX + 10} ${trunkTopY + 7} ${svgX + 19} ${trunkTopY - 3} ${svgX + 26} ${trunkTopY - 17}`,
+      `M${svgX} ${trunkTopY} C${svgX - 10} ${trunkTopY - 9} ${svgX - 16} ${trunkTopY - 22} ${svgX - 21} ${trunkTopY - 33}`,
+      `M${svgX} ${trunkTopY - 3} C${svgX + 12} ${trunkTopY - 11} ${svgX + 21} ${trunkTopY - 23} ${svgX + 28} ${trunkTopY - 35}`,
+    ];
+
+    treeNodes.branches.forEach((branchNode, index) => {
+      branchNode.setAttribute('d', branchDefinitions[index]);
+    });
+
+    treeNodes.wrapper.style.transformOrigin = `${(svgX / 180) * 100}% 100%`;
+  };
 
   let growthFrameId = 0;
   let canopyNodes = [];
@@ -142,6 +178,7 @@ export function initTree({ observer, stateMachine, states, rafRegistry }) {
     treeNodes.wrapper.style.opacity = '0';
     treeNodes.wrapper.style.transform = '';
 
+    applyImpactLayout();
     branchNodes.forEach((pathNode) => setDrawProgress(pathNode, 0));
 
     canopyNodes = ensureCanopy(treeNodes.canopyGroup);
@@ -159,6 +196,7 @@ export function initTree({ observer, stateMachine, states, rafRegistry }) {
 
   const growTree = () => {
     cancelGrowth();
+    applyImpactLayout();
     treeNodes.wrapper.style.opacity = '1';
 
     const durationMs = 1200;
@@ -188,6 +226,7 @@ export function initTree({ observer, stateMachine, states, rafRegistry }) {
   };
 
   const fillCanopy = () => {
+    applyImpactLayout();
     treeNodes.wrapper.style.opacity = '1';
     canopyNodes = ensureCanopy(treeNodes.canopyGroup);
 

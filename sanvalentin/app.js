@@ -36,9 +36,7 @@ const MUSIC_STORAGE_KEY = "musicOn";
 const MICRO_INTRO_STORAGE_KEY = "skipMicroIntro";
 const INTENSITY_STORAGE_KEY = "visualIntensity";
 const DEFAULT_MUSIC_VOLUME = 0.2;
-const MICRO_INTRO_DURATION_MS = 2000;
-
-const STATES = { INTRO: "intro", MORPH: "morph", FALLING: "falling", TREE: "tree", REVEAL_MESSAGE: "revealMessage" };
+const STATES = { IDLE: "idle", INTRO: "intro", MORPH: "morph", FALLING: "falling", TREE: "tree", REVEAL_MESSAGE: "revealMessage" };
 const INTENSITY_LEVELS = { SOFT: "soft", NORMAL: "normal" };
 const PHASE_TIMEOUTS_MS = { morph: 760, falling: 1240, tree: 1320 };
 const PHASE_DELAYS_MS = { afterMorph: 60, afterFalling: 70, afterTree: 60 };
@@ -50,7 +48,7 @@ const VALID_TRANSITIONS = {
   [STATES.REVEAL_MESSAGE]: [],
 };
 
-let currentState = STATES.INTRO;
+let currentState = STATES.IDLE;
 const poemLines = ["Eres luz en mis mañanas,", "calma dulce en tempestad,", "cada latido me recuerda", "que contigo es hogar."];
 const typewriterConfig = { letterDelayMs: 45, lineDelayMs: 350 };
 
@@ -68,6 +66,7 @@ let shouldSkipMicroIntro = false;
 let visualIntensity = INTENSITY_LEVELS.NORMAL;
 let microIntroTimeoutId = null;
 let microIntroHasFinished = false;
+let hasStarted = false;
 let hasTreeReachedFinalState = false;
 let introMachineInFlight = false;
 let canopyHeartNodes = [];
@@ -100,7 +99,7 @@ function keepLoveHeadingPersistent() {
 
 function syncPhaseProgress(phase) {
   if (!phaseProgress || phaseProgressSteps.length === 0) return;
-  const phaseMap = { intro: "intro", morph: "intro", falling: "intro", tree: "tree", revealMessage: "revealMessage" };
+  const phaseMap = { idle: "intro", intro: "intro", morph: "intro", falling: "intro", tree: "tree", revealMessage: "revealMessage" };
   const activeStep = phaseMap[phase] ?? "intro";
   phaseProgressSteps.forEach((stepNode) => {
     const isActive = stepNode.dataset.phaseStep === activeStep;
@@ -859,9 +858,6 @@ function finishMicroIntro() {
     microIntroTimeoutId = null;
   }
   hideMicroIntroOverlay();
-  if (currentState === STATES.INTRO) {
-    startIntroStateMachine();
-  }
 }
 
 function startMicroIntro() {
@@ -874,7 +870,6 @@ function startMicroIntro() {
   microIntro.classList.remove("is-hidden");
   microIntro.classList.add("is-active");
   microIntro.setAttribute("aria-hidden", "false");
-  microIntroTimeoutId = setTimeout(finishMicroIntro, MICRO_INTRO_DURATION_MS);
 }
 
 function normalizeTreeTransform() {
@@ -1054,11 +1049,31 @@ function startIntroStateMachine() {
   });
 }
 
+function handleHeartStart(event) {
+  if (!heartButton || hasStarted) return;
+  if (event.type === "keydown") {
+    const isActivationKey = event.key === "Enter" || event.key === " " || event.key === "Space";
+    if (!isActivationKey) return;
+    event.preventDefault();
+  }
+
+  hasStarted = true;
+  if (scene) scene.classList.add("is-started");
+  heartButton.disabled = true;
+  if (!microIntroHasFinished) finishMicroIntro();
+  if (currentState === STATES.IDLE) {
+    currentState = STATES.INTRO;
+    syncScenePhase(STATES.INTRO);
+  }
+  startIntroStateMachine();
+}
+
 function resetExperience() {
   keepLoveHeadingPersistent();
   activeRunToken += 1;
-  currentState = STATES.INTRO;
-  syncScenePhase(STATES.INTRO);
+  currentState = STATES.IDLE;
+  syncScenePhase(STATES.IDLE);
+  hasStarted = false;
   poemHasStarted = false;
   introMachineInFlight = false;
   pauseFallingHeartEmitter();
@@ -1077,6 +1092,7 @@ function resetExperience() {
   fallingLayoutCache = null;
   microIntroHasFinished = false;
   hasTreeReachedFinalState = false;
+  if (scene) scene.classList.remove("is-started");
   hideMicroIntroOverlay();
 }
 
@@ -1085,10 +1101,8 @@ microIntroHideNextCheckbox?.addEventListener("change", (event) => {
   setMicroIntroPreference(event.currentTarget.checked);
 });
 
-heartButton?.addEventListener("click", () => {
-  if (currentState !== STATES.INTRO) return;
-  startIntroStateMachine();
-});
+heartButton?.addEventListener("click", handleHeartStart);
+heartButton?.addEventListener("keydown", handleHeartStart);
 musicToggleButton?.addEventListener("click", () => {
   ensureBackgroundMusicSource();
   registerMusicGesture();
@@ -1130,7 +1144,8 @@ buildFallingHeartPool();
 fallingLayoutCache = null;
 
 if (shouldSkipMicroIntro) {
-  finishMicroIntro();
+  hideMicroIntroOverlay();
+  microIntroHasFinished = true;
 } else {
   startMicroIntro();
 }

@@ -119,14 +119,100 @@ function createProceduralTimeline() {
   };
 }
 
+function createTypewriter({ target, text, typingMs = 36, punctuationPauseMs = 140 }) {
+  let timerId = 0;
+  let runToken = 0;
+
+  const clearTimer = () => {
+    if (!timerId) {
+      return;
+    }
+
+    clearTimeout(timerId);
+    timerId = 0;
+  };
+
+  const cancel = () => {
+    runToken += 1;
+    clearTimer();
+  };
+
+  const reset = () => {
+    cancel();
+    if (target) {
+      target.textContent = '';
+    }
+  };
+
+  const nextDelay = (character) => {
+    if (/[,:;.!?…]/.test(character)) {
+      return punctuationPauseMs;
+    }
+
+    return character === ' ' ? Math.max(typingMs * 0.55, 14) : typingMs;
+  };
+
+  const play = () => {
+    if (!target) {
+      return Promise.resolve(false);
+    }
+
+    reset();
+
+    if (!text) {
+      return Promise.resolve(true);
+    }
+
+    const activeToken = runToken;
+    let index = 0;
+
+    return new Promise((resolve) => {
+      const step = () => {
+        if (activeToken !== runToken) {
+          resolve(false);
+          return;
+        }
+
+        if (index >= text.length) {
+          timerId = 0;
+          resolve(true);
+          return;
+        }
+
+        index += 1;
+        target.textContent = text.slice(0, index);
+        timerId = window.setTimeout(step, nextDelay(text[index - 1]));
+      };
+
+      step();
+    });
+  };
+
+  return {
+    play,
+    cancel,
+    reset,
+  };
+}
+
 export function initAnimations({ observer, stateMachine, states, domListeners }) {
   const introRoot = qs('.app');
   const heartEl = qs('[data-role="heart"]', introRoot);
   const seedEl = qs('[data-role="seed"]', introRoot);
   const letterEl = qs('[data-role="letter"]', introRoot);
   const treeEl = qs('[data-role="tree"]', introRoot);
+  const typewriterEl = qs('[data-role="typewriter"]', introRoot);
+  const reviveButton = qs('[data-action="revive-animation"]', introRoot);
+
+  const letterMessage =
+    typewriterEl?.dataset.typewriterText?.trim() ||
+    'Me haces feliz incluso en los días más difíciles, y contigo todo se siente posible. Gracias por tanto amor. ❤️';
 
   const timeline = createProceduralTimeline();
+  const typewriter = createTypewriter({
+    target: typewriterEl,
+    text: letterMessage,
+  });
 
   const resetVisuals = () => {
     [heartEl, seedEl, letterEl, treeEl].forEach((node) => {
@@ -201,29 +287,53 @@ export function initAnimations({ observer, stateMachine, states, domListeners })
     },
   ];
 
-  const handleIntroInteraction = () => {
+  const runIntroSequence = (source = 'timeline') => {
     if (stateMachine.getState() !== states.HEART_IDLE) {
-      return;
+      return Promise.resolve(false);
     }
 
     observer.emit(observer.lifecycle.ANIMATION_START, {
       scope: 'intro',
       state: states.HEART_IDLE,
+      source,
     });
 
-    timeline
-      .play(buildIntroSequence())
-      .finally(() => {
-        observer.emit(observer.lifecycle.ANIMATION_END, {
-          scope: 'intro',
-          state: stateMachine.getState(),
-        });
+    return timeline.play(buildIntroSequence()).finally(() => {
+      observer.emit(observer.lifecycle.ANIMATION_END, {
+        scope: 'intro',
+        state: stateMachine.getState(),
+        source,
       });
+    });
+  };
+
+  const handleIntroInteraction = () => {
+    runIntroSequence('heart-click');
+  };
+
+  const handleReviveAnimation = (event) => {
+    event.preventDefault();
+    event.stopPropagation();
+
+    timeline.cancelAll();
+    typewriter.reset();
+    resetVisuals();
+
+    stateMachine.reset();
+    stateMachine.transition(states.HEART_IDLE, {
+      source: 'revive-animation',
+    });
+
+    runIntroSequence('revive-animation');
   };
 
   const unsubscribeOnState = observer.subscribe(
     observer.lifecycle.STATE_CHANGED,
     ({ to }) => {
+      if (to === states.LETTER_VIEW) {
+        typewriter.play();
+      }
+
       observer.emit(observer.lifecycle.ANIMATION_START, {
         scope: 'animations',
         state: to,
@@ -239,16 +349,24 @@ export function initAnimations({ observer, stateMachine, states, domListeners })
   );
 
   const unsubscribeIntroClick = domListeners.on(introRoot, 'click', handleIntroInteraction);
+  const unsubscribeReviveClick = domListeners.on(
+    reviveButton,
+    'click',
+    handleReviveAnimation,
+  );
 
   const unsubscribeReset = observer.subscribe(observer.lifecycle.APP_RESET, () => {
     timeline.cancelAll();
+    typewriter.reset();
     resetVisuals();
   });
 
   observer.registerCleanup(() => {
     timeline.cancelAll();
+    typewriter.cancel();
   });
   observer.registerCleanup(unsubscribeReset);
+  observer.registerCleanup(unsubscribeReviveClick);
   observer.registerCleanup(unsubscribeIntroClick);
   observer.registerCleanup(unsubscribeOnState);
 

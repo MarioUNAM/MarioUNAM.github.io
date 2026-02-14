@@ -367,35 +367,11 @@ body {
 }
 
 #tree-panel .tree-canopy {
-  --canopy-right-lobe-x: 47%;
   width: var(--tree-width);
   height: var(--tree-height);
-  margin-top: -12px;
+  margin-top: -8px;
   margin-bottom: -10px;
-  transform: rotate(-45deg);
-  border-radius: 22px;
-  background: linear-gradient(160deg, var(--heart-2), var(--heart-6));
   box-shadow: none;
-}
-
-#tree-panel .tree-canopy::before,
-#tree-panel .tree-canopy::after {
-  content: "";
-  position: absolute;
-  width: 100%;
-  height: 100%;
-  border-radius: 50%;
-  background: inherit;
-}
-
-#tree-panel .tree-canopy::before {
-  top: -50%;
-  left: 0;
-}
-
-#tree-panel .tree-canopy::after {
-  top: 0;
-  left: var(--canopy-right-lobe-x);
 }
 
 .ground-line {
@@ -542,8 +518,37 @@ body {
   animation: tree-glow 3.2s ease-in-out infinite;
 }
 
+.tree-canopy--rendered {
+  isolation: isolate;
+}
+
+.tree-branches {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+  filter: drop-shadow(0 6px 8px rgba(84, 36, 32, 0.22));
+}
+
+.tree-branch {
+  fill: none;
+  stroke: #7a4633;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  vector-effect: non-scaling-stroke;
+}
+
+.tree-branch:nth-child(3n) {
+  stroke: #8b523c;
+}
+
+.tree-branch:nth-child(4n) {
+  stroke: #6f3f2f;
+}
+
 .canopy-heart {
-  --heart-size: 26px;
+  --heart-size: clamp(14px, 2.35vw, 24px);
   --heart-scale: 1;
   --parallax-x: 0px;
   --parallax-y: 0px;

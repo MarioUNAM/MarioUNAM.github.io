@@ -1,19 +1,19 @@
 :root {
-  color-scheme: light;
-  --bg-top: #fff6ed;
-  --bg-bottom: #ffe1ec;
-  --text: #3d1028;
-  --focus: #4c1d95;
+  color-scheme: dark;
+  --bg-top: #2a0c29;
+  --bg-bottom: #13061e;
+  --text: #ffe4f5;
+  --focus: #f9a8d4;
   --font-serif: "Cormorant Garamond", "Garamond", "Times New Roman", serif;
   --font-sans: "Inter", "Segoe UI", "Helvetica Neue", Arial, sans-serif;
 
-  /* Paleta de corazones (rosa/rojo/coral). */
-  --heart-1: #f8b9cf;
-  --heart-2: #f49bc0;
-  --heart-3: #de5d98;
-  --heart-4: #ee7d83;
-  --heart-5: #d95f7a;
-  --heart-6: #cb4e69;
+  /* Paleta de corazones (alto contraste en fondo nocturno). */
+  --heart-1: #f4aacb;
+  --heart-2: #f889b8;
+  --heart-3: #f062b0;
+  --heart-4: #ff7f9a;
+  --heart-5: #e8568f;
+  --heart-6: #d63f77;
 
   /* Paleta armónica san valentín (pastel → acento). */
   --rose-pastel: var(--heart-1);
@@ -23,8 +23,8 @@
   --rose-medium: var(--heart-5);
   --red-soft: var(--heart-6);
 
-  --primary: var(--fuchsia-soft);
-  --primary-dark: #b0467b;
+  --primary: #f472b6;
+  --primary-dark: #db2777;
   --motion-ease: cubic-bezier(0.22, 0.61, 0.36, 1);
   --morph-ease: cubic-bezier(0.28, 0.84, 0.42, 1);
   --fall-ease: cubic-bezier(0.2, 0.72, 0.3, 1);
@@ -41,59 +41,31 @@
   --tree-width: clamp(340px, 40vw, 540px);
   --tree-height: clamp(290px, 35vw, 450px);
 
-  --particle-1: rgba(248, 185, 207, 0.72);
-  --particle-2: rgba(244, 155, 192, 0.7);
-  --particle-3: rgba(222, 93, 152, 0.68);
-  --particle-4: rgba(238, 125, 131, 0.64);
+  --particle-1: rgba(244, 170, 203, 0.72);
+  --particle-2: rgba(248, 137, 184, 0.7);
+  --particle-3: rgba(240, 98, 176, 0.68);
+  --particle-4: rgba(255, 127, 154, 0.64);
 }
 
 * {
   box-sizing: border-box;
 }
 
-:root[data-theme='day'] {
-  --heart-1: #d46b8d;
-  --heart-2: #c84a81;
-  --heart-3: #b73a84;
-  --heart-4: #b93f62;
-  --heart-5: #9b274f;
-  --heart-6: #7d1538;
-
-  --particle-1: rgba(155, 37, 79, 0.72);
-  --particle-2: rgba(183, 58, 132, 0.68);
-  --particle-3: rgba(200, 74, 129, 0.66);
-  --particle-4: rgba(125, 21, 56, 0.62);
-}
-
-
-:root[data-theme="night"] {
-  color-scheme: dark;
-  --bg-top: #2a0c29;
-  --bg-bottom: #13061e;
-  --text: #ffe4f5;
-  --focus: #f9a8d4;
-  --primary: #f472b6;
-  --primary-dark: #db2777;
-}
 
 .stars-layer {
   position: fixed;
   inset: 0;
   pointer-events: none;
-  opacity: 0;
+  opacity: 0.72;
   z-index: 0;
   transition: opacity 420ms var(--motion-ease);
+  animation: stars-glimmer 4.8s ease-in-out infinite;
   background-image:
     radial-gradient(circle at 10% 20%, rgba(255, 255, 255, 0.5) 1px, transparent 2px),
     radial-gradient(circle at 76% 10%, rgba(255, 215, 236, 0.5) 1px, transparent 2px),
     radial-gradient(circle at 45% 78%, rgba(255, 255, 255, 0.42) 1px, transparent 2px),
     radial-gradient(circle at 84% 56%, rgba(255, 215, 236, 0.38) 1px, transparent 2px);
   background-size: 260px 260px;
-}
-
-:root[data-theme="night"] .stars-layer {
-  opacity: 0.72;
-  animation: stars-glimmer 4.8s ease-in-out infinite;
 }
 
 
@@ -1128,24 +1100,24 @@ body {
 }
 
 
-:root[data-theme="night"] #message-panel {
+#message-panel {
   background: rgba(38, 14, 40, 0.68);
 }
 
-:root[data-theme="night"] .dedication,
-:root[data-theme="night"] .poem,
-:root[data-theme="night"] .signature,
-:root[data-theme="night"] .counter,
-:root[data-theme="night"] .poem-title,
-:root[data-theme="night"] .final-dedication,
-:root[data-theme="night"] .counter-label {
+.dedication,
+.poem,
+.signature,
+.counter,
+.poem-title,
+.final-dedication,
+.counter-label {
   color: #ffe3f6;
 }
 
-:root[data-theme="night"] .counter-unit {
+.counter-unit {
   background: transparent;
 }
 
-:root[data-theme="night"] .counter-number {
+.counter-number {
   color: #fff0fa;
 }

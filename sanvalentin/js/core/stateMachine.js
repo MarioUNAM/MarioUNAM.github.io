@@ -1,3 +1,9 @@
+/**
+ * Contrato de estados y eventos:
+ * - Estados válidos: INIT -> HEART_IDLE -> HEART_TO_SEED -> SEED_FALL -> TREE_GROW -> TREE_FULL -> LETTER_VIEW.
+ * - `state:changed`: payload { from, to, payload } en transiciones válidas.
+ * - `app:reset`: payload { state: 'INIT' } al reiniciar.
+ */
 export const STATES = Object.freeze({
   INIT: 'INIT',
   HEART_IDLE: 'HEART_IDLE',
@@ -18,68 +24,80 @@ const VALID_TRANSITIONS = Object.freeze({
   [STATES.LETTER_VIEW]: [],
 });
 
-function buildStateError(type, details) {
-  return {
-    type,
-    message: `[StateMachine] ${type}`,
-    details,
-  };
-}
+const STATE_VALUES = Object.freeze(Object.values(STATES));
 
+/**
+ * @typedef {{ type: string, message: string, details: { from: string, to?: string } }} StateMachineError
+ * @typedef {{ ok: true, state: string, payload: unknown } | { ok: false, error: StateMachineError }} TransitionResult
+ */
+
+const isValidState = (state) => STATE_VALUES.includes(state);
+
+const buildStateError = (type, details) => ({
+  type,
+  message: `[StateMachine] ${type}`,
+  details,
+});
+
+/**
+ * @param {string} [initialState=STATES.INIT]
+ * @param {{ emit?: Function, lifecycle?: { STATE_CHANGED: string, APP_RESET: string } }} [observer]
+ */
 export function createStateMachine(initialState = STATES.INIT, observer) {
-  let currentState = Object.values(STATES).includes(initialState)
-    ? initialState
-    : STATES.INIT;
+  let currentState = isValidState(initialState) ? initialState : STATES.INIT;
   let lastPayload;
+
+  const canTransition = (from, to) => {
+    if (!VALID_TRANSITIONS[from] || !isValidState(to)) {
+      return false;
+    }
+
+    return VALID_TRANSITIONS[from].includes(to);
+  };
+
+  /** @param {string} to @param {unknown} payload @returns {TransitionResult} */
+  const transition = (to, payload) => {
+    if (!isValidState(to)) {
+      return {
+        ok: false,
+        error: buildStateError('INVALID_TARGET_STATE', { from: currentState, to }),
+      };
+    }
+
+    if (!canTransition(currentState, to)) {
+      return {
+        ok: false,
+        error: buildStateError('ILLEGAL_TRANSITION', { from: currentState, to }),
+      };
+    }
+
+    const previousState = currentState;
+    currentState = to;
+    lastPayload = payload;
+
+    observer?.emit?.(observer.lifecycle.STATE_CHANGED, {
+      from: previousState,
+      to: currentState,
+      payload: lastPayload,
+    });
+
+    return { ok: true, state: currentState, payload: lastPayload };
+  };
+
+  const reset = () => {
+    currentState = STATES.INIT;
+    lastPayload = undefined;
+    observer?.emit?.(observer.lifecycle.APP_RESET, { state: currentState });
+    return currentState;
+  };
 
   return {
     getState() {
       return currentState;
     },
-    canTransition(from, to) {
-      if (!VALID_TRANSITIONS[from] || !Object.values(STATES).includes(to)) {
-        return false;
-      }
-
-      return VALID_TRANSITIONS[from].includes(to);
-    },
-    transition(to, payload) {
-      if (!Object.values(STATES).includes(to)) {
-        const error = buildStateError('INVALID_TARGET_STATE', {
-          from: currentState,
-          to,
-        });
-        console.warn(error.message, error.details);
-        return { ok: false, error };
-      }
-
-      if (!this.canTransition(currentState, to)) {
-        const error = buildStateError('ILLEGAL_TRANSITION', {
-          from: currentState,
-          to,
-        });
-        console.warn(error.message, error.details);
-        return { ok: false, error };
-      }
-
-      const previousState = currentState;
-      currentState = to;
-      lastPayload = payload;
-
-      observer?.emit(observer.lifecycle.STATE_CHANGED, {
-        from: previousState,
-        to: currentState,
-        payload: lastPayload,
-      });
-
-      return { ok: true, state: currentState, payload: lastPayload };
-    },
-    reset() {
-      currentState = STATES.INIT;
-      lastPayload = undefined;
-      observer?.emit(observer.lifecycle.APP_RESET, { state: currentState });
-      return currentState;
-    },
+    canTransition,
+    transition,
+    reset,
   };
 }
 

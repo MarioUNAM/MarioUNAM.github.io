@@ -1,5 +1,13 @@
 import { qs } from '../utils/dom.js';
 
+/**
+ * Contrato de módulo árbol:
+ * - Escucha `state:changed` para reaccionar a TREE_GROW y TREE_FULL.
+ * - Escucha `app:reset` para volver al estado inicial visual.
+ * - Emite `tree:grown` al finalizar el trazo de ramas.
+ * - Emite `tree:full` al completar el follaje.
+ */
+
 const SVG_NS = 'http://www.w3.org/2000/svg';
 const TREE_EVENTS = Object.freeze({
   GROWN: 'tree:grown',
@@ -8,13 +16,13 @@ const TREE_EVENTS = Object.freeze({
 
 let persistentTree;
 
-function createSvgNode(tagName, attributes = {}) {
+const createSvgNode = (tagName, attributes = {}) => {
   const node = document.createElementNS(SVG_NS, tagName);
   Object.entries(attributes).forEach(([key, value]) => {
     node.setAttribute(key, String(value));
   });
   return node;
-}
+};
 
 function createPersistentTree(root) {
   const wrapper = document.createElement('div');
@@ -46,19 +54,17 @@ function createPersistentTree(root) {
     'M90 140 C100 132 109 122 116 108',
     'M90 125 C80 116 74 103 69 92',
     'M90 122 C102 114 111 102 118 90',
-  ].map((path) =>
-    createSvgNode('path', {
-      d: path,
-      stroke: '#6e4634',
-      'stroke-width': '6',
-      'stroke-linecap': 'round',
-      fill: 'none',
-    }),
-  );
+  ].map((path) => createSvgNode('path', {
+    d: path,
+    stroke: '#6e4634',
+    'stroke-width': '6',
+    'stroke-linecap': 'round',
+    fill: 'none',
+  }));
 
   const canopyGroup = createSvgNode('g');
-
   [trunk, ...branches, canopyGroup].forEach((node) => svg.appendChild(node));
+
   wrapper.appendChild(svg);
   root.appendChild(wrapper);
 
@@ -74,11 +80,11 @@ function getTreeNodes(root) {
   return persistentTree;
 }
 
-function setDrawProgress(pathNode, progress) {
+const setDrawProgress = (pathNode, progress) => {
   const total = pathNode.getTotalLength();
   pathNode.style.strokeDasharray = String(total);
   pathNode.style.strokeDashoffset = String(total * (1 - progress));
-}
+};
 
 function ensureCanopy(canopyGroup) {
   if (canopyGroup.childNodes.length > 0) {
@@ -91,31 +97,32 @@ function ensureCanopy(canopyGroup) {
     { cx: 114, cy: 98, r: 20 },
     { cx: 78, cy: 70, r: 16 },
     { cx: 102, cy: 68, r: 16 },
-  ].map(({ cx, cy, r }) =>
-    createSvgNode('circle', {
-      cx,
-      cy,
-      r,
-      fill: '#e95f7f',
-      opacity: 0,
-    }),
-  );
+  ].map(({ cx, cy, r }) => createSvgNode('circle', {
+    cx,
+    cy,
+    r,
+    fill: '#e95f7f',
+    opacity: 0,
+  }));
 
   circles.forEach((circle) => canopyGroup.appendChild(circle));
   return circles;
 }
 
+/**
+ * @param {{ observer: any, stateMachine: any, states: Record<string,string>, rafRegistry: any }} deps
+ */
 export function initTree({ observer, stateMachine, states, rafRegistry }) {
   const appRoot = qs('.app');
   if (!appRoot) {
-    return;
+    return null;
   }
 
   const treeNodes = getTreeNodes(appRoot);
   const branchNodes = [treeNodes.trunk, ...treeNodes.branches];
+
   let growthFrameId = 0;
   let canopyNodes = [];
-
   let didEmitGrown = false;
   let didEmitFull = false;
 
@@ -148,15 +155,19 @@ export function initTree({ observer, stateMachine, states, rafRegistry }) {
     });
   };
 
+  const emitTreeEvent = (eventName) => {
+    observer.emit(eventName, { state: stateMachine.getState() });
+  };
+
   const growTree = () => {
     cancelGrowth();
     treeNodes.wrapper.style.opacity = '1';
 
-    const duration = 1200;
-    const start = performance.now();
+    const durationMs = 1200;
+    const startTime = performance.now();
 
-    const tick = (timestamp) => {
-      const progress = Math.min(1, (timestamp - start) / duration);
+    const tickGrowth = (timestamp) => {
+      const progress = Math.min(1, (timestamp - startTime) / durationMs);
 
       branchNodes.forEach((pathNode, index) => {
         const localProgress = Math.max(0, Math.min(1, progress * 1.15 - index * 0.13));
@@ -167,15 +178,15 @@ export function initTree({ observer, stateMachine, states, rafRegistry }) {
         growthFrameId = 0;
         if (!didEmitGrown) {
           didEmitGrown = true;
-          observer.emit(TREE_EVENTS.GROWN, { state: stateMachine.getState() });
+          emitTreeEvent(TREE_EVENTS.GROWN);
         }
         return;
       }
 
-      growthFrameId = rafRegistry.request(tick);
+      growthFrameId = rafRegistry.request(tickGrowth);
     };
 
-    growthFrameId = rafRegistry.request(tick);
+    growthFrameId = rafRegistry.request(tickGrowth);
   };
 
   const fillCanopy = () => {
@@ -183,17 +194,17 @@ export function initTree({ observer, stateMachine, states, rafRegistry }) {
     canopyNodes = ensureCanopy(treeNodes.canopyGroup);
 
     canopyNodes.forEach((leaf, index) => {
-      leaf.style.transition = `opacity 320ms ease ${index * 70}ms, transform 360ms ease ${index * 70}ms`;
+      const delayMs = index * 70;
+      leaf.style.transition = `opacity 320ms ease ${delayMs}ms, transform 360ms ease ${delayMs}ms`;
       leaf.style.opacity = '1';
       leaf.style.transform = 'scale(1)';
     });
 
     if (!didEmitFull) {
       didEmitFull = true;
-      observer.emit(TREE_EVENTS.FULL, { state: stateMachine.getState() });
+      emitTreeEvent(TREE_EVENTS.FULL);
     }
   };
-
 
   resetTree();
 
@@ -205,16 +216,12 @@ export function initTree({ observer, stateMachine, states, rafRegistry }) {
 
     if (to === states.TREE_FULL) {
       fillCanopy();
-      return;
     }
-
   });
 
   const unsubscribeOnReset = observer.subscribe(observer.lifecycle.APP_RESET, resetTree);
 
-  const reset = () => {
-    resetTree();
-  };
+  const reset = () => resetTree();
 
   const destroy = () => {
     cancelGrowth();

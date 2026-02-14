@@ -1,13 +1,20 @@
 import { qs } from '../utils/dom.js';
 
+/**
+ * Contrato de módulo de partículas:
+ * - Se activa cuando el estado es `LETTER_VIEW`.
+ * - Escucha `state:changed` para start/stop y `app:reset` para limpiar.
+ * - No emite eventos; solo controla una capa visual decorativa.
+ */
+
 const PARTICLE_POOL_SIZE = 48;
 const SPAWN_RATE_PER_SECOND = 14;
 const GRAVITY = 980;
 const MAX_FALL_SPEED = 280;
 
-function randomInRange(min, max) {
-  return min + Math.random() * (max - min);
-}
+const randomInRange = (min, max) => min + Math.random() * (max - min);
+
+const shouldRunForState = (state, states) => state === states.LETTER_VIEW;
 
 function createParticleNode() {
   const node = document.createElement('span');
@@ -17,11 +24,26 @@ function createParticleNode() {
   return node;
 }
 
-function shouldRunForState(state, states) {
-  return state === states.LETTER_VIEW;
-}
+/**
+ * @typedef {{
+ *  node: HTMLSpanElement,
+ *  active: boolean,
+ *  x: number,
+ *  y: number,
+ *  vx: number,
+ *  vy: number,
+ *  driftPhase: number,
+ *  driftAmp: number,
+ *  rotation: number,
+ *  spin: number,
+ *  size: number
+ * }} Particle
+ */
 
-export function initParticles({ observer, stateMachine, states, rafRegistry }) {
+/**
+ * @param {{ observer: any, states: Record<string,string>, rafRegistry: any }} deps
+ */
+export function initParticles({ observer, states, rafRegistry }) {
   const appRoot = qs('.app');
   if (!appRoot) {
     return null;
@@ -34,6 +56,7 @@ export function initParticles({ observer, stateMachine, states, rafRegistry }) {
   layer.setAttribute('aria-hidden', 'true');
   appRoot.appendChild(layer);
 
+  /** @type {Particle[]} */
   const pool = Array.from({ length: PARTICLE_POOL_SIZE }, () => {
     const node = createParticleNode();
     layer.appendChild(node);
@@ -60,6 +83,23 @@ export function initParticles({ observer, stateMachine, states, rafRegistry }) {
   let spawnAccumulator = 0;
   let spawnCursor = 0;
 
+  const resize = () => {
+    bounds = { width: appRoot.clientWidth, height: appRoot.clientHeight };
+  };
+
+  /** @param {Particle} particle */
+  const deactivateParticle = (particle) => {
+    particle.active = false;
+    particle.node.style.opacity = '0';
+    particle.node.style.transform = 'translate3d(-9999px, -9999px, 0) rotate(0deg) scale(1)';
+  };
+
+  /** @param {Particle} particle */
+  const renderParticle = (particle) => {
+    particle.node.style.transform = `translate3d(${particle.x.toFixed(2)}px, ${particle.y.toFixed(2)}px, 0) rotate(${particle.rotation.toFixed(2)}deg) scale(${particle.size.toFixed(2)})`;
+  };
+
+  /** @param {Particle} particle */
   const activateParticle = (particle) => {
     particle.active = true;
     particle.x = randomInRange(0, bounds.width);
@@ -74,16 +114,7 @@ export function initParticles({ observer, stateMachine, states, rafRegistry }) {
     particle.node.style.opacity = randomInRange(0.4, 0.95).toFixed(2);
   };
 
-  const deactivateParticle = (particle) => {
-    particle.active = false;
-    particle.node.style.opacity = '0';
-    particle.node.style.transform = 'translate3d(-9999px, -9999px, 0) rotate(0deg) scale(1)';
-  };
-
-  const renderParticle = (particle) => {
-    particle.node.style.transform = `translate3d(${particle.x.toFixed(2)}px, ${particle.y.toFixed(2)}px, 0) rotate(${particle.rotation.toFixed(2)}deg) scale(${particle.size.toFixed(2)})`;
-  };
-
+  /** @param {Particle} particle @param {number} dt */
   const updateParticle = (particle, dt) => {
     const drift = Math.sin(particle.driftPhase) * particle.driftAmp;
     particle.vx += drift * dt * 0.6;
@@ -93,11 +124,12 @@ export function initParticles({ observer, stateMachine, states, rafRegistry }) {
     particle.rotation += particle.spin * dt;
     particle.driftPhase += dt * randomInRange(0.9, 1.8);
 
-    if (
+    const outOfBounds =
       particle.y > bounds.height + 24 ||
       particle.x < -32 ||
-      particle.x > bounds.width + 32
-    ) {
+      particle.x > bounds.width + 32;
+
+    if (outOfBounds) {
       deactivateParticle(particle);
       return;
     }
@@ -106,8 +138,8 @@ export function initParticles({ observer, stateMachine, states, rafRegistry }) {
   };
 
   const spawnParticle = () => {
-    for (let i = 0; i < pool.length; i += 1) {
-      const index = (spawnCursor + i) % pool.length;
+    for (let offset = 0; offset < pool.length; offset += 1) {
+      const index = (spawnCursor + offset) % pool.length;
       const particle = pool[index];
       if (particle.active) {
         continue;
@@ -135,21 +167,12 @@ export function initParticles({ observer, stateMachine, states, rafRegistry }) {
     }
 
     pool.forEach((particle) => {
-      if (!particle.active) {
-        return;
+      if (particle.active) {
+        updateParticle(particle, dt);
       }
-
-      updateParticle(particle, dt);
     });
 
     frameId = rafRegistry.request(tick);
-  };
-
-  const resize = () => {
-    bounds = {
-      width: appRoot.clientWidth,
-      height: appRoot.clientHeight,
-    };
   };
 
   const start = () => {
@@ -178,11 +201,7 @@ export function initParticles({ observer, stateMachine, states, rafRegistry }) {
   const reset = () => {
     stop();
     spawnAccumulator = 0;
-    pool.forEach((particle) => deactivateParticle(particle));
-  };
-
-  const handleResize = () => {
-    resize();
+    pool.forEach(deactivateParticle);
   };
 
   resize();
@@ -196,10 +215,9 @@ export function initParticles({ observer, stateMachine, states, rafRegistry }) {
     stop();
   });
 
-  const unsubscribeOnReset = observer.subscribe(observer.lifecycle.APP_RESET, () => {
-    reset();
-  });
+  const unsubscribeOnReset = observer.subscribe(observer.lifecycle.APP_RESET, reset);
 
+  const handleResize = () => resize();
   window.addEventListener('resize', handleResize);
 
   const destroy = () => {

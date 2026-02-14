@@ -194,7 +194,7 @@ function createTypewriter({ target, text, typingMs = 36, punctuationPauseMs = 14
   };
 }
 
-export function initAnimations({ observer, stateMachine, states, domListeners, rafRegistry }) {
+export function initAnimations({ observer, stateMachine, states, domListeners, rafRegistry, animationContext }) {
   const introRoot = qs('.app');
   const heartEl = qs('[data-role="heart"]', introRoot);
   const seedEl = qs('[data-role="seed"]', introRoot);
@@ -202,6 +202,8 @@ export function initAnimations({ observer, stateMachine, states, domListeners, r
   const treeEl = qs('[data-role="tree"]', introRoot);
   const typewriterEl = qs('[data-role="typewriter"]', introRoot);
   const counterCardEl = qs('[data-role="counter-card"]', introRoot);
+  const sceneEl = qs('.scene', introRoot);
+  const groundLineEl = qs('[data-role="ground-line"]', introRoot);
   const reviveButton = qs('[data-action="revive-animation"]', introRoot);
 
   const letterMessage =
@@ -213,6 +215,49 @@ export function initAnimations({ observer, stateMachine, states, domListeners, r
     target: typewriterEl,
     text: letterMessage,
   });
+
+  const context = animationContext || { seedImpact: null };
+
+  const FALL_DISTANCE = 140;
+
+  const getSeedImpactOffsetY = () => {
+    if (!sceneEl || !context.seedImpact) {
+      return FALL_DISTANCE;
+    }
+
+    const sceneRect = sceneEl.getBoundingClientRect();
+    return Math.max(0, context.seedImpact.groundY - sceneRect.top);
+  };
+
+  const cacheSeedImpact = () => {
+    if (!seedEl || !sceneEl || context.seedImpact) {
+      return;
+    }
+
+    const seedRect = seedEl.getBoundingClientRect();
+    const impactX = seedRect.left + seedRect.width / 2;
+    const groundY = seedRect.top + seedRect.height;
+
+    context.seedImpact = { impactX, groundY };
+
+    if (groundLineEl) {
+      const lineParentRect = groundLineEl.parentElement?.getBoundingClientRect();
+      if (lineParentRect) {
+        const deltaX = impactX - (lineParentRect.left + lineParentRect.width / 2);
+        groundLineEl.style.transform = `translate3d(${deltaX}px, 0, 0)`;
+      }
+    }
+
+    if (treeEl) {
+      treeEl.dataset.seedImpactX = String(impactX);
+      treeEl.dataset.seedGroundY = String(groundY);
+
+      const treeRect = treeEl.getBoundingClientRect();
+      const localImpactX = impactX - treeRect.left;
+      const impactRatioX = treeRect.width > 0 ? clamp01(localImpactX / treeRect.width) : 0.5;
+      treeEl.style.transformOrigin = `${impactRatioX * 100}% 100%`;
+    }
+  };
 
   const resetVisuals = () => {
     [heartEl, seedEl, letterEl, treeEl].forEach((node) => {
@@ -250,9 +295,12 @@ export function initAnimations({ observer, stateMachine, states, domListeners, r
       },
       update: ({ progress }) => {
         applyVisual(seedEl, {
-          transform: `translate3d(0, ${lerp(0, 140, progress)}px, 0) scale(1)`,
+          transform: `translate3d(0, ${lerp(0, FALL_DISTANCE, progress)}px, 0) scale(1)`,
           opacity: 1,
         });
+      },
+      onComplete: () => {
+        cacheSeedImpact();
       },
     },
     {
@@ -262,13 +310,15 @@ export function initAnimations({ observer, stateMachine, states, domListeners, r
         stateMachine.transition(states.TREE_GROW, { source: 'timeline' });
       },
       update: ({ progress }) => {
+        const impactOffsetY = getSeedImpactOffsetY();
+
         applyVisual(seedEl, {
-          transform: `translate3d(0, ${lerp(140, 112, progress)}px, 0) scale(${lerp(1, 0.7, progress)})`,
+          transform: `translate3d(0, ${lerp(impactOffsetY, impactOffsetY - 28, progress)}px, 0) scale(${lerp(1, 0.7, progress)})`,
           opacity: 1 - progress,
         });
 
         applyVisual(treeEl, {
-          transform: `translate3d(0, ${lerp(42, 0, progress)}px, 0) scale(${lerp(0.72, 1, progress)})`,
+          transform: `translate3d(0, ${lerp(impactOffsetY - 98, 0, progress)}px, 0) scale(${lerp(0.72, 1, progress)})`,
           opacity: progress,
         });
       },
@@ -340,6 +390,16 @@ export function initAnimations({ observer, stateMachine, states, domListeners, r
     timeline.cancelAll();
     typewriter.reset();
     resetVisuals();
+
+    context.seedImpact = null;
+    if (groundLineEl) {
+      groundLineEl.style.transform = '';
+    }
+    if (treeEl) {
+      treeEl.style.transformOrigin = '';
+      delete treeEl.dataset.seedImpactX;
+      delete treeEl.dataset.seedGroundY;
+    }
 
     stateMachine.reset();
 

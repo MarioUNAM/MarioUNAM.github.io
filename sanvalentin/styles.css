@@ -25,10 +25,17 @@
 
   --primary: #f472b6;
   --primary-dark: #db2777;
+  --t-fast: 220ms;
+  --t-medium: 460ms;
+  --t-phase-morph: 760ms;
+  --t-phase-fall: 1240ms;
+  --t-phase-tree: 1320ms;
+  --ease-soft-in-out: cubic-bezier(0.25, 0.78, 0.33, 1);
+  --ease-soft-out: cubic-bezier(0.2, 0.84, 0.34, 1);
   --motion-ease: cubic-bezier(0.22, 0.61, 0.36, 1);
-  --morph-ease: cubic-bezier(0.28, 0.84, 0.42, 1);
-  --fall-ease: cubic-bezier(0.2, 0.72, 0.3, 1);
-  --tree-ease: cubic-bezier(0.19, 0.88, 0.32, 1);
+  --morph-ease: var(--ease-soft-out);
+  --fall-ease: var(--ease-soft-in-out);
+  --tree-ease: cubic-bezier(0.22, 0.86, 0.34, 1);
 
   /* Escala global responsive */
   --space-xs: clamp(0.4rem, 0.9vw, 0.7rem);
@@ -236,7 +243,7 @@ body {
   min-height: 100dvh;
   display: flex;
   transform: translateX(0);
-  transition: transform 860ms var(--motion-ease);
+  transition: transform var(--t-phase-morph) var(--motion-ease);
 }
 
 .view {
@@ -405,7 +412,7 @@ body {
   transform: translateZ(0) scale(1);
   transform-origin: center;
   filter: drop-shadow(0 8px 14px rgba(122, 30, 70, 0.2)) drop-shadow(0 2px 4px rgba(122, 30, 70, 0.15));
-  transition: transform 220ms var(--motion-ease), filter 220ms var(--motion-ease);
+  transition: transform var(--t-fast) var(--motion-ease), filter var(--t-fast) var(--motion-ease);
   backface-visibility: hidden;
   will-change: transform;
 }
@@ -421,7 +428,7 @@ body {
 .heart.is-morphing {
   transform: translate3d(0, -4px, 0) scale(0.84);
   opacity: 0.96;
-  transition: transform 460ms var(--morph-ease), opacity 420ms var(--morph-ease), border-radius 420ms var(--morph-ease);
+  transition: transform var(--t-medium) var(--morph-ease), opacity var(--t-medium) var(--morph-ease), border-radius var(--t-medium) var(--morph-ease);
 }
 
 .heart.is-seed {
@@ -449,7 +456,7 @@ body {
 }
 
 .heart-button.is-falling {
-  animation: heart-fall 1120ms var(--fall-ease) forwards;
+  animation: heart-fall var(--t-phase-fall) var(--fall-ease) forwards;
 }
 
 .heart-button.is-landed .heart {
@@ -465,7 +472,7 @@ body {
   transform: scaleX(0.05);
   transform-origin: center;
   opacity: 0;
-  transition: transform 560ms var(--motion-ease), opacity 460ms var(--motion-ease);
+  transition: transform var(--t-medium) var(--motion-ease), opacity var(--t-medium) var(--motion-ease);
 }
 
 #ground.is-visible {
@@ -492,27 +499,27 @@ body {
 }
 
 .love-tree.is-visible {
-  animation: tree-grow 1220ms var(--tree-ease) forwards;
+  animation: tree-grow var(--t-phase-tree) var(--tree-ease) forwards;
 }
 
 .love-tree.is-growing .tree-trunk {
   transform-origin: center bottom;
-  animation: trunk-grow 520ms var(--tree-ease) both;
+  animation: trunk-grow var(--t-medium) var(--tree-ease) both;
 }
 
 .love-tree.is-growing .tree-branch {
   stroke-dasharray: var(--branch-length, 120);
   stroke-dashoffset: var(--branch-length, 120);
-  animation: branch-draw 620ms var(--tree-ease) forwards;
+  animation: branch-draw var(--t-phase-morph) var(--tree-ease) forwards;
 }
 
 .love-tree.is-growing .tree-canopy {
-  animation: canopy-rise 680ms var(--tree-ease) 340ms both, tree-glow 3.2s ease-in-out 1.02s infinite;
+  animation: canopy-rise var(--t-phase-morph) var(--tree-ease) 340ms both, tree-glow 3.2s ease-in-out 1.02s infinite;
 }
 
 .love-tree.is-growing .canopy-heart {
   opacity: 0;
-  animation: canopy-heart-rise 300ms var(--tree-ease) forwards, canopy-pulse 2.8s var(--motion-ease) 1.08s infinite;
+  animation: canopy-heart-rise var(--t-fast) var(--tree-ease) forwards, canopy-pulse 2.8s var(--motion-ease) 1.08s infinite;
 }
 
 .love-tree.tree--final {

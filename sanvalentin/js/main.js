@@ -5,14 +5,22 @@ import { initTree } from './modules/tree.js';
 import { initParticles } from './modules/particles.js';
 import { initCounter } from './modules/counter.js';
 import { initAudio } from './modules/audio.js';
+import { createListenerRegistry } from './utils/dom.js';
 
 function bootstrapApp() {
   const observer = createObserver();
   const stateMachine = createStateMachine(STATES.INIT, observer);
+  const domListeners = createListenerRegistry();
+
+  observer.registerCleanup(() => {
+    domListeners.cleanupAll();
+  });
+
   const sharedDependencies = {
     observer,
     stateMachine,
     states: STATES,
+    domListeners,
   };
 
   const animations = initAnimations(sharedDependencies);

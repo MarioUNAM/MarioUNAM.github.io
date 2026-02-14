@@ -6,11 +6,13 @@ import { initParticles } from './modules/particles.js';
 import { initCounter } from './modules/counter.js';
 import { initAudio } from './modules/audio.js';
 import { createListenerRegistry } from './utils/dom.js';
+import { createRafRegistry } from './utils/raf.js';
 
 function bootstrapApp() {
   const observer = createObserver();
   const stateMachine = createStateMachine(STATES.INIT, observer);
   const domListeners = createListenerRegistry();
+  const rafRegistry = createRafRegistry();
 
   const appRoot = document.querySelector('.app');
   if (appRoot) {
@@ -19,6 +21,7 @@ function bootstrapApp() {
 
   observer.registerCleanup(() => {
     domListeners.cleanupAll();
+    rafRegistry.cancelAll();
   });
 
   const sharedDependencies = {
@@ -26,6 +29,7 @@ function bootstrapApp() {
     stateMachine,
     states: STATES,
     domListeners,
+    rafRegistry,
   };
 
   const animations = initAnimations(sharedDependencies);

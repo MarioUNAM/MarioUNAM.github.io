@@ -3,7 +3,7 @@ const scene = document.querySelector("#scene");
 const messageView = document.querySelector("#message-view");
 const heartButton = document.querySelector("#heart-button");
 const heart = document.querySelector(".heart");
-const ground = document.querySelector("#ground");
+const groundLine = document.querySelector("#ground-line");
 const loveTree = document.querySelector("#tree");
 const elapsedYears = document.querySelector("#elapsed-years");
 const elapsedMonths = document.querySelector("#elapsed-months");
@@ -971,8 +971,38 @@ function normalizeTreeTransform() {
   loveTree.style.transform = "translateX(-50%) translateY(0) scale(1)";
 }
 
+function calculateTreeOriginFromSeedImpact() {
+  if (!heartButton || !groundLine || !loveTree) return null;
+
+  const seedRect = heartButton.getBoundingClientRect();
+  const lineRect = groundLine.getBoundingClientRect();
+  const treeRect = loveTree.getBoundingClientRect();
+
+  return {
+    x: seedRect.left + seedRect.width / 2,
+    y: lineRect.top + lineRect.height / 2,
+    treeHalfWidth: treeRect.width / 2,
+  };
+}
+
+function anchorTreeToSeedImpact() {
+  if (!loveTree) return;
+  const origin = calculateTreeOriginFromSeedImpact();
+  if (!origin) {
+    normalizeTreeTransform();
+    return;
+  }
+
+  const leftPosition = origin.x - origin.treeHalfWidth;
+  const bottomPosition = Math.max(0, window.innerHeight - origin.y);
+
+  loveTree.style.left = `${leftPosition.toFixed(2)}px`;
+  loveTree.style.bottom = `${bottomPosition.toFixed(2)}px`;
+  loveTree.style.transform = "translateX(0) translateY(0) scale(1)";
+}
+
 function showTree() {
-  normalizeTreeTransform();
+  anchorTreeToSeedImpact();
   heartButton.classList.add("is-hidden");
   loveTree.classList.add("is-visible", "is-growing");
   playMilestoneCue("sprout");
@@ -1159,11 +1189,11 @@ const INTRO_FLOW_MACHINE = {
   [STATES.HEART_TO_SEED_FAST]: {
     enter: () => {
       heartButton.disabled = true;
-      ground.classList.add("is-visible");
+      groundLine?.classList.add("is-visible");
     },
     wait: () => Promise.all([
       runHeartToSeedMorphSequence(),
-      waitForMotionEnd({ element: ground, eventName: "transitionend", timeoutMs: PHASE_TIMEOUTS_MS.morph, filter: (e) => e.propertyName === "transform" }),
+      waitForMotionEnd({ element: groundLine, eventName: "transitionend", timeoutMs: PHASE_TIMEOUTS_MS.morph, filter: (e) => e.propertyName === "transform" }),
     ]),
   },
   [STATES.SEED_FALL]: {
@@ -1306,7 +1336,7 @@ function resetExperience() {
   heartButton.disabled = false;
   heartButton.classList.remove("is-hidden", "is-falling", "is-landed");
   resetHeartMorphStages();
-  ground.classList.remove("is-visible");
+  groundLine?.classList.remove("is-visible");
   loveTree.classList.remove("is-visible", "is-growing", "tree--final");
   introView.classList.add("is-active");
   introView.setAttribute("aria-hidden", "false");

@@ -1,26 +1,22 @@
 /**
  * Contrato de estados y eventos:
- * - Estados válidos: INIT -> HEART_IDLE -> HEART_TO_SEED -> SEED_FALL -> TREE_GROW -> TREE_FULL -> LETTER_VIEW.
+ * - Estados válidos: INIT -> HEART_TO_SEED -> SEED_FALL -> TREE_GROW -> LETTER_VIEW.
  * - `state:changed`: payload { from, to, payload } en transiciones válidas.
  * - `app:reset`: payload { state: 'INIT' } al reiniciar.
  */
 export const STATES = Object.freeze({
   INIT: 'INIT',
-  HEART_IDLE: 'HEART_IDLE',
   HEART_TO_SEED: 'HEART_TO_SEED',
   SEED_FALL: 'SEED_FALL',
   TREE_GROW: 'TREE_GROW',
-  TREE_FULL: 'TREE_FULL',
   LETTER_VIEW: 'LETTER_VIEW',
 });
 
 const VALID_TRANSITIONS = Object.freeze({
-  [STATES.INIT]: [STATES.HEART_IDLE],
-  [STATES.HEART_IDLE]: [STATES.HEART_TO_SEED],
+  [STATES.INIT]: [STATES.HEART_TO_SEED],
   [STATES.HEART_TO_SEED]: [STATES.SEED_FALL],
   [STATES.SEED_FALL]: [STATES.TREE_GROW],
-  [STATES.TREE_GROW]: [STATES.TREE_FULL],
-  [STATES.TREE_FULL]: [STATES.LETTER_VIEW],
+  [STATES.TREE_GROW]: [STATES.LETTER_VIEW],
   [STATES.LETTER_VIEW]: [],
 });
 

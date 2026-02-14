@@ -2,7 +2,7 @@ import { qs } from '../utils/dom.js';
 
 /**
  * Contrato de módulo árbol:
- * - Escucha `state:changed` para reaccionar a TREE_GROW y TREE_FULL.
+ * - Escucha `state:changed` para reaccionar a TREE_GROW y LETTER_VIEW.
  * - Escucha `app:reset` para volver al estado inicial visual.
  * - Emite `tree:grown` al finalizar el trazo de ramas.
  * - Emite `tree:full` al completar el follaje.
@@ -212,7 +212,7 @@ export function initTree({ observer, stateMachine, states, rafRegistry }) {
       return;
     }
 
-    if (to === states.TREE_FULL) {
+    if (to === states.LETTER_VIEW) {
       fillCanopy();
     }
   });

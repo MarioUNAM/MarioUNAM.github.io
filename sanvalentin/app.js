@@ -12,6 +12,7 @@ const elapsedHours = document.querySelector("#elapsed-hours");
 const elapsedMinutes = document.querySelector("#elapsed-minutes");
 const counterMessage = document.querySelector("#counter-message");
 const treeCanopy = loveTree?.querySelector(".tree-canopy") ?? document.querySelector("#tree-canopy");
+const poemTitle = document.querySelector("#poem-title");
 const poemContainer = document.querySelector("#poem");
 const finalDedication = document.querySelector("#final-dedication");
 const fallingHeartsLayer = document.querySelector("#falling-hearts-layer");
@@ -27,6 +28,7 @@ const microIntroHideNextCheckbox = document.querySelector("#micro-intro-hide-nex
 const loveHeading = document.querySelector("#love-heading");
 const reducedMotionMediaQuery = window.matchMedia("(prefers-reduced-motion: reduce)");
 
+const POEM_TITLE = "Nuestro árbol de amor";
 const START_DATE = "2016-09-09T00:00:00";
 const startDate = new Date(START_DATE);
 const MUSIC_STORAGE_KEY = "musicOn";
@@ -109,6 +111,7 @@ beepAudio.volume = 0.15;
 
 const randomBetween = (min, max) => Math.random() * (max - min) + min;
 
+if (poemTitle) poemTitle.textContent = POEM_TITLE;
 
 function getParticlePaletteFromTheme() {
   const rootStyles = getComputedStyle(document.documentElement);

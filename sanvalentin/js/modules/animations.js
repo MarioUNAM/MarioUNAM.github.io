@@ -244,7 +244,9 @@ export function initAnimations({ observer, stateMachine, states, domListeners, r
       const lineParentRect = groundLineEl.parentElement?.getBoundingClientRect();
       if (lineParentRect) {
         const deltaX = impactX - (lineParentRect.left + lineParentRect.width / 2);
-        groundLineEl.style.transform = `translate3d(${deltaX}px, 0, 0)`;
+        const deltaY = groundY - lineParentRect.top;
+        groundLineEl.style.setProperty('--ground-line-offset-x', `${deltaX}px`);
+        groundLineEl.style.setProperty('--ground-line-offset-y', `${deltaY}px`);
       }
     }
 
@@ -388,7 +390,8 @@ export function initAnimations({ observer, stateMachine, states, domListeners, r
 
     context.seedImpact = null;
     if (groundLineEl) {
-      groundLineEl.style.transform = '';
+      groundLineEl.style.removeProperty('--ground-line-offset-x');
+      groundLineEl.style.removeProperty('--ground-line-offset-y');
     }
     if (treeEl) {
       delete treeEl.dataset.seedImpactX;

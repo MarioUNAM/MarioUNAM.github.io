@@ -137,13 +137,17 @@ select {
 }
 
 .ground-line {
+  position: absolute;
+  left: 50%;
+  top: var(--ground-line-offset-y, calc(100% - 6px));
   width: 100%;
   max-width: 260px;
   height: 3px;
   border-radius: 999px;
   background: linear-gradient(90deg, #c0806a 0%, #6f8f4c 45%, #3f6f39 100%);
   opacity: 0.62;
-  justify-self: center;
+  transform: translate3d(var(--ground-line-offset-x, 0), -50%, 0);
+  pointer-events: none;
 }
 
 [data-role="tree"] {
@@ -186,6 +190,7 @@ select {
   justify-items: center;
   min-width: 0;
   padding: var(--space-2) var(--space-2) 0;
+  position: relative;
 }
 
 #tree {

@@ -4,7 +4,6 @@ const DEFAULT_DURATIONS = Object.freeze({
   HEART_TO_SEED: 800,
   SEED_FALL: 700,
   HORIZONTAL_TO_LETTER: 650,
-  TREE_SCALE_SHIFT: 900,
 });
 
 const clamp01 = (value) => Math.min(1, Math.max(0, value));
@@ -275,19 +274,6 @@ export function initAnimations({ observer, stateMachine, states, domListeners, r
       },
     },
     {
-      key: 'tree-full',
-      duration: DEFAULT_DURATIONS.TREE_SCALE_SHIFT,
-      onStart: () => {
-        stateMachine.transition(states.TREE_FULL, { source: 'timeline' });
-      },
-      update: ({ progress }) => {
-        applyVisual(treeEl, {
-          transform: `translate3d(0, ${lerp(0, -8, progress)}px, 0) scale(${lerp(1, 1.03, progress)})`,
-          opacity: 1,
-        });
-      },
-    },
-    {
       key: 'horizontal-transition-letter',
       duration: DEFAULT_DURATIONS.HORIZONTAL_TO_LETTER,
       onStart: () => {
@@ -295,7 +281,7 @@ export function initAnimations({ observer, stateMachine, states, domListeners, r
       },
       update: ({ progress }) => {
         applyVisual(treeEl, {
-          transform: `translate3d(${lerp(0, -72, progress)}px, ${lerp(-8, -16, progress)}px, 0) scale(${lerp(1.03, 0.72, progress)})`,
+          transform: `translate3d(${lerp(0, -72, progress)}px, ${lerp(0, -16, progress)}px, 0) scale(${lerp(1, 0.72, progress)})`,
           opacity: 1,
         });
 
@@ -319,13 +305,13 @@ export function initAnimations({ observer, stateMachine, states, domListeners, r
   ];
 
   const runIntroSequence = (source = 'timeline') => {
-    if (stateMachine.getState() !== states.HEART_IDLE) {
+    if (stateMachine.getState() !== states.INIT) {
       return Promise.resolve(false);
     }
 
     observer.emit(observer.lifecycle.ANIMATION_START, {
       scope: 'intro',
-      state: states.HEART_IDLE,
+      state: states.INIT,
       source,
     });
 
@@ -339,7 +325,7 @@ export function initAnimations({ observer, stateMachine, states, domListeners, r
   };
 
   const handleIntroInteraction = () => {
-    if (stateMachine.getState() !== states.HEART_IDLE) {
+    if (stateMachine.getState() !== states.INIT) {
       return;
     }
 
@@ -356,9 +342,6 @@ export function initAnimations({ observer, stateMachine, states, domListeners, r
     resetVisuals();
 
     stateMachine.reset();
-    stateMachine.transition(states.HEART_IDLE, {
-      source: 'revive-animation',
-    });
 
     subscribeRuntimeBindings();
     runIntroSequence('revive-animation');

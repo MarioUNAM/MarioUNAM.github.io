@@ -57,11 +57,6 @@ function bootstrapApp() {
     orchestrator.destroyAll();
   });
 
-  if (animations?.introReady) {
-    stateMachine.transition(STATES.HEART_IDLE, {
-      source: 'intro-listeners-ready',
-    });
-  }
 }
 
 bootstrapApp();

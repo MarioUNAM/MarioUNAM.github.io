@@ -20,21 +20,26 @@ const particlesCanvas = document.querySelector("#particles-layer");
 const backgroundMusic = document.querySelector("#bg-music");
 const musicToggleButton = document.querySelector("#music-toggle");
 const restartButton = document.querySelector("#restart-button");
+const intensityToggleButton = document.querySelector("#intensity-toggle");
 const microIntro = document.querySelector("#micro-intro");
 const microIntroSkipButton = document.querySelector("#micro-intro-skip");
 const microIntroHideNextCheckbox = document.querySelector("#micro-intro-hide-next");
 const loveHeading = document.querySelector("#love-heading");
 const reducedMotionMediaQuery = window.matchMedia("(prefers-reduced-motion: reduce)");
+const phaseProgress = document.querySelector("#phase-progress");
+const phaseProgressSteps = Array.from(document.querySelectorAll("[data-phase-step]"));
 
 const POEM_TITLE = "Nuestro árbol de amor";
 const START_DATE = "2016-09-09T00:00:00";
 const startDate = new Date(START_DATE);
 const MUSIC_STORAGE_KEY = "musicOn";
 const MICRO_INTRO_STORAGE_KEY = "skipMicroIntro";
+const INTENSITY_STORAGE_KEY = "visualIntensity";
 const DEFAULT_MUSIC_VOLUME = 0.2;
 const MICRO_INTRO_DURATION_MS = 2000;
 
 const STATES = { INTRO: "intro", MORPH: "morph", FALLING: "falling", TREE: "tree", REVEAL_MESSAGE: "revealMessage" };
+const INTENSITY_LEVELS = { SOFT: "soft", NORMAL: "normal" };
 const PHASE_TIMEOUTS_MS = { morph: 760, falling: 1240, tree: 1320 };
 const PHASE_DELAYS_MS = { afterMorph: 60, afterFalling: 70, afterTree: 60 };
 const VALID_TRANSITIONS = {
@@ -60,6 +65,7 @@ let hasUserInteractedForMusic = false;
 let activeRunToken = 0;
 let prefersReducedMotion = reducedMotionMediaQuery.matches;
 let shouldSkipMicroIntro = false;
+let visualIntensity = INTENSITY_LEVELS.NORMAL;
 let microIntroTimeoutId = null;
 let microIntroHasFinished = false;
 let hasTreeReachedFinalState = false;
@@ -92,10 +98,22 @@ function keepLoveHeadingPersistent() {
   loveHeading.style.visibility = "visible";
 }
 
+function syncPhaseProgress(phase) {
+  if (!phaseProgress || phaseProgressSteps.length === 0) return;
+  const phaseMap = { intro: "intro", morph: "intro", falling: "intro", tree: "tree", revealMessage: "revealMessage" };
+  const activeStep = phaseMap[phase] ?? "intro";
+  phaseProgressSteps.forEach((stepNode) => {
+    const isActive = stepNode.dataset.phaseStep === activeStep;
+    stepNode.classList.toggle("is-active", isActive);
+    stepNode.setAttribute("aria-current", isActive ? "step" : "false");
+  });
+}
+
 function syncScenePhase(phase) {
   if (!scene) return;
   scene.dataset.phase = phase;
   keepLoveHeadingPersistent();
+  syncPhaseProgress(phase);
 }
 
 const fallingHeartPool = [];
@@ -125,10 +143,41 @@ let particleAnchorCache = [];
 let particleAnchorCacheAt = 0;
 
 const pickHeartPaletteItem = (palette) => palette[Math.floor(Math.random() * palette.length)];
-const beepAudio = new Audio("data:audio/wav;base64,UklGRjgAAABXQVZFZm10IBAAAAABAAEARKwAAIhYAQACABAAZGF0YRQAAAAAABw9XL+fbj0NAAAAAA==");
-beepAudio.volume = 0.15;
 
 const randomBetween = (min, max) => Math.random() * (max - min) + min;
+
+const audioContext = window.AudioContext ? new AudioContext() : (window.webkitAudioContext ? new webkitAudioContext() : null);
+
+function shouldPlayMilestoneSound() {
+  return !prefersReducedMotion && hasUserInteractedForMusic && musicShouldBeOn && Boolean(audioContext);
+}
+
+function playMilestoneSound({ frequency = 720, durationMs = 90, type = "sine", gain = 0.028 } = {}) {
+  if (!shouldPlayMilestoneSound()) return;
+  const context = audioContext;
+  if (!context) return;
+  const start = context.currentTime + 0.005;
+  const duration = Math.max(0.04, durationMs / 1000);
+  const oscillator = context.createOscillator();
+  const amp = context.createGain();
+
+  oscillator.type = type;
+  oscillator.frequency.setValueAtTime(frequency, start);
+  amp.gain.setValueAtTime(0.0001, start);
+  amp.gain.exponentialRampToValueAtTime(gain, start + 0.012);
+  amp.gain.exponentialRampToValueAtTime(0.0001, start + duration);
+
+  oscillator.connect(amp);
+  amp.connect(context.destination);
+  oscillator.start(start);
+  oscillator.stop(start + duration + 0.02);
+}
+
+function playMilestoneCue(stage) {
+  if (stage === "falling") playMilestoneSound({ frequency: 460, durationMs: 60, type: "triangle", gain: 0.022 });
+  if (stage === "sprout") playMilestoneSound({ frequency: 620, durationMs: 75, type: "sine", gain: 0.026 });
+  if (stage === "tree") playMilestoneSound({ frequency: 820, durationMs: 95, type: "sine", gain: 0.03 });
+}
 
 const treeRenderer = (() => {
   const SVG_NS = "http://www.w3.org/2000/svg";
@@ -340,6 +389,7 @@ function ensureBackgroundMusicSource() {
 function registerMusicGesture() {
   if (hasUserInteractedForMusic) return;
   hasUserInteractedForMusic = true;
+  if (audioContext?.state === "suspended") audioContext.resume().catch(() => {});
   ensureBackgroundMusicSource();
   syncMusicWithPreference();
   updateMusicToggleUI();
@@ -352,14 +402,34 @@ function updateReducedMotionPreference(event) {
     if (particleAnimationFrameId) cancelAnimationFrame(particleAnimationFrameId);
     particleAnimationFrameId = null;
     if (particleContext) particleContext.clearRect(0, 0, particleCanvasWidth, particleCanvasHeight);
+    if (heartShowerHasStarted) pauseFallingHeartEmitter();
     return;
   }
   initializeParticles();
 }
 
 function playTreeBell() {
-  beepAudio.currentTime = 0;
-  beepAudio.play().catch(() => {});
+  playMilestoneCue("tree");
+}
+
+function getIntensityMultiplier() {
+  return visualIntensity === INTENSITY_LEVELS.SOFT ? 0.62 : 1;
+}
+
+function updateIntensityToggleUI() {
+  if (!intensityToggleButton) return;
+  const isSoft = visualIntensity === INTENSITY_LEVELS.SOFT;
+  intensityToggleButton.textContent = `✨ Intensidad: ${isSoft ? "Suave" : "Normal"}`;
+  intensityToggleButton.setAttribute("aria-label", `Intensidad visual ${isSoft ? "suave" : "normal"}`);
+}
+
+function setVisualIntensity(nextIntensity) {
+  visualIntensity = nextIntensity === INTENSITY_LEVELS.SOFT ? INTENSITY_LEVELS.SOFT : INTENSITY_LEVELS.NORMAL;
+  localStorage.setItem(INTENSITY_STORAGE_KEY, visualIntensity);
+  updateIntensityToggleUI();
+  if (!hasTreeReachedFinalState) buildCanopyHearts(getCanopyHeartCount());
+  buildFallingHeartPool();
+  if (!prefersReducedMotion) initializeParticles();
 }
 
 function isLowPowerViewport() {
@@ -369,7 +439,8 @@ function isLowPowerViewport() {
 function getCanopyHeartCount() {
   const viewportFactor = Math.min(window.innerWidth, 1200) / 1200;
   const minHearts = Math.round(CANOPY_HEART_DENSITY * 0.64);
-  return Math.round(minHearts + (CANOPY_HEART_DENSITY - minHearts) * viewportFactor);
+  const base = Math.round(minHearts + (CANOPY_HEART_DENSITY - minHearts) * viewportFactor);
+  return Math.max(24, Math.round(base * getIntensityMultiplier()));
 }
 
 function buildCanopyHearts(count) {
@@ -387,8 +458,9 @@ function getFallingHeartPoolSize() {
   const areaRatio = Math.min(area, 1920 * 1080) / (1920 * 1080);
   const dprPenalty = 1 / getEffectivePixelRatio();
   const baseCount = Math.round(10 + (42 - 10) * areaRatio * dprPenalty);
-  if (isLowPowerViewport()) return Math.max(8, Math.min(24, Math.round(baseCount * 0.6)));
-  return baseCount;
+  const intensityAdjusted = Math.round(baseCount * getIntensityMultiplier());
+  if (isLowPowerViewport()) return Math.max(6, Math.min(20, Math.round(intensityAdjusted * 0.6)));
+  return Math.max(8, intensityAdjusted);
 }
 
 function isMessagePhaseVisible() {
@@ -714,8 +786,8 @@ function tickParticles(timestamp) {
 
 function getParticlePoolSize() {
   const dprPenalty = 1 / getEffectivePixelRatio();
-  const tunedBase = Math.round(BASE_PARTICLE_POOL_SIZE * (isLowPowerViewport() ? 0.52 : 1) * dprPenalty);
-  return Math.max(36, Math.min(BASE_PARTICLE_POOL_SIZE, tunedBase));
+  const tunedBase = Math.round(BASE_PARTICLE_POOL_SIZE * (isLowPowerViewport() ? 0.52 : 1) * dprPenalty * getIntensityMultiplier());
+  return Math.max(24, Math.min(BASE_PARTICLE_POOL_SIZE, tunedBase));
 }
 
 function initializeParticles() {
@@ -814,7 +886,8 @@ function showTree() {
   normalizeTreeTransform();
   heartButton.classList.add("is-hidden");
   loveTree.classList.add("is-visible", "is-growing");
-  playTreeBell();
+  playMilestoneCue("sprout");
+  window.setTimeout(playTreeBell, 360);
 }
 
 function hasSeedTouchedGround() {
@@ -935,6 +1008,7 @@ const INTRO_FLOW_MACHINE = {
   [STATES.FALLING]: {
     enter: () => {
       heartButton.classList.add("is-falling");
+      playMilestoneCue("falling");
       if (prefersReducedMotion) heartButton.classList.add("is-landed");
     },
     wait: () => (prefersReducedMotion ? Promise.resolve() : waitForSeedLanding()),
@@ -1027,6 +1101,10 @@ musicToggleButton?.addEventListener("keydown", (event) => {
   musicToggleButton.click();
 });
 restartButton?.addEventListener("click", resetExperience);
+intensityToggleButton?.addEventListener("click", () => {
+  const next = visualIntensity === INTENSITY_LEVELS.NORMAL ? INTENSITY_LEVELS.SOFT : INTENSITY_LEVELS.NORMAL;
+  setVisualIntensity(next);
+});
 window.addEventListener("pointermove", updateParallax, { passive: true });
 window.addEventListener("pointerleave", resetParallax);
 
@@ -1039,8 +1117,10 @@ if (backgroundMusic) backgroundMusic.volume = DEFAULT_MUSIC_VOLUME;
 if (backgroundMusic) backgroundMusic.pause();
 musicShouldBeOn = localStorage.getItem(MUSIC_STORAGE_KEY) === "true";
 shouldSkipMicroIntro = localStorage.getItem(MICRO_INTRO_STORAGE_KEY) === "true";
+visualIntensity = localStorage.getItem(INTENSITY_STORAGE_KEY) === INTENSITY_LEVELS.SOFT ? INTENSITY_LEVELS.SOFT : INTENSITY_LEVELS.NORMAL;
 if (microIntroHideNextCheckbox) microIntroHideNextCheckbox.checked = shouldSkipMicroIntro;
 updateMusicToggleUI();
+updateIntensityToggleUI();
 syncThemePalettes();
 keepLoveHeadingPersistent();
 syncScenePhase(currentState);

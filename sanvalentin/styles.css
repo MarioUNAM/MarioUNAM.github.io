@@ -255,6 +255,16 @@ body {
   background: rgba(222, 93, 152, 0.86);
 }
 
+
+#scene:not(.is-started) #message-view,
+#scene:not(.is-started) #love-tree,
+#scene:not(.is-started) #ground,
+#scene:not(.is-started) #falling-hearts-layer {
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+}
+
 #scene {
   width: 100%;
   min-height: 100svh;

@@ -7,7 +7,7 @@ import { initCounter } from './modules/counter.js';
 import { initAudio } from './modules/audio.js';
 
 const observer = createObserver();
-const machine = createStateMachine(STATES.INIT);
+const machine = createStateMachine(STATES.INIT, observer);
 
 initAnimations({ observer, machine });
 initTree({ observer, machine });

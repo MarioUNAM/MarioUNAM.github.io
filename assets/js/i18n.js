@@ -303,7 +303,100 @@
       'projects.mdm.button': 'Related success story',
       'projects.common.languageLabel': 'Language',
       'projects.common.languageAria': 'Select language',
-      'projects.common.back': '← Back'
+      'projects.common.back': '← Back',
+
+      // ── v2: New sections ─────────────────────────────────────────
+      'meta.description': 'MDM consultant & Java developer from UNAM. TIBCO EBX specialist, SnapLogic integrations, AI data governance. 4+ yrs at Alldatum Business. Based in CDMX.',
+      'nav.philosophy': 'Philosophy',
+      'nav.skills': 'Skills',
+      'nav.caseStudies': 'Case Studies',
+      'nav.certifications': 'Certifications',
+      'nav.journey': 'Journey',
+      'nav.hobbies': 'Hobbies',
+      'nav.testimonials': 'Testimonials',
+      'nav.theme.dark': 'Switch to dark theme',
+      'nav.theme.light': 'Switch to light theme',
+      'nav.theme.announce.dark': 'Dark theme activated',
+      'nav.theme.announce.light': 'Light theme activated',
+      'nav.lang.switchEn': 'Switch to English',
+      'nav.lang.switchEs': 'Cambiar a español',
+
+      // Hero name split + CTA
+      'hero.name.first': 'MARIO HUARTE',
+      'hero.name.last': 'NOLASCO',
+      'hero.cta.work': 'View My Work',
+
+      // About stats grid
+      'about.stat.years': 'Years Professional Exp.',
+      'about.stat.projects': 'Enterprise Deliveries',
+      'about.stat.sectors': 'Industry Sectors',
+      'about.stat.degree': 'Computer Engineer',
+      'about.stat.university': 'UNAM Graduate',
+
+      // About bio (rewritten)
+      'about.bio': "I'm a Computer Engineer from UNAM who ended up where data gets difficult — the intersection of business rules, legacy systems, and the quiet organizational politics that decide whether a master data program survives its first year. At Alldatum Business I've spent four years doing MDM consulting with TIBCO EBX and integration work with SnapLogic, which means I've seen the same data quality crisis from enough angles to stop being surprised by it. What sets me apart from a developer who also knows data tools is that I care about governance as a design discipline: who owns a record, under what rules, and what happens when the rules change at 4 PM on a Friday. I'm based in CDMX, fluent in English and Spanish, and currently expanding into AI data governance — because the models are only as trustworthy as the pipelines feeding them.",
+
+      // Philosophy section
+      'philosophy.headline': 'Precision Over Noise.',
+      'philosophy.paragraph': 'Most data problems are not data problems — they are clarity problems in disguise. I build systems that force ambiguity into structure, whether that means governing a master data model across siloed enterprises or wiring integrations that actually hold under production load. The UNAM taught me to think in first principles; four years in consulting taught me that first principles have to survive a Tuesday afternoon meeting.',
+      'philosophy.p1.name': 'Model the Domain, Not the Request',
+      'philosophy.p1.desc': 'Clients ask for solutions; my job is to understand what they\'re actually governing before I write the first table definition.',
+      'philosophy.p2.name': 'Pipelines Are Promises',
+      'philosophy.p2.desc': 'An integration that fails silently is worse than no integration — every data flow I build carries an implicit SLA and I design to honor it.',
+      'philosophy.p3.name': 'Teach the Stack, Not Just the Solution',
+      'philosophy.p3.desc': 'Whether mentoring 40 junior engineers or documenting an EBX workflow, I leave every engagement with a team that understands what they\'re running — not just that it runs.',
+
+      // Journey (Life timeline)
+      'journey.title': 'The Path Here',
+      'journey.m1.year': '2017',
+      'journey.m1.title': 'Enrolled at UNAM',
+      'journey.m1.desc': 'Began Computer Engineering at the largest university in Latin America, where rigorous theory met the chaos of building real systems from scratch.',
+      'journey.m2.year': '2020',
+      'journey.m2.title': 'Instructor, PROTECO',
+      'journey.m2.desc': 'While still a student, led Python and Linux bootcamps for 40+ peers — discovering early that teaching forces a different, sharper kind of understanding.',
+      'journey.m3.year': '2021',
+      'journey.m3.title': 'First Consulting Engagement',
+      'journey.m3.desc': 'Joined Alldatum Business as a junior consultant and immediately shipped SnapLogic integrations in production environments.',
+      'journey.m4.year': '2022–23',
+      'journey.m4.title': 'MDM Specialist, TIBCO EBX',
+      'journey.m4.desc': 'Became the team\'s go-to on EBX governance, driving an 18% SLA accuracy improvement and anchoring a $2.5M automation portfolio.',
+      'journey.m5.year': '2024',
+      'journey.m5.title': 'AI Enablement & Governance',
+      'journey.m5.desc': 'Completed Azure ML and MLflow training, bridging classical MDM governance with generative AI accountability frameworks.',
+
+      // Hobbies (default 3: cycling, writing, chess; 2 extras available below)
+      'hobbies.title': 'Beyond the Terminal',
+      'hobbies.h1.name': 'Urban Cycling',
+      'hobbies.h1.icon': 'directions_bike',
+      'hobbies.h1.desc': 'Navigates CDMX by bike — because the city makes more sense at 20 km/h than through a Waze screen.',
+      'hobbies.h2.name': 'Technical Writing',
+      'hobbies.h2.icon': 'edit_note',
+      'hobbies.h2.desc': 'Writes about data architecture and tooling — clarity is the rarest engineering output.',
+      'hobbies.h3.name': 'Competitive Chess',
+      'hobbies.h3.icon': 'strategy',
+      'hobbies.h3.desc': 'Studies chess not for the wins but for the forcing functions — positions that eliminate bad moves before you make them.',
+      // Extras (swap any of the above with these):
+      // 'hobbies.h4.name': 'Open Source Tinkering', 'hobbies.h4.icon': 'terminal', 'hobbies.h4.desc': '...'
+      // 'hobbies.h5.name': 'Science Communication', 'hobbies.h5.icon': 'science', 'hobbies.h5.desc': '...'
+
+      // Case studies section (honest labeling)
+      'caseStudies.title': 'Case Studies',
+      'caseStudies.disclaimer': 'The following case studies are built on real methodologies and representative metrics; client-specific data has been anonymized or synthesized to respect confidentiality agreements.',
+      'caseStudies.badge': 'SYNTHETIC',
+      'caseStudies.badgeTooltip': 'Real approach, representative data — methodology and outcomes reflect actual project patterns.',
+      'caseStudies.cta': 'Read Approach',
+
+      // Contact: query type select
+      'contact.form.queryLabel': 'Type of enquiry',
+      'contact.form.query.freelance': 'Freelance project',
+      'contact.form.query.job': 'Job position',
+      'contact.form.query.networking': 'Networking',
+      'contact.form.query.other': 'Other',
+      'contact.availability': 'Open to new mandates',
+
+      // Testimonials section titles
+      'testimonials.sectionTitle': 'What People Say',
+      'testimonials.sectionSubtitle': 'Recommendations from managers and collaborators.'
     },
     es: {
       'meta.title': 'MAHUNO',
@@ -608,7 +701,97 @@
       'projects.mdm.button': 'Caso de éxito relacionado',
       'projects.common.languageLabel': 'Idioma',
       'projects.common.languageAria': 'Selecciona idioma',
-      'projects.common.back': '← Volver'
+      'projects.common.back': '← Volver',
+
+      // ── v2: Nuevas secciones ─────────────────────────────────────
+      'meta.description': 'Consultor MDM e ingeniero Java por la UNAM. Especialista TIBCO EBX, integraciones SnapLogic y gobierno de datos con IA. 4+ años en Alldatum. CDMX.',
+      'nav.philosophy': 'Filosofía',
+      'nav.skills': 'Habilidades',
+      'nav.caseStudies': 'Casos de estudio',
+      'nav.certifications': 'Certificaciones',
+      'nav.journey': 'Trayectoria',
+      'nav.hobbies': 'Intereses',
+      'nav.testimonials': 'Testimonios',
+      'nav.theme.dark': 'Activar tema oscuro',
+      'nav.theme.light': 'Activar tema claro',
+      'nav.theme.announce.dark': 'Tema oscuro activado',
+      'nav.theme.announce.light': 'Tema claro activado',
+      'nav.lang.switchEn': 'Switch to English',
+      'nav.lang.switchEs': 'Cambiar a español',
+
+      // Hero nombre dividido + CTA
+      'hero.name.first': 'MARIO HUARTE',
+      'hero.name.last': 'NOLASCO',
+      'hero.cta.work': 'Ver mi trabajo',
+
+      // Stats de la sección about
+      'about.stat.years': 'Años de exp. profesional',
+      'about.stat.projects': 'Entregas empresariales',
+      'about.stat.sectors': 'Sectores industriales',
+      'about.stat.degree': 'Ingeniero en computación',
+      'about.stat.university': 'Egresado UNAM',
+
+      // Bio ampliada (about)
+      'about.bio': 'Soy ingeniero en computación por la UNAM que terminó donde los datos se complican — en la intersección de las reglas de negocio, los sistemas heredados y la política organizacional silenciosa que decide si un programa de datos maestros sobrevive su primer año. En Alldatum Business llevo cuatro años haciendo consultoría MDM con TIBCO EBX e integración con SnapLogic, lo que significa que he visto la misma crisis de calidad de datos desde suficientes ángulos como para dejar de sorprenderme. Lo que me distingue de un desarrollador que también conoce herramientas de datos es que me importa el gobierno como disciplina de diseño: quién es dueño de un registro, bajo qué reglas, y qué pasa cuando las reglas cambian a las 4 PM de un viernes. Vivo en la CDMX, trabajo en inglés y español, y actualmente me estoy especializando en gobierno de datos para IA — porque los modelos solo son confiables si los pipelines que los alimentan también lo son.',
+
+      // Filosofía
+      'philosophy.headline': 'Precisión sobre el ruido.',
+      'philosophy.paragraph': 'La mayoría de los problemas de datos no son problemas de datos — son problemas de claridad disfrazados. Construyo sistemas que convierten la ambigüedad en estructura, ya sea gobernando un modelo de datos maestros en empresas fragmentadas o conectando integraciones que aguantan la carga real de producción. La UNAM me enseñó a pensar desde los fundamentos; cuatro años en consultoría me enseñaron que los fundamentos tienen que sobrevivir una junta un martes por la tarde.',
+      'philosophy.p1.name': 'Modela el dominio, no el pedido',
+      'philosophy.p1.desc': 'Los clientes piden soluciones; mi trabajo es entender qué están realmente gobernando antes de escribir la primera definición de tabla.',
+      'philosophy.p2.name': 'Los pipelines son compromisos',
+      'philosophy.p2.desc': 'Una integración que falla en silencio es peor que ninguna integración — cada flujo de datos que construyo lleva un SLA implícito y diseño para cumplirlo.',
+      'philosophy.p3.name': 'Enseña el stack, no solo la solución',
+      'philosophy.p3.desc': 'Ya sea mentoreando a 40 ingenieros junior o documentando un workflow de EBX, termino cada proyecto con un equipo que entiende lo que opera — no solo que opera.',
+
+      // Trayectoria
+      'journey.title': 'El camino recorrido',
+      'journey.m1.year': '2017',
+      'journey.m1.title': 'Ingreso a la UNAM',
+      'journey.m1.desc': 'Empezó Ingeniería en Computación en la universidad más grande de América Latina, donde la teoría rigurosa se encontró con el caos de construir sistemas reales desde cero.',
+      'journey.m2.year': '2020',
+      'journey.m2.title': 'Instructor en PROTECO',
+      'journey.m2.desc': 'Siendo aún estudiante, impartió bootcamps de Python y Linux a 40+ compañeros — descubriendo que enseñar exige un tipo de comprensión diferente y más afilada.',
+      'journey.m3.year': '2021',
+      'journey.m3.title': 'Primer proyecto de consultoría',
+      'journey.m3.desc': 'Se incorporó a Alldatum Business como consultor junior y de inmediato entregó integraciones SnapLogic en entornos de producción.',
+      'journey.m4.year': '2022–23',
+      'journey.m4.title': 'Especialista MDM, TIBCO EBX',
+      'journey.m4.desc': 'Se convirtió en la referencia del equipo en gobierno EBX, impulsando una mejora del 18% en precisión de SLA y liderando un portafolio de automatización de $2.5M.',
+      'journey.m5.year': '2024',
+      'journey.m5.title': 'AI Enablement y Gobierno de Datos',
+      'journey.m5.desc': 'Completó formación en Azure ML y MLflow, conectando el gobierno MDM clásico con marcos de responsabilidad para IA generativa.',
+
+      // Hobbies
+      'hobbies.title': 'Más allá de la terminal',
+      'hobbies.h1.name': 'Ciclismo urbano',
+      'hobbies.h1.icon': 'directions_bike',
+      'hobbies.h1.desc': 'Recorre la CDMX en bicicleta — porque la ciudad tiene más sentido a 20 km/h que a través de una pantalla de Waze.',
+      'hobbies.h2.name': 'Escritura técnica',
+      'hobbies.h2.icon': 'edit_note',
+      'hobbies.h2.desc': 'Escribe sobre arquitectura de datos y herramientas — la claridad es el producto de ingeniería más escaso.',
+      'hobbies.h3.name': 'Ajedrez competitivo',
+      'hobbies.h3.icon': 'strategy',
+      'hobbies.h3.desc': 'Estudia ajedrez no por las victorias sino por las jugadas forzadas — posiciones que eliminan los errores antes de que ocurran.',
+
+      // Casos de estudio
+      'caseStudies.title': 'Casos de estudio',
+      'caseStudies.disclaimer': 'Los siguientes casos de estudio están construidos sobre metodologías reales y métricas representativas; los datos específicos de cada cliente han sido anonimizados o sintetizados para respetar acuerdos de confidencialidad.',
+      'caseStudies.badge': 'SINTÉTICO',
+      'caseStudies.badgeTooltip': 'Metodología real, datos representativos — el enfoque y los resultados reflejan patrones de proyectos reales.',
+      'caseStudies.cta': 'Ver metodología',
+
+      // Contacto: tipo de consulta
+      'contact.form.queryLabel': 'Tipo de consulta',
+      'contact.form.query.freelance': 'Proyecto freelance',
+      'contact.form.query.job': 'Posición laboral',
+      'contact.form.query.networking': 'Networking',
+      'contact.form.query.other': 'Otro',
+      'contact.availability': 'Abierto a nuevos mandatos',
+
+      // Testimonios (títulos de sección)
+      'testimonials.sectionTitle': 'Lo que dicen',
+      'testimonials.sectionSubtitle': 'Recomendaciones de líderes y colaboradores.'
     }
   };
 

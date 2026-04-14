@@ -1,1004 +1,1140 @@
 <!DOCTYPE html>
-<html lang="en">
+<html class="dark" lang="en">
 <head>
+  <!-- ── FOUC prevention: read theme/lang before paint ── -->
+  <script>
+    (function(){
+      var t=localStorage.getItem('theme');
+      var preferLight=window.matchMedia('(prefers-color-scheme:light)').matches;
+      var theme=(t==='dark'||t==='light')?t:(preferLight?'light':'dark');
+      document.documentElement.classList.remove('dark','light');
+      document.documentElement.classList.add(theme);
+      var l=localStorage.getItem('lang')||'en';
+      document.documentElement.setAttribute('lang',l);
+    })();
+  </script>
 
-    <!-- Basic Page Needs
-    ================================================== -->
-    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title data-i18n="meta.title">MAHUNO — Mario Huarte Nolasco</title>
+  <meta name="description" data-i18n="meta.description"
+        content="MDM consultant &amp; Java developer from UNAM. TIBCO EBX specialist, SnapLogic integrations, AI data governance. 4+ yrs at Alldatum Business. Based in CDMX." />
+  <meta name="author" content="Mario Huarte Nolasco" />
+  <meta name="keywords" content="Mario Huarte Nolasco, MDM, TIBCO EBX, Java, Master Data Management, portfolio, UNAM" />
 
-    <title data-i18n="meta.title">MAHUNO</title>
+  <!-- Favicon -->
+  <link rel="icon" type="image/png" sizes="32x32" href="assets/img/favicon-32x32.png" />
+  <link rel="icon" type="image/png" sizes="16x16" href="assets/img/favicon-16x16.png" />
 
-    <meta name="description" content="Portfolio for Mario Huarte Nolasco showcasing engineering expertise in automation, data analysis, and business intelligence.">
-    <meta name="author" content="Mario Huarte Nolasco">
-    <meta name="keywords" content="Mario Huarte Nolasco, computer engineer, automation, data analysis, business intelligence, portfolio">
+  <!-- Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;700;800&family=Inter:wght@400;500;600&family=Space+Grotesk:wght@400;500;700&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet" />
 
-    <!-- Mobile Specific Metas
-    ================================================== -->
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0">
-    <meta name="apple-mobile-web-app-capable" content="yes">
+  <!-- Tailwind CDN (darkMode:"class" via config below) -->
+  <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            /* All tokens use CSS variables so light/dark theme works */
+            'surface':                   'var(--surface)',
+            'surface-dim':               'var(--surface-dim)',
+            'surface-container-lowest':  'var(--surface-container-lowest)',
+            'surface-container-low':     'var(--surface-container-low)',
+            'surface-container':         'var(--surface-container)',
+            'surface-container-high':    'var(--surface-container-high)',
+            'surface-container-highest': 'var(--surface-container-highest)',
+            'surface-bright':            'var(--surface-bright)',
+            'surface-variant':           'var(--surface-variant)',
+            'on-surface':                'var(--on-surface)',
+            'on-surface-variant':        'var(--on-surface-variant)',
+            'primary':                   'var(--primary)',
+            'primary-container':         'var(--primary-container)',
+            'on-primary':                'var(--on-primary)',
+            'secondary':                 'var(--secondary)',
+            'tertiary':                  'var(--tertiary)',
+            'outline':                   'var(--outline)',
+            'outline-variant':           'var(--outline-variant)',
+          },
+          fontFamily: {
+            headline: ['Manrope', 'sans-serif'],
+            body:     ['Inter', 'sans-serif'],
+            label:    ['Space Grotesk', 'sans-serif'],
+          },
+        },
+      },
+    };
+  </script>
 
-    <!-- Fonts -->
-    <link href="https://fonts.googleapis.com/css?family=Open+Sans:300,400,600,700|Varela" rel="stylesheet">
+  <!-- Custom CSS (CSS vars, components, animations) -->
+  <link rel="stylesheet" href="assets/css/main.css" />
 
-    <!-- Favicon
-    ================================================== -->
-    <link rel="icon" type="image/png" sizes="32x32" href="assets/img/favicon-32x32.png">
-    <link rel="icon" type="image/png" sizes="16x16" href="assets/img/favicon-16x16.png">
-    <link rel="icon" sizes="16x16" href="assets/img/favicon.png">
-
-    <link rel="mask-icon" href="assets/img/safari-pinned-tab.svg" color="#5bbad5">
-    <meta name="theme-color" content="#ffffff">
-
-    <!-- Stylesheets
-    ================================================== -->
-    <!-- Bootstrap core CSS -->
-    <link rel="stylesheet" href="assets/css/bootstrap.min.css" />
-
-    <!-- Font Awesome core CSS -->
-    <link rel="stylesheet" href="assets/css/font-awesome.min.css" />
-
-    <!-- Custom CSS -->
-    <link rel="stylesheet" href="assets/css/style.css">
-
-    <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
-    <!--[if lt IE 9]>
-    <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
-    <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
-    <![endif]-->
+  <style>
+    .material-symbols-outlined {
+      font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+      vertical-align: middle;
+    }
+  </style>
 </head>
-<body>
+<body class="font-body selection:bg-primary/30 selection:text-primary">
 
-    <!-- Hero Section, Background Image change in css -->
-    <div id="top" class="hero background-overlay">
+<!-- Skip link (a11y) -->
+<a href="#main-content" class="sr-only focus:not-sr-only focus:fixed focus:top-4 focus:left-4 focus:z-[100] focus:bg-primary focus:text-on-primary focus:px-4 focus:py-2 focus:rounded">
+  Skip to main content
+</a>
+<!-- SR live region for theme announcements -->
+<div class="sr-live" aria-live="polite" aria-atomic="true" id="theme-announce"></div>
 
-        <!-- Name & Description -->
-        <div class="hero-content">
-            <h1 data-i18n="hero.name">Mario Huarte Nolasco</h1>
-            <p class="hero-job"><span data-i18n="hero.role">COMPUTER ENGINEER</span></p>
-            <p class="hero-job-desc" data-i18n="hero.description">“Passionate about automation, data analysis, and business intelligence. Always seeking new challenges and opportunities to apply my expertise and contribute to the success of technological projects.”</p>
-            <ul class="hero-stats">
-                <li data-i18n="hero.stats.aiExperience">MDM Consultant 3+ years</li>
-                <li data-i18n="hero.stats.mlops"></li>
-                <li data-i18n="hero.stats.generativeGovernance"></li>
-            </ul>
-            <div class="hero-cta">
-                <a class="btn btn-inverted" href="https://www.linkedin.com/in/mario-huarte-nolasco-874436202" target="_blank" rel="noopener noreferrer" data-i18n="hero.cta">View LinkedIn profile</a>
-                <a class="btn btn-resume" href="assets/docs/Mario-Huarte-CV.pdf" target="_blank" rel="noopener noreferrer" data-i18n="hero.resume">Download résumé</a>
+
+<!-- ═══════════════════════════════════════════
+     NAV
+════════════════════════════════════════════ -->
+<nav class="fixed top-0 w-full z-50 glass-nav" id="main-nav" aria-label="Main navigation">
+  <div class="flex justify-between items-center px-6 md:px-8 py-4 max-w-7xl mx-auto">
+
+    <!-- Logo -->
+    <a href="#hero" class="text-base font-black tracking-tighter text-primary font-headline uppercase">
+      MARIO HUARTE NOLASCO
+    </a>
+
+    <!-- Desktop links -->
+    <div class="hidden lg:flex items-center gap-6 font-headline text-xs uppercase font-semibold">
+      <a href="#about"        class="nav-link text-on-surface-variant hover:text-on-surface transition-colors" data-section="about"        data-i18n="nav.about">About</a>
+      <a href="#philosophy"   class="nav-link text-on-surface-variant hover:text-on-surface transition-colors" data-section="philosophy"   data-i18n="nav.philosophy">Philosophy</a>
+      <a href="#skills"       class="nav-link text-on-surface-variant hover:text-on-surface transition-colors" data-section="skills"       data-i18n="nav.skills">Skills</a>
+      <a href="#case-studies" class="nav-link text-on-surface-variant hover:text-on-surface transition-colors" data-section="case-studies" data-i18n="nav.caseStudies">Case Studies</a>
+      <a href="#journey"      class="nav-link text-on-surface-variant hover:text-on-surface transition-colors" data-section="journey"      data-i18n="nav.journey">Journey</a>
+      <a href="#contact"      class="nav-link text-on-surface-variant hover:text-on-surface transition-colors" data-section="contact"      data-i18n="nav.contact">Contact</a>
+    </div>
+
+    <div class="flex items-center gap-2">
+      <!-- Language toggle -->
+      <div class="hidden md:flex items-center bg-surface-container-low border border-outline-variant/40 rounded overflow-hidden text-xs font-label font-bold">
+        <button id="lang-en" class="px-3 py-1.5 transition-colors" aria-label="Switch to English" data-i18n-attrs="aria-label:nav.lang.switchEn">EN</button>
+        <span class="text-outline-variant/50">|</span>
+        <button id="lang-es" class="px-3 py-1.5 transition-colors" aria-label="Cambiar a español" data-i18n-attrs="aria-label:nav.lang.switchEs">ES</button>
+      </div>
+
+      <!-- Theme toggle -->
+      <button data-theme-toggle
+        class="hidden md:flex items-center justify-center w-8 h-8 text-on-surface-variant hover:text-primary transition-colors"
+        aria-pressed="true"
+        data-i18n-attrs="aria-label:nav.theme.dark">
+        <span class="material-symbols-outlined theme-icon text-[18px]">light_mode</span>
+      </button>
+
+      <!-- Hire Me CTA -->
+      <a href="#contact" data-magnetic
+        class="hidden md:inline-flex items-center bg-primary/10 text-primary border border-primary/20 px-4 py-2 font-headline text-xs uppercase font-bold tracking-widest hover:bg-primary/20 transition-all duration-200 active:scale-95">
+        Hire Me
+      </a>
+
+      <!-- Mobile hamburger -->
+      <button id="nav-toggle" class="lg:hidden p-2 text-on-surface-variant hover:text-primary transition-colors" aria-label="Open menu" aria-expanded="false" aria-controls="mobile-nav">
+        <span class="material-symbols-outlined">menu</span>
+      </button>
+    </div>
+  </div>
+</nav>
+
+<!-- Mobile nav overlay -->
+<div id="mobile-nav" class="fixed inset-0 z-40 bg-surface-container-low/95 backdrop-blur-xl flex flex-col items-center justify-center gap-8 font-headline text-2xl uppercase font-bold tracking-widest" aria-label="Mobile navigation" hidden>
+  <button id="nav-close" class="absolute top-6 right-6 text-on-surface-variant hover:text-primary transition-colors" aria-label="Close menu">
+    <span class="material-symbols-outlined text-3xl">close</span>
+  </button>
+  <a href="#about"        class="mobile-nav-link text-on-surface-variant hover:text-primary transition-colors" data-i18n="nav.about">About</a>
+  <a href="#philosophy"   class="mobile-nav-link text-on-surface-variant hover:text-primary transition-colors" data-i18n="nav.philosophy">Philosophy</a>
+  <a href="#skills"       class="mobile-nav-link text-on-surface-variant hover:text-primary transition-colors" data-i18n="nav.skills">Skills</a>
+  <a href="#case-studies" class="mobile-nav-link text-on-surface-variant hover:text-primary transition-colors" data-i18n="nav.caseStudies">Case Studies</a>
+  <a href="#journey"      class="mobile-nav-link text-on-surface-variant hover:text-primary transition-colors" data-i18n="nav.journey">Journey</a>
+  <a href="#contact"      class="mobile-nav-link text-on-surface-variant hover:text-primary transition-colors" data-i18n="nav.contact">Contact</a>
+
+  <!-- Mobile lang + theme -->
+  <div class="flex items-center gap-6 mt-4">
+    <div class="flex items-center gap-1 bg-surface-container border border-outline-variant/40 rounded overflow-hidden text-sm font-label font-bold">
+      <button id="lang-en-mobile" class="px-3 py-2 transition-colors">EN</button>
+      <span class="text-outline-variant/50">|</span>
+      <button id="lang-es-mobile" class="px-3 py-2 transition-colors">ES</button>
+    </div>
+    <button data-theme-toggle
+      class="flex items-center justify-center w-10 h-10 text-on-surface-variant hover:text-primary transition-colors border border-outline-variant/40 rounded"
+      aria-pressed="true">
+      <span class="material-symbols-outlined theme-icon">light_mode</span>
+    </button>
+  </div>
+
+  <a href="#contact" class="mt-2 bg-primary text-on-primary px-8 py-4 text-sm tracking-widest font-bold hover:shadow-[0_0_30px_rgba(76,214,251,0.3)] transition-all" data-i18n="nav.contact">Hire Me</a>
+</div>
+
+
+<!-- ═══════════════════════════════════════════
+     HERO
+════════════════════════════════════════════ -->
+<main id="main-content">
+<section class="relative min-h-screen flex items-center justify-center overflow-hidden pt-16" id="hero" data-fade-section>
+  <!-- Background -->
+  <div class="absolute inset-0 z-0 pointer-events-none">
+    <div class="poly-grid absolute inset-0" data-parallax data-parallax-speed="0.1"></div>
+    <div class="hero-glow absolute inset-0"></div>
+    <div class="absolute top-1/4 left-10 w-64 h-64 bg-primary/5 rounded-full blur-[100px]" data-parallax data-parallax-speed="0.2"></div>
+    <div class="absolute bottom-1/4 right-10 w-96 h-96 bg-secondary/5 rounded-full blur-[120px]" data-parallax data-parallax-speed="0.15"></div>
+  </div>
+
+  <div class="relative z-10 text-center px-4 max-w-5xl reveal">
+    <div class="inline-block px-3 py-1 mb-6 bg-surface-container-highest border border-primary/20">
+      <span class="font-label text-[10px] tracking-[0.2em] uppercase text-primary font-bold" data-i18n="hero.role">MDM Specialist &amp; Java Developer</span>
+    </div>
+    <h1 class="text-6xl md:text-8xl lg:text-9xl font-headline font-extrabold tracking-tighter text-on-surface mb-8">
+      <span class="block" data-i18n="hero.name.first">MARIO HUARTE</span>
+      <span class="text-primary drop-shadow-[0_0_30px_rgba(76,214,251,0.18)]" data-i18n="hero.name.last">NOLASCO</span>
+    </h1>
+    <div class="h-10 mb-12 overflow-hidden">
+      <p class="text-xl md:text-2xl font-body text-on-surface-variant font-light tracking-wide">
+        <span id="typing-target" class="typing-cursor"></span>
+      </p>
+    </div>
+    <div class="flex flex-col sm:flex-row gap-4 sm:gap-6 justify-center items-center">
+      <a href="#case-studies" data-magnetic class="btn-primary w-full sm:w-auto justify-center">
+        <span data-i18n="hero.cta.work">View My Work</span>
+        <span class="material-symbols-outlined text-base">arrow_forward</span>
+      </a>
+      <a href="assets/docs/Mario_Huarte_CV.pdf" target="_blank" rel="noopener noreferrer" class="btn-outline w-full sm:w-auto justify-center">
+        <span data-i18n="hero.resume">Download CV</span>
+        <span class="material-symbols-outlined text-base">description</span>
+      </a>
+    </div>
+  </div>
+
+  <!-- Floating status -->
+  <div class="absolute bottom-10 left-10 hidden xl:flex flex-col gap-2 opacity-40">
+    <div class="flex items-center gap-2">
+      <span class="w-1 h-1 rounded-full bg-primary status-dot"></span>
+      <span class="font-label text-[10px] tracking-widest uppercase">System Status: Active</span>
+    </div>
+    <div class="flex items-center gap-2">
+      <span class="w-1 h-1 rounded-full bg-primary/60"></span>
+      <span class="font-label text-[10px] tracking-widest uppercase" data-i18n="contact.availability">Open to new mandates</span>
+    </div>
+  </div>
+
+  <!-- Scroll cue -->
+  <a href="#about" class="absolute bottom-8 left-1/2 -translate-x-1/2 text-on-surface-variant/40 hover:text-primary transition-colors animate-bounce" aria-label="Scroll down">
+    <span class="material-symbols-outlined">keyboard_arrow_down</span>
+  </a>
+</section>
+
+<hr class="section-divider" />
+
+
+<!-- ═══════════════════════════════════════════
+     ABOUT
+════════════════════════════════════════════ -->
+<section class="bg-surface py-28 px-6 overflow-x-hidden" id="about" data-fade-section>
+  <div class="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-16 items-center">
+
+    <!-- Photo -->
+    <div class="lg:col-span-5 relative group reveal-left">
+      <div class="absolute -top-6 -left-6 w-32 h-32 bg-primary/10 rounded-full blur-3xl opacity-50 pointer-events-none"></div>
+      <div class="relative z-10 aspect-[4/5] bg-surface-container-low p-3 shadow-2xl transition-transform duration-500 group-hover:-translate-y-2 photo-frame">
+        <div class="w-full h-full relative overflow-hidden bg-surface-container-high">
+          <img src="assets/img/me.jpeg" alt="Mario Huarte Nolasco, MDM Specialist" class="w-full h-full object-cover" />
+          <div class="absolute inset-0 border-[16px] border-surface-container-low/70 pointer-events-none"></div>
+          <div class="absolute top-6 right-6">
+            <span class="font-label text-primary/40 text-[9px] tracking-[0.3em] uppercase" style="writing-mode:vertical-rl;transform:rotate(180deg)">ARCHITECT_049</span>
+          </div>
+        </div>
+      </div>
+      <div class="absolute -bottom-6 -left-6 w-full h-full bg-surface-container-highest -z-10 transition-transform duration-500 group-hover:translate-x-2 group-hover:translate-y-2 pointer-events-none"></div>
+    </div>
+
+    <!-- Content -->
+    <div class="lg:col-span-7 flex flex-col space-y-8 reveal-right">
+      <div class="space-y-4">
+        <span class="font-label text-primary text-sm tracking-[0.2em] uppercase font-bold flex items-center gap-3">
+          <span class="w-8 h-[1px] bg-primary/40 inline-block"></span>
+          The Precision Architect
+        </span>
+        <h2 class="text-5xl lg:text-6xl font-headline font-extrabold tracking-tighter text-on-surface leading-[0.95]">
+          Engineering <br /><span class="text-primary/90">Identity &amp; Control.</span>
+        </h2>
+      </div>
+      <p class="text-lg text-on-surface-variant font-body leading-relaxed max-w-2xl" data-i18n="about.bio">
+        I'm a Computer Engineer from UNAM who ended up where data gets difficult — at the intersection of business rules, legacy systems, and the quiet organizational politics that decide whether a master data program survives its first year.
+      </p>
+      <!-- Availability inline -->
+      <div class="flex items-center gap-3">
+        <span class="availability-badge">
+          <span class="availability-dot"></span>
+          <span data-i18n="contact.availability">Open to new mandates</span>
+        </span>
+        <span class="font-label text-xs text-outline">· CDMX / Remote</span>
+      </div>
+
+      <!-- Stats -->
+      <div class="grid grid-cols-2 gap-4 pt-2 reveal-stagger">
+        <div class="bg-surface-container-low p-6 transition-all duration-300 hover:bg-surface-container-high group card-lift">
+          <div class="flex justify-between items-start mb-4">
+            <span class="material-symbols-outlined text-primary group-hover:scale-110 transition-transform">terminal</span>
+            <span class="font-label text-[10px] text-outline tracking-widest uppercase">EXP_LOG</span>
+          </div>
+          <h4 class="text-3xl font-headline font-bold text-on-surface">
+            <span data-counter data-counter-target="4" data-counter-suffix="+">4+</span>
+          </h4>
+          <p class="font-label text-xs text-on-surface-variant uppercase tracking-wider mt-1" data-i18n="about.stat.years">Years Professional Exp.</p>
+        </div>
+        <div class="bg-surface-container-low p-6 transition-all duration-300 hover:bg-surface-container-high group card-lift">
+          <div class="flex justify-between items-start mb-4">
+            <span class="material-symbols-outlined text-primary group-hover:scale-110 transition-transform">deployed_code</span>
+            <span class="font-label text-[10px] text-outline tracking-widest uppercase">SYS_DEPLOY</span>
+          </div>
+          <h4 class="text-3xl font-headline font-bold text-on-surface">
+            <span data-counter data-counter-target="6">6</span>
+          </h4>
+          <p class="font-label text-xs text-on-surface-variant uppercase tracking-wider mt-1" data-i18n="about.stat.projects">Enterprise Deliveries</p>
+        </div>
+        <div class="bg-surface-container-low p-6 transition-all duration-300 hover:bg-surface-container-high group card-lift">
+          <div class="flex justify-between items-start mb-4">
+            <span class="material-symbols-outlined text-primary group-hover:scale-110 transition-transform">domain</span>
+            <span class="font-label text-[10px] text-outline tracking-widest uppercase">MKT_SECTOR</span>
+          </div>
+          <h4 class="text-3xl font-headline font-bold text-on-surface">
+            <span data-counter data-counter-target="3">3</span>
+          </h4>
+          <p class="font-label text-xs text-on-surface-variant uppercase tracking-wider mt-1" data-i18n="about.stat.sectors">Industry Sectors</p>
+        </div>
+        <div class="bg-surface-container-low p-6 transition-all duration-300 hover:bg-surface-container-high group card-lift">
+          <div class="flex justify-between items-start mb-4">
+            <span class="material-symbols-outlined text-primary group-hover:scale-110 transition-transform" style="font-variation-settings:'FILL' 1">school</span>
+            <span class="font-label text-[10px] text-outline tracking-widest uppercase">ACAD_CRED</span>
+          </div>
+          <h4 class="text-xl font-headline font-bold text-on-surface leading-tight" data-i18n="about.stat.degree">Computer Engineer</h4>
+          <p class="font-label text-xs text-on-surface-variant uppercase tracking-wider mt-1" data-i18n="about.stat.university">UNAM Graduate</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<hr class="section-divider" />
+
+
+<!-- ═══════════════════════════════════════════
+     PHILOSOPHY
+════════════════════════════════════════════ -->
+<section class="bg-surface-container-low py-28 px-6" id="philosophy" data-fade-section>
+  <div class="max-w-4xl mx-auto">
+    <div class="mb-16 reveal">
+      <span class="font-label text-primary text-sm tracking-[0.4em] uppercase font-bold flex items-center gap-3 mb-6">
+        <span class="w-8 h-[1px] bg-primary/40 inline-block"></span>
+        <span data-i18n="nav.philosophy">Philosophy</span>
+      </span>
+      <h2 class="philosophy-headline mb-8" data-i18n="philosophy.headline">Precision Over Noise.</h2>
+      <p class="text-lg text-on-surface-variant font-body leading-relaxed max-w-2xl" data-i18n="philosophy.paragraph">
+        Most data problems are not data problems — they are clarity problems in disguise.
+      </p>
+    </div>
+    <div class="space-y-4 reveal-stagger">
+      <div class="principle-card">
+        <h3 class="principle-name" data-i18n="philosophy.p1.name">Model the Domain, Not the Request</h3>
+        <p class="principle-desc" data-i18n="philosophy.p1.desc">Clients ask for solutions; my job is to understand what they're actually governing before I write the first table definition.</p>
+      </div>
+      <div class="principle-card">
+        <h3 class="principle-name" data-i18n="philosophy.p2.name">Pipelines Are Promises</h3>
+        <p class="principle-desc" data-i18n="philosophy.p2.desc">An integration that fails silently is worse than no integration — every data flow I build carries an implicit SLA and I design to honor it.</p>
+      </div>
+      <div class="principle-card">
+        <h3 class="principle-name" data-i18n="philosophy.p3.name">Teach the Stack, Not Just the Solution</h3>
+        <p class="principle-desc" data-i18n="philosophy.p3.desc">Whether mentoring 40 junior engineers or documenting an EBX workflow, I leave every engagement with a team that understands what they're running — not just that it runs.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<hr class="section-divider" />
+
+
+<!-- ═══════════════════════════════════════════
+     SKILLS
+════════════════════════════════════════════ -->
+<section class="bg-surface py-24 px-6" id="skills" data-fade-section>
+  <div class="max-w-7xl mx-auto">
+    <div class="mb-14 reveal">
+      <span class="font-label text-primary text-sm tracking-[0.4em] uppercase font-bold flex items-center gap-3 mb-3">
+        <span class="w-8 h-[1px] bg-primary/40 inline-block"></span>
+        <span data-i18n="nav.skills">Skills</span>
+      </span>
+      <h2 class="text-4xl md:text-5xl font-headline font-extrabold tracking-tighter text-on-surface">Tech Stack.</h2>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+      <!-- Core -->
+      <div class="bg-surface-container-low p-8 reveal">
+        <h3 class="font-label text-xs font-bold tracking-[0.2em] uppercase text-on-surface-variant mb-6 flex items-center gap-2">
+          <span class="w-2 h-[2px] bg-primary inline-block"></span>
+          <span data-i18n="skills.technical.title">Core Engineering</span>
+        </h3>
+        <ul role="list" aria-label="Core engineering skills" class="flex flex-wrap gap-3">
+          <li><span class="skill-pill" data-i18n="skills.technical.tibco">TIBCO EBX</span></li>
+          <li><span class="skill-pill" data-i18n="skills.technical.java">Java</span></li>
+          <li><span class="skill-pill">MDM</span></li>
+          <li><span class="skill-pill" data-i18n="skills.technical.sql">SQL / DML</span></li>
+          <li><span class="skill-pill" data-i18n="skills.technical.python">Python</span></li>
+        </ul>
+      </div>
+
+      <!-- Ecosystem -->
+      <div class="bg-surface-container-low p-8 reveal">
+        <h3 class="font-label text-xs font-bold tracking-[0.2em] uppercase text-on-surface-variant mb-6 flex items-center gap-2">
+          <span class="w-2 h-[2px] bg-secondary inline-block"></span>
+          Ecosystem &amp; Tools
+        </h3>
+        <ul role="list" aria-label="Ecosystem and tools" class="flex flex-wrap gap-3">
+          <li><span class="skill-pill-secondary">SnapLogic</span></li>
+          <li><span class="skill-pill-secondary" data-i18n="skills.technical.powerbi">Power BI</span></li>
+          <li><span class="skill-pill-secondary">Spring Boot</span></li>
+          <li><span class="skill-pill-secondary">Azure ML</span></li>
+          <li><span class="skill-pill-secondary">Airflow</span></li>
+        </ul>
+      </div>
+
+      <!-- Governance -->
+      <div class="bg-surface-container-low p-8 reveal">
+        <h3 class="font-label text-xs font-bold tracking-[0.2em] uppercase text-on-surface-variant mb-6 flex items-center gap-2">
+          <span class="w-2 h-[2px] bg-on-surface-variant inline-block"></span>
+          Governance &amp; Strategy
+        </h3>
+        <ul role="list" aria-label="Governance and strategy skills" class="flex flex-wrap gap-3">
+          <li><span class="skill-pill-secondary italic">Data Governance</span></li>
+          <li><span class="skill-pill-secondary italic">Data Quality</span></li>
+          <li><span class="skill-pill-secondary italic">Data Stewardship</span></li>
+          <li><span class="skill-pill-secondary italic">AI Data Governance</span></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<hr class="section-divider" />
+
+
+<!-- ═══════════════════════════════════════════
+     EXPERIENCE (vertical timeline)
+════════════════════════════════════════════ -->
+<section class="bg-surface-container-low py-28 px-6" id="experience" data-fade-section>
+  <div class="max-w-4xl mx-auto">
+    <div class="mb-16 reveal">
+      <span class="font-label text-primary text-sm tracking-[0.4em] uppercase font-bold flex items-center gap-3 mb-3">
+        <span class="w-8 h-[1px] bg-primary/40 inline-block"></span>
+        <span data-i18n="nav.history">Experience</span>
+      </span>
+      <h2 class="text-4xl md:text-5xl font-headline font-extrabold tracking-tighter text-on-surface">
+        Professional <span class="text-primary">Journey.</span>
+      </h2>
+    </div>
+
+    <ol aria-label="Professional experience" class="relative pl-8 space-y-10">
+      <div class="absolute left-0 top-0 h-full w-[2px] bg-outline-variant/30"></div>
+
+      <!-- Role 1 -->
+      <li class="relative group reveal">
+        <div class="absolute -left-[37px] top-0 w-4 h-4 rounded-full bg-primary shadow-[0_0_15px_rgba(76,214,251,0.6)] border-4 border-surface-container-low z-10 timeline-node-active"></div>
+        <div class="bg-surface p-8 transition-all duration-300 hover:bg-surface-container-high hover:-translate-y-1">
+          <time datetime="2023-08" class="font-label text-primary text-sm font-bold tracking-widest uppercase mb-2 block">Aug 2023 – Present</time>
+          <h3 class="font-headline font-bold text-2xl text-on-surface mb-1">MDM Consultant | TIBCO EBX Developer</h3>
+          <p class="font-label text-tertiary font-medium mb-6">Alldatum Business</p>
+          <ul class="space-y-3 font-body text-on-surface-variant list-none">
+            <li class="flex gap-3">
+              <span class="material-symbols-outlined text-primary text-sm mt-1 shrink-0">check_circle</span>
+              <span>Orchestrating complex MDM solutions using TIBCO EBX for enterprise-scale data governance across multiple client verticals.</span>
+            </li>
+            <li class="flex gap-3">
+              <span class="material-symbols-outlined text-primary text-sm mt-1 shrink-0">check_circle</span>
+              <span>Developing custom Java extensions and API integrations to streamline data workflows and deliver a $2.5M automation portfolio.</span>
+            </li>
+          </ul>
+        </div>
+      </li>
+
+      <!-- Role 2 -->
+      <li class="relative group reveal">
+        <div class="absolute -left-[37px] top-0 w-4 h-4 rounded-full bg-outline-variant border-4 border-surface-container-low z-10 group-hover:bg-primary transition-colors"></div>
+        <div class="bg-surface p-8 transition-all duration-300 hover:bg-surface-container-high hover:-translate-y-1">
+          <time datetime="2021-12" class="font-label text-on-surface-variant text-sm font-bold tracking-widest uppercase mb-2 block">Dec 2021 – Aug 2023</time>
+          <h3 class="font-headline font-bold text-2xl text-on-surface mb-1">Intern MDM Consultant</h3>
+          <p class="font-label text-tertiary font-medium mb-6">Alldatum Business</p>
+          <ul class="space-y-3 font-body text-on-surface-variant list-none">
+            <li class="flex gap-3">
+              <span class="material-symbols-outlined text-primary text-sm mt-1 shrink-0">check_circle</span>
+              <span>Supported implementation of data stewardship policies and quality controls. Delivered 40+ SnapLogic integrations in production.</span>
+            </li>
+            <li class="flex gap-3">
+              <span class="material-symbols-outlined text-primary text-sm mt-1 shrink-0">check_circle</span>
+              <span>SQL database optimization and technical documentation for MDM deployments — achieved 80% cycle-time reduction on RPA automation.</span>
+            </li>
+          </ul>
+        </div>
+      </li>
+    </ol>
+  </div>
+</section>
+
+<hr class="section-divider" />
+
+
+<!-- ═══════════════════════════════════════════
+     CASE STUDIES
+════════════════════════════════════════════ -->
+<section class="bg-surface py-28 px-6" id="case-studies" data-fade-section>
+  <div class="max-w-7xl mx-auto">
+    <header class="mb-6 space-y-4 reveal">
+      <div class="inline-block px-3 py-1 bg-primary/10 border border-primary/20">
+        <span class="font-label text-xs font-bold tracking-[0.2em] text-primary uppercase" data-i18n="nav.caseStudies">Case Studies</span>
+      </div>
+      <h2 class="text-5xl md:text-7xl font-headline font-extrabold tracking-tighter text-on-surface">
+        Applied <span class="text-primary">Methodology.</span>
+      </h2>
+    </header>
+    <!-- Disclaimer -->
+    <p class="font-body text-sm text-on-surface-variant italic mb-12 max-w-3xl border-l-2 border-outline-variant/40 pl-4" data-i18n="caseStudies.disclaimer">
+      The following case studies are built on real methodologies and representative metrics; client-specific data has been anonymized or synthesized to respect confidentiality agreements.
+    </p>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 reveal-stagger">
+
+      <!-- Case 1: RPA -->
+      <a href="projects/rpa-invoice-automation.html" class="case-study-card group relative bg-surface-container-low p-8 transition-all duration-300 hover:-translate-y-2 hover:bg-surface-container-high hover:shadow-[0_20px_40px_rgba(0,0,0,0.3)]" data-tilt>
+        <span class="badge-synthetic" data-tooltip-i18n="caseStudies.badgeTooltip" data-i18n="caseStudies.badge">SYNTHETIC</span>
+        <div class="flex items-start gap-4 mb-8">
+          <div class="w-14 h-14 bg-surface-container-highest flex items-center justify-center border border-primary/10 group-hover:border-primary/40 transition-colors shrink-0">
+            <span class="material-symbols-outlined text-3xl text-primary">smart_toy</span>
+          </div>
+          <div>
+            <p class="font-label text-xs text-outline uppercase tracking-widest mb-1">Automation · Python</p>
+            <h3 class="text-xl font-headline font-bold text-on-surface group-hover:text-primary transition-colors" data-i18n="works.modal.rpa.title">SAP Reconciliation RPA Bot</h3>
+          </div>
+        </div>
+        <p class="font-body text-sm text-on-surface-variant leading-relaxed mb-8" data-i18n="works.modal.rpa.description">Automation built with Python + Selenium to match bank statements with SAP FI, reducing reconciliation cycle by 80%.</p>
+        <div class="pt-6 border-t border-outline-variant/10 flex items-center justify-between">
+          <span class="font-label text-xs text-primary uppercase tracking-widest" data-i18n="caseStudies.cta">Read Approach</span>
+          <span class="material-symbols-outlined text-primary opacity-0 group-hover:opacity-100 transition-opacity">arrow_forward</span>
+        </div>
+      </a>
+
+      <!-- Case 2: Power BI -->
+      <a href="projects/data-analytics-dashboard.html" class="case-study-card group relative bg-surface-container-low p-8 transition-all duration-300 hover:-translate-y-2 hover:bg-surface-container-high hover:shadow-[0_20px_40px_rgba(0,0,0,0.3)]" data-tilt>
+        <span class="badge-synthetic" data-tooltip-i18n="caseStudies.badgeTooltip" data-i18n="caseStudies.badge">SYNTHETIC</span>
+        <div class="flex items-start gap-4 mb-8">
+          <div class="w-14 h-14 bg-surface-container-highest flex items-center justify-center border border-primary/10 group-hover:border-primary/40 transition-colors shrink-0">
+            <span class="material-symbols-outlined text-3xl text-primary">analytics</span>
+          </div>
+          <div>
+            <p class="font-label text-xs text-outline uppercase tracking-widest mb-1">Data Analytics · Power BI</p>
+            <h3 class="text-xl font-headline font-bold text-on-surface group-hover:text-primary transition-colors" data-i18n="works.modal.analytics.title">Power BI Commercial Dashboard</h3>
+          </div>
+        </div>
+        <p class="font-body text-sm text-on-surface-variant leading-relaxed mb-8" data-i18n="works.modal.analytics.description">End-to-end POS/CRM dashboard with 120+ DAX measures for KPI tracking, forecasting, and automated alerts.</p>
+        <div class="pt-6 border-t border-outline-variant/10 flex items-center justify-between">
+          <span class="font-label text-xs text-primary uppercase tracking-widest" data-i18n="caseStudies.cta">Read Approach</span>
+          <span class="material-symbols-outlined text-primary opacity-0 group-hover:opacity-100 transition-opacity">arrow_forward</span>
+        </div>
+      </a>
+
+      <!-- Case 3: EBX MDM -->
+      <a href="projects/ebx-mdm-hub.html" class="case-study-card group relative bg-surface-container-low p-8 transition-all duration-300 hover:-translate-y-2 hover:bg-surface-container-high hover:shadow-[0_20px_40px_rgba(0,0,0,0.3)]" data-tilt>
+        <span class="badge-synthetic" data-tooltip-i18n="caseStudies.badgeTooltip" data-i18n="caseStudies.badge">SYNTHETIC</span>
+        <div class="flex items-start gap-4 mb-8">
+          <div class="w-14 h-14 bg-surface-container-highest flex items-center justify-center border border-primary/10 group-hover:border-primary/40 transition-colors shrink-0">
+            <span class="material-symbols-outlined text-3xl text-primary">hub</span>
+          </div>
+          <div>
+            <p class="font-label text-xs text-outline uppercase tracking-widest mb-1">MDM · TIBCO EBX</p>
+            <h3 class="text-xl font-headline font-bold text-on-surface group-hover:text-primary transition-colors" data-i18n="works.modal.mdm.title">MDM Hub with TIBCO EBX</h3>
+          </div>
+        </div>
+        <p class="font-body text-sm text-on-surface-variant leading-relaxed mb-8" data-i18n="works.modal.mdm.description">Centralized master data hub with multilevel approval workflows and SAP/Salesforce REST integrations.</p>
+        <div class="pt-6 border-t border-outline-variant/10 flex items-center justify-between">
+          <span class="font-label text-xs text-primary uppercase tracking-widest" data-i18n="caseStudies.cta">Read Approach</span>
+          <span class="material-symbols-outlined text-primary opacity-0 group-hover:opacity-100 transition-opacity">arrow_forward</span>
+        </div>
+      </a>
+
+      <!-- Case 4: Data Quality -->
+      <a href="projects/data-quality-observability.html" class="case-study-card group relative bg-surface-container-low p-8 transition-all duration-300 hover:-translate-y-2 hover:bg-surface-container-high hover:shadow-[0_20px_40px_rgba(0,0,0,0.3)]" data-tilt>
+        <span class="badge-synthetic" data-tooltip-i18n="caseStudies.badgeTooltip" data-i18n="caseStudies.badge">SYNTHETIC</span>
+        <div class="flex items-start gap-4 mb-8">
+          <div class="w-14 h-14 bg-surface-container-highest flex items-center justify-center border border-primary/10 group-hover:border-primary/40 transition-colors shrink-0">
+            <span class="material-symbols-outlined text-3xl text-primary">monitoring</span>
+          </div>
+          <div>
+            <p class="font-label text-xs text-outline uppercase tracking-widest mb-1">Data Quality · Python</p>
+            <h3 class="text-xl font-headline font-bold text-on-surface group-hover:text-primary transition-colors" data-i18n="works.modal.observability.title">24/7 Data Observability</h3>
+          </div>
+        </div>
+        <p class="font-body text-sm text-on-surface-variant leading-relaxed mb-8" data-i18n="works.modal.observability.description">Monitoring framework with Great Expectations and Airflow validating 60+ test suites with Grafana dashboards.</p>
+        <div class="pt-6 border-t border-outline-variant/10 flex items-center justify-between">
+          <span class="font-label text-xs text-primary uppercase tracking-widest" data-i18n="caseStudies.cta">Read Approach</span>
+          <span class="material-symbols-outlined text-primary opacity-0 group-hover:opacity-100 transition-opacity">arrow_forward</span>
+        </div>
+      </a>
+    </div>
+  </div>
+</section>
+
+<hr class="section-divider" />
+
+
+<!-- ═══════════════════════════════════════════
+     CERTIFICATIONS
+════════════════════════════════════════════ -->
+<section class="bg-surface-container-low py-24 px-6" id="certifications" data-fade-section>
+  <div class="max-w-7xl mx-auto">
+    <div class="mb-14 reveal">
+      <span class="font-label text-primary text-sm tracking-[0.4em] uppercase font-bold flex items-center gap-3 mb-3">
+        <span class="w-8 h-[1px] bg-primary/40 inline-block"></span>
+        <span data-i18n="nav.certifications">Certifications</span>
+      </span>
+      <h2 class="text-4xl md:text-5xl font-headline font-extrabold tracking-tighter text-on-surface">Validated <span class="text-primary">Credentials.</span></h2>
+    </div>
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 reveal-stagger">
+      <div class="cert-card group">
+        <div class="flex justify-between items-start mb-10">
+          <div class="cert-icon"><span class="material-symbols-outlined text-3xl text-primary">cloud</span></div>
+          <span class="font-label text-sm text-primary/60 tracking-widest">2023</span>
+        </div>
+        <h3 class="text-xl font-headline font-bold text-on-surface group-hover:text-primary transition-colors">AZ-900 Microsoft Azure</h3>
+        <p class="font-label text-xs text-on-surface-variant uppercase tracking-tighter mt-1">Microsoft Fundamentals</p>
+        <span class="material-symbols-outlined text-primary cert-arrow mt-4 block">arrow_forward</span>
+      </div>
+      <div class="cert-card group">
+        <div class="flex justify-between items-start mb-10">
+          <div class="cert-icon"><span class="material-symbols-outlined text-3xl text-primary">analytics</span></div>
+          <span class="font-label text-sm text-primary/60 tracking-widest">2023</span>
+        </div>
+        <h3 class="text-xl font-headline font-bold text-on-surface group-hover:text-primary transition-colors">Google Data Analytics</h3>
+        <p class="font-label text-xs text-on-surface-variant uppercase tracking-tighter mt-1">Google Career Certificates</p>
+        <span class="material-symbols-outlined text-primary cert-arrow mt-4 block">arrow_forward</span>
+      </div>
+      <div class="cert-card group">
+        <div class="flex justify-between items-start mb-10">
+          <div class="cert-icon"><span class="material-symbols-outlined text-3xl text-primary">hub</span></div>
+          <span class="font-label text-sm text-primary/60 tracking-widest">2022</span>
+        </div>
+        <h3 class="text-xl font-headline font-bold text-on-surface group-hover:text-primary transition-colors">SnapLogic Integrator</h3>
+        <p class="font-label text-xs text-on-surface-variant uppercase tracking-tighter mt-1">SnapLogic Certified</p>
+        <span class="material-symbols-outlined text-primary cert-arrow mt-4 block">arrow_forward</span>
+      </div>
+      <div class="cert-card group">
+        <div class="flex justify-between items-start mb-10">
+          <div class="cert-icon"><span class="material-symbols-outlined text-3xl text-primary">groups</span></div>
+          <span class="font-label text-sm text-primary/60 tracking-widest">2024</span>
+        </div>
+        <h3 class="text-xl font-headline font-bold text-on-surface group-hover:text-primary transition-colors">Leadership Diploma 240h</h3>
+        <p class="font-label text-xs text-on-surface-variant uppercase tracking-tighter mt-1">Executive Mgmt. Institute</p>
+        <span class="material-symbols-outlined text-primary cert-arrow mt-4 block">arrow_forward</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<hr class="section-divider" />
+
+
+<!-- ═══════════════════════════════════════════
+     JOURNEY (Life Timeline)
+════════════════════════════════════════════ -->
+<section class="bg-surface py-24 px-6" id="journey" data-fade-section>
+  <div class="max-w-7xl mx-auto">
+    <div class="mb-14 reveal">
+      <span class="font-label text-primary text-sm tracking-[0.4em] uppercase font-bold flex items-center gap-3 mb-3">
+        <span class="w-8 h-[1px] bg-primary/40 inline-block"></span>
+        <span data-i18n="nav.journey">Journey</span>
+      </span>
+      <h2 class="text-4xl md:text-5xl font-headline font-extrabold tracking-tighter text-on-surface" data-i18n="journey.title">The Path Here.</h2>
+    </div>
+    <div class="journey-track">
+      <!-- Milestone 1 -->
+      <div class="journey-item past">
+        <p class="journey-year" data-i18n="journey.m1.year">2017</p>
+        <div class="journey-node"></div>
+        <div class="journey-card">
+          <p class="journey-card-title" data-i18n="journey.m1.title">Enrolled at UNAM</p>
+          <p class="journey-card-desc" data-i18n="journey.m1.desc">Began Computer Engineering at Latin America's largest university.</p>
+        </div>
+      </div>
+      <!-- Milestone 2 -->
+      <div class="journey-item past">
+        <p class="journey-year" data-i18n="journey.m2.year">2020</p>
+        <div class="journey-node"></div>
+        <div class="journey-card">
+          <p class="journey-card-title" data-i18n="journey.m2.title">Instructor, PROTECO</p>
+          <p class="journey-card-desc" data-i18n="journey.m2.desc">Led Python and Linux bootcamps for 40+ peers while still a student.</p>
+        </div>
+      </div>
+      <!-- Milestone 3 -->
+      <div class="journey-item past">
+        <p class="journey-year" data-i18n="journey.m3.year">2021</p>
+        <div class="journey-node"></div>
+        <div class="journey-card">
+          <p class="journey-card-title" data-i18n="journey.m3.title">First Consulting Role</p>
+          <p class="journey-card-desc" data-i18n="journey.m3.desc">Joined Alldatum Business and shipped SnapLogic integrations in production.</p>
+        </div>
+      </div>
+      <!-- Milestone 4 -->
+      <div class="journey-item past">
+        <p class="journey-year" data-i18n="journey.m4.year">2022–23</p>
+        <div class="journey-node"></div>
+        <div class="journey-card">
+          <p class="journey-card-title" data-i18n="journey.m4.title">MDM Specialist</p>
+          <p class="journey-card-desc" data-i18n="journey.m4.desc">EBX governance specialist — 18% SLA improvement, $2.5M automation portfolio.</p>
+        </div>
+      </div>
+      <!-- Milestone 5 (active) -->
+      <div class="journey-item active">
+        <p class="journey-year" data-i18n="journey.m5.year">2024</p>
+        <div class="journey-node"></div>
+        <div class="journey-card">
+          <p class="journey-card-title" data-i18n="journey.m5.title">AI Enablement</p>
+          <p class="journey-card-desc" data-i18n="journey.m5.desc">Azure ML, MLflow, and generative AI governance frameworks — building what comes next.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<hr class="section-divider" />
+
+
+<!-- ═══════════════════════════════════════════
+     HOBBIES
+════════════════════════════════════════════ -->
+<section class="bg-surface-container-low py-24 px-6" id="hobbies" data-fade-section>
+  <div class="max-w-7xl mx-auto">
+    <div class="mb-14 reveal">
+      <span class="font-label text-primary text-sm tracking-[0.4em] uppercase font-bold flex items-center gap-3 mb-3">
+        <span class="w-8 h-[1px] bg-primary/40 inline-block"></span>
+        <span data-i18n="nav.hobbies">Hobbies</span>
+      </span>
+      <h2 class="text-4xl md:text-5xl font-headline font-extrabold tracking-tighter text-on-surface" data-i18n="hobbies.title">Beyond the Terminal.</h2>
+    </div>
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 reveal-stagger">
+      <div class="hobby-card-v2">
+        <div class="hobby-icon-wrap">
+          <span class="material-symbols-outlined text-2xl" data-i18n="hobbies.h1.icon">directions_bike</span>
+        </div>
+        <p class="hobby-card-title" data-i18n="hobbies.h1.name">Urban Cycling</p>
+        <p class="hobby-card-desc" data-i18n="hobbies.h1.desc">Navigates CDMX by bike — because the city makes more sense at 20 km/h than through a Waze screen.</p>
+      </div>
+      <div class="hobby-card-v2">
+        <div class="hobby-icon-wrap">
+          <span class="material-symbols-outlined text-2xl" data-i18n="hobbies.h2.icon">edit_note</span>
+        </div>
+        <p class="hobby-card-title" data-i18n="hobbies.h2.name">Technical Writing</p>
+        <p class="hobby-card-desc" data-i18n="hobbies.h2.desc">Writes about data architecture and tooling — clarity is the rarest engineering output.</p>
+      </div>
+      <div class="hobby-card-v2">
+        <div class="hobby-icon-wrap">
+          <span class="material-symbols-outlined text-2xl" data-i18n="hobbies.h3.icon">strategy</span>
+        </div>
+        <p class="hobby-card-title" data-i18n="hobbies.h3.name">Competitive Chess</p>
+        <p class="hobby-card-desc" data-i18n="hobbies.h3.desc">Studies chess not for the wins but for the forcing functions — positions that eliminate bad moves before you make them.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<hr class="section-divider" />
+
+
+<!-- ═══════════════════════════════════════════
+     TESTIMONIALS (auto-hides if empty)
+════════════════════════════════════════════ -->
+<section class="bg-surface py-24 px-6" id="testimonials" data-fade-section>
+  <div class="max-w-7xl mx-auto">
+    <div class="mb-14 reveal">
+      <span class="font-label text-primary text-sm tracking-[0.4em] uppercase font-bold flex items-center gap-3 mb-3">
+        <span class="w-8 h-[1px] bg-primary/40 inline-block"></span>
+        <span data-i18n="nav.testimonials">Testimonials</span>
+      </span>
+      <h2 class="text-4xl md:text-5xl font-headline font-extrabold tracking-tighter text-on-surface" data-i18n="testimonials.sectionTitle">What People Say.</h2>
+    </div>
+    <div id="testimonials-grid" class="grid grid-cols-1 md:grid-cols-3 gap-6 reveal-stagger">
+      <!-- Injected by JS from TRANSLATIONS testimonials.items.* -->
+    </div>
+  </div>
+</section>
+
+<hr class="section-divider" />
+
+
+<!-- ═══════════════════════════════════════════
+     CONTACT
+════════════════════════════════════════════ -->
+<section class="bg-surface-container-low py-28 px-6" id="contact" data-fade-section>
+  <div class="max-w-7xl mx-auto">
+    <div class="max-w-3xl mx-auto text-center mb-20 reveal">
+      <h2 class="font-headline font-extrabold text-5xl md:text-7xl tracking-tighter text-on-surface mb-6">
+        Let's Build the <span class="text-primary">Next Architecture.</span>
+      </h2>
+      <p class="font-body text-on-surface-variant text-lg max-w-2xl mx-auto leading-relaxed" data-i18n="contact.form.description">
+        Whether you need a full-scale MDM implementation or a robust technical consultation, my inbox is open.
+      </p>
+      <div class="flex justify-center mt-6">
+        <span class="availability-badge">
+          <span class="availability-dot"></span>
+          <span data-i18n="contact.availability">Open to new mandates</span>
+        </span>
+      </div>
+    </div>
+
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-12 items-start">
+
+      <!-- Info cards -->
+      <div class="lg:col-span-5 grid grid-cols-1 gap-4 reveal-left">
+        <a href="mailto:mario_huarte@outlook.com" class="group bg-surface p-8 transition-all duration-300 hover:-translate-y-1 hover:bg-surface-container-high">
+          <div class="flex items-start justify-between">
+            <div>
+              <span class="font-label text-primary text-xs font-bold tracking-widest uppercase mb-2 block" data-i18n="contact.email.heading">Email</span>
+              <h3 class="font-headline text-2xl font-semibold mb-1">Email</h3>
+              <p class="font-body text-on-surface-variant text-sm">mario_huarte@outlook.com</p>
             </div>
-
-        </div><!-- /.hero-content -->
-
-        <div class="hero-arrow page-scroll home-arrow-down">
-            <a class="" href="#intro"><i class="fa fa-angle-double-down" aria-hidden="true"></i></a>
-        </div><!-- /.hero-arrow -->
-
-    </div><!-- /.hero -->
-    <!-- End Hero -->
-
-    <!-- Header -->
-    <header id="masthead" class="site-header">
-        <nav id="primary-navigation" class="site-navigation" data-spy="affix">
-            <div class="container">
-                <div class="navbar-header page-scroll">
-
-                    <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#portfolio-perfect-collapse" aria-expanded="false" >
-                        <span class="icon-bar"></span>
-                        <span class="icon-bar"></span>
-                        <span class="icon-bar"></span>
-                    </button>
-
-                    <!-- Name -->
-                    <div class="page-scroll site-logo">
-                        <a href="#top">MARIO</a>
-                    </div>
-
-                </div><!-- /.navbar-header -->
-
-                <div class="main-menu collapse navbar-collapse" id="portfolio-perfect-collapse">
-
-                    <!-- Navigation -->
-                    <ul class="nav navbar-nav navbar-right">
-
-                        <li class="page-scroll"><a href="#top" data-i18n="nav.home">Home</a></li>
-                        <li class="page-scroll"><a href="#intro" data-i18n="nav.intro">Values</a></li>
-                        <li class="page-scroll"><a href="#about" data-i18n="nav.about">About</a></li>
-                        <li class="page-scroll"><a href="#history" data-i18n="nav.history">History</a></li>
-                        <li class="page-scroll"><a href="#works" data-i18n="nav.works">Works</a></li>
-                        <li class="page-scroll"><a href="#contact" data-i18n="nav.contact">Contact</a></li>
-                        <li class="language-selector">
-                            <label for="language-switcher" class="sr-only" data-i18n="language.label">Language</label>
-                            <span id="language-switcher-description" class="sr-only" data-i18n="language.hint">Use this menu to change the language of the site.</span>
-                            <select id="language-switcher" class="language-switcher" aria-describedby="language-switcher-description" data-i18n-attrs="aria-label:language.switcherLabel">
-                                <option value="en" data-i18n="language.option.en">EN</option>
-                                <option value="es" data-i18n="language.option.es">ES</option>
-                            </select>
-                        </li>
-
-                    </ul><!-- /.navbar-nav -->
-
-                </div><!-- /.navbar-collapse -->
+            <div class="p-3 bg-surface-container-highest group-hover:shadow-[0_0_15px_rgba(76,214,251,0.2)] transition-shadow">
+              <span class="material-symbols-outlined text-primary">alternate_email</span>
             </div>
-        </nav><!-- /.primary-navigation -->
-    </header><!-- /#header -->
-    <!-- End Header -->
+          </div>
+        </a>
 
-    <!-- Main content -->
-    <main id="main" class="site-main">
-
-        <!-- Hello section -->
-        <section class="site-section section-hello" id="intro">
-            <div class="container">
-                <h2 data-i18n="intro.title">Professional Values</h2>
-                <p class="section-subtitle"><span data-i18n="intro.subtitle">How I deliver sustainable change</span></p>
-                <div class="row">
-                    <div class="col-sm-4">
-                        <div class="main-service text-right">
-                            <div class="rectangle">
-                                <i class="fa fa-random" aria-hidden="true"></i>
-                            </div><!-- /.rectangle -->
-                            <h3 data-i18n="intro.adaptability.title">Adaptability</h3>
-                            <p data-i18n="intro.adaptability.description">I took on critical configurations in a JBoss project without prior experience, teaching myself and resolving deployments in record time; subsequently, I became the team's point of reference for server queries.</p>
-                        </div><!-- /.main-service -->
-                        <div class="main-service text-right">
-                            <div class="rectangle">
-                                <i class="fa fa-graduation-cap" aria-hidden="true"></i>
-                            </div>
-                            <h3 data-i18n="intro.continuousLearning.title">Continuous learning</h3>
-                            <p data-i18n="intro.continuousLearning.description">Fortalezco constantemente mis bases técnicas en Java, SQL y Linux mediante cursos en Udemy y autoformación. De forma proactiva aprendí Power BI, lo que permitió entregar un dashboard técnico clave en una presentación a clientes, aplicando conocimiento recién adquirido.</p>
-                        </div><!-- /.main-service -->
-                    </div>
-                    <div class="col-sm-4">
-                        <div class="main-service text-left">
-                            <div class="rectangle">
-                                <i class="fa fa-lightbulb-o" aria-hidden="true"></i>
-                            </div>
-                            <h3 data-i18n="intro.analyticalThinking.title">Analytical thinking</h3>
-                            <p data-i18n="intro.analyticalThinking.description">I designed and implemented a data quality rule on over 200 million records in EBX, applying logical analysis and Java programming. I divided the problem into modules and optimized processing, ensuring system integrity and performance.</p>
-                        </div><!-- /.main-service -->
-                        <div class="main-service text-left">
-                            <div class="rectangle">
-                                <i class="fa fa-handshake-o" aria-hidden="true"></i>
-                            </div><!-- /.rectangle -->
-                            <h3 data-i18n="intro.stakeholderLeadership.title">Stakeholder leadership</h3>
-                            <p data-i18n="intro.stakeholderLeadership.description">I translate business requirements into technical solutions within MDM projects, facilitating communication between users and developers. My technical approach and clear explanations enable clients to understand the impact and scope of each proposal before implementation.</p>
-                        </div><!-- /.main-service -->
-                    </div>
-                </div>
+        <div class="grid grid-cols-2 gap-4">
+          <div class="group bg-surface p-6 transition-all duration-300 hover:-translate-y-1 hover:bg-surface-container-high">
+            <span class="font-label text-primary text-xs font-bold tracking-widest uppercase mb-2 block" data-i18n="contact.location.heading">Location</span>
+            <h3 class="font-headline text-lg font-semibold mb-1">Mexico City</h3>
+            <p class="font-label text-xs text-outline uppercase">GMT-6</p>
+            <p class="font-label text-xs text-on-surface-variant mt-3" data-i18n="contact.location.description">Open to remote &amp; hybrid</p>
+          </div>
+          <a href="https://www.linkedin.com/in/mario-huarte-nolasco-874436202/" target="_blank" rel="noopener noreferrer" class="group bg-surface p-6 transition-all duration-300 hover:-translate-y-1 hover:bg-surface-container-high">
+            <span class="font-label text-primary text-xs font-bold tracking-widest uppercase mb-2 block" data-i18n="contact.networks.heading">LinkedIn</span>
+            <h3 class="font-headline text-lg font-semibold mb-1">LinkedIn</h3>
+            <p class="font-body text-xs text-on-surface-variant truncate">/mario-huarte</p>
+            <div class="mt-6 flex justify-end">
+              <span class="material-symbols-outlined text-primary text-3xl group-hover:rotate-12 transition-transform">link</span>
             </div>
-        </section><!-- /.section-hello -->
-        <!-- End Hello section -->
-
-        <!-- Testimonials section -->
-        <section class="site-section section-testimonials" id="testimonials">
-            <div class="container">
-                <div class="text-center">
-                    <h2 data-i18n="testimonials.title">What peers say about my work</h2>
-                    <p class="section-subtitle" data-i18n="testimonials.subtitle">Feedback from managers and collaborators who have built data initiatives with me.</p>
-                </div>
-                <div class="review-carousel" role="region" aria-live="polite" aria-roledescription="carousel" aria-label="Testimonials carousel" data-arrows="desktop">
-                    <div class="testimonial-card">
-                        <div class="testimonial-avatar" role="img" aria-label="Monogram avatar for Ana García" data-i18n-attrs="aria-label:testimonials.items.0.avatarLabel">
-                            <span class="testimonial-initials" aria-hidden="true" data-i18n="testimonials.items.0.initials">AG</span>
-                        </div>
-                        <blockquote class="testimonial-quote" data-i18n="testimonials.items.0.quote">“Mario sets a high bar for structured delivery. He breaks down automation roadmaps into milestones that keep leadership aligned.”</blockquote>
-                        <p class="testimonial-name" data-i18n="testimonials.items.0.name">Ana García</p>
-                        <p class="testimonial-role">
-                            <span data-i18n="testimonials.items.0.role">Head of Finance Transformation, RetailCo</span>
-                            <a class="testimonial-linkedin" href="https://www.linkedin.com/" target="_blank" rel="noopener noreferrer" data-i18n-attrs="aria-label:testimonials.items.0.linkedinAria" aria-label="View Ana García on LinkedIn">
-                                <i class="fa fa-linkedin" aria-hidden="true"></i>
-                            </a>
-                        </p>
-                    </div>
-                    <div class="testimonial-card">
-                        <div class="testimonial-avatar" role="img" aria-label="Monogram avatar for Li Wei" data-i18n-attrs="aria-label:testimonials.items.1.avatarLabel">
-                            <span class="testimonial-initials" aria-hidden="true" data-i18n="testimonials.items.1.initials">LW</span>
-                        </div>
-                        <blockquote class="testimonial-quote" data-i18n="testimonials.items.1.quote">“He designs data models with the business in mind. Mario translated complex product hierarchies into EBX structures everyone could use.”</blockquote>
-                        <p class="testimonial-name" data-i18n="testimonials.items.1.name">Li Wei</p>
-                        <p class="testimonial-role">
-                            <span data-i18n="testimonials.items.1.role">MDM Product Owner, Alldatum</span>
-                            <a class="testimonial-linkedin" href="https://www.linkedin.com/" target="_blank" rel="noopener noreferrer" data-i18n-attrs="aria-label:testimonials.items.1.linkedinAria" aria-label="View Li Wei on LinkedIn">
-                                <i class="fa fa-linkedin" aria-hidden="true"></i>
-                            </a>
-                        </p>
-                    </div>
-                    <div class="testimonial-card">
-                        <div class="testimonial-avatar" role="img" aria-label="Monogram avatar for Sofía Ramírez" data-i18n-attrs="aria-label:testimonials.items.2.avatarLabel">
-                            <span class="testimonial-initials" aria-hidden="true" data-i18n="testimonials.items.2.initials">SR</span>
-                        </div>
-                        <blockquote class="testimonial-quote" data-i18n="testimonials.items.2.quote">“From discovery interviews to Power BI deployment, Mario keeps stakeholders informed and confident. Delivery risks are surfaced early.”</blockquote>
-                        <p class="testimonial-name" data-i18n="testimonials.items.2.name">Sofía Ramírez</p>
-                        <p class="testimonial-role">
-                            <span data-i18n="testimonials.items.2.role">Analytics Chapter Lead, FinNova</span>
-                            <a class="testimonial-linkedin" href="https://www.linkedin.com/" target="_blank" rel="noopener noreferrer" data-i18n-attrs="aria-label:testimonials.items.2.linkedinAria" aria-label="View Sofía Ramírez on LinkedIn">
-                                <i class="fa fa-linkedin" aria-hidden="true"></i>
-                            </a>
-                        </p>
-                    </div>
-                </div>
-            </div>
-        </section>
-        <!-- End Testimonials section -->
-
-        <!-- About section -->
-        <section class="site-section section-about text-center" id="about">
-            <div class="container">
-                <h2 data-i18n="about.title">Data advisory services I deliver</h2>
-                <p class="section-subtitle"><span data-i18n="about.subtitle">Structured programs to unblock delivery and grow team capability</span></p>
-                <div class="services-grid">
-                    <article class="service-card">
-                            <div class="service-card__header">
-                                <div class="service-card__icon-wrap">
-                                    <img src="assets/img/icons/mdm-sprint.svg" class="service-card__icon" loading="lazy" alt="Icon representing a master data foundations sprint" data-i18n-attrs="alt:about.services.masterData.iconAlt">
-                                </div>
-                                <h3 data-i18n="about.services.masterData.title">Master Data Foundations Sprint</h3>
-                            </div>
-                            <p class="service-card__description" data-i18n="about.services.masterData.description">Focused 4–6 week engagement to stabilize core domains, align governance, and activate the foundation of your master data hub.</p>
-                            <div class="service-card__details">
-                                <div class="service-card__detail">
-                                    <h4 data-i18n="about.services.detail.deliverablesTitle">Key deliverables</h4>
-                                    <ul class="service-card__list">
-                                        <li data-i18n="about.services.masterData.deliverables.item1">Domain blueprint with integration inventory and canonical definitions.</li>
-                                        <li data-i18n="about.services.masterData.deliverables.item2">Golden record workflow backlog with success metrics and ownership.</li>
-                                        <li data-i18n="about.services.masterData.deliverables.item3">Governance starter kit including stewardship runbooks and scorecards.</li>
-                                    </ul>
-                                </div>
-                                <div class="service-card__detail">
-                                    <h4 data-i18n="about.services.detail.stakeholdersTitle">Ideal stakeholders</h4>
-                                    <p data-i18n="about.services.masterData.stakeholders">Data governance leads, product owners, integration architects.</p>
-                                </div>
-                                <div class="service-card__detail">
-                                    <h4 data-i18n="about.services.detail.impactTitle">Expected impact</h4>
-                                    <p data-i18n="about.services.masterData.impact">Stabilizes shared definitions, reduces onboarding time for new domains, and creates measurable quality baselines.</p>
-                                </div>
-                            </div>
-                            <ol class="service-card__timeline" aria-label="Engagement timeline" data-i18n-attrs="aria-label:about.services.timelineLabel">
-                                <li data-i18n="about.services.masterData.timeline.phase1">Assess &amp; align</li>
-                                <li data-i18n="about.services.masterData.timeline.phase2">Design &amp; configure</li>
-                                <li data-i18n="about.services.masterData.timeline.phase3">Pilot governance</li>
-                            </ol>
-                            <a class="btn btn-service" href="#contact" data-i18n="about.services.cta">Book intro call</a>
-                    </article>
-                    <article class="service-card">
-                            <div class="service-card__header">
-                                <div class="service-card__icon-wrap">
-                                    <img src="assets/img/icons/automation-accelerator.svg" class="service-card__icon" loading="lazy" alt="Icon representing an automation accelerator program" data-i18n-attrs="alt:about.services.automation.iconAlt">
-                                </div>
-                                <h3 data-i18n="about.services.automation.title">Automation Pipeline Accelerator</h3>
-                            </div>
-                            <p class="service-card__description" data-i18n="about.services.automation.description">Rapid program combining discovery, pilot delivery, and enablement to grow a healthy automation pipeline.</p>
-                            <div class="service-card__details">
-                                <div class="service-card__detail">
-                                    <h4 data-i18n="about.services.detail.deliverablesTitle">Key deliverables</h4>
-                                    <ul class="service-card__list">
-                                        <li data-i18n="about.services.automation.deliverables.item1">Automation funnel with quantified opportunities and ROI heatmap.</li>
-                                        <li data-i18n="about.services.automation.deliverables.item2">Reusable bot blueprint with documentation, testing, and support plan.</li>
-                                        <li data-i18n="about.services.automation.deliverables.item3">Operating model playbook covering CoE roles, change management, and metrics.</li>
-                                    </ul>
-                                </div>
-                                <div class="service-card__detail">
-                                    <h4 data-i18n="about.services.detail.stakeholdersTitle">Ideal stakeholders</h4>
-                                    <p data-i18n="about.services.automation.stakeholders">Operations managers, process owners, automation center of excellence leads.</p>
-                                </div>
-                                <div class="service-card__detail">
-                                    <h4 data-i18n="about.services.detail.impactTitle">Expected impact</h4>
-                                    <p data-i18n="about.services.automation.impact">Cuts manual cycle times, frees high-value hours, and builds confidence for scaled automation delivery.</p>
-                                </div>
-                            </div>
-                            <ol class="service-card__timeline" aria-label="Engagement timeline" data-i18n-attrs="aria-label:about.services.timelineLabel">
-                                <li data-i18n="about.services.automation.timeline.phase1">Map value chain</li>
-                                <li data-i18n="about.services.automation.timeline.phase2">Prototype &amp; test</li>
-                                <li data-i18n="about.services.automation.timeline.phase3">Launch &amp; coach</li>
-                            </ol>
-                            <a class="btn btn-service" href="#contact" data-i18n="about.services.cta">Book intro call</a>
-                    </article>
-                    <article class="service-card">
-                            <div class="service-card__header">
-                                <div class="service-card__icon-wrap">
-                                    <img src="assets/img/icons/analytics-roadmap.svg" class="service-card__icon" loading="lazy" alt="Icon showing an AI and analytics roadmap" data-i18n-attrs="alt:about.services.analytics.iconAlt">
-                                </div>
-                                <h3 data-i18n="about.services.analytics.title">AI &amp; Analytics Roadmap</h3>
-                            </div>
-                            <p class="service-card__description" data-i18n="about.services.analytics.description">Strategy engagement to align analytics and AI vision, prioritize use cases, and define the delivery runway.</p>
-                            <div class="service-card__details">
-                                <div class="service-card__detail">
-                                    <h4 data-i18n="about.services.detail.deliverablesTitle">Key deliverables</h4>
-                                    <ul class="service-card__list">
-                                        <li data-i18n="about.services.analytics.deliverables.item1">Analytics and AI maturity assessment with capability heatmap.</li>
-                                        <li data-i18n="about.services.analytics.deliverables.item2">Prioritized portfolio with business value cases and data dependencies.</li>
-                                        <li data-i18n="about.services.analytics.deliverables.item3">12–18 month execution plan with governance, squad design, and investment outlook.</li>
-                                    </ul>
-                                </div>
-                                <div class="service-card__detail">
-                                    <h4 data-i18n="about.services.detail.stakeholdersTitle">Ideal stakeholders</h4>
-                                    <p data-i18n="about.services.analytics.stakeholders">Analytics leaders, finance strategists, digital product owners.</p>
-                                </div>
-                                <div class="service-card__detail">
-                                    <h4 data-i18n="about.services.detail.impactTitle">Expected impact</h4>
-                                    <p data-i18n="about.services.analytics.impact">Aligns investment decisions, sequences high-impact launches, and builds a shared scorecard for analytics initiatives.</p>
-                                </div>
-                            </div>
-                            <ol class="service-card__timeline" aria-label="Engagement timeline" data-i18n-attrs="aria-label:about.services.timelineLabel">
-                                <li data-i18n="about.services.analytics.timeline.phase1">Discover signals</li>
-                                <li data-i18n="about.services.analytics.timeline.phase2">Co-create portfolio</li>
-                                <li data-i18n="about.services.analytics.timeline.phase3">Operationalize plan</li>
-                            </ol>
-                            <a class="btn btn-service" href="#contact" data-i18n="about.services.cta">Book intro call</a>
-                    </article>
-                    <article class="service-card">
-                            <div class="service-card__header">
-                                <div class="service-card__icon-wrap">
-                                    <img src="assets/img/icons/fractional-leadership.svg" class="service-card__icon" loading="lazy" alt="Icon representing fractional data leadership advisory" data-i18n-attrs="alt:about.services.fractionalLeadership.iconAlt">
-                                </div>
-                                <h3 data-i18n="about.services.fractionalLeadership.title">Fractional Data Leadership</h3>
-                            </div>
-                            <p class="service-card__description" data-i18n="about.services.fractionalLeadership.description">Advisory and mentorship retainer that provides technical reviews, office hours, and leadership coaching for your data teams.</p>
-                            <div class="service-card__details">
-                                <div class="service-card__detail">
-                                    <h4 data-i18n="about.services.detail.deliverablesTitle">Key deliverables</h4>
-                                    <ul class="service-card__list">
-                                        <li data-i18n="about.services.fractionalLeadership.deliverables.item1">Weekly architecture and delivery clinics with documented decisions.</li>
-                                        <li data-i18n="about.services.fractionalLeadership.deliverables.item2">On-call advisory playbook covering escalation paths and health metrics.</li>
-                                        <li data-i18n="about.services.fractionalLeadership.deliverables.item3">Mentorship tracks with measurable growth goals for product and engineering leads.</li>
-                                    </ul>
-                                </div>
-                                <div class="service-card__detail">
-                                    <h4 data-i18n="about.services.detail.stakeholdersTitle">Ideal stakeholders</h4>
-                                    <p data-i18n="about.services.fractionalLeadership.stakeholders">Heads of data, product owners, analytics or platform tech leads.</p>
-                                </div>
-                                <div class="service-card__detail">
-                                    <h4 data-i18n="about.services.detail.impactTitle">Expected impact</h4>
-                                    <p data-i18n="about.services.fractionalLeadership.impact">Builds internal autonomy, de-risks technical decisions, and accelerates delivery confidence.</p>
-                                </div>
-                            </div>
-                            <ol class="service-card__timeline" aria-label="Engagement timeline" data-i18n-attrs="aria-label:about.services.timelineLabel">
-                                <li data-i18n="about.services.fractionalLeadership.timeline.phase1">Kickoff &amp; prioritize</li>
-                                <li data-i18n="about.services.fractionalLeadership.timeline.phase2">Embed rituals</li>
-                                <li data-i18n="about.services.fractionalLeadership.timeline.phase3">Scale capability</li>
-                            </ol>
-                            <a class="btn btn-service" href="#contact" data-i18n="about.services.cta">Book intro call</a>
-                    </article>
-                </div>
-
-            </div>
-        </section><!-- /.section-about -->
-        <!-- End About section -->
-
-        <!-- Skills section -->
-        <section class="site-section section-skills">
-            <div class="container">
-                <div class="row">
-                    <div class="col-sm-6">
-                        <h2 data-i18n="skills.videoTitle">Introduction video</h2>
-                        <div class="embed-responsive embed-responsive-16by9">
-                            <iframe class="embed-responsive-item" src="https://www.youtube.com/embed/-QXW3OVFMcc" title="Introduction video" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen data-i18n-attrs="title:skills.videoTitle"></iframe>
-                        </div>
-                    </div>
-                    <div class="col-sm-6">
-                        <h2 data-i18n="skills.listTitle">Skills</h2>
-                        <div class="skills-wrapper">
-                            <section class="skills-category">
-                                <h3 data-i18n="skills.technical.title">Technical Skills</h3>
-                                <ul class="skill-list">
-                                    <li>
-                                        <i class="fa fa-code skill-icon" aria-hidden="true"></i>
-                                        <span class="skill-badge" data-i18n="skills.technical.python">Python</span>
-                                    </li>
-                                    <li>
-                                        <i class="fa fa-database skill-icon" aria-hidden="true"></i>
-                                        <span class="skill-badge" data-i18n="skills.technical.sql">SQL / DML</span>
-                                    </li>
-                                    <li>
-                                        <i class="fa fa-coffee skill-icon" aria-hidden="true"></i>
-                                        <span class="skill-badge" data-i18n="skills.technical.java">Java</span>
-                                    </li>
-                                    <li>
-                                        <i class="fa fa-cubes skill-icon" aria-hidden="true"></i>
-                                        <span class="skill-badge" data-i18n="skills.technical.tibco">TIBCO EBX</span>
-                                    </li>
-                                    <li>
-                                        <i class="fa fa-bar-chart skill-icon" aria-hidden="true"></i>
-                                        <span class="skill-badge" data-i18n="skills.technical.powerbi">Power BI</span>
-                                    </li>
-                                    <li>
-                                        <i class="fa fa-language skill-icon" aria-hidden="true"></i>
-                                        <span class="skill-badge" data-i18n="skills.technical.english">English B2</span>
-                                    </li>
-                                </ul>
-                            </section>
-                            <section class="skills-category">
-                                <h3 data-i18n="skills.soft.title">Soft Skills</h3>
-                                <ul class="skill-list">
-                                    <li>
-                                        <i class="fa fa-comments skill-icon" aria-hidden="true"></i>
-                                        <span class="skill-badge" data-i18n="skills.soft.communication">Communication</span>
-                                    </li>
-                                    <li>
-                                        <i class="fa fa-lightbulb-o skill-icon" aria-hidden="true"></i>
-                                        <span class="skill-badge" data-i18n="skills.soft.problemSolving">Problem-solving</span>
-                                    </li>
-                                    <li>
-                                        <i class="fa fa-users skill-icon" aria-hidden="true"></i>
-                                        <span class="skill-badge" data-i18n="skills.soft.teamwork">Teamwork</span>
-                                    </li>
-                                    <li>
-                                        <i class="fa fa-random skill-icon" aria-hidden="true"></i>
-                                        <span class="skill-badge" data-i18n="skills.soft.adaptability">Adaptability</span>
-                                    </li>
-                                    <li>
-                                        <i class="fa fa-compass skill-icon" aria-hidden="true"></i>
-                                        <span class="skill-badge" data-i18n="skills.soft.leadership">Stakeholder leadership</span>
-                                    </li>
-                                </ul>
-                            </section>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </section><!-- /.section-skills -->
-        <!-- End Skills section -->
-
-        <!-- Highlights section -->
-        <section class="site-section section-highlights" id="highlights">
-            <div class="container">
-                <div class="text-center">
-                    <h2 data-i18n="highlights.title">Certifications and Project Highlights</h2>
-                    <p class="section-subtitle"><span data-i18n="highlights.subtitle">Credentials and impact from recent deliveries</span></p>
-                </div>
-                <div class="row">
-                    <div class="col-sm-6 col-md-3">
-                        <div class="feature-about highlight-card">
-                            <div class="medium-rectangle rectangle">
-                                <i class="fa fa-certificate" aria-hidden="true"></i>
-                            </div>
-                            <h3 data-i18n="highlights.certifications.title">Professional Certifications</h3>
-                            <p data-i18n="highlights.certifications.description">Google Data Analytics Professional Certificate, Microsoft Certified: Azure Fundamentals (AZ-900), SnapLogic Integrator Essentials, and a leadership diploma in business execution anchor my toolkit for data programs.</p>
-                        </div>
-                    </div>
-                    <div class="col-sm-6 col-md-3">
-                        <div class="feature-about highlight-card">
-                            <div class="medium-rectangle rectangle">
-                                <i class="fa fa-plug" aria-hidden="true"></i>
-                            </div>
-                            <h3 data-i18n="highlights.automation.title">SnapLogic Integration Delivery</h3>
-                            <p data-i18n="highlights.automation.description">Built and governed SnapLogic pipelines that sync Salesforce, SAP, and on-prem sources, cutting manual reconciliations by automating 40+ integrations for finance and commercial teams.</p>
-                        </div>
-                    </div>
-                    <div class="col-sm-6 col-md-3">
-                        <div class="feature-about highlight-card">
-                            <div class="medium-rectangle rectangle">
-                                <i class="fa fa-bar-chart" aria-hidden="true"></i>
-                            </div>
-                            <h3 data-i18n="highlights.governance.title">Google Data Analytics Capstone</h3>
-                            <p data-i18n="highlights.governance.description">Analyzed 5.8M bike-share rides with SQL, R, and Tableau to surface ridership trends that informed marketing experiments and seasonality promotions.</p>
-                        </div>
-                    </div>
-                    <div class="col-sm-6 col-md-3">
-                        <div class="feature-about highlight-card">
-                            <div class="medium-rectangle rectangle">
-                                <i class="fa fa-cloud" aria-hidden="true"></i>
-                            </div>
-                            <h3 data-i18n="highlights.awards.title">Azure Cost Governance Dashboard</h3>
-                            <p data-i18n="highlights.awards.description">Partnered with FinOps to deploy Azure cost and consumption dashboards that flag anomalies, forecast spend, and guide subscription governance decisions.</p>
-                        </div>
-                    </div>
-                    <div class="col-sm-6 col-md-3">
-                        <div class="feature-about highlight-card">
-                            <div class="medium-rectangle rectangle">
-                                <i class="fa fa-users" aria-hidden="true"></i>
-                            </div>
-                            <h3 data-i18n="highlights.aiEnablement.title">Leadership Diploma Capstone</h3>
-                            <p data-i18n="highlights.aiEnablement.description">Led a cross-functional change initiative as part of a leadership diploma, coaching stakeholders through OKRs, talent plans, and communications for automation readiness.</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </section>
-        <!-- End Highlights section -->
-
-        <!-- History section -->
-        <section class="section-history" id="history">
-            <div class="container">
-                <div class="text-center section-diff-title">
-                    <h2 data-i18n="timeline.title">A Look Back at My History</h2>
-                    <p data-i18n="timeline.subtitle">This is my education and experience</p>
-                </div>
-                <!-- Timeline -->
-                <ul class="timeline">
-                    <!-- Timeline badge -->
-                    <li class="timeline-start">
-                        <div class="rectangle"><span data-i18n="timeline.2017.label">2017</span></div>
-                    </li><!-- /.timeline-start -->
-
-                    <!-- Timeline job & description  -->
-                    <li>
-                        <div class="rectangle timeline-rectangle"></div>
-                        <div class="timeline-panel">
-                            <div class="timeline-heading">
-                                <div class="timeline-date">
-                                    <p data-i18n="timeline.2017.date">Aug 2017</p>
-                                </div><!-- /.timeline-date -->
-                                <div class="timeline-position">
-                                    <p data-i18n="timeline.2017.position">Computer engineer</p>
-                                </div><!-- /.timeline-position -->
-                            </div><!-- /.timeline-heading -->
-                            <div class="timeline-body">
-                                <div class="timeline-body-thumb">
-                                    <img src="assets/img/escudofi.png" class="img-res migris" alt="Coat of arms of UNAM's Faculty of Engineering" loading="lazy" data-i18n-attrs="alt:timeline.2017.imageAlt">
-                                </div><!-- /.timeline-body-thumb -->
-                                    <p data-i18n="timeline.2017.description">Began my Computer Engineering studies at UNAM, mastering calculus, circuit design, and C programming labs that strengthened algorithmic thinking and collaborative problem solving.</p>
-                            </div><!-- /.timeline-body -->
-                        </div><!-- /.timeline-panel -->
-                    </li>
-
-                    <!-- Timeline badge -->
-                    <li class="timeline-start">
-                        <div class="rectangle"><span data-i18n="timeline.2020.label">2020</span></div>
-                    </li><!-- /.timeline-start -->
-
-                    <!-- Timeline job & description, inverted  -->
-                    <li class="timeline-inverted">
-                        <div class="rectangle timeline-rectangle"></div>
-                        <div class="timeline-panel">
-                            <div class="timeline-heading">
-                               <div class="timeline-position">
-                                    <p data-i18n="timeline.2020.position">PROTECO</p>
-                                </div><!-- /.timeline-position -->
-                                <div class="timeline-date">
-                                    <p data-i18n="timeline.2020.date">Jan 2020</p>
-                                </div><!-- /.timeline-date -->
-                            </div><!-- /.timeline-heading -->
-                            <div class="timeline-body">
-                                <div class="timeline-body-thumb">
-                                    <img src="assets/img/PROTECO.jfif" class="img-res migris" alt="Logo of the UNAM PROTECO program" loading="lazy" data-i18n-attrs="alt:timeline.2020.imageAlt">
-                                </div><!-- /.timeline-body-thumb -->
-                                <p data-i18n="timeline.2020.description">Joined PROTECO as an instructor, co-designing Python, Linux, and networking bootcamps while mentoring 40+ classmates in lesson planning, public speaking, and agile teamwork.</p>
-                            </div><!-- /.timeline-body -->
-                        </div><!-- /.timeline-panel -->
-                    </li><!-- /.timeline-inverted -->
-
-                    <!-- Timeline badge -->
-                    <li class="timeline-start">
-                        <div class="rectangle"><span data-i18n="timeline.2021.label">2021</span></div>
-                    </li><!-- /.timeline-start -->
-
-                    <!-- Timeline job & description  -->
-                    <li>
-                        <div class="rectangle timeline-rectangle"></div>
-                        <div class="timeline-panel">
-                            <div class="timeline-heading">
-                                <div class="timeline-date">
-                                    <p data-i18n="timeline.2021.date">Dec 2021 – Present</p>
-                                </div><!-- /.timeline-date -->
-                                <div class="timeline-position">
-                                    <p data-i18n="timeline.2021.position">Alldatum</p>
-                                </div><!-- /.timeline-position -->
-                            </div><!-- /.timeline-heading -->
-                            <div class="timeline-body">
-                                <div class="timeline-body-thumb">
-                                    <img src="assets/img/ALLDATUM.jfif" class="img-res migris" alt="Logo of Alldatum Business" loading="lazy" data-i18n-attrs="alt:timeline.2021.imageAlt">
-                                </div><!-- /.timeline-body-thumb -->
-                                <p data-i18n="timeline.2021.description">Became a data consultant at Alldatum, leading SnapLogic integrations, modeling master data in TIBCO EBX, and deploying Power BI governance dashboards for enterprise clients.</p>
-                            </div><!-- /.timeline-body -->
-                        </div><!-- /.timeline-panel -->
-                    </li>
-
-                    <!-- Timeline badge -->
-                    <li class="timeline-start">
-                        <div class="rectangle"><span data-i18n="timeline.2024.label">2024</span></div>
-                    </li><!-- /.timeline-start -->
-
-                    <!-- Timeline job & description, inverted  -->
-                    <li class="timeline-inverted">
-                        <div class="rectangle timeline-rectangle"></div>
-                        <div class="timeline-panel">
-                            <div class="timeline-heading">
-                                <div class="timeline-position">
-                                    <p data-i18n="timeline.2024.position">AI enablement program</p>
-                                </div><!-- /.timeline-position -->
-                                <div class="timeline-date">
-                                    <p data-i18n="timeline.2024.date">Apr 2024</p>
-                                </div><!-- /.timeline-date -->
-                            </div><!-- /.timeline-heading -->
-                            <div class="timeline-body">
-                                <div class="timeline-body-thumb">
-                                    <img src="assets/img/business-intelligence.png" class="img-res migris" alt="Illustration representing an AI enablement program" loading="lazy" data-i18n-attrs="alt:timeline.2024.imageAlt">
-                                </div><!-- /.timeline-body-thumb -->
-                                <p data-i18n="timeline.2024.description">Co-led an AI enablement program that productionized Azure ML forecasting pipelines, built MLflow monitoring guardrails, and launched a prompt evaluation framework for responsible generative AI adoption.</p>
-                            </div><!-- /.timeline-body -->
-                        </div><!-- /.timeline-panel -->
-                    </li><!-- /.timeline-inverted -->
-                </ul>
-            </div>
-        </section><!-- /.section-history -->
-        <!-- End History section -->
-
-        <!-- Portfolio/Works section -->
-        <section class="site-section section-works" id="works">
-            <div class="container">
-                <h2 data-i18n="works.title">Recent Works</h2>
-                <p class="section-subtitle"><span data-i18n="works.subtitle">My experience</span></p>
-
-                <div class="portfolio">
-                    <ul class="portfolio-sorting list-inline">
-                        <li><a href="#" class="active" data-group="all" data-i18n="works.filter.all">All</a></li>
-                        <li><a href="#" data-group="automation" data-i18n="works.filter.automation">Automation</a></li>
-                        <li><a href="#" data-group="data" data-i18n="works.filter.data">Data Analytics</a></li>
-                        <li><a href="#" data-group="mdm" data-i18n="works.filter.mdm">MDM</a></li>
-                    </ul><!-- /.portfolio-sorting  -->
-
-                    <div id="grid">
-
-                        <!-- Portfolio item: Automation -->
-                        <div class="col-md-3 col-sm-4 col-xs-6" data-groups='["automation"]'>
-                            <div class="portfolio-item">
-                                <div class="portfolio-item-thumb">
-                                    <img src="assets/img/portfolio-automation-rpa.svg" alt="RPA bot reconciling invoices in SAP" class="img-res" loading="lazy" data-i18n-attrs="alt:works.rpa.alt">
-                                    <a href="#" class="rectangle" data-toggle="modal" data-target="#portfolioItem1">
-                                        <i class="fa fa-plus"></i>
-                                    </a>
-                                </div><!-- /.portfolio-item-thumb  -->
-                                <div class="portfolio-info">
-                                    <a href="./projects/rpa-invoice-automation.html"><h3 data-i18n="works.rpa.title">SAP Reconciliation RPA Bot</h3></a>
-                                    <p data-i18n="works.rpa.subtitle">Financial automation</p>
-                                </div><!-- /.portfolio-info  -->
-                            </div>
-                        </div><!-- /.col-md-3  -->
-
-                        <!-- Portfolio item: Data analytics -->
-                        <div class="col-md-3 col-sm-4 col-xs-6" data-groups='["data"]'>
-                            <div class="portfolio-item">
-                                <div class="portfolio-item-thumb">
-                                    <img src="assets/img/portfolio-data-analytics.svg" alt="Commercial dashboard in Power BI" class="img-res" loading="lazy" data-i18n-attrs="alt:works.analytics.alt">
-                                    <a href="#" class="rectangle" data-toggle="modal" data-target="#portfolioItem2">
-                                        <i class="fa fa-plus" aria-hidden="true"></i>
-                                    </a>
-                                </div><!-- /.portfolio-item-thumb  -->
-                                <div class="portfolio-info">
-                                    <a href="./projects/data-analytics-dashboard.html"><h3 data-i18n="works.analytics.title">Power BI Commercial Dashboard</h3></a>
-                                    <p data-i18n="works.analytics.subtitle">Data analytics</p>
-                                </div><!-- /.portfolio-info  -->
-                            </div>
-                        </div><!-- /.col-md-3  -->
-
-                        <!-- Portfolio item: MDM -->
-                        <div class="col-md-3 col-sm-4 col-xs-6" data-groups='["mdm"]'>
-                            <div class="portfolio-item">
-                                <div class="portfolio-item-thumb">
-                                    <img src="assets/img/portfolio-mdm-ebx.svg" alt="Master data hub view in EBX" class="img-res" loading="lazy" data-i18n-attrs="alt:works.mdm.alt">
-                                    <a href="#" class="rectangle" data-toggle="modal" data-target="#portfolioItem3">
-                                        <i class="fa fa-plus"></i>
-                                    </a>
-                                </div><!-- /.portfolio-item-thumb  -->
-                                <div class="portfolio-info">
-                                    <a href="./projects/ebx-mdm-hub.html"><h3 data-i18n="works.mdm.title">MDM Hub with TIBCO EBX</h3></a>
-                                    <p data-i18n="works.mdm.subtitle">Data governance</p>
-                                </div><!-- /.portfolio-info  -->
-                            </div>
-                        </div>
-
-                        <!-- Portfolio item: Data quality automation -->
-                        <div class="col-md-3 col-sm-4 col-xs-6" data-groups='["automation","data"]'>
-                            <div class="portfolio-item">
-                                <div class="portfolio-item-thumb">
-                                    <img src="assets/img/portfolio-data-quality.svg" alt="Automated data quality monitoring panel" class="img-res" loading="lazy" data-i18n-attrs="alt:works.observability.alt">
-                                    <a href="#" class="rectangle" data-toggle="modal" data-target="#portfolioItem4">
-                                        <i class="fa fa-plus"></i>
-                                    </a>
-                                </div><!-- /.portfolio-item-thumb  -->
-                                <div class="portfolio-info">
-                                    <a href="./projects/data-quality-observability.html"><h3 data-i18n="works.observability.title">24/7 Data Observability</h3></a>
-                                    <p data-i18n="works.observability.subtitle">Quality and automation</p>
-                                </div><!-- /.portfolio-info  -->
-                            </div>
-                        </div>
-                    </div><!-- /#grid -->
-                </div>
-            </div>
-        </section><!-- /.section-works -->
-        <!-- End Works section -->
-
-        <!-- Insights section -->
-        <section class="site-section section-insights" id="insights">
-            <div class="container">
-                <div class="text-center">
-                    <h2 data-i18n="insights.title">Latest insights &amp; resources</h2>
-                    <p class="section-subtitle"><span data-i18n="insights.subtitle">Curated articles, talks, and tools on automation, data, and leadership.</span></p>
-                </div>
-
-                <div class="insight-grid" data-insights-grid>
-                    <!-- Insight cards are rendered via assets/js/insights.js using the template below.
-                         Add new items to the insightsData array to keep markup and translations in sync. -->
-                </div>
-                <template id="insight-card-template">
-                    <article class="insight-card">
-                        <div class="insight-thumb">
-                            <img class="insight-thumb-image" loading="lazy" alt="">
-                        </div>
-                        <div class="insight-content">
-                            <div class="insight-tags" data-i18n-attrs="aria-label:insights.tags.ariaLabel" aria-label="Resource topics" data-insight-tags></div>
-                            <h3 class="insight-title">
-                                <a class="insight-title-link" target="_blank" rel="noopener noreferrer"></a>
-                            </h3>
-                            <p class="insight-description" data-insight-description></p>
-                            <div class="insight-meta">
-                                <time data-insight-date></time>
-                                <a class="insight-link" target="_blank" rel="noopener noreferrer" data-insight-cta></a>
-                            </div>
-                        </div>
-                    </article>
-                </template>
-                <noscript>
-                    <p class="insight-noscript">Enable JavaScript to view the latest insight cards.</p>
-                </noscript>
-
-                <div class="insights-cta text-center">
-                    <a class="btn btn-insights" href="https://medium.com/@mariohuartenolasco" target="_blank" rel="noopener noreferrer" data-i18n="insights.cta.label" data-i18n-attrs="href:insights.cta.href">View all articles</a>
-                </div>
-            </div>
-        </section><!-- /.section-insights -->
-        <!-- End Insights section -->
-
-        <!-- Me section -->
-        <section class="section-background section-me background-overlay text-center">
-            <div class="container page-scroll">
-                <h2 data-i18n="cta.workImpression">Are You Impressed By My Work?</h2>
-                <a href="#contact" class="btn" data-i18n="cta.getInTouch">GET IN TOUCH</a>
-            </div>
-        </section><!-- /.section-me -->
-        <!-- End Me section -->
-
-        <!-- Contacts section -->
-        <section class="site-section section-hello" id="contact">
-            <div class="container">
-                <h2 data-i18n="contact.title">Contact</h2>
-                <p class="section-subtitle"><span data-i18n="contact.subtitle">Choose a channel</span></p>
-                <div class="contact-form-wrapper">
-                    <form class="contact-form" method="POST" data-i18n-attrs="aria-label:contact.form.ariaLabel" aria-label="Direct contact form">
-                        <div class="contact-form-intro">
-                            <h3 data-i18n="contact.form.title">Send a direct message</h3>
-                            <p data-i18n="contact.form.description">Share a bit about your project and how I can help.</p>
-                        </div>
-                        <div class="row">
-                            <div class="col-sm-6">
-                                <div class="form-group">
-                                    <label for="contact-name" data-i18n="contact.form.nameLabel">Name</label>
-                                    <input id="contact-name" class="form-control" type="text" name="name" required autocomplete="name" data-i18n-attrs="placeholder:contact.form.namePlaceholder" placeholder="Your name">
-                                </div>
-                            </div>
-                            <div class="col-sm-6">
-                                <div class="form-group">
-                                    <label for="contact-email" data-i18n="contact.form.emailLabel">Email</label>
-                                    <input id="contact-email" class="form-control" type="email" name="email" required autocomplete="email" data-i18n-attrs="placeholder:contact.form.emailPlaceholder" placeholder="your@email.com">
-                                </div>
-                            </div>
-                        </div>
-                        <div class="row">
-                            <div class="col-sm-6">
-                                <div class="form-group">
-                                    <label for="contact-subject" data-i18n="contact.form.subjectLabel">Subject</label>
-                                    <input id="contact-subject" class="form-control" type="text" name="subject" required autocomplete="on" data-i18n-attrs="placeholder:contact.form.subjectPlaceholder" placeholder="Project idea or topic">
-                                </div>
-                            </div>
-                            <div class="col-sm-12">
-                                <div class="form-group">
-                                    <label for="contact-message" data-i18n="contact.form.messageLabel">Message</label>
-                                    <textarea id="contact-message" class="form-control" name="message" rows="4" required maxlength="500" data-i18n-attrs="placeholder:contact.form.messagePlaceholder" placeholder="Share a short message"></textarea>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="contact-form-footer">
-                            <input type="hidden" name="_redirect" value="contact-success.html?status=success" data-contact-redirect-input>
-                            <input type="hidden" name="_error" value="contact-error.html?status=error" data-contact-error-input>
-                            <input type="hidden" name="language" value="en" data-contact-language-input>
-                            <button type="submit" class="btn btn-contact" data-i18n="contact.form.submit" disabled>Send message</button>
-                            <div class="form-alert form-alert-success" role="status" aria-live="polite" tabindex="-1" hidden data-i18n="contact.form.success">Thank you! Your message was sent successfully.</div>
-                            <div class="form-alert form-alert-error" role="alert" aria-live="assertive" tabindex="-1" hidden data-i18n="contact.form.error">Something went wrong. Please try again or use another channel.</div>
-                            <div class="form-alert form-alert-config" role="alert" aria-live="assertive" tabindex="-1" hidden data-i18n="contact.form.configError">The contact form is temporarily unavailable because its endpoint is not configured.</div>
-                        </div>
-                    </form>
-                </div>
-                <div class="row contact-cards-row">
-                    <div class="col-sm-4 col-xs-12">
-                        <div class="contact-card">
-                            <span class="contact-card-icon" aria-hidden="true">
-                                <i class="fa fa-envelope"></i>
-                            </span>
-                            <div class="contact-card-content">
-                                <h3 data-i18n="contact.email.heading">Email</h3>
-                                <p data-i18n="contact.email.description">Write to collaborate or resolve technical questions.</p>
-                                <a class="contact-card-link" href="mailto:mario_huarte@outlook.com">mario_huarte@outlook.com</a>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-sm-4 col-xs-12">
-                        <div class="contact-card">
-                            <span class="contact-card-icon" aria-hidden="true">
-                                <i class="fa fa-linkedin"></i>
-                            </span>
-                            <div class="contact-card-content">
-                                <h3 data-i18n="contact.networks.heading">Professional networks</h3>
-                                <p data-i18n="contact.networks.description">Connect on LinkedIn or send a direct WhatsApp message.</p>
-                                <div class="contact-card-actions">
-                                    <a class="contact-card-link" href="https://www.linkedin.com/in/mario-huarte-nolasco-874436202/" target="_blank" rel="noopener">LinkedIn</a>
-                                    <a class="contact-card-link" href="https://wa.me/qr/4AUDRLIXV2L4C1" target="_blank" rel="noopener">WhatsApp</a>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-sm-4 col-xs-12">
-                        <div class="contact-card">
-                            <span class="contact-card-icon" aria-hidden="true">
-                                <i class="fa fa-map-marker"></i>
-                            </span>
-                            <div class="contact-card-content">
-                                <h3 data-i18n="contact.location.heading">Location and availability</h3>
-                                <p data-i18n="contact.location.description">Based in Mexico City. Open to remote and hybrid roles.</p>
-                                <a class="contact-card-link" href="https://maps.app.goo.gl/wdM2vc9GzA1wha2E8" target="_blank" rel="noopener" data-i18n="contact.location.cta">View work area</a>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </section><!-- /.section-contact-->
-        <!-- End Contacts section -->
-
-        <!-- Social Networks section -->
-        <section class="section-networks blue-bg" aria-labelledby="connect-title">
-            <div class="container">
-                <h2 id="connect-title" class="sr-only" data-i18n="connect.title">Connect with Mario</h2>
-                <ul class="network-list" role="list">
-                    <li>
-                        <a class="network-link" href="https://www.linkedin.com/in/mario-huarte-nolasco-874436202/" target="_blank" rel="noopener" data-i18n-attrs="aria-label:connect.linkedinAria">
-                            <i class="fa fa-linkedin-square" aria-hidden="true"></i>
-                            <span class="sr-only" data-i18n="connect.linkedinLabel">LinkedIn</span>
-                        </a>
-                    </li>
-                    <li>
-                        <a class="network-link" href="mailto:mario_huarte@outlook.com" data-i18n-attrs="aria-label:connect.emailAria">
-                            <i class="fa fa-envelope" aria-hidden="true"></i>
-                            <span class="sr-only" data-i18n="connect.emailLabel">Email</span>
-                        </a>
-                    </li>
-                </ul>
-            </div>
-        </section><!-- /.section-networks-->
-        <!-- End Social Networks section -->
-
-    </main><!-- /#main -->
-    <!-- End Main content -->
-
-    <!-- Footer -->
-    <footer id="colophon" class="site-footer">
-
-        <div class="container footer-primary">
-            <p class="footer-contact-line">
-                <span data-i18n="footer.contactIntro">Available for data and automation collaborations.</span>
-                <a class="footer-contact-link" href="mailto:mario_huarte@outlook.com" data-i18n="footer.contactEmail" data-i18n-attrs="aria-label:footer.contactEmailAria">mario_huarte@outlook.com</a>
-            </p>
-
-            <div class="footer-backtotop page-scroll">
-                <a href="#top" class="footer-backtotop-link" data-i18n-attrs="aria-label:footer.backToTopAria">
-                    <i class="fa fa-angle-double-up" aria-hidden="true"></i>
-                </a>
-            </div>
+          </a>
         </div>
 
-        <div class="container text-center">
-            <p class="copyright">
-                <span class="copyright-symbol" aria-hidden="true">&copy;</span>
-                <span data-i18n="footer.creditPrefix">Design inspired by</span>
-                <a href="http://pixelperfect.mk/" target="_blank" rel="noopener" data-i18n="footer.creditLinkText">PixelPerfect</a>
-                <span data-i18n="footer.creditSuffix">and refined by Mario Huarte Nolasco · 2017–2024</span>
-            </p>
+        <div class="bg-surface-container-lowest p-5 flex items-center gap-4 outline outline-1 outline-outline-variant/15">
+          <div class="w-2 h-2 rounded-full bg-primary status-dot shadow-[0_0_8px_var(--primary)]"></div>
+          <span class="font-label text-sm text-on-surface uppercase" data-i18n="contact.availability">Available for new architectural mandates</span>
         </div>
+      </div>
 
-    </footer><!-- /#footer -->
-    <!-- End Footer -->
+      <!-- Form -->
+      <div class="lg:col-span-7 bg-surface p-8 md:p-12 reveal-right">
+        <form id="contact-form" class="space-y-7" method="POST" action="https://formspree.io/f/xwkgozkj" novalidate>
+          <input type="hidden" name="_redirect" value="contact-success.html?status=success" />
+          <input type="hidden" name="_error"    value="contact-error.html?status=error" />
 
-    <!-- Modals -->
-    <div id="portfolioItem1" class="modal fade fade-scale" role="dialog">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <a class="rectangle" data-dismiss="modal"><i class="fa fa-times"></i></a>
-                    <img class="img-res" src="assets/img/portfolio-automation-rpa.svg" alt="Detail of the RPA bot reconciling invoices in SAP" loading="lazy" data-i18n-attrs="alt:works.modal.rpa.alt">
-                </div>
-                <div class="modal-body">
-                    <h4 class="modal-title" data-i18n="works.modal.rpa.title">SAP Reconciliation RPA Bot</h4>
-                    <p data-i18n="works.modal.rpa.description">Automation developed in Python + Selenium to match bank statements with SAP FI, generate accounting adjustments, and notify treasury about exceptions via email and Teams.</p>
-                </div>
-                <div class="modal-footer">
-                    <a href="./projects/rpa-invoice-automation.html" class="btn" data-i18n="works.modal.rpa.button">View case</a>
-                </div>
-            </div><!-- /.modal-content -->
-        </div><!-- /.modal-dialog -->
-    </div><!-- /.modal -->
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div class="space-y-2">
+              <label class="font-label text-xs font-bold text-outline uppercase tracking-widest" for="c-name" data-i18n="contact.form.nameLabel">Name</label>
+              <input id="c-name" name="name" type="text" required autocomplete="name"
+                class="w-full bg-surface-container-highest border-none focus:ring-2 focus:ring-primary/20 text-on-surface font-body p-4 placeholder:text-outline transition-all"
+                data-i18n-attrs="placeholder:contact.form.namePlaceholder" placeholder="Your name" />
+              <span class="sr-only" role="alert" aria-live="polite" id="c-name-error"></span>
+            </div>
+            <div class="space-y-2">
+              <label class="font-label text-xs font-bold text-outline uppercase tracking-widest" for="c-email" data-i18n="contact.form.emailLabel">Email</label>
+              <input id="c-email" name="email" type="email" required autocomplete="email"
+                class="w-full bg-surface-container-highest border-none focus:ring-2 focus:ring-primary/20 text-on-surface font-body p-4 placeholder:text-outline transition-all"
+                data-i18n-attrs="placeholder:contact.form.emailPlaceholder" placeholder="you@example.com" />
+              <span class="text-xs text-error font-label mt-1 hidden" role="alert" id="c-email-error"></span>
+            </div>
+          </div>
 
-    <div id="portfolioItem2" class="modal fade fade-scale" role="dialog">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <a class="rectangle" data-dismiss="modal"><i class="fa fa-times"></i></a>
-                    <img class="img-res" src="assets/img/portfolio-data-analytics.svg" alt="Visualization of the commercial dashboard in Power BI" loading="lazy" data-i18n-attrs="alt:works.modal.analytics.alt">
-                </div>
-                <div class="modal-body">
-                    <h4 class="modal-title" data-i18n="works.modal.analytics.title">Power BI Commercial Dashboard</h4>
-                    <p data-i18n="works.modal.analytics.description">Semantic model and interactive dashboard integrating POS, CRM, and quarterly goals to track KPIs, forecast sales, and send automated alerts through Power BI Service.</p>
-                </div>
-                <div class="modal-footer">
-                    <a href="./projects/data-analytics-dashboard.html" class="btn" data-i18n="works.modal.analytics.button">View demo</a>
-                </div>
-            </div><!-- /.modal-content -->
-        </div><!-- /.modal-dialog -->
-    </div><!-- /.modal -->
+          <!-- Query type (UX agent recommendation: replaces subject) -->
+          <div class="space-y-2">
+            <label class="font-label text-xs font-bold text-outline uppercase tracking-widest" for="c-query" data-i18n="contact.form.queryLabel">Type of enquiry</label>
+            <select id="c-query" name="query"
+              class="w-full bg-surface-container-highest border-none focus:ring-2 focus:ring-primary/20 text-on-surface font-body p-4 transition-all">
+              <option value="freelance"  data-i18n="contact.form.query.freelance">Freelance project</option>
+              <option value="job"        data-i18n="contact.form.query.job">Job position</option>
+              <option value="networking" data-i18n="contact.form.query.networking">Networking</option>
+              <option value="other"      data-i18n="contact.form.query.other">Other</option>
+            </select>
+          </div>
 
-    <div id="portfolioItem3" class="modal fade fade-scale" role="dialog">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <a class="rectangle" data-dismiss="modal"><i class="fa fa-times"></i></a>
-                    <img class="img-res" src="assets/img/portfolio-mdm-ebx.svg" alt="Configuration of the master data hub in TIBCO EBX" loading="lazy" data-i18n-attrs="alt:works.modal.mdm.alt">
-                </div>
-                <div class="modal-body">
-                    <h4 class="modal-title" data-i18n="works.modal.mdm.title">MDM Hub with TIBCO EBX</h4>
-                    <p data-i18n="works.modal.mdm.description">Implementation of a centralized repository for products and clients with approval workflows, REST integrations, and quality rules to ensure reliable data across the organization.</p>
-                </div>
-                <div class="modal-footer">
-                    <a href="./projects/ebx-mdm-hub.html" class="btn" data-i18n="works.modal.mdm.button">View case</a>
-                </div>
-            </div><!-- /.modal-content -->
-        </div><!-- /.modal-dialog -->
-    </div><!-- /.modal -->
+          <div class="space-y-2">
+            <label class="font-label text-xs font-bold text-outline uppercase tracking-widest" for="c-message" data-i18n="contact.form.messageLabel">Message</label>
+            <textarea id="c-message" name="message" rows="5" required
+              class="w-full bg-surface-container-highest border-none focus:ring-2 focus:ring-primary/20 text-on-surface font-body p-4 placeholder:text-outline transition-all resize-none"
+              data-i18n-attrs="placeholder:contact.form.messagePlaceholder" placeholder="Describe the project or initiative..."></textarea>
+            <p class="text-right text-xs font-label text-outline" id="c-msg-count">0 / 500</p>
+          </div>
 
-    <div id="portfolioItem4" class="modal fade fade-scale" role="dialog">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <a class="rectangle" data-dismiss="modal"><i class="fa fa-times"></i></a>
-                    <img class="img-res" src="assets/img/portfolio-data-quality.svg" alt="Observability dashboard for data quality" loading="lazy" data-i18n-attrs="alt:works.modal.observability.alt">
-                </div>
-                <div class="modal-body">
-                    <h4 class="modal-title" data-i18n="works.modal.observability.title">24/7 Data Observability</h4>
-                    <p data-i18n="works.modal.observability.description">Monitoring framework with Great Expectations and Airflow that validates critical pipelines, stores evidence in a data lake, and publishes coverage metrics in Grafana with Slack alerts.</p>
-                </div>
-                <div class="modal-footer">
-                    <a href="./projects/data-quality-observability.html" class="btn" data-i18n="works.modal.observability.button">View reference</a>
-                </div>
-            </div><!-- /.modal-content -->
-        </div><!-- /.modal-dialog -->
-    </div><!-- /.modal -->
+          <div class="flex flex-col sm:flex-row gap-4 items-start">
+            <button type="submit" data-magnetic class="btn-primary group">
+              <span data-i18n="contact.form.submit">Send message</span>
+              <span class="material-symbols-outlined text-lg group-hover:translate-x-1 transition-transform">send</span>
+            </button>
+            <div class="space-y-2 text-sm hidden" id="form-alerts">
+              <div class="text-green-400 font-label text-xs hidden" id="form-success" role="status" aria-live="polite" data-i18n="contact.form.success"></div>
+              <div class="text-error font-label text-xs hidden" id="form-error" role="alert" aria-live="assertive" data-i18n="contact.form.error"></div>
+            </div>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</section>
+</main>
 
-    <!-- Bootstrap core JavaScript
-    ================================================== -->
-    <!-- Placed at the end of the document so the pages load faster -->
-    <!-- jQuery core js | Do not Delete -->
-    <script src="assets/js/jquery.min.js"></script>
 
-    <!-- Bootstrap core js | Do not Delete -->
-    <script src="assets/js/bootstrap.min.js"></script>
+<!-- ═══════════════════════════════════════════
+     FOOTER
+════════════════════════════════════════════ -->
+<footer class="bg-surface-container-lowest py-12 border-t border-outline-variant/20">
+  <div class="max-w-7xl mx-auto px-6">
+    <div class="flex flex-col md:flex-row justify-between items-center gap-6 mb-6">
+      <span class="font-headline font-bold text-on-surface-variant tracking-widest uppercase text-sm">Mario Huarte Nolasco</span>
+      <div class="flex gap-8 font-label text-xs tracking-widest text-outline uppercase">
+        <a href="https://www.linkedin.com/in/mario-huarte-nolasco-874436202/" target="_blank" rel="noopener" class="hover:text-primary transition-colors">LinkedIn</a>
+        <a href="https://github.com/MarioUNAM" target="_blank" rel="noopener" class="hover:text-primary transition-colors">GitHub</a>
+        <a href="mailto:mario_huarte@outlook.com" class="hover:text-primary transition-colors">Email</a>
+      </div>
+    </div>
+    <div class="flex flex-col sm:flex-row justify-between items-center gap-4 border-t border-outline-variant/10 pt-6">
+      <p class="font-label text-xs tracking-widest text-outline uppercase text-center">
+        &copy; 2024 Mario Huarte Nolasco | MDM Architect
+      </p>
+      <!-- Footer: lang + theme mirror -->
+      <div class="flex items-center gap-3">
+        <div class="flex items-center bg-surface-container-low border border-outline-variant/40 rounded overflow-hidden text-xs font-label font-bold">
+          <button id="lang-en-footer" class="px-3 py-1.5 transition-colors">EN</button>
+          <span class="text-outline-variant/50">|</span>
+          <button id="lang-es-footer" class="px-3 py-1.5 transition-colors">ES</button>
+        </div>
+        <button data-theme-toggle
+          class="flex items-center justify-center w-8 h-8 text-outline hover:text-primary transition-colors"
+          aria-pressed="true">
+          <span class="material-symbols-outlined theme-icon text-[18px]">light_mode</span>
+        </button>
+      </div>
+    </div>
+  </div>
+</footer>
 
-    <!-- Count To JS -->
-    <script src="assets/js/jquery.countTo.min.js"></script>
 
-    <!-- Easing JS -->
-    <script src="assets/js/jquery.easing.min.js"></script>
+<!-- ═══════════════════════════════════════════
+     SCRIPTS
+════════════════════════════════════════════ -->
+<!-- i18n engine -->
+<script src="assets/js/i18n.js"></script>
+<!-- Theme toggle (already booted in <head>, init wires buttons) -->
+<script src="assets/js/theme-toggle.js"></script>
+<!-- Animations -->
+<script src="assets/js/animations.js"></script>
 
-    <!-- Shuffle JS -->
-    <script src="assets/js/jquery.shuffle.min.js"></script>
+<script>
+  /* ════════════════════════════════════════════
+     INIT: i18n, nav, theme, testimonials, form
+  ════════════════════════════════════════════ */
+  document.addEventListener('DOMContentLoaded', function () {
 
-    <!-- Slick Carousel JS -->
-    <script src="assets/js/slick.min.js"></script>
+    /* ── i18n ────────────────────────────────────────────── */
+    var currentLang = localStorage.getItem('lang') || 'en';
+    var T = window.TRANSLATIONS;
 
-    <!-- Touchswipe JS -->
-    <script src="assets/js/touchswipe.min.js"></script>
+    function t(key) {
+      return (T[currentLang] && T[currentLang][key]) || (T['en'] && T['en'][key]) || key;
+    }
 
-    <!-- Custom JS -->
-    <script src="assets/js/i18n.js"></script>
-    <script src="assets/js/contact-config.js"></script>
-    <script src="assets/js/insights.js"></script>
-    <script src="assets/js/script.js"></script>
+    function applyI18n(lang) {
+      currentLang = lang;
+      localStorage.setItem('lang', lang);
+      document.documentElement.setAttribute('lang', lang);
+
+      document.querySelectorAll('[data-i18n]').forEach(function (el) {
+        var key = el.dataset.i18n;
+        var val = t(key);
+        if (val && val !== key) el.textContent = val;
+      });
+      document.querySelectorAll('[data-i18n-attrs]').forEach(function (el) {
+        el.dataset.i18nAttrs.split(',').forEach(function (pair) {
+          var parts = pair.trim().split(':');
+          if (parts.length === 2) {
+            var val = t(parts[1].trim());
+            if (val && val !== parts[1].trim()) el.setAttribute(parts[0].trim(), val);
+          }
+        });
+      });
+      document.querySelectorAll('[data-tooltip-i18n]').forEach(function (el) {
+        el.setAttribute('data-tooltip', t(el.dataset.tooltipI18n));
+      });
+      syncLangButtons(lang);
+    }
+
+    function syncLangButtons(lang) {
+      ['lang-en','lang-en-mobile','lang-en-footer'].forEach(function(id){
+        var b=document.getElementById(id);
+        if(b) b.classList.toggle('text-primary', lang==='en');
+      });
+      ['lang-es','lang-es-mobile','lang-es-footer'].forEach(function(id){
+        var b=document.getElementById(id);
+        if(b) b.classList.toggle('text-primary', lang==='es');
+      });
+    }
+
+    ['lang-en','lang-en-mobile','lang-en-footer'].forEach(function(id){
+      var b=document.getElementById(id);
+      if(b) b.addEventListener('click', function(){ applyI18n('en'); });
+    });
+    ['lang-es','lang-es-mobile','lang-es-footer'].forEach(function(id){
+      var b=document.getElementById(id);
+      if(b) b.addEventListener('click', function(){ applyI18n('es'); });
+    });
+
+    // Apply on load
+    applyI18n(currentLang);
+
+    /* ── Theme toggle init (buttons) ────────────────────── */
+    if (window.ThemeToggle) window.ThemeToggle.init();
+
+    // Announce theme change to screen reader
+    document.addEventListener('theme:change', function(e){
+      var announceEl = document.getElementById('theme-announce');
+      if(announceEl) announceEl.textContent = t(e.detail.theme === 'dark' ? 'nav.theme.announce.dark' : 'nav.theme.announce.light');
+    });
+
+    /* ── Mobile nav ──────────────────────────────────────── */
+    var toggle   = document.getElementById('nav-toggle');
+    var closeBtn = document.getElementById('nav-close');
+    var mobileNav = document.getElementById('mobile-nav');
+
+    function openNav(){
+      mobileNav.removeAttribute('hidden');
+      toggle.setAttribute('aria-expanded','true');
+      document.body.style.overflow='hidden';
+    }
+    function closeNav(){
+      mobileNav.setAttribute('hidden','');
+      toggle.setAttribute('aria-expanded','false');
+      document.body.style.overflow='';
+    }
+
+    if(toggle)   toggle.addEventListener('click', openNav);
+    if(closeBtn) closeBtn.addEventListener('click', closeNav);
+    document.querySelectorAll('.mobile-nav-link').forEach(function(l){ l.addEventListener('click', closeNav); });
+
+    /* ── Sticky nav scroll ───────────────────────────────── */
+    var nav = document.getElementById('main-nav');
+    window.addEventListener('scroll', function(){
+      nav.classList.toggle('scrolled', window.scrollY > 40);
+    }, { passive: true });
+
+    /* ── Active nav link on scroll ───────────────────────── */
+    var sections = document.querySelectorAll('section[id], main[id]');
+    var navLinks = document.querySelectorAll('.nav-link');
+    var sectionObs = new IntersectionObserver(function(entries){
+      entries.forEach(function(e){
+        if(e.isIntersecting){
+          navLinks.forEach(function(l){
+            var active = l.dataset.section === e.target.id;
+            l.classList.toggle('nav-link-active', active);
+            if(active) l.classList.remove('text-on-surface-variant');
+            else l.classList.add('text-on-surface-variant');
+          });
+        }
+      });
+    },{ rootMargin:'-40% 0px -55% 0px' });
+    sections.forEach(function(s){ sectionObs.observe(s); });
+
+    /* ── Scroll reveal ───────────────────────────────────── */
+    var revealObs = new IntersectionObserver(function(entries){
+      entries.forEach(function(e){
+        if(e.isIntersecting){ e.target.classList.add('active'); revealObs.unobserve(e.target); }
+      });
+    },{ threshold: 0.1 });
+    document.querySelectorAll('.reveal,.reveal-left,.reveal-right,.reveal-stagger').forEach(function(el){
+      revealObs.observe(el);
+    });
+
+    /* ── Typing effect ───────────────────────────────────── */
+    var phrases = ['MDM Specialist','TIBCO EBX Developer','Java Engineer','Data Governance Architect'];
+    var pi=0, ci=0, del=false;
+    var tgt = document.getElementById('typing-target');
+    function type(){
+      if(!tgt) return;
+      var cur=phrases[pi];
+      if(!del){ tgt.textContent=cur.slice(0,++ci); if(ci===cur.length){del=true;setTimeout(type,1800);return;} }
+      else { tgt.textContent=cur.slice(0,--ci); if(ci===0){del=false;pi=(pi+1)%phrases.length;} }
+      setTimeout(type,del?50:80);
+    }
+    type();
+
+    /* ── Testimonials (render + hide if empty) ───────────── */
+    var grid = document.getElementById('testimonials-grid');
+    var testimonialsSection = document.getElementById('testimonials');
+    var testimonialsItems = [];
+
+    // Build from translations
+    var idx = 0;
+    while(T[currentLang] && T[currentLang]['testimonials.items.'+idx+'.quote']){
+      testimonialsItems.push(idx); idx++;
+    }
+    // Fallback to EN
+    if(!testimonialsItems.length){
+      var idx2=0;
+      while(T['en'] && T['en']['testimonials.items.'+idx2+'.quote']){ testimonialsItems.push(idx2); idx2++; }
+    }
+
+    if(!testimonialsItems.length){
+      testimonialsSection.setAttribute('hidden','');
+    } else {
+      testimonialsItems.slice(0,3).forEach(function(n){
+        var base='testimonials.items.'+n+'.';
+        var card=document.createElement('div');
+        card.className='testimonial-card';
+        card.innerHTML =
+          '<p class="testimonial-quote" data-i18n="'+base+'quote">'+(t(base+'quote')||'')+'</p>'+
+          '<div class="testimonial-divider"></div>'+
+          '<div class="flex items-center gap-3">'+
+            '<div class="testimonial-avatar">'+(t(base+'initials')||'?')+'</div>'+
+            '<div>'+
+              '<p class="testimonial-name" data-i18n="'+base+'name">'+(t(base+'name')||'')+'</p>'+
+              '<p class="testimonial-role" data-i18n="'+base+'role">'+(t(base+'role')||'')+'</p>'+
+            '</div>'+
+          '</div>';
+        grid.appendChild(card);
+      });
+    }
+
+    /* ── Contact: char counter + inline email validation ─── */
+    var msgEl  = document.getElementById('c-message');
+    var cntEl  = document.getElementById('c-msg-count');
+    var emailEl = document.getElementById('c-email');
+    var emailErr = document.getElementById('c-email-error');
+
+    if(msgEl && cntEl){
+      msgEl.addEventListener('input', function(){
+        cntEl.textContent = msgEl.value.length + ' / 500';
+        if(msgEl.value.length > 500) msgEl.value = msgEl.value.slice(0,500);
+      });
+    }
+
+    if(emailEl && emailErr){
+      emailEl.addEventListener('blur', function(){
+        if(emailEl.value && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(emailEl.value)){
+          emailErr.textContent='Please enter a valid email.';
+          emailErr.classList.remove('hidden');
+        } else {
+          emailErr.textContent='';
+          emailErr.classList.add('hidden');
+        }
+      });
+    }
+
+  }); // DOMContentLoaded
+</script>
 
 </body>
 </html>

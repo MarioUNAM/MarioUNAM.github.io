@@ -369,20 +369,17 @@
       'journey.m5.title': 'AI Enablement & Governance',
       'journey.m5.desc': 'Completed Azure ML and MLflow training, bridging classical MDM governance with generative AI accountability frameworks.',
 
-      // Hobbies (default 3: cycling, writing, chess; 2 extras available below)
+      // Hobbies
       'hobbies.title': 'Beyond the Terminal',
-      'hobbies.h1.name': 'Urban Cycling',
-      'hobbies.h1.icon': 'directions_bike',
-      'hobbies.h1.desc': 'Navigates CDMX by bike — because the city makes more sense at 20 km/h than through a Waze screen.',
-      'hobbies.h2.name': 'Technical Writing',
-      'hobbies.h2.icon': 'edit_note',
-      'hobbies.h2.desc': 'Writes about data architecture and tooling — clarity is the rarest engineering output.',
-      'hobbies.h3.name': 'Competitive Chess',
-      'hobbies.h3.icon': 'strategy',
-      'hobbies.h3.desc': 'Studies chess not for the wins but for the forcing functions — positions that eliminate bad moves before you make them.',
-      // Extras (swap any of the above with these):
-      // 'hobbies.h4.name': 'Open Source Tinkering', 'hobbies.h4.icon': 'terminal', 'hobbies.h4.desc': '...'
-      // 'hobbies.h5.name': 'Science Communication', 'hobbies.h5.icon': 'science', 'hobbies.h5.desc': '...'
+      'hobbies.h1.name': 'Gaming',
+      'hobbies.h1.icon': 'sports_esports',
+      'hobbies.h1.desc': 'FIFA, Rocket League, Marvel Rivals — competitive matches with friends are how I decompress after a long sprint.',
+      'hobbies.h2.name': 'Football & Pumas',
+      'hobbies.h2.icon': 'sports_soccer',
+      'hobbies.h2.desc': 'Hardcore Pumas UNAM fan. I go to the stadium, play on weekends, and live the Liga MX season match by match.',
+      'hobbies.h3.name': 'Gym',
+      'hobbies.h3.icon': 'fitness_center',
+      'hobbies.h3.desc': 'Consistent training keeps me focused. Lifting is the one routine that scales perfectly with screen time.',
 
       // Case studies section (honest labeling)
       'caseStudies.title': 'Case Studies',
@@ -818,15 +815,15 @@
 
       // Hobbies
       'hobbies.title': 'Más allá de la terminal',
-      'hobbies.h1.name': 'Ciclismo urbano',
-      'hobbies.h1.icon': 'directions_bike',
-      'hobbies.h1.desc': 'Recorre la CDMX en bicicleta — porque la ciudad tiene más sentido a 20 km/h que a través de una pantalla de Waze.',
-      'hobbies.h2.name': 'Escritura técnica',
-      'hobbies.h2.icon': 'edit_note',
-      'hobbies.h2.desc': 'Escribe sobre arquitectura de datos y herramientas — la claridad es el producto de ingeniería más escaso.',
-      'hobbies.h3.name': 'Ajedrez competitivo',
-      'hobbies.h3.icon': 'strategy',
-      'hobbies.h3.desc': 'Estudia ajedrez no por las victorias sino por las jugadas forzadas — posiciones que eliminan los errores antes de que ocurran.',
+      'hobbies.h1.name': 'Videojuegos',
+      'hobbies.h1.icon': 'sports_esports',
+      'hobbies.h1.desc': 'FIFA, Rocket League, Marvel Rivals — partidas competitivas con amigos para desconectar después de un sprint largo.',
+      'hobbies.h2.name': 'Fútbol y Pumas',
+      'hobbies.h2.icon': 'sports_soccer',
+      'hobbies.h2.desc': 'Fiel seguidor de Pumas UNAM. Voy al estadio, juego los fines de semana y vivo la Liga MX partido a partido.',
+      'hobbies.h3.name': 'Gym',
+      'hobbies.h3.icon': 'fitness_center',
+      'hobbies.h3.desc': 'El entrenamiento constante mantiene el enfoque. Levantar pesas es la única rutina que escala perfectamente con el tiempo frente a pantallas.',
 
       // Casos de estudio
       'caseStudies.title': 'Casos de estudio',

@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;700;800&amp;family=Inter:wght@400;500;600&amp;family=Space_Grotesk:wght@500;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "on-primary-fixed": "#001f27",
+                        "surface-dim": "#071325",
+                        "error": "#ffb4ab",
+                        "primary-fixed": "#b3ebff",
+                        "surface-bright": "#2e394d",
+                        "outline-variant": "#3d494d",
+                        "secondary": "#58d6f1",
+                        "inverse-surface": "#d7e3fc",
+                        "surface-container": "#142032",
+                        "on-tertiary": "#00363d",
+                        "secondary-fixed": "#a7edff",
+                        "tertiary-fixed": "#9feffe",
+                        "surface-variant": "#2a3548",
+                        "on-tertiary-container": "#00424a",
+                        "on-error": "#690005",
+                        "primary-container": "#00b4d8",
+                        "surface": "#071325",
+                        "on-primary-fixed-variant": "#004e5f",
+                        "on-surface-variant": "#bcc9ce",
+                        "surface-tint": "#4cd6fb",
+                        "on-primary-container": "#00414f",
+                        "surface-container-high": "#1f2a3d",
+                        "tertiary-container": "#60b1bf",
+                        "surface-container-lowest": "#030e20",
+                        "tertiary": "#83d3e1",
+                        "on-secondary": "#00363f",
+                        "surface-container-low": "#101c2e",
+                        "on-tertiary-fixed": "#001f24",
+                        "background": "#071325",
+                        "inverse-primary": "#00677d",
+                        "on-secondary-fixed": "#001f25",
+                        "on-tertiary-fixed-variant": "#004f59",
+                        "on-primary": "#003642",
+                        "on-secondary-container": "#003640",
+                        "on-secondary-fixed-variant": "#004e5b",
+                        "tertiary-fixed-dim": "#83d3e1",
+                        "primary": "#4cd6fb",
+                        "on-background": "#d7e3fc",
+                        "outline": "#869398",
+                        "on-surface": "#d7e3fc",
+                        "error-container": "#93000a",
+                        "secondary-container": "#00a7c0",
+                        "secondary-fixed-dim": "#58d6f1",
+                        "inverse-on-surface": "#253144",
+                        "primary-fixed-dim": "#4cd6fb",
+                        "surface-container-highest": "#2a3548",
+                        "on-error-container": "#ffdad6"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.125rem",
+                        "lg": "0.25rem",
+                        "xl": "0.5rem",
+                        "full": "0.75rem"
+                    },
+                    "fontFamily": {
+                        "headline": ["Manrope"],
+                        "body": ["Inter"],
+                        "label": ["Space Grotesk"]
+                    }
+                },
+            },
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .hero-glow {
+            background: radial-gradient(circle at 50% 50%, rgba(76, 214, 251, 0.08) 0%, rgba(7, 19, 37, 0) 70%);
+        }
+        .poly-grid {
+            mask-image: linear-gradient(to bottom, black, transparent);
+            background-image: 
+                linear-gradient(rgba(76, 214, 251, 0.05) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(76, 214, 251, 0.05) 1px, transparent 1px);
+            background-size: 50px 50px;
+        }
+    </style>
+</head>
+<body class="bg-surface text-on-surface font-body selection:bg-primary/30 selection:text-primary">
+<!-- TopNavBar -->
+<nav class="fixed top-0 w-full z-50 bg-[#101c2e]/60 backdrop-blur-xl shadow-[0_20px_40px_rgba(0,0,0,0.4)]">
+<div class="flex justify-between items-center px-8 py-4 max-w-7xl mx-auto">
+<div class="text-xl font-black tracking-tighter text-cyan-400 font-headline uppercase">
+                MARIO HUARTE NOLASCO
+            </div>
+<div class="hidden md:flex items-center gap-8 font-headline tracking-tight text-sm uppercase font-semibold">
+<a class="text-cyan-400 relative after:content-[''] after:absolute after:-bottom-1 after:left-1/2 after:-translate-x-1/2 after:w-1 after:h-1 after:bg-cyan-400 after:rounded-full" href="#hero">Hero</a>
+<a class="text-slate-400 hover:text-slate-200 transition-colors" href="#about">About</a>
+<a class="text-slate-400 hover:text-slate-200 transition-colors" href="#experience">Experience</a>
+<a class="text-slate-400 hover:text-slate-200 transition-colors" href="#projects">Projects</a>
+<a class="text-slate-400 hover:text-slate-200 transition-colors" href="#contact">Contact</a>
+</div>
+<button class="bg-primary/10 text-cyan-400 border border-primary/20 px-5 py-2 rounded-lg font-headline text-xs uppercase font-bold tracking-widest hover:bg-cyan-400/20 hover:shadow-[0_0_15px_rgba(76,214,251,0.3)] transition-all scale-100 active:scale-95 duration-200">
+                Hire Me
+            </button>
+</div>
+</nav>
+<!-- Hero Section -->
+<main class="relative min-h-screen flex items-center justify-center overflow-hidden pt-16" id="hero">
+<!-- Background Layers -->
+<div class="absolute inset-0 z-0">
+<div class="absolute inset-0 poly-grid"></div>
+<div class="absolute inset-0 hero-glow"></div>
+<!-- Decorative Tech Elements -->
+<div class="absolute top-1/4 left-10 w-64 h-64 bg-primary/5 rounded-full blur-[100px]"></div>
+<div class="absolute bottom-1/4 right-10 w-96 h-96 bg-secondary/5 rounded-full blur-[120px]"></div>
+</div>
+<div class="relative z-10 text-center px-4 max-w-5xl">
+<div class="inline-block px-3 py-1 mb-6 rounded-full bg-surface-container-highest border border-primary/20">
+<span class="font-label text-[10px] tracking-[0.2em] uppercase text-primary font-bold">Systems Architect &amp; Developer</span>
+</div>
+<h1 class="text-6xl md:text-8xl lg:text-9xl font-headline font-extrabold tracking-tighter text-on-surface mb-8">
+<span class="block">MARIO HUARTE</span>
+<span class="text-primary drop-shadow-[0_0_30px_rgba(76,214,251,0.2)]">NOLASCO</span>
+</h1>
+<div class="h-12 mb-12">
+<p class="text-xl md:text-2xl font-body text-on-surface-variant font-light tracking-wide italic">
+                    MDM Specialist <span class="mx-2 text-primary/40">|</span> TIBCO EBX Developer <span class="mx-2 text-primary/40">|</span> Java Developer
+                </p>
+</div>
+<div class="flex flex-col md:flex-row gap-6 justify-center items-center">
+<a class="group relative px-10 py-5 bg-primary text-on-primary font-headline font-bold text-sm tracking-widest uppercase transition-all duration-300 hover:shadow-[0_0_40px_rgba(76,214,251,0.5)] active:scale-95" href="#projects">
+                    VIEW MY WORK
+                </a>
+<a class="px-10 py-5 border border-outline-variant hover:border-primary/50 text-on-surface-variant hover:text-primary font-headline font-bold text-sm tracking-widest uppercase transition-all duration-300" href="#experience">
+                    RESUME / CV
+                </a>
+</div>
+</div>
+<!-- Floating Data Indicator (Visual Decorum) -->
+<div class="absolute bottom-10 left-10 hidden xl:flex flex-col gap-2 opacity-40">
+<div class="flex items-center gap-2">
+<span class="w-1 h-1 rounded-full bg-primary animate-pulse"></span>
+<span class="font-label text-[10px] tracking-widest uppercase">System Status: Active</span>
+</div>
+<div class="flex items-center gap-2">
+<span class="w-1 h-1 rounded-full bg-primary"></span>
+<span class="font-label text-[10px] tracking-widest uppercase">Nodes Secured: 50k+</span>
+</div>
+</div>
+</main>
+<!-- Expertise Section (Bento Style) -->
+<section class="bg-surface py-32 px-8" id="about">
+<div class="max-w-7xl mx-auto">
+<div class="mb-20">
+<h2 class="text-sm font-label text-primary tracking-[0.4em] uppercase mb-4">Core Domains</h2>
+<p class="text-4xl md:text-5xl font-headline font-bold tracking-tight max-w-2xl">Bridging Enterprise Architecture with Master Data Precision.</p>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-12 gap-6">
+<!-- Large Bento Card -->
+<div class="md:col-span-8 bg-surface-container-low p-10 rounded-xl group hover:bg-surface-container-high transition-all duration-500 relative overflow-hidden">
+<div class="absolute top-0 right-0 p-8 opacity-10 group-hover:opacity-20 transition-opacity">
+<span class="material-symbols-outlined text-8xl" style="font-variation-settings: 'FILL' 1;">security</span>
+</div>
+<div class="relative z-10">
+<span class="font-label text-xs text-primary uppercase tracking-widest block mb-4">Focus 01</span>
+<h3 class="text-3xl font-headline font-bold mb-6">MDM Implementation</h3>
+<p class="text-on-surface-variant text-lg leading-relaxed max-w-xl">
+                            Specializing in large-scale Mobile Device Management and Master Data Management workflows. Architecting secure, scalable infrastructures that manage thousands of endpoints with TIBCO EBX and Java-based custom solutions.
+                        </p>
+<div class="mt-10 flex flex-wrap gap-3">
+<span class="px-4 py-2 bg-surface-container-highest text-primary border border-primary/10 rounded-full font-label text-xs">TIBCO EBX</span>
+<span class="px-4 py-2 bg-surface-container-highest text-primary border border-primary/10 rounded-full font-label text-xs">Device Security</span>
+<span class="px-4 py-2 bg-surface-container-highest text-primary border border-primary/10 rounded-full font-label text-xs">API Orchestration</span>
+</div>
+</div>
+</div>
+<!-- Small Bento Card -->
+<div class="md:col-span-4 bg-surface-container-low p-10 rounded-xl group hover:bg-surface-container-high transition-all duration-500">
+<span class="font-label text-xs text-primary uppercase tracking-widest block mb-4">Focus 02</span>
+<h3 class="text-2xl font-headline font-bold mb-6">Java Engineering</h3>
+<p class="text-on-surface-variant text-base leading-relaxed">
+                        Back-end systems built for reliability. Crafting robust microservices and middleware to connect disparate enterprise datasets.
+                    </p>
+<div class="mt-8 flex flex-wrap gap-2">
+<span class="px-3 py-1 bg-surface-container-highest text-on-surface-variant rounded font-label text-[10px]">SPRING BOOT</span>
+<span class="px-3 py-1 bg-surface-container-highest text-on-surface-variant rounded font-label text-[10px]">MICROSERVICES</span>
+</div>
+</div>
+<!-- Another Bento Card -->
+<div class="md:col-span-4 bg-surface-container-low p-10 rounded-xl group hover:bg-surface-container-high transition-all duration-500">
+<span class="font-label text-xs text-primary uppercase tracking-widest block mb-4">Focus 03</span>
+<h3 class="text-2xl font-headline font-bold mb-6">Cloud Infrastructure</h3>
+<p class="text-on-surface-variant text-base leading-relaxed">
+                        Deploying and managing data ecosystems within cloud-native environments, ensuring 99.9% availability.
+                    </p>
+</div>
+<div class="md:col-span-8 bg-surface-container-low p-10 rounded-xl relative group hover:bg-surface-container-high transition-all duration-500 overflow-hidden">
+<div class="flex flex-col md:flex-row items-center gap-10">
+<img alt="Server infrastructure" class="w-full md:w-1/3 h-48 object-cover rounded-lg grayscale hover:grayscale-0 transition-all duration-700" data-alt="Technical data center interior with servers glowing in blue and cyan neon lights, high-tech architectural feel" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCVcBZUX1tFDJ4pnIDvGJ0MpLjrP4Z-3cWsl6ckExfjWYffkkDUxxHyNnFuteLNPhsYSCjpJZ5sx2ffG7VeNFf8QMMgrN01WEf_cDXadZc4gMSsBp5dfDA1w4ia7QOXkeJo8PnNmup-E4xGKZZiU97JVEvNOPpCOyIC2ywbjYDg37DYSVeAQ9-hO2Jax_EX1EOKIKemUTXj9a36yWVM8utzsW3gje4NlSH9_C3lRN39IiEjJho9yXCtrBNOJF-6bgrUh4ZjW_F5_tx8"/>
+<div>
+<h3 class="text-2xl font-headline font-bold mb-4">Architecture First</h3>
+<p class="text-on-surface-variant text-base leading-relaxed">
+                                My philosophy is rooted in clean code and scalable architecture. Every endpoint is a node in a larger narrative of security and efficiency.
+                            </p>
+</div>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- Experience Section (Timeline) -->
+<section class="bg-surface-container-low py-32 px-8" id="experience">
+<div class="max-w-4xl mx-auto">
+<h2 class="text-sm font-label text-primary tracking-[0.4em] uppercase mb-16 text-center">Career Log</h2>
+<div class="relative space-y-16">
+<!-- Vertical Line -->
+<div class="absolute left-0 md:left-1/2 top-0 bottom-0 w-[1px] bg-outline-variant/30 transform md:-translate-x-1/2"></div>
+<!-- Item 1 -->
+<div class="relative flex flex-col md:flex-row md:justify-between items-start md:items-center">
+<div class="flex items-center md:absolute md:left-1/2 md:-translate-x-1/2 z-10">
+<div class="w-4 h-4 rounded-full bg-primary shadow-[0_0_10px_rgba(76,214,251,0.8)]"></div>
+</div>
+<div class="md:w-[45%] mt-6 md:mt-0 bg-surface p-6 rounded-xl border-l-2 border-primary/30">
+<span class="font-label text-xs text-primary uppercase">2022 - Present</span>
+<h4 class="text-xl font-headline font-bold mt-2">Senior MDM Specialist</h4>
+<p class="text-on-surface-variant text-sm mt-2">Leading integration strategies for global enterprise MDM systems using TIBCO EBX.</p>
+</div>
+<div class="hidden md:block md:w-[45%]"></div>
+</div>
+<!-- Item 2 -->
+<div class="relative flex flex-col md:flex-row md:justify-between items-start md:items-center">
+<div class="flex items-center md:absolute md:left-1/2 md:-translate-x-1/2 z-10">
+<div class="w-4 h-4 rounded-full bg-primary/40 border border-primary/20"></div>
+</div>
+<div class="hidden md:block md:w-[45%]"></div>
+<div class="md:w-[45%] mt-6 md:mt-0 bg-surface p-6 rounded-xl border-r-2 border-primary/30 text-left md:text-right">
+<span class="font-label text-xs text-primary uppercase">2020 - 2022</span>
+<h4 class="text-xl font-headline font-bold mt-2 text-left md:text-right">Java Developer</h4>
+<p class="text-on-surface-variant text-sm mt-2 text-left md:text-right">Developed core middleware components for high-traffic financial systems.</p>
+</div>
+</div>
+<!-- Item 3 -->
+<div class="relative flex flex-col md:flex-row md:justify-between items-start md:items-center">
+<div class="flex items-center md:absolute md:left-1/2 md:-translate-x-1/2 z-10">
+<div class="w-4 h-4 rounded-full bg-primary/40 border border-primary/20"></div>
+</div>
+<div class="md:w-[45%] mt-6 md:mt-0 bg-surface p-6 rounded-xl border-l-2 border-primary/30">
+<span class="font-label text-xs text-primary uppercase">2018 - 2020</span>
+<h4 class="text-xl font-headline font-bold mt-2">Software Engineer</h4>
+<p class="text-on-surface-variant text-sm mt-2">Focused on full-stack development and security-first application design.</p>
+</div>
+<div class="hidden md:block md:w-[45%]"></div>
+</div>
+</div>
+</div>
+</section>
+<!-- Contact CTA -->
+<section class="bg-surface py-32 px-8 overflow-hidden" id="contact">
+<div class="max-w-5xl mx-auto bg-surface-container-high rounded-3xl p-12 md:p-20 relative">
+<div class="absolute -top-24 -right-24 w-64 h-64 bg-primary/10 rounded-full blur-3xl"></div>
+<div class="relative z-10 text-center">
+<h2 class="text-4xl md:text-6xl font-headline font-extrabold tracking-tighter mb-8">Ready to Architect Your Next Big Solution?</h2>
+<p class="text-on-surface-variant text-lg max-w-2xl mx-auto mb-12">
+                    I am currently open to new opportunities and strategic collaborations in the MDM and Java ecosystem.
+                </p>
+<div class="flex flex-wrap justify-center gap-6">
+<a class="flex items-center gap-3 px-8 py-4 bg-primary text-on-primary font-headline font-bold rounded-lg hover:scale-105 transition-transform" href="mailto:contact@mario.dev">
+<span class="material-symbols-outlined">mail</span>
+                        SAY HELLO
+                    </a>
+<a class="flex items-center gap-3 px-8 py-4 border border-outline-variant text-on-surface hover:bg-surface-container-highest rounded-lg transition-colors" href="#">
+<span class="material-symbols-outlined">description</span>
+                        GET PDF RESUME
+                    </a>
+</div>
+</div>
+</div>
+</section>
+<!-- Footer -->
+<footer class="w-full py-12 mt-20 bg-[#071325] flex flex-col md:flex-row justify-between items-center px-12 border-t border-white/5 opacity-80 hover:opacity-100 transition-opacity">
+<div class="font-['Space_Grotesk'] font-bold text-slate-300 mb-4 md:mb-0">
+            MARIO HUARTE NOLASCO
+        </div>
+<div class="font-['Inter'] text-xs tracking-widest text-slate-500 uppercase text-center mb-4 md:mb-0">
+            © 2024 MARIO HUARTE NOLASCO | MDM ARCHITECT
+        </div>
+<div class="flex gap-8 font-['Inter'] text-xs tracking-widest text-slate-600">
+<a class="hover:text-cyan-300 transition-colors" href="#">LinkedIn</a>
+<a class="hover:text-cyan-300 transition-colors" href="#">GitHub</a>
+<a class="hover:text-cyan-300 transition-colors" href="#">Privacy Policy</a>
+</div>
+</footer>
+</body></html>

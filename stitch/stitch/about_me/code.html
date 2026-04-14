@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;700;800&amp;family=Inter:wght@400;500;600&amp;family=Space_Grotesk:wght@400;500;700&amp;family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                "on-primary-fixed": "#001f27",
+                "surface-dim": "#071325",
+                "error": "#ffb4ab",
+                "primary-fixed": "#b3ebff",
+                "surface-bright": "#2e394d",
+                "outline-variant": "#3d494d",
+                "secondary": "#58d6f1",
+                "inverse-surface": "#d7e3fc",
+                "surface-container": "#142032",
+                "on-tertiary": "#00363d",
+                "secondary-fixed": "#a7edff",
+                "tertiary-fixed": "#9feffe",
+                "surface-variant": "#2a3548",
+                "on-tertiary-container": "#00424a",
+                "on-error": "#690005",
+                "primary-container": "#00b4d8",
+                "surface": "#071325",
+                "on-primary-fixed-variant": "#004e5f",
+                "on-surface-variant": "#bcc9ce",
+                "surface-tint": "#4cd6fb",
+                "on-primary-container": "#00414f",
+                "surface-container-high": "#1f2a3d",
+                "tertiary-container": "#60b1bf",
+                "surface-container-lowest": "#030e20",
+                "tertiary": "#83d3e1",
+                "on-secondary": "#00363f",
+                "surface-container-low": "#101c2e",
+                "on-tertiary-fixed": "#001f24",
+                "background": "#071325",
+                "inverse-primary": "#00677d",
+                "on-secondary-fixed": "#001f25",
+                "on-tertiary-fixed-variant": "#004f59",
+                "on-primary": "#003642",
+                "on-secondary-container": "#003640",
+                "on-secondary-fixed-variant": "#004e5b",
+                "tertiary-fixed-dim": "#83d3e1",
+                "primary": "#4cd6fb",
+                "on-background": "#d7e3fc",
+                "outline": "#869398",
+                "on-surface": "#d7e3fc",
+                "error-container": "#93000a",
+                "secondary-container": "#00a7c0",
+                "secondary-fixed-dim": "#58d6f1",
+                "inverse-on-surface": "#253144",
+                "primary-fixed-dim": "#4cd6fb",
+                "surface-container-highest": "#2a3548",
+                "on-error-container": "#ffdad6"
+            },
+            "borderRadius": {
+                "DEFAULT": "0.125rem",
+                "lg": "0.25rem",
+                "xl": "0.5rem",
+                "full": "0.75rem"
+            },
+            "fontFamily": {
+                "headline": ["Manrope"],
+                "body": ["Inter"],
+                "label": ["Space Grotesk"]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+      .material-symbols-outlined {
+        font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+      }
+      body {
+        background-color: #071325;
+        color: #d7e3fc;
+      }
+    </style>
+</head>
+<body class="font-body selection:bg-primary/30 selection:text-primary">
+<!-- Top Navigation Bar -->
+<nav class="fixed top-0 w-full z-50 bg-[#101c2e]/60 backdrop-blur-xl shadow-[0_20px_40px_rgba(0,0,0,0.4)]">
+<div class="flex justify-between items-center px-8 py-4 max-w-7xl mx-auto">
+<span class="text-xl font-black tracking-tighter text-cyan-400 font-headline">MARIO HUARTE NOLASCO</span>
+<div class="hidden md:flex items-center space-x-8">
+<a class="text-slate-400 hover:text-slate-200 transition-colors font-headline tracking-tight text-sm uppercase font-semibold" href="#hero">Hero</a>
+<a class="text-cyan-400 relative after:content-[''] after:absolute after:-bottom-1 after:left-1/2 after:-translate-x-1/2 after:w-1 after:h-1 after:bg-cyan-400 after:rounded-full font-headline tracking-tight text-sm uppercase font-semibold" href="#about">About</a>
+<a class="text-slate-400 hover:text-slate-200 transition-colors font-headline tracking-tight text-sm uppercase font-semibold" href="#experience">Experience</a>
+<a class="text-slate-400 hover:text-slate-200 transition-colors font-headline tracking-tight text-sm uppercase font-semibold" href="#projects">Projects</a>
+<a class="text-slate-400 hover:text-slate-200 transition-colors font-headline tracking-tight text-sm uppercase font-semibold" href="#contact">Contact</a>
+</div>
+<button class="bg-primary/10 text-cyan-400 border border-primary/20 px-6 py-2 font-headline text-xs uppercase font-bold tracking-widest hover:bg-cyan-400/20 hover:shadow-[0_0_15px_rgba(76,214,251,0.3)] transition-all duration-200 active:scale-95">
+                Hire Me
+            </button>
+</div>
+</nav>
+<main class="pt-32 pb-20 overflow-x-hidden">
+<!-- About Me Section -->
+<section class="max-w-7xl mx-auto px-8 lg:px-12" id="about">
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-16 items-center">
+<!-- Left: Professional Photo in Modern Frame -->
+<div class="lg:col-span-5 relative group">
+<!-- Layered Atmosphere Decorative Elements -->
+<div class="absolute -top-6 -left-6 w-32 h-32 bg-primary/10 rounded-full blur-3xl opacity-50"></div>
+<div class="absolute -bottom-10 -right-10 w-48 h-48 bg-primary/5 rounded-full blur-3xl opacity-30"></div>
+<!-- Modern Frame -->
+<div class="relative z-10 aspect-[4/5] bg-surface-container-low p-3 shadow-2xl transition-transform duration-500 group-hover:translate-y-[-8px]">
+<div class="w-full h-full relative overflow-hidden bg-surface-container-high">
+<img alt="Professional headshot of Mario Huarte Nolasco" class="w-full h-full object-cover grayscale contrast-125 opacity-90 transition-all duration-700 group-hover:scale-105 group-hover:grayscale-0" data-alt="Close-up professional portrait of a man in a dark environment with dramatic cyan side-lighting and minimalist tech aesthetic" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCLA3D5poKEZFECMz5Iu7a2FxK4yPB_fJlfKzqz1l5W9l8-DQUW-czU-r1hlvdWAoMxqB3dnZ1SwYyNDw91J3l8ZCLgWSxJhi77pBDC4gjStIYC2CUJl4C3leWx9CMMtJS9G8qkRH6u6rxzzDiza1YwIgAdk0JLopQ8s7lQdf1dJCB52MDG7yohDsHiD4eMQwxa0LET8MGtDr8G5jH5wIGRvS7WgoX1AkVhQ5YVWqC0ZqSeiwUFRCubPkJ2y8mfMSJJke1MtkSJat6i"/>
+<!-- Precision Overlay -->
+<div class="absolute inset-0 border-[20px] border-surface-container-low/80 pointer-events-none"></div>
+<div class="absolute top-8 right-8 mix-blend-difference">
+<span class="font-label text-primary/40 text-[10px] tracking-[0.3em] uppercase vertical-rl rotate-180">ARCHITECT_049</span>
+</div>
+</div>
+</div>
+<!-- Asymmetric Background Block -->
+<div class="absolute -bottom-6 -left-6 w-full h-full bg-surface-container-highest -z-10 transition-transform duration-500 group-hover:translate-x-2 group-hover:translate-y-2"></div>
+</div>
+<!-- Right: Content Column -->
+<div class="lg:col-span-7 flex flex-col space-y-10">
+<div class="space-y-4">
+<span class="font-label text-primary text-sm tracking-[0.2em] uppercase font-bold flex items-center gap-3">
+<span class="w-8 h-[1px] bg-primary/40"></span>
+                            The Precision Architect
+                        </span>
+<h2 class="text-5xl lg:text-7xl font-headline font-extrabold tracking-tighter text-on-surface leading-[0.9]">
+                            Engineering <br/> <span class="text-primary/90">Identity &amp; Control.</span>
+</h2>
+</div>
+<div class="space-y-6">
+<p class="text-lg lg:text-xl text-on-surface-variant font-body leading-relaxed max-w-2xl">
+                            As a <span class="text-on-surface font-semibold underline decoration-primary/30 underline-offset-4">Computer Engineer from UNAM</span>, I specialize in the architectural integrity of high-scale systems. My focus lies at the intersection of Mobile Device Management (MDM) and robust software engineering, where precision is not a choice, but a requirement.
+                        </p>
+<p class="text-on-surface-variant/80 font-body leading-relaxed max-w-2xl italic">
+                            I treat every line of code and every device policy as a structural beam in a digital skyscraper—designed for endurance, security, and absolute clarity.
+                        </p>
+</div>
+<!-- Stat Cards Bento-ish Grid -->
+<div class="grid grid-cols-1 md:grid-cols-2 gap-4 pt-4">
+<!-- Card 1: Experience -->
+<div class="bg-surface-container-low p-6 transition-all duration-300 hover:bg-surface-container-high group">
+<div class="flex justify-between items-start mb-4">
+<span class="material-symbols-outlined text-primary group-hover:scale-110 transition-transform" data-icon="terminal">terminal</span>
+<span class="font-label text-[10px] text-outline tracking-widest uppercase">EXP_LOG</span>
+</div>
+<h4 class="text-3xl font-headline font-bold text-on-surface">4+ Years</h4>
+<p class="font-label text-xs text-on-surface-variant uppercase tracking-wider mt-1">Professional Experience</p>
+</div>
+<!-- Card 2: Projects -->
+<div class="bg-surface-container-low p-6 transition-all duration-300 hover:bg-surface-container-high group border-b-2 border-transparent hover:border-primary/20">
+<div class="flex justify-between items-start mb-4">
+<span class="material-symbols-outlined text-primary group-hover:scale-110 transition-transform" data-icon="deployed_code">deployed_code</span>
+<span class="font-label text-[10px] text-outline tracking-widest uppercase">SYS_DEPLOY</span>
+</div>
+<h4 class="text-3xl font-headline font-bold text-on-surface">4-6 Projects</h4>
+<p class="font-label text-xs text-on-surface-variant uppercase tracking-wider mt-1">Enterprise Deliveries</p>
+</div>
+<!-- Card 3: Sectors -->
+<div class="bg-surface-container-low p-6 transition-all duration-300 hover:bg-surface-container-high group">
+<div class="flex justify-between items-start mb-4">
+<span class="material-symbols-outlined text-primary group-hover:scale-110 transition-transform" data-icon="domain">domain</span>
+<span class="font-label text-[10px] text-outline tracking-widest uppercase">MKT_SECTOR</span>
+</div>
+<h4 class="text-3xl font-headline font-bold text-on-surface">3 Sectors</h4>
+<p class="font-label text-xs text-on-surface-variant uppercase tracking-wider mt-1">Industry Expertise</p>
+</div>
+<!-- Card 4: Education -->
+<div class="bg-surface-container-low p-6 transition-all duration-300 hover:bg-surface-container-high group border-r-2 border-transparent hover:border-primary/20">
+<div class="flex justify-between items-start mb-4">
+<span class="material-symbols-outlined text-primary group-hover:scale-110 transition-transform" data-icon="school" data-weight="fill" style="font-variation-settings: 'FILL' 1;">school</span>
+<span class="font-label text-[10px] text-outline tracking-widest uppercase">ACAD_CRED</span>
+</div>
+<h4 class="text-xl lg:text-2xl font-headline font-bold text-on-surface leading-tight">Computer Engineer</h4>
+<p class="font-label text-xs text-on-surface-variant uppercase tracking-wider mt-1">UNAM Graduate</p>
+</div>
+</div>
+</div>
+</div>
+</section>
+</main>
+<!-- Footer -->
+<footer class="bg-[#071325] w-full py-12 mt-20 border-t border-white/5">
+<div class="flex flex-col md:flex-row justify-between items-center px-12 max-w-7xl mx-auto space-y-6 md:space-y-0">
+<span class="font-['Space_Grotesk'] font-bold text-slate-300">MARIO HUARTE NOLASCO</span>
+<p class="font-['Inter'] text-xs tracking-widest text-slate-500 uppercase">© 2024 MARIO HUARTE NOLASCO | MDM ARCHITECT</p>
+<div class="flex items-center space-x-6">
+<a class="text-slate-600 hover:text-cyan-300 transition-colors opacity-80 hover:opacity-100 font-['Inter'] text-xs tracking-widest" href="#">LinkedIn</a>
+<a class="text-slate-600 hover:text-cyan-300 transition-colors opacity-80 hover:opacity-100 font-['Inter'] text-xs tracking-widest" href="#">GitHub</a>
+<a class="text-slate-600 hover:text-cyan-300 transition-colors opacity-80 hover:opacity-100 font-['Inter'] text-xs tracking-widest" href="#">Privacy Policy</a>
+</div>
+</div>
+</footer>
+</body></html>

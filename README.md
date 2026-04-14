@@ -1,126 +1,198 @@
-# Portafolio de Mario Huarte Nolasco
+# MarioUNAM.github.io — Portafolio personal
 
-Este repositorio aloja el código fuente del sitio web personal de Mario Huarte Nolasco. El objetivo es mostrar proyectos de automatización, análisis de datos y business intelligence en un portafolio que pueda consultarse públicamente mediante GitHub Pages.
+Sitio web de presentación profesional de **Mario Huarte Nolasco** — MDM Consultant, Java Developer, Data Analyst.
 
-## Tecnologías utilizadas
+**Live:** [https://mariounam.github.io](https://mariounam.github.io)
 
-La página principal (`index.html`) está construida con HTML5, CSS3 y JavaScript, apoyándose en las siguientes librerías y recursos estáticos:
+---
 
-- [Bootstrap](https://getbootstrap.com/) para la estructura responsiva y componentes base (`assets/css/bootstrap.min.css`, `assets/js/bootstrap.min.js`).
-- [jQuery](https://jquery.com/) como dependencia de Bootstrap y scripts personalizados (`assets/js/jquery.min.js`).
-- [Font Awesome](https://fontawesome.com/) para iconografía (`assets/css/font-awesome.min.css`).
-- Plugins adicionales como `slick`, `bootstrap-progressbar`, `jquery.shuffle`, `jquery.countTo`, `jquery.easing` y `touchSwipe` para animaciones, carruseles y efectos interactivos (`assets/js/`).
-- Fuentes web servidas desde Google Fonts (`Open Sans`, `Varela`).
+## Stack técnico
 
-Las carpetas `template1/`, `template2/` y `template3/` conservan variaciones o plantillas de referencia que también hacen uso de Bootstrap, jQuery y recursos específicos documentados en cada subdirectorio.
+| Capa | Tecnología |
+|------|-----------|
+| Estructura | HTML5 semántico |
+| Estilos | Tailwind CSS (CDN, `darkMode:"class"`) + `assets/css/main.css` |
+| Iconos | Material Symbols Outlined (Google) |
+| Fuentes | Manrope · Inter · Space Grotesk (Google Fonts) |
+| Scripts | Vanilla JS — sin frameworks |
+| i18n | Motor propio (`assets/js/i18n.js`) — ES / EN |
+| Tema | Dual dark/light (`assets/js/theme-toggle.js`) |
+| Animaciones | `assets/js/animations.js` — 6 módulos |
+| Hosting | GitHub Pages (rama `main`) |
 
-## Estructura del proyecto
+---
 
-```text
-.
-├── index.html            # Página principal del portafolio
-├── assets/               # Recursos compartidos por la página principal
-│   ├── css/              # Hojas de estilo (Bootstrap, Font Awesome, estilos personalizados)
-│   ├── js/               # Bibliotecas y scripts personalizados
-│   ├── img/              # Imágenes utilizadas en secciones y modales
-│   ├── fonts/            # Tipografías locales utilizadas por los estilos
-│   └── audio/            # Recursos de audio (si se requieren en el futuro)
-├── CartaMama/            # Proyecto individual con su propia página estática
-├── pythoncodes/          # Scripts auxiliares en Python
-├── template1/            # Plantilla de referencia con sus assets propios
-├── template2/            # Segunda plantilla de referencia
-└── template3/            # Tercera plantilla de referencia
+## Dónde editar cada sección
+
+### Textos / traducciones — `assets/js/i18n.js`
+
+Todos los textos del sitio están centralizados aquí en dos bloques: `en: { ... }` y `es: { ... }`.  
+Busca la clave correspondiente y cambia el valor en **ambos idiomas**.
+
+| Sección | Claves en i18n.js |
+|---------|------------------|
+| Hero — nombre, rol, botones | `hero.name.first`, `hero.name.last`, `hero.role`, `hero.cta.work`, `hero.resume` |
+| About — bio y estadísticas | `about.bio`, `about.stat.years/projects/sectors/degree/university` |
+| Filosofía — título y principios | `philosophy.headline`, `philosophy.paragraph`, `philosophy.p1/p2/p3.*` |
+| Skills — títulos de columnas | `skills.heading`, `skills.ecosystem.title`, `skills.governance.title` |
+| Experiencia — fechas y bullets | `exp.r1.*`, `exp.r2.*` |
+| Casos de estudio — disclaimer y badge | `caseStudies.disclaimer`, `caseStudies.badge`, `caseStudies.cta` |
+| Casos de estudio — títulos y descripciones | `works.modal.rpa/analytics/mdm/observability.*` |
+| Certificaciones | hardcodeadas en `index.html` (líneas ~601–636) |
+| Journey (timeline de vida) | `journey.m1` … `journey.m5.*` |
+| Hobbies | `hobbies.h1/h2/h3.*` |
+| Testimonios | `testimonials.items.0/1/2.*` — si el array está vacío, la sección se oculta sola |
+| Contacto | `contact.heading`, `contact.cta.email/linkedin/intro` |
+| Nav y footer | `nav.*` |
+
+### Estructura HTML — `index.html`
+
+Cada sección tiene un comentario de bloque:
+
+```
+<!-- ══════ HERO ══════ -->        línea ~175
+<!-- ══════ ABOUT ══════ -->       línea ~234
+<!-- ══════ PHILOSOPHY ══════ -->  línea ~326
+<!-- ══════ SKILLS ══════ -->      línea ~361
+<!-- ══════ EXPERIENCE ══════ --> línea ~425
+<!-- ══════ CASE STUDIES ══════ -->línea ~489
+<!-- ══════ CERTIFICATIONS ══════ -->línea ~591
+<!-- ══════ JOURNEY ══════ -->     línea ~647
+<!-- ══════ HOBBIES ══════ -->     línea ~714
+<!-- ══════ TESTIMONIALS ══════ -->línea ~755
+<!-- ══════ CONTACT ══════ -->     línea ~774
+<!-- ══════ FOOTER ══════ -->      línea ~895
 ```
 
-### Personalización de contenidos
+### Estilos / colores — `assets/css/main.css`
 
-- **Secciones principales:** Edita `index.html` para actualizar textos, secciones de experiencia y enlaces. Cada bloque está etiquetado con comentarios HTML descriptivos.
-- **Llamado a la acción principal:** Dentro del bloque `.hero-content` de `index.html` puedes personalizar el botón con clase `btn btn-inverted` para apuntar a tu CV en PDF, LinkedIn u otro perfil profesional.
-- **Currículum descargable:** Coloca tu CV en PDF dentro de `assets/docs/` (el repositorio incluye `assets/docs/Mario-Huarte-CV.pdf` como ejemplo) y ajusta el texto o enlace del botón secundario “Download résumé” en `.hero-content` si cambias el nombre del archivo.
-- **Bloque de highlights:** La sección `#highlights` agrega tarjetas con métricas, certificaciones y reconocimientos. Ajusta títulos y textos en `index.html` y, si necesitas modificar espaciados o colores, utiliza las clases `.section-highlights` y `.highlight-card` definidas en `assets/css/style.css`.
-- **Datos de contacto:** Dentro de la sección `#contact` de `index.html` encontrarás tres tarjetas con correo, redes profesionales y ubicación. Edita los textos y enlaces (`mailto`, LinkedIn, WhatsApp y Google Maps) según tus necesidades y, si requieres cambios visuales, ajusta las clases `.contact-card*` en `assets/css/style.css`.
-- **Galería y modales:** Las tarjetas del portafolio se definen alrededor de la línea 360 de `index.html` y se enlazan con modales `#portfolioItem1` a `#portfolioItem4` definidos al final del archivo. Para añadir un nuevo proyecto, duplica una tarjeta, crea un modal con un identificador único y actualiza el contenido (título, descripción, imágenes y enlaces).
-- **Imágenes y multimedia:** Coloca imágenes en `assets/img/` y actualiza las rutas dentro de `index.html` o los modales correspondientes. Para mantener el desempeño, optimiza las imágenes antes de subirlas.
-- **Dimensiones sugeridas de imágenes:**
+Los tokens de color están al inicio del archivo como variables CSS:
 
-  | Uso | Selector / Clase | Dimensiones recomendadas | Relación de aspecto | Notas |
-  | --- | --- | --- | --- | --- |
-  | Avatar de perfil | `.big-rectangle` | 230 × 230 px | 1:1 | Se recorta centrado gracias a `object-fit: cover`; prepara el archivo cuadrado para evitar deformaciones. |
-  | Logo de cronología | `.timeline-body-thumb` | 100 × 100 px | 1:1 | Mantén fondos transparentes cuando sea posible para integrarse con la línea de tiempo. |
-  | Miniatura de portafolio | `.portfolio-item-thumb` | ≥ 300 × 250 px | ~6:5 | Ajusta la composición pensando en el recorte centrado por `object-fit: cover`. |
-  | Miniatura de insights | `.insight-thumb-image` | 480 × 320 px (SVG recomendado) | 3:2 | Exporta ilustraciones o capturas en SVG optimizado (<100 KB) para asegurar nitidez y carga rápida en la cuadrícula de insights. |
-  | Imagen de cabecera en modal | (imagen principal del modal) | ≥ 1200 × 400 px | ≥ 3:1 | Asegura una altura efectiva de 400 px para evitar pixelado y aprovecha el recorte central. |
+```css
+/* Tema oscuro (default) */
+:root {
+  --surface: #071325;
+  --primary: #4cd6fb;
+  --on-surface: #e8f4f8;
+  /* … */
+}
 
-- **Buenas prácticas para imágenes:**
-  - Comprueba que el peso del archivo sea razonable: <200 KB para miniaturas y logotipos, y <400 KB para imágenes de modales o cabeceras amplias.
-  - Prioriza formatos óptimos según el contenido: PNG para gráficos con transparencia, JPEG para fotografías y WebP cuando sea soportado para reducir peso.
-  - Sigue una convención clara de nombres en `assets/img/`, por ejemplo `seccion-descriptivo-tipo.ext` (`portfolio-analitica-thumb.jpg`, `timeline-empresa-logo.png`) para facilitar el mantenimiento.
-  - Después de reemplazar imágenes, revisa el sitio tanto en vista de escritorio como en dispositivos móviles para confirmar que el recorte centrado se muestra correctamente.
-- **Estilos personalizados:** Ajusta los estilos en `assets/css/style.css` (u otras hojas dentro de `assets/css/`). Si la modificación requiere JavaScript, utiliza `assets/js/script.js` para mantener la lógica centralizada.
-- **Plantillas alternativas:** Las carpetas `template1/`, `template2/` y `template3/` contienen versiones completas de plantillas descargadas. Consulta los archivos `README.txt`, `READ-ME.txt` o `LICENSE.txt` en cada una para respetar sus términos antes de reutilizar elementos en la página principal.
+/* Tema claro */
+:root:not(.dark) {
+  --surface: #f6f1e7;
+  --primary: #0099c2;
+  --on-surface: #0d1b2a;
+  /* … */
+}
+```
+
+Componentes específicos que puedes tocar:
+
+| Componente | Clase CSS | Línea aprox. |
+|-----------|-----------|-------------|
+| Botón primario | `.btn-primary` | ~301 |
+| Botón outline | `.btn-outline` | ~323 |
+| Skill pills | `.skill-pill`, `.skill-pill-secondary` | ~345 |
+| Cert cards | `.cert-card` | ~407 |
+| Hobby cards | `.hobby-card-v2` | ~808 |
+| Testimonial card | `.testimonial-card` | ~610 |
+| Journey timeline | `.journey-track`, `.journey-item` | ~677 |
+| Principios | `.principle-card` | ~862 |
+| Disponibilidad | `.availability-badge` | ~908 |
+
+### Foto de perfil — `assets/img/me.jpeg`
+
+Reemplaza el archivo manteniendo el mismo nombre. Dimensión recomendada: **800×1000 px**, relación 4:5.
+
+### CV descargable — `assets/docs/Mario_Huarte_CV.pdf`
+
+Reemplaza el archivo. El enlace en el hero ya apunta a `assets/docs/Mario_Huarte_CV.pdf`.
+
+### Animaciones — `assets/js/animations.js`
+
+6 módulos independientes, todos respetan `prefers-reduced-motion`:
+
+| Módulo | Función | Selector |
+|--------|---------|----------|
+| MagneticCTA | Botones se mueven hacia el cursor | `[data-magnetic]` |
+| ParallaxHero | Fondo del hero se mueve con scroll | `[data-parallax]` |
+| CounterAnim | Contadores animados | `[data-counter]` |
+| CardTilt | Cards se inclinan con el pointer | `[data-tilt]` |
+| SmoothScroll | Scroll suave con offset del nav | `a[href^="#"]` |
+| FadeThrough | Secciones aparecen con fade | `[data-fade-section]` |
+
+---
+
+## Testimonios
+
+Para agregar testimonios reales, edita las claves `testimonials.items.N.*` en `i18n.js`:
+
+```js
+'testimonials.items.0.quote': '"Texto del testimonio."',
+'testimonials.items.0.name':  'Nombre Apellido',
+'testimonials.items.0.role':  'Cargo, Empresa',
+'testimonials.items.0.initials': 'NA',
+```
+
+Si no hay ninguna clave `testimonials.items.0.quote`, la sección se oculta automáticamente.
+
+---
+
+## Casos de estudio (proyectos)
+
+Las páginas detalladas están en `projects/`:
+
+```
+projects/
+├── rpa-invoice-automation.html
+├── data-analytics-dashboard.html
+├── ebx-mdm-hub.html
+└── data-quality-observability.html
+```
+
+Cada página usa Bootstrap + `assets/css/project-detail.css` y `assets/js/i18n.js`.  
+Edita los textos en `i18n.js` bajo las claves `projects.rpa.*`, `projects.analytics.*`, `projects.mdm.*`, `projects.quality.*`.
+
+---
+
+## Proyectos personales (en desarrollo)
+
+Repositorios en `E:/ProyectosPersonales/` que darán contenido real a los casos de estudio:
+
+| Repo | Descripción | Integración portfolio |
+|------|-------------|----------------------|
+| `pumas-data-hub` | MDM hub para datos de Pumas / Liga MX con metodología EBX | Reemplazará el caso "MDM Hub" |
+| `liga-mx-analytics` | Pipeline + Power BI para estadísticas Liga MX | Reemplazará el caso "Power BI Dashboard" |
+| `gaming-stats-pipeline` | ETL + SQL para stats de FIFA, Rocket League, Marvel Rivals | Caso nuevo |
+| `futbol-data-quality` | Observabilidad y calidad de datos deportivos con GE + Airflow | Reemplazará el caso "Data Observability" |
+
+Para crear los repos remotos en GitHub:
+```bash
+# Ejecutar dentro de cada carpeta de proyecto
+gh repo create MarioUNAM/<nombre-repo> --public --source=. --push
+# O sin gh CLI:
+# 1. Crear el repo en github.com/new
+# 2. git push -u origin main
+```
+
+---
+
+## Despliegue
+
+El sitio es estático. Cualquier push a `main` se despliega automáticamente via GitHub Pages.
+
+```bash
+git add .
+git commit -m "descripción del cambio"
+git push origin main
+```
+
+---
 
 ## Ejecución local
 
-El sitio es completamente estático. Puedes revisarlo localmente de dos maneras:
-
-1. **Abrir directamente el archivo:** haz doble clic en `index.html` o ábrelo con tu navegador preferido.
-2. **Servirlo con un servidor simple:** desde la raíz del repositorio ejecuta
-   ```bash
-   python3 -m http.server 8000
-   ```
-   Luego visita <http://localhost:8000> en tu navegador.
-
-## Configuración del formulario de contacto
-
-La integración con servicios como Formspree requiere definir el endpoint del formulario y las URL de redirección. Por limitaciones de red en el entorno de desarrollo automatizado no fue posible iniciar sesión en Formspree ni validar el identificador `xwkgozkj`; deberás crear o verificar el formulario manualmente antes de desplegar.
-
-1. Crea un formulario nuevo en [Formspree](https://formspree.io/) (u otro servicio equivalente) y copia su endpoint seguro, por ejemplo `https://formspree.io/f/tuHashNuevo`.
-2. Actualiza `assets/js/contact-config.js` asignando el valor del endpoint en `endpoint`. Si tu servicio utiliza URL personalizadas para redirecciones de éxito o error, también puedes modificar `successRedirect` y `errorRedirect`.
-3. Abre `index.html` y confirma que el botón “Send message” aparece habilitado; si el endpoint está vacío, el botón permanecerá deshabilitado y se mostrará un mensaje de configuración pendiente.
-4. Verifica el flujo de redirección ejecutando el servidor de simulación local y enviando una petición de prueba:
-   ```bash
-   node scripts/mock-formspree.js &
-   curl -i -X POST "http://localhost:8787" \
-     -H "Content-Type: application/x-www-form-urlencoded" \
-     -d "name=Test&email=test@example.com&subject=Hi&_redirect=contact-success.html?status=success&_error=contact-error.html?status=error"
-   ```
-   El mock responde con un estado `303` y redirige según los valores enviados. Finaliza el servidor con `Ctrl+C` al terminar.
-5. Para simular un error de validación, añade `?forceError=1` a la URL en `curl`; el mock redirigirá hacia la página de error definida.
-
-### Rotación del hash o credenciales del formulario
-
-- **Cambiar el endpoint:** actualiza `assets/js/contact-config.js` con el nuevo hash y vuelve a desplegar. El sitio deshabilita el botón automáticamente cuando falta configuración válida.
-- **Limpiar caches:** al rotar la clave, borra caché del navegador o utiliza una ventana privada para asegurarte de que el formulario carga la nueva configuración.
-- **Verificar respuestas:** utiliza el comando `curl` anterior (reemplazando el endpoint real) o las herramientas de pruebas que ofrezca tu proveedor para confirmar que obtienes una respuesta `200/303` antes de compartir el formulario.
-- **Actualizar traducciones:** si cambias los mensajes de éxito o error en `assets/js/i18n.js`, traduce las versiones en inglés y español para mantener la paridad entre idiomas.
-
-## Publicación con GitHub Pages
-
-1. Asegúrate de que los cambios estén confirmados y enviados al repositorio `MarioUNAM/MarioUNAM.github.io` en la rama `main`.
-2. En la configuración del repositorio en GitHub, activa GitHub Pages apuntando a la rama `main` (carpeta `/`).
-3. Tras cada push, GitHub Pages desplegará automáticamente la versión más reciente. El sitio quedará disponible en `https://mariounam.github.io/`.
-
-## Actualizaciones y mantenimiento
-
-- **Agregar nuevos proyectos:** duplica las secciones correspondientes en `index.html` y actualiza las imágenes en `assets/img/`.
-- **Actualizar dependencias:** si deseas cambiar versiones de Bootstrap, jQuery u otros plugins, reemplaza los archivos dentro de `assets/` y prueba el sitio localmente.
-- **Scripts adicionales:** coloca nuevos scripts en `assets/js/` y enlázalos en la sección `<head>` o antes del cierre de `</body>` de `index.html`.
-- **Contenido de plantillas:** para mantener historial y créditos, conserva los archivos `LICENSE.txt` y `README` incluidos en las carpetas de plantillas.
-
-## Recomendaciones de accesibilidad
-
-- **Navegación por teclado mejorada:** incorporar un enlace de “Saltar al contenido”, revisar el orden de tabulación en modales y asegurar que todos los controles visibles reciben un estilo `:focus-visible` coherente para usuarios que navegan sin ratón.
-- **Modo de alto contraste:** ofrecer un selector de contraste independiente (o integrado con el cambio de idioma) que incremente la relación de contraste de textos y elementos interactivos, además de documentar los colores alternativos en `assets/css/style.css` para futuros mantenimientos.
-
-## Créditos y licencias
-
-- Los recursos de terceros (Bootstrap, jQuery, Font Awesome, Slick, etc.) mantienen sus respectivas licencias. Consulta la documentación oficial de cada proyecto para detalles de uso.
-- Las carpetas `template1/`, `template2/` y `template3/` incluyen licencias o notas (`LICENSE.txt`, `README.txt`) provenientes de los autores originales. Revísalas antes de redistribuir o modificar sus activos.
-- El contenido propio (textos, imágenes personalizadas y proyectos) está sujeto a los derechos de Mario Huarte Nolasco.
-
-## Buenas prácticas de edición
-
-- Verifica los resultados en un navegador y en dispositivos móviles después de cada cambio.
-- Usa commits descriptivos y revisa que el archivo `README.md` se visualice correctamente en GitHub (encabezados con `#`, listas con `-` o numeradas, y bloques de código con triple acento grave).
-- Para reportar issues o proponer mejoras, utiliza el sistema de issues de GitHub.
-
+```bash
+cd E:/GitHub/MarioUNAM.github.io
+python -m http.server 8080
+# Abrir http://localhost:8080
+```

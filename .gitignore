@@ -1,0 +1,21 @@
+# Claude Code internal files
+.claude/
+
+# OS
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Editor
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Node (if ever needed)
+node_modules/
+npm-debug.log*
+
+# Build output
+dist/
+build/

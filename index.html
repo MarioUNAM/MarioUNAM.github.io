@@ -254,10 +254,11 @@
       <div class="space-y-4">
         <span class="font-label text-primary text-sm tracking-[0.2em] uppercase font-bold flex items-center gap-3">
           <span class="w-8 h-[1px] bg-primary/40 inline-block"></span>
-          The Precision Architect
+          <span data-i18n="about.label">The Precision Architect</span>
         </span>
         <h2 class="text-5xl lg:text-6xl font-headline font-extrabold tracking-tighter text-on-surface leading-[0.95]">
-          Engineering <br /><span class="text-primary/90">Identity &amp; Control.</span>
+          <span data-i18n="about.heading.line1">Engineering</span><br />
+          <span class="text-primary/90" data-i18n="about.heading.accent">Identity &amp; Control.</span>
         </h2>
       </div>
       <p class="text-lg text-on-surface-variant font-body leading-relaxed max-w-2xl" data-i18n="about.bio">
@@ -365,7 +366,7 @@
         <span class="w-8 h-[1px] bg-primary/40 inline-block"></span>
         <span data-i18n="nav.skills">Skills</span>
       </span>
-      <h2 class="text-4xl md:text-5xl font-headline font-extrabold tracking-tighter text-on-surface">Tech Stack.</h2>
+      <h2 class="text-4xl md:text-5xl font-headline font-extrabold tracking-tighter text-on-surface" data-i18n="skills.heading">Tech Stack.</h2>
     </div>
 
     <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
@@ -388,14 +389,14 @@
       <div class="bg-surface-container-low p-8 reveal">
         <h3 class="font-label text-xs font-bold tracking-[0.2em] uppercase text-on-surface-variant mb-6 flex items-center gap-2">
           <span class="w-2 h-[2px] bg-secondary inline-block"></span>
-          Ecosystem &amp; Tools
+          <span data-i18n="skills.ecosystem.title">Ecosystem &amp; Tools</span>
         </h3>
         <ul role="list" aria-label="Ecosystem and tools" class="flex flex-wrap gap-3">
           <li><span class="skill-pill-secondary">SnapLogic</span></li>
           <li><span class="skill-pill-secondary" data-i18n="skills.technical.powerbi">Power BI</span></li>
+          <li><span class="skill-pill-secondary">Databricks</span></li>
           <li><span class="skill-pill-secondary">Spring Boot</span></li>
-          <li><span class="skill-pill-secondary">Azure ML</span></li>
-          <li><span class="skill-pill-secondary">Airflow</span></li>
+          <li><span class="skill-pill-secondary">Azure</span></li>
         </ul>
       </div>
 
@@ -403,13 +404,13 @@
       <div class="bg-surface-container-low p-8 reveal">
         <h3 class="font-label text-xs font-bold tracking-[0.2em] uppercase text-on-surface-variant mb-6 flex items-center gap-2">
           <span class="w-2 h-[2px] bg-on-surface-variant inline-block"></span>
-          Governance &amp; Strategy
+          <span data-i18n="skills.governance.title">Governance &amp; Strategy</span>
         </h3>
         <ul role="list" aria-label="Governance and strategy skills" class="flex flex-wrap gap-3">
-          <li><span class="skill-pill-secondary italic">Data Governance</span></li>
-          <li><span class="skill-pill-secondary italic">Data Quality</span></li>
-          <li><span class="skill-pill-secondary italic">Data Stewardship</span></li>
-          <li><span class="skill-pill-secondary italic">AI Data Governance</span></li>
+          <li><span class="skill-pill-secondary italic" data-i18n="skills.gov.governance">Data Governance</span></li>
+          <li><span class="skill-pill-secondary italic" data-i18n="skills.gov.quality">Data Quality</span></li>
+          <li><span class="skill-pill-secondary italic" data-i18n="skills.gov.stewardship">Data Stewardship</span></li>
+          <li><span class="skill-pill-secondary italic" data-i18n="skills.gov.integration">Data Integration</span></li>
         </ul>
       </div>
     </div>
@@ -430,7 +431,7 @@
         <span data-i18n="nav.history">Experience</span>
       </span>
       <h2 class="text-4xl md:text-5xl font-headline font-extrabold tracking-tighter text-on-surface">
-        Professional <span class="text-primary">Journey.</span>
+        <span data-i18n="exp.heading">Professional</span> <span class="text-primary" data-i18n="exp.heading.accent">Journey.</span>
       </h2>
     </div>
 
@@ -441,17 +442,21 @@
       <li class="relative group reveal">
         <div class="absolute -left-[37px] top-0 w-4 h-4 rounded-full bg-primary shadow-[0_0_15px_rgba(76,214,251,0.6)] border-4 border-surface-container-low z-10 timeline-node-active"></div>
         <div class="bg-surface p-8 transition-all duration-300 hover:bg-surface-container-high hover:-translate-y-1">
-          <time datetime="2023-08" class="font-label text-primary text-sm font-bold tracking-widest uppercase mb-2 block">Aug 2023 – Present</time>
-          <h3 class="font-headline font-bold text-2xl text-on-surface mb-1">MDM Consultant | TIBCO EBX Developer</h3>
+          <time datetime="2021-12" class="font-label text-primary text-sm font-bold tracking-widest uppercase mb-2 block" data-i18n="exp.r1.date">Dec 2021 – Present</time>
+          <h3 class="font-headline font-bold text-2xl text-on-surface mb-1" data-i18n="exp.r1.title">Data Consultant Jr.</h3>
           <p class="font-label text-tertiary font-medium mb-6">Alldatum Business</p>
           <ul class="space-y-3 font-body text-on-surface-variant list-none">
             <li class="flex gap-3">
               <span class="material-symbols-outlined text-primary text-sm mt-1 shrink-0">check_circle</span>
-              <span>Orchestrating complex MDM solutions using TIBCO EBX for enterprise-scale data governance across multiple client verticals.</span>
+              <span data-i18n="exp.r1.b1">Delivered MDM solutions with TIBCO EBX: support, data modeling, and performance optimization for enterprise clients.</span>
             </li>
             <li class="flex gap-3">
               <span class="material-symbols-outlined text-primary text-sm mt-1 shrink-0">check_circle</span>
-              <span>Developing custom Java extensions and API integrations to streamline data workflows and deliver a $2.5M automation portfolio.</span>
+              <span data-i18n="exp.r1.b2">Developed Java customizations using the EBX API to automate workflows and integrate with external systems.</span>
+            </li>
+            <li class="flex gap-3">
+              <span class="material-symbols-outlined text-primary text-sm mt-1 shrink-0">check_circle</span>
+              <span data-i18n="exp.r1.b3">Performed data analysis and visualization to support decision-making across client engagements.</span>
             </li>
           </ul>
         </div>
@@ -461,17 +466,17 @@
       <li class="relative group reveal">
         <div class="absolute -left-[37px] top-0 w-4 h-4 rounded-full bg-outline-variant border-4 border-surface-container-low z-10 group-hover:bg-primary transition-colors"></div>
         <div class="bg-surface p-8 transition-all duration-300 hover:bg-surface-container-high hover:-translate-y-1">
-          <time datetime="2021-12" class="font-label text-on-surface-variant text-sm font-bold tracking-widest uppercase mb-2 block">Dec 2021 – Aug 2023</time>
-          <h3 class="font-headline font-bold text-2xl text-on-surface mb-1">Intern MDM Consultant</h3>
-          <p class="font-label text-tertiary font-medium mb-6">Alldatum Business</p>
+          <time datetime="2020-01" class="font-label text-on-surface-variant text-sm font-bold tracking-widest uppercase mb-2 block" data-i18n="exp.r2.date">Jan 2020 – Dec 2021</time>
+          <h3 class="font-headline font-bold text-2xl text-on-surface mb-1" data-i18n="exp.r2.title">Instructor &amp; Teaching Assistant</h3>
+          <p class="font-label text-tertiary font-medium mb-6">PROTECO — UNAM</p>
           <ul class="space-y-3 font-body text-on-surface-variant list-none">
             <li class="flex gap-3">
               <span class="material-symbols-outlined text-primary text-sm mt-1 shrink-0">check_circle</span>
-              <span>Supported implementation of data stewardship policies and quality controls. Delivered 40+ SnapLogic integrations in production.</span>
+              <span data-i18n="exp.r2.b1">Co-designed and delivered Python, Linux, and networking bootcamps for 40+ engineering students.</span>
             </li>
             <li class="flex gap-3">
               <span class="material-symbols-outlined text-primary text-sm mt-1 shrink-0">check_circle</span>
-              <span>SQL database optimization and technical documentation for MDM deployments — achieved 80% cycle-time reduction on RPA automation.</span>
+              <span data-i18n="exp.r2.b2">Mentored peers in lesson planning, public speaking, and collaborative problem solving.</span>
             </li>
           </ul>
         </div>
@@ -493,7 +498,7 @@
         <span class="font-label text-xs font-bold tracking-[0.2em] text-primary uppercase" data-i18n="nav.caseStudies">Case Studies</span>
       </div>
       <h2 class="text-5xl md:text-7xl font-headline font-extrabold tracking-tighter text-on-surface">
-        Applied <span class="text-primary">Methodology.</span>
+        <span data-i18n="cs.heading">Applied</span> <span class="text-primary" data-i18n="cs.heading.accent">Methodology.</span>
       </h2>
     </header>
     <!-- Disclaimer -->
@@ -595,7 +600,7 @@
         <span class="w-8 h-[1px] bg-primary/40 inline-block"></span>
         <span data-i18n="nav.certifications">Certifications</span>
       </span>
-      <h2 class="text-4xl md:text-5xl font-headline font-extrabold tracking-tighter text-on-surface">Validated <span class="text-primary">Credentials.</span></h2>
+      <h2 class="text-4xl md:text-5xl font-headline font-extrabold tracking-tighter text-on-surface"><span data-i18n="cert.heading">Validated</span> <span class="text-primary" data-i18n="cert.heading.accent">Credentials.</span></h2>
     </div>
     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 reveal-stagger">
       <div class="cert-card group">
@@ -687,16 +692,16 @@
         <div class="journey-node"></div>
         <div class="journey-card">
           <p class="journey-card-title" data-i18n="journey.m4.title">MDM Specialist</p>
-          <p class="journey-card-desc" data-i18n="journey.m4.desc">EBX governance specialist — 18% SLA improvement, $2.5M automation portfolio.</p>
+          <p class="journey-card-desc" data-i18n="journey.m4.desc">Became the team's reference for EBX data modeling, governance workflows, and Java customizations.</p>
         </div>
       </div>
       <!-- Milestone 5 (active) -->
       <div class="journey-item active">
-        <p class="journey-year" data-i18n="journey.m5.year">2024</p>
+        <p class="journey-year" data-i18n="journey.m5.year">2023</p>
         <div class="journey-node"></div>
         <div class="journey-card">
-          <p class="journey-card-title" data-i18n="journey.m5.title">AI Enablement</p>
-          <p class="journey-card-desc" data-i18n="journey.m5.desc">Azure ML, MLflow, and generative AI governance frameworks — building what comes next.</p>
+          <p class="journey-card-title" data-i18n="journey.m5.title">Graduate &amp; Certified</p>
+          <p class="journey-card-desc" data-i18n="journey.m5.desc">Graduated UNAM Computer Engineering and earned AZ-900, Google Data Analytics, SnapLogic, and a 240-hr leadership diploma.</p>
         </div>
       </div>
     </div>
@@ -775,7 +780,7 @@
   <div class="max-w-7xl mx-auto">
     <div class="max-w-3xl mx-auto text-center mb-20 reveal">
       <h2 class="font-headline font-extrabold text-5xl md:text-7xl tracking-tighter text-on-surface mb-6">
-        Let's Build the <span class="text-primary">Next Architecture.</span>
+        <span data-i18n="contact.heading">Let's Build the</span> <span class="text-primary" data-i18n="contact.heading.accent">Next Architecture.</span>
       </h2>
       <p class="font-body text-on-surface-variant text-lg max-w-2xl mx-auto leading-relaxed" data-i18n="contact.form.description">
         Whether you need a full-scale MDM implementation or a robust technical consultation, my inbox is open.
@@ -828,60 +833,32 @@
         </div>
       </div>
 
-      <!-- Form -->
-      <div class="lg:col-span-7 bg-surface p-8 md:p-12 reveal-right">
-        <form id="contact-form" class="space-y-7" method="POST" action="https://formspree.io/f/xwkgozkj" novalidate>
-          <input type="hidden" name="_redirect" value="contact-success.html?status=success" />
-          <input type="hidden" name="_error"    value="contact-error.html?status=error" />
+      <!-- Direct contact CTAs -->
+      <div class="lg:col-span-7 reveal-right flex flex-col justify-center gap-6">
+        <p class="font-body text-on-surface-variant text-lg leading-relaxed" data-i18n="contact.cta.intro">
+          The fastest way to reach me is directly. Pick your preferred channel below.
+        </p>
 
-          <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div class="space-y-2">
-              <label class="font-label text-xs font-bold text-outline uppercase tracking-widest" for="c-name" data-i18n="contact.form.nameLabel">Name</label>
-              <input id="c-name" name="name" type="text" required autocomplete="name"
-                class="w-full bg-surface-container-highest border-none focus:ring-2 focus:ring-primary/20 text-on-surface font-body p-4 placeholder:text-outline transition-all"
-                data-i18n-attrs="placeholder:contact.form.namePlaceholder" placeholder="Your name" />
-              <span class="sr-only" role="alert" aria-live="polite" id="c-name-error"></span>
-            </div>
-            <div class="space-y-2">
-              <label class="font-label text-xs font-bold text-outline uppercase tracking-widest" for="c-email" data-i18n="contact.form.emailLabel">Email</label>
-              <input id="c-email" name="email" type="email" required autocomplete="email"
-                class="w-full bg-surface-container-highest border-none focus:ring-2 focus:ring-primary/20 text-on-surface font-body p-4 placeholder:text-outline transition-all"
-                data-i18n-attrs="placeholder:contact.form.emailPlaceholder" placeholder="you@example.com" />
-              <span class="text-xs text-error font-label mt-1 hidden" role="alert" id="c-email-error"></span>
-            </div>
-          </div>
+        <a href="mailto:mario_huarte@outlook.com?subject=Portfolio%20Contact" data-magnetic
+           class="btn-primary group text-base py-5 px-8 justify-center">
+          <span class="material-symbols-outlined text-xl">alternate_email</span>
+          <span data-i18n="contact.cta.email">mario_huarte@outlook.com</span>
+          <span class="material-symbols-outlined text-base group-hover:translate-x-1 transition-transform ml-auto">arrow_forward</span>
+        </a>
 
-          <!-- Query type (UX agent recommendation: replaces subject) -->
-          <div class="space-y-2">
-            <label class="font-label text-xs font-bold text-outline uppercase tracking-widest" for="c-query" data-i18n="contact.form.queryLabel">Type of enquiry</label>
-            <select id="c-query" name="query"
-              class="w-full bg-surface-container-highest border-none focus:ring-2 focus:ring-primary/20 text-on-surface font-body p-4 transition-all">
-              <option value="freelance"  data-i18n="contact.form.query.freelance">Freelance project</option>
-              <option value="job"        data-i18n="contact.form.query.job">Job position</option>
-              <option value="networking" data-i18n="contact.form.query.networking">Networking</option>
-              <option value="other"      data-i18n="contact.form.query.other">Other</option>
-            </select>
-          </div>
+        <a href="https://www.linkedin.com/in/mario-huarte-nolasco-874436202/" target="_blank" rel="noopener noreferrer" data-magnetic
+           class="btn-outline group text-base py-5 px-8 justify-center">
+          <svg class="w-5 h-5 shrink-0" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+            <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 01-2.063-2.065 2.064 2.064 0 112.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/>
+          </svg>
+          <span data-i18n="contact.cta.linkedin">Connect on LinkedIn</span>
+          <span class="material-symbols-outlined text-base group-hover:translate-x-1 transition-transform ml-auto">open_in_new</span>
+        </a>
 
-          <div class="space-y-2">
-            <label class="font-label text-xs font-bold text-outline uppercase tracking-widest" for="c-message" data-i18n="contact.form.messageLabel">Message</label>
-            <textarea id="c-message" name="message" rows="5" required
-              class="w-full bg-surface-container-highest border-none focus:ring-2 focus:ring-primary/20 text-on-surface font-body p-4 placeholder:text-outline transition-all resize-none"
-              data-i18n-attrs="placeholder:contact.form.messagePlaceholder" placeholder="Describe the project or initiative..."></textarea>
-            <p class="text-right text-xs font-label text-outline" id="c-msg-count">0 / 500</p>
-          </div>
-
-          <div class="flex flex-col sm:flex-row gap-4 items-start">
-            <button type="submit" data-magnetic class="btn-primary group">
-              <span data-i18n="contact.form.submit">Send message</span>
-              <span class="material-symbols-outlined text-lg group-hover:translate-x-1 transition-transform">send</span>
-            </button>
-            <div class="space-y-2 text-sm hidden" id="form-alerts">
-              <div class="text-green-400 font-label text-xs hidden" id="form-success" role="status" aria-live="polite" data-i18n="contact.form.success"></div>
-              <div class="text-error font-label text-xs hidden" id="form-error" role="alert" aria-live="assertive" data-i18n="contact.form.error"></div>
-            </div>
-          </div>
-        </form>
+        <div class="flex items-center gap-4 pt-4 border-t border-outline-variant/20">
+          <span class="font-label text-xs text-outline uppercase tracking-widest" data-i18n="contact.cta.or">Or find me on</span>
+          <a href="https://github.com/MarioUNAM" target="_blank" rel="noopener" class="font-label text-xs text-on-surface-variant hover:text-primary transition-colors uppercase tracking-wider">GitHub</a>
+        </div>
       </div>
     </div>
   </div>
@@ -1059,7 +1036,7 @@
     });
 
     /* ── Typing effect ───────────────────────────────────── */
-    var phrases = ['MDM Specialist','TIBCO EBX Developer','Java Engineer','Data Governance Architect'];
+    var phrases = ['MDM Consultant','TIBCO EBX Developer','Java Developer','Data Consultant'];
     var pi=0, ci=0, del=false;
     var tgt = document.getElementById('typing-target');
     function type(){
@@ -1105,31 +1082,6 @@
             '</div>'+
           '</div>';
         grid.appendChild(card);
-      });
-    }
-
-    /* ── Contact: char counter + inline email validation ─── */
-    var msgEl  = document.getElementById('c-message');
-    var cntEl  = document.getElementById('c-msg-count');
-    var emailEl = document.getElementById('c-email');
-    var emailErr = document.getElementById('c-email-error');
-
-    if(msgEl && cntEl){
-      msgEl.addEventListener('input', function(){
-        cntEl.textContent = msgEl.value.length + ' / 500';
-        if(msgEl.value.length > 500) msgEl.value = msgEl.value.slice(0,500);
-      });
-    }
-
-    if(emailEl && emailErr){
-      emailEl.addEventListener('blur', function(){
-        if(emailEl.value && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(emailEl.value)){
-          emailErr.textContent='Please enter a valid email.';
-          emailErr.classList.remove('hidden');
-        } else {
-          emailErr.textContent='';
-          emailErr.classList.add('hidden');
-        }
       });
     }
 

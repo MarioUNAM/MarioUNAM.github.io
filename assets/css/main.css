@@ -983,6 +983,22 @@ body, body * {
 :root:not(.dark) ::-webkit-scrollbar-track { background: var(--surface-container-low); }
 :root:not(.dark) ::-webkit-scrollbar-thumb { background: var(--surface-container-high); }
 
+:root:not(.dark) .cert-card {
+  background: var(--surface-container-low);
+  border: 1px solid var(--outline-variant);
+}
+:root:not(.dark) .cert-card:hover {
+  background: var(--surface-container);
+  box-shadow: 0 20px 40px rgba(0,0,0,0.08);
+}
+:root:not(.dark) .cert-card .cert-icon {
+  background: rgba(0,153,194,0.08);
+  border-color: rgba(0,153,194,0.2);
+}
+:root:not(.dark) .cert-card:hover .cert-icon {
+  border-color: rgba(0,153,194,0.45);
+}
+
 /* ══════════════════════════════════════════════════════════
    SCREEN READER LIVE REGION (theme announce)
    ══════════════════════════════════════════════════════════ */

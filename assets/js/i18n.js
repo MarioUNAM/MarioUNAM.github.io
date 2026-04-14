@@ -333,8 +333,13 @@
       'about.stat.degree': 'Computer Engineer',
       'about.stat.university': 'UNAM Graduate',
 
-      // About bio (rewritten)
-      'about.bio': "I'm a Computer Engineer from UNAM who ended up where data gets difficult — the intersection of business rules, legacy systems, and the quiet organizational politics that decide whether a master data program survives its first year. At Alldatum Business I've spent four years doing MDM consulting with TIBCO EBX and integration work with SnapLogic, which means I've seen the same data quality crisis from enough angles to stop being surprised by it. What sets me apart from a developer who also knows data tools is that I care about governance as a design discipline: who owns a record, under what rules, and what happens when the rules change at 4 PM on a Friday. I'm based in CDMX, fluent in English and Spanish, and currently expanding into AI data governance — because the models are only as trustworthy as the pipelines feeding them.",
+      // About section labels & headings
+      'about.label': 'The Precision Architect',
+      'about.heading.line1': 'Engineering',
+      'about.heading.accent': 'Identity & Control.',
+
+      // About bio — aligned to CV (no AI claims)
+      'about.bio': "I'm a Computer Engineer from UNAM who ended up where data gets difficult — at the intersection of business rules, legacy systems, and the quiet organizational politics that decide whether a master data program survives its first year. At Alldatum Business I've spent 3+ years doing MDM consulting with TIBCO EBX, developing Java customizations via the EBX API, and wiring SnapLogic integrations that connect SAP, Salesforce, and on-prem sources. I care about data governance as a design discipline: who owns a record, under what rules, and what happens when those rules change. Fluent in English and Spanish. Based in CDMX.",
 
       // Philosophy section
       'philosophy.headline': 'Precision Over Noise.',
@@ -396,7 +401,51 @@
 
       // Testimonials section titles
       'testimonials.sectionTitle': 'What People Say',
-      'testimonials.sectionSubtitle': 'Recommendations from managers and collaborators.'
+      'testimonials.sectionSubtitle': 'Recommendations from managers and collaborators.',
+
+      // Skills section labels
+      'skills.heading': 'Tech Stack.',
+      'skills.ecosystem.title': 'Ecosystem & Tools',
+      'skills.governance.title': 'Governance & Strategy',
+      'skills.gov.governance': 'Data Governance',
+      'skills.gov.quality': 'Data Quality',
+      'skills.gov.stewardship': 'Data Stewardship',
+      'skills.gov.integration': 'Data Integration',
+
+      // Experience section
+      'exp.heading': 'Professional',
+      'exp.heading.accent': 'Journey.',
+      'exp.r1.date': 'Dec 2021 – Present',
+      'exp.r1.title': 'Data Consultant Jr.',
+      'exp.r1.b1': 'Delivered MDM solutions with TIBCO EBX: support, data modeling, and performance optimization for enterprise clients.',
+      'exp.r1.b2': 'Developed Java customizations using the EBX API to automate workflows and integrate with external systems.',
+      'exp.r1.b3': 'Performed data analysis and visualization to support decision-making across client engagements.',
+      'exp.r2.date': 'Jan 2020 – Dec 2021',
+      'exp.r2.title': 'Instructor & Teaching Assistant',
+      'exp.r2.b1': 'Co-designed and delivered Python, Linux, and networking bootcamps for 40+ engineering students.',
+      'exp.r2.b2': 'Mentored peers in lesson planning, public speaking, and collaborative problem solving.',
+
+      // Case studies headings
+      'cs.heading': 'Applied',
+      'cs.heading.accent': 'Methodology.',
+
+      // Certifications heading
+      'cert.heading': 'Validated',
+      'cert.heading.accent': 'Credentials.',
+
+      // Journey m4 & m5 (CV-accurate)
+      'journey.m4.desc': 'Became the team\'s reference for EBX data modeling, governance workflows, and Java customizations.',
+      'journey.m5.year': '2023',
+      'journey.m5.title': 'Graduate & Certified',
+      'journey.m5.desc': 'Graduated UNAM Computer Engineering and earned AZ-900, Google Data Analytics, SnapLogic, and a 240-hr leadership diploma.',
+
+      // Contact heading & CTAs (replaces form)
+      'contact.heading': "Let's Build the",
+      'contact.heading.accent': 'Next Architecture.',
+      'contact.cta.intro': 'The fastest way to reach me is directly. Pick your preferred channel below.',
+      'contact.cta.email': 'mario_huarte@outlook.com',
+      'contact.cta.linkedin': 'Connect on LinkedIn',
+      'contact.cta.or': 'Or find me on'
     },
     es: {
       'meta.title': 'MAHUNO',
@@ -731,7 +780,12 @@
       'about.stat.degree': 'Ingeniero en computación',
       'about.stat.university': 'Egresado UNAM',
 
-      // Bio ampliada (about)
+      // Etiquetas y encabezado de about
+      'about.label': 'El Arquitecto de Precisión',
+      'about.heading.line1': 'Ingeniería,',
+      'about.heading.accent': 'Identidad y Control.',
+
+      // Bio ampliada (about) — alineada al CV (sin menciones de IA)
       'about.bio': 'Soy ingeniero en computación por la UNAM que terminó donde los datos se complican — en la intersección de las reglas de negocio, los sistemas heredados y la política organizacional silenciosa que decide si un programa de datos maestros sobrevive su primer año. En Alldatum Business llevo cuatro años haciendo consultoría MDM con TIBCO EBX e integración con SnapLogic, lo que significa que he visto la misma crisis de calidad de datos desde suficientes ángulos como para dejar de sorprenderme. Lo que me distingue de un desarrollador que también conoce herramientas de datos es que me importa el gobierno como disciplina de diseño: quién es dueño de un registro, bajo qué reglas, y qué pasa cuando las reglas cambian a las 4 PM de un viernes. Vivo en la CDMX, trabajo en inglés y español, y actualmente me estoy especializando en gobierno de datos para IA — porque los modelos solo son confiables si los pipelines que los alimentan también lo son.',
 
       // Filosofía
@@ -791,7 +845,51 @@
 
       // Testimonios (títulos de sección)
       'testimonials.sectionTitle': 'Lo que dicen',
-      'testimonials.sectionSubtitle': 'Recomendaciones de líderes y colaboradores.'
+      'testimonials.sectionSubtitle': 'Recomendaciones de líderes y colaboradores.',
+
+      // Skills (encabezados)
+      'skills.heading': 'Stack Tecnológico.',
+      'skills.ecosystem.title': 'Ecosistema y Herramientas',
+      'skills.governance.title': 'Gobierno y Estrategia',
+      'skills.gov.governance': 'Gobierno de datos',
+      'skills.gov.quality': 'Calidad de datos',
+      'skills.gov.stewardship': 'Stewardship de datos',
+      'skills.gov.integration': 'Integración de datos',
+
+      // Experiencia
+      'exp.heading': 'Trayectoria',
+      'exp.heading.accent': 'Profesional.',
+      'exp.r1.date': 'Dic 2021 – Presente',
+      'exp.r1.title': 'Consultor de Datos Jr.',
+      'exp.r1.b1': 'Entregué soluciones MDM con TIBCO EBX: soporte, modelado de datos y optimización del rendimiento para clientes empresariales.',
+      'exp.r1.b2': 'Desarrollé personalizaciones Java con la API de EBX para automatizar flujos y conectar sistemas externos.',
+      'exp.r1.b3': 'Realicé análisis de datos y visualización para apoyar la toma de decisiones en cada proyecto.',
+      'exp.r2.date': 'Ene 2020 – Dic 2021',
+      'exp.r2.title': 'Instructor y Asistente Docente',
+      'exp.r2.b1': 'Codiseñé e impartí bootcamps de Python, Linux y redes para 40+ estudiantes de ingeniería.',
+      'exp.r2.b2': 'Mentoré a compañeros en planeación de clases, oratoria y resolución colaborativa de problemas.',
+
+      // Casos de estudio (encabezados)
+      'cs.heading': 'Metodología',
+      'cs.heading.accent': 'Aplicada.',
+
+      // Certificaciones (encabezados)
+      'cert.heading': 'Credenciales',
+      'cert.heading.accent': 'Validadas.',
+
+      // Journey m4 & m5 (alineados al CV)
+      'journey.m4.desc': 'Se convirtió en la referencia del equipo para modelado de datos EBX, flujos de gobernanza y personalizaciones Java.',
+      'journey.m5.year': '2023',
+      'journey.m5.title': 'Egreso y Certificaciones',
+      'journey.m5.desc': 'Egresó de Ingeniería en Computación UNAM y obtuvo AZ-900, Google Data Analytics, SnapLogic y diplomado de liderazgo de 240 hrs.',
+
+      // Contacto (reemplaza formulario)
+      'contact.heading': 'Construyamos la',
+      'contact.heading.accent': 'Próxima Arquitectura.',
+      'contact.cta.intro': 'La forma más rápida de contactarme es de manera directa. Elige tu canal preferido.',
+      'contact.cta.email': 'mario_huarte@outlook.com',
+      'contact.cta.linkedin': 'Conectar en LinkedIn',
+      'contact.cta.or': 'O encuéntrame en'
     }
   };
 

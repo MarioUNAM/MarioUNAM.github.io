@@ -104,8 +104,9 @@
       <a href="#about"        class="nav-link text-on-surface-variant hover:text-on-surface transition-colors" data-section="about"        data-i18n="nav.about">About</a>
       <a href="#philosophy"   class="nav-link text-on-surface-variant hover:text-on-surface transition-colors" data-section="philosophy"   data-i18n="nav.philosophy">Philosophy</a>
       <a href="#skills"       class="nav-link text-on-surface-variant hover:text-on-surface transition-colors" data-section="skills"       data-i18n="nav.skills">Skills</a>
-      <a href="#case-studies" class="nav-link text-on-surface-variant hover:text-on-surface transition-colors" data-section="case-studies" data-i18n="nav.caseStudies">Case Studies</a>
-      <a href="#journey"      class="nav-link text-on-surface-variant hover:text-on-surface transition-colors" data-section="journey"      data-i18n="nav.journey">Journey</a>
+      <a href="#case-studies"  class="nav-link text-on-surface-variant hover:text-on-surface transition-colors" data-section="case-studies"  data-i18n="nav.caseStudies">Case Studies</a>
+      <a href="#ui-showcases"  class="nav-link text-on-surface-variant hover:text-on-surface transition-colors" data-section="ui-showcases">UI Lab</a>
+      <a href="#journey"       class="nav-link text-on-surface-variant hover:text-on-surface transition-colors" data-section="journey"      data-i18n="nav.journey">Journey</a>
       <a href="#contact"      class="nav-link text-on-surface-variant hover:text-on-surface transition-colors" data-section="contact"      data-i18n="nav.contact">Contact</a>
     </div>
 
@@ -147,8 +148,9 @@
   <a href="#about"        class="mobile-nav-link text-on-surface-variant hover:text-primary transition-colors" data-i18n="nav.about">About</a>
   <a href="#philosophy"   class="mobile-nav-link text-on-surface-variant hover:text-primary transition-colors" data-i18n="nav.philosophy">Philosophy</a>
   <a href="#skills"       class="mobile-nav-link text-on-surface-variant hover:text-primary transition-colors" data-i18n="nav.skills">Skills</a>
-  <a href="#case-studies" class="mobile-nav-link text-on-surface-variant hover:text-primary transition-colors" data-i18n="nav.caseStudies">Case Studies</a>
-  <a href="#journey"      class="mobile-nav-link text-on-surface-variant hover:text-primary transition-colors" data-i18n="nav.journey">Journey</a>
+  <a href="#case-studies"  class="mobile-nav-link text-on-surface-variant hover:text-primary transition-colors" data-i18n="nav.caseStudies">Case Studies</a>
+  <a href="#ui-showcases"  class="mobile-nav-link text-on-surface-variant hover:text-primary transition-colors">UI Lab</a>
+  <a href="#journey"       class="mobile-nav-link text-on-surface-variant hover:text-primary transition-colors" data-i18n="nav.journey">Journey</a>
   <a href="#contact"      class="mobile-nav-link text-on-surface-variant hover:text-primary transition-colors" data-i18n="nav.contact">Contact</a>
 
   <!-- Mobile lang + theme -->
@@ -583,6 +585,7 @@
           <span class="material-symbols-outlined text-primary opacity-0 group-hover:opacity-100 transition-opacity">arrow_forward</span>
         </div>
       </a>
+
     </div>
   </div>
 </section>
@@ -639,6 +642,112 @@
         <p class="font-label text-xs text-on-surface-variant uppercase tracking-tighter mt-1">Executive Mgmt. Institute</p>
         <span class="material-symbols-outlined text-primary cert-arrow mt-4 block">arrow_forward</span>
       </div>
+    </div>
+  </div>
+</section>
+
+<hr class="section-divider" />
+
+
+<!-- ═══════════════════════════════════════════
+     UI SHOWCASES — demos de diseño frontend
+════════════════════════════════════════════ -->
+<section class="bg-surface-container-low py-24 px-6" id="ui-showcases" data-fade-section>
+  <div class="max-w-7xl mx-auto">
+
+    <!-- Encabezado de sección -->
+    <div class="mb-16 reveal">
+      <span class="font-label text-primary text-sm tracking-[0.4em] uppercase font-bold flex items-center gap-3 mb-3">
+        <span class="material-symbols-outlined text-base">palette</span>
+        UI Showcases
+      </span>
+      <h2 class="text-5xl md:text-7xl font-headline font-extrabold tracking-tighter text-on-surface">
+        Frontend <span class="text-primary">Design Lab.</span>
+      </h2>
+      <p class="font-body text-sm text-on-surface-variant mt-4 max-w-2xl leading-relaxed">
+        Full production-ready HTML/CSS/JS demos built without frameworks. Each one explores a specific
+        design system, interaction pattern, or UX challenge — self-contained, zero build step.
+      </p>
+    </div>
+
+    <!-- Grid de demos -->
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 reveal-stagger">
+
+      <!-- Demo: BECA INDUSTRIAL -->
+      <a href="projects/beca_industrial.html" target="_blank" rel="noopener"
+         class="group relative bg-surface-container overflow-hidden transition-all duration-300
+                hover:-translate-y-2 hover:shadow-[0_20px_48px_rgba(0,0,0,0.18)]">
+
+        <!-- Preview visual — gradiente industrial con patrón de puntos -->
+        <div class="h-48 bg-[#001e40] relative overflow-hidden flex items-center justify-center">
+          <div class="absolute inset-0 opacity-10"
+               style="background-image:radial-gradient(#fff 1px,transparent 1px);background-size:22px 22px;"></div>
+          <div class="absolute inset-0 bg-gradient-to-br from-[#001e40] to-[#003366]/90"></div>
+          <!-- Mini-mockup de la navbar -->
+          <div class="relative z-10 w-4/5 max-w-xs">
+            <div class="flex items-center gap-2 mb-3">
+              <div class="w-3 h-3 rounded-full bg-[#f37a00]"></div>
+              <div class="h-2 w-24 bg-white/20 rounded"></div>
+              <div class="ml-auto h-2 w-16 bg-[#f37a00]/60 rounded"></div>
+            </div>
+            <div class="h-8 w-3/4 bg-white/10 rounded mb-2"></div>
+            <div class="h-3 w-full bg-white/6 rounded mb-1"></div>
+            <div class="h-3 w-5/6 bg-white/6 rounded mb-4"></div>
+            <div class="flex gap-2">
+              <div class="h-7 w-20 bg-[#f37a00] rounded-sm"></div>
+              <div class="h-7 w-20 bg-white/10 border border-white/20 rounded-sm"></div>
+            </div>
+          </div>
+          <!-- Badge -->
+          <span class="absolute top-3 right-3 badge-web">WEB DEMO</span>
+        </div>
+
+        <!-- Contenido de la card -->
+        <div class="p-8">
+          <div class="flex items-start gap-4 mb-6">
+            <div class="w-12 h-12 bg-surface-container-highest flex items-center justify-center
+                        border border-primary/10 group-hover:border-primary/40 transition-colors shrink-0">
+              <span class="material-symbols-outlined text-2xl text-primary">precision_manufacturing</span>
+            </div>
+            <div>
+              <p class="font-label text-xs text-outline uppercase tracking-widest mb-1">Tailwind CSS · Vanilla JS · SPA</p>
+              <h3 class="text-xl font-headline font-bold text-on-surface group-hover:text-primary transition-colors">
+                BECA INDUSTRIAL
+              </h3>
+            </div>
+          </div>
+          <p class="font-body text-sm text-on-surface-variant leading-relaxed mb-6">
+            B2B industrial landing page with custom design system. SPA navigation with page fade transitions,
+            IntersectionObserver scroll reveals, parallax hero, animated metric counters, ripple micro-interactions,
+            and a filterable product catalog with animated modal sheets.
+          </p>
+
+          <!-- Tech tags -->
+          <div class="flex flex-wrap gap-2 mb-6">
+            <span class="font-label text-[10px] uppercase tracking-wider px-2 py-1 bg-surface-container-high text-on-surface-variant">Tailwind CDN</span>
+            <span class="font-label text-[10px] uppercase tracking-wider px-2 py-1 bg-surface-container-high text-on-surface-variant">IntersectionObserver</span>
+            <span class="font-label text-[10px] uppercase tracking-wider px-2 py-1 bg-surface-container-high text-on-surface-variant">CSS Animations</span>
+            <span class="font-label text-[10px] uppercase tracking-wider px-2 py-1 bg-surface-container-high text-on-surface-variant">Material Symbols</span>
+          </div>
+
+          <div class="pt-6 border-t border-outline-variant/10 flex items-center justify-between">
+            <span class="font-label text-xs text-primary uppercase tracking-widest">Open Live Demo</span>
+            <span class="material-symbols-outlined text-primary opacity-0 group-hover:opacity-100 transition-opacity">open_in_new</span>
+          </div>
+        </div>
+      </a>
+
+      <!-- Slot vacío — próximamente -->
+      <div class="group relative bg-surface-container border-2 border-dashed border-outline-variant/30
+                  flex flex-col items-center justify-center min-h-[420px] p-8 text-center
+                  hover:border-primary/30 transition-colors duration-300">
+        <span class="material-symbols-outlined text-5xl text-outline-variant/40 mb-4">add_circle</span>
+        <p class="font-label text-sm text-outline uppercase tracking-widest mb-2">Coming Soon</p>
+        <p class="font-body text-xs text-on-surface-variant max-w-xs leading-relaxed">
+          More UI experiments in progress — dashboard components, micro-interaction libraries, and design system explorations.
+        </p>
+      </div>
+
     </div>
   </div>
 </section>
@@ -984,109 +1093,4 @@
 
     /* ── Mobile nav ──────────────────────────────────────── */
     var toggle   = document.getElementById('nav-toggle');
-    var closeBtn = document.getElementById('nav-close');
-    var mobileNav = document.getElementById('mobile-nav');
-
-    function openNav(){
-      mobileNav.removeAttribute('hidden');
-      toggle.setAttribute('aria-expanded','true');
-      document.body.style.overflow='hidden';
-    }
-    function closeNav(){
-      mobileNav.setAttribute('hidden','');
-      toggle.setAttribute('aria-expanded','false');
-      document.body.style.overflow='';
-    }
-
-    if(toggle)   toggle.addEventListener('click', openNav);
-    if(closeBtn) closeBtn.addEventListener('click', closeNav);
-    document.querySelectorAll('.mobile-nav-link').forEach(function(l){ l.addEventListener('click', closeNav); });
-
-    /* ── Sticky nav scroll ───────────────────────────────── */
-    var nav = document.getElementById('main-nav');
-    window.addEventListener('scroll', function(){
-      nav.classList.toggle('scrolled', window.scrollY > 40);
-    }, { passive: true });
-
-    /* ── Active nav link on scroll ───────────────────────── */
-    var sections = document.querySelectorAll('section[id], main[id]');
-    var navLinks = document.querySelectorAll('.nav-link');
-    var sectionObs = new IntersectionObserver(function(entries){
-      entries.forEach(function(e){
-        if(e.isIntersecting){
-          navLinks.forEach(function(l){
-            var active = l.dataset.section === e.target.id;
-            l.classList.toggle('nav-link-active', active);
-            if(active) l.classList.remove('text-on-surface-variant');
-            else l.classList.add('text-on-surface-variant');
-          });
-        }
-      });
-    },{ rootMargin:'-40% 0px -55% 0px' });
-    sections.forEach(function(s){ sectionObs.observe(s); });
-
-    /* ── Scroll reveal ───────────────────────────────────── */
-    var revealObs = new IntersectionObserver(function(entries){
-      entries.forEach(function(e){
-        if(e.isIntersecting){ e.target.classList.add('active'); revealObs.unobserve(e.target); }
-      });
-    },{ threshold: 0.1 });
-    document.querySelectorAll('.reveal,.reveal-left,.reveal-right,.reveal-stagger').forEach(function(el){
-      revealObs.observe(el);
-    });
-
-    /* ── Typing effect ───────────────────────────────────── */
-    var phrases = ['MDM Consultant','TIBCO EBX Developer','Java Developer','Data Consultant'];
-    var pi=0, ci=0, del=false;
-    var tgt = document.getElementById('typing-target');
-    function type(){
-      if(!tgt) return;
-      var cur=phrases[pi];
-      if(!del){ tgt.textContent=cur.slice(0,++ci); if(ci===cur.length){del=true;setTimeout(type,1800);return;} }
-      else { tgt.textContent=cur.slice(0,--ci); if(ci===0){del=false;pi=(pi+1)%phrases.length;} }
-      setTimeout(type,del?50:80);
-    }
-    type();
-
-    /* ── Testimonials (render + hide if empty) ───────────── */
-    var grid = document.getElementById('testimonials-grid');
-    var testimonialsSection = document.getElementById('testimonials');
-    var testimonialsItems = [];
-
-    // Build from translations
-    var idx = 0;
-    while(T[currentLang] && T[currentLang]['testimonials.items.'+idx+'.quote']){
-      testimonialsItems.push(idx); idx++;
-    }
-    // Fallback to EN
-    if(!testimonialsItems.length){
-      var idx2=0;
-      while(T['en'] && T['en']['testimonials.items.'+idx2+'.quote']){ testimonialsItems.push(idx2); idx2++; }
-    }
-
-    if(!testimonialsItems.length){
-      testimonialsSection.setAttribute('hidden','');
-    } else {
-      testimonialsItems.slice(0,3).forEach(function(n){
-        var base='testimonials.items.'+n+'.';
-        var card=document.createElement('div');
-        card.className='testimonial-card';
-        card.innerHTML =
-          '<p class="testimonial-quote" data-i18n="'+base+'quote">'+(t(base+'quote')||'')+'</p>'+
-          '<div class="testimonial-divider"></div>'+
-          '<div class="flex items-center gap-3">'+
-            '<div class="testimonial-avatar">'+(t(base+'initials')||'?')+'</div>'+
-            '<div>'+
-              '<p class="testimonial-name" data-i18n="'+base+'name">'+(t(base+'name')||'')+'</p>'+
-              '<p class="testimonial-role" data-i18n="'+base+'role">'+(t(base+'role')||'')+'</p>'+
-            '</div>'+
-          '</div>';
-        grid.appendChild(card);
-      });
-    }
-
-  }); // DOMContentLoaded
-</script>
-
-</body>
-</html>
+    var closeBtn = document.getElementById('n

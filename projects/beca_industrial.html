@@ -1,0 +1,1614 @@
+<!DOCTYPE html>
+<html lang="es" class="scroll-smooth">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>BECA INDUSTRIAL — Precision Engineered</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@400,0..1&display=swap" rel="stylesheet"/>
+
+<!-- Design system extraído del DESIGN.md -->
+<script>
+  tailwind.config = {
+    theme: {
+      extend: {
+        colors: {
+          "primary":                  "#001e40",
+          "primary-container":        "#003366",
+          "on-primary":               "#ffffff",
+          "on-primary-container":     "#799dd6",
+          "secondary":                "#115cb9",
+          "secondary-container":      "#659dfe",
+          "on-secondary":             "#ffffff",
+          "on-secondary-container":   "#003370",
+          "tertiary-container":       "#552600",
+          "on-tertiary-container":    "#f37a00",
+          "tertiary-fixed":           "#ffdcc7",
+          "on-tertiary-fixed":        "#311300",
+          "on-tertiary-fixed-variant":"#723600",
+          "surface":                  "#f8f9fa",
+          "surface-dim":              "#d9dadb",
+          "surface-variant":          "#e1e3e4",
+          "surface-container-lowest": "#ffffff",
+          "surface-container-low":    "#f3f4f5",
+          "surface-container":        "#edeeef",
+          "surface-container-high":   "#e7e8e9",
+          "surface-container-highest":"#e1e3e4",
+          "on-surface":               "#191c1d",
+          "on-surface-variant":       "#43474f",
+          "on-background":            "#191c1d",
+          "inverse-primary":          "#a7c8ff",
+          "secondary-fixed-dim":      "#acc7ff",
+          "outline":                  "#737780",
+          "outline-variant":          "#c3c6d1",
+          "error":                    "#ba1a1a",
+        },
+        borderRadius: {
+          "DEFAULT": "0.125rem",
+          "sm":      "0.125rem",
+          "lg":      "0.25rem",
+          "xl":      "0.5rem",
+          "full":    "9999px",
+        },
+        fontFamily: {
+          "headline": ["Inter", "sans-serif"],
+          "body":     ["Inter", "sans-serif"],
+          "label":    ["Inter", "sans-serif"],
+        }
+      }
+    }
+  }
+</script>
+
+<style>
+  /* ══════════════════════════════════════════════════════════════
+     BASE
+  ══════════════════════════════════════════════════════════════ */
+  body { font-family: 'Inter', sans-serif; }
+
+  /* Iconos Material Symbols en variante outline por defecto */
+  .material-symbols-outlined {
+    font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+  }
+  .icon-fill { font-variation-settings: 'FILL' 1; }
+
+  /* ══════════════════════════════════════════════════════════════
+     TRANSICIÓN DE PÁGINAS SPA
+     Fade suave entre secciones en lugar de corte abrupto
+  ══════════════════════════════════════════════════════════════ */
+  .page {
+    display: none;
+    opacity: 0;
+    /* transform listo para la animación de entrada */
+    transform: translateY(12px);
+  }
+  .page.active {
+    display: block;
+    animation: pageEnter 0.45s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+  }
+  @keyframes pageEnter {
+    from { opacity: 0; transform: translateY(12px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  /* ══════════════════════════════════════════════════════════════
+     SCROLL REVEAL — clases gestionadas por IntersectionObserver
+  ══════════════════════════════════════════════════════════════ */
+  .reveal {
+    opacity: 0;
+    transform: translateY(32px);
+    transition: opacity 0.65s cubic-bezier(0.22, 1, 0.36, 1),
+                transform 0.65s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+  .reveal.from-left  { transform: translateX(-40px); }
+  .reveal.from-right { transform: translateX(40px); }
+  .reveal.scale-in   { transform: scale(0.94); }
+
+  /* Cuando el elemento entra al viewport */
+  .reveal.visible {
+    opacity: 1;
+    transform: none;
+  }
+
+  /* Delays escalonados para grupos de elementos */
+  .reveal-d1 { transition-delay: 0.05s; }
+  .reveal-d2 { transition-delay: 0.15s; }
+  .reveal-d3 { transition-delay: 0.25s; }
+  .reveal-d4 { transition-delay: 0.35s; }
+  .reveal-d5 { transition-delay: 0.45s; }
+
+  /* ══════════════════════════════════════════════════════════════
+     ANIMACIONES DEL HERO (al cargar la página)
+  ══════════════════════════════════════════════════════════════ */
+  @keyframes fadeInUp {
+    from { opacity: 0; transform: translateY(28px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+  @keyframes fadeIn {
+    from { opacity: 0; }
+    to   { opacity: 1; }
+  }
+  .anim-fade-up  { animation: fadeInUp 0.7s cubic-bezier(0.22, 1, 0.36, 1) forwards; }
+  .anim-fade-in  { animation: fadeIn  0.6s ease forwards; }
+
+  /* Delays del hero */
+  .delay-1 { animation-delay: 0.1s;  opacity: 0; }
+  .delay-2 { animation-delay: 0.28s; opacity: 0; }
+  .delay-3 { animation-delay: 0.46s; opacity: 0; }
+  .delay-4 { animation-delay: 0.60s; opacity: 0; }
+
+  /* ══════════════════════════════════════════════════════════════
+     PARALLAX DEL HERO
+     El fondo de puntos se mueve a diferente velocidad al hacer scroll
+  ══════════════════════════════════════════════════════════════ */
+  #hero-dots {
+    will-change: transform;
+    transition: transform 0.05s linear;
+  }
+
+  /* ══════════════════════════════════════════════════════════════
+     NAVEGACIÓN
+  ══════════════════════════════════════════════════════════════ */
+  .nav-link { transition: color 0.2s, border-color 0.2s; }
+  .nav-link.active {
+    color: #fff;
+    border-bottom: 2px solid #f37a00;
+  }
+  .nav-link:not(.active) {
+    color: #94a3b8;
+    border-bottom: 2px solid transparent;
+  }
+  .nav-link:not(.active):hover { color: #fff; }
+
+  /* ══════════════════════════════════════════════════════════════
+     TARJETAS DE PRODUCTO — hover mejorado
+     Elevación + desaturar → color + escala del ícono
+  ══════════════════════════════════════════════════════════════ */
+  .product-card {
+    transition: box-shadow 0.35s ease, transform 0.35s cubic-bezier(0.22, 1, 0.36, 1);
+    box-shadow: 0 2px 8px rgba(0, 30, 64, 0.06);
+  }
+  .product-card:hover {
+    transform: translateY(-6px);
+    box-shadow: 0 20px 48px rgba(0, 30, 64, 0.14);
+  }
+
+  /* Imagen: escala de grises → color */
+  .product-card img        { filter: grayscale(100%); opacity: 0.8; transition: filter 0.5s; }
+  .product-card:hover img  { filter: grayscale(0); }
+
+  /* Ícono placeholder: opacidad y escala */
+  .product-card .product-icon {
+    transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.4s;
+    opacity: 0.3;
+  }
+  .product-card:hover .product-icon {
+    transform: scale(1.18) rotate(-6deg);
+    opacity: 0.55;
+  }
+
+  /* Borde izquierdo de acento al hover */
+  .product-card::before {
+    content: '';
+    position: absolute;
+    left: 0; top: 0; bottom: 0;
+    width: 3px;
+    background: #f37a00;
+    transform: scaleY(0);
+    transform-origin: bottom;
+    transition: transform 0.35s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+  .product-card { position: relative; }
+  .product-card:hover::before { transform: scaleY(1); }
+
+  /* ══════════════════════════════════════════════════════════════
+     BOTONES — efecto ripple al hacer clic
+  ══════════════════════════════════════════════════════════════ */
+  .btn-ripple {
+    position: relative;
+    overflow: hidden;
+  }
+  .btn-ripple .ripple {
+    position: absolute;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.35);
+    transform: scale(0);
+    animation: rippleAnim 0.55s linear;
+    pointer-events: none;
+  }
+  @keyframes rippleAnim {
+    to { transform: scale(4); opacity: 0; }
+  }
+
+  /* Micro-animación de escala en botones primarios */
+  .btn-ripple:active { transform: scale(0.97); }
+  .btn-ripple { transition: background-color 0.2s, transform 0.1s; }
+
+  /* ══════════════════════════════════════════════════════════════
+     SHIMMER — en los placeholders de imagen mientras "carga"
+  ══════════════════════════════════════════════════════════════ */
+  @keyframes shimmer {
+    0%   { background-position: -400px 0; }
+    100% { background-position: 400px 0; }
+  }
+  .shimmer-overlay {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(90deg,
+      transparent 0%, rgba(255,255,255,0.08) 50%, transparent 100%);
+    background-size: 800px 100%;
+    animation: shimmer 2.2s infinite;
+    pointer-events: none;
+  }
+
+  /* ══════════════════════════════════════════════════════════════
+     FILTROS DE PRODUCTO
+  ══════════════════════════════════════════════════════════════ */
+  .filter-btn {
+    transition: background-color 0.2s, color 0.2s, transform 0.15s;
+  }
+  .filter-btn:hover:not(.active) { transform: translateY(-2px); }
+  .filter-btn.active {
+    background: #001e40;
+    color: #fff;
+  }
+
+  /* ══════════════════════════════════════════════════════════════
+     FORMULARIO DE CONTACTO
+  ══════════════════════════════════════════════════════════════ */
+  .field-input {
+    transition: border-color 0.25s, box-shadow 0.25s, background-color 0.25s;
+  }
+  .field-input:focus {
+    outline: none;
+    border-color: #115cb9;
+    background-color: #fff;
+    box-shadow: 0 0 0 3px rgba(17, 92, 185, 0.12);
+  }
+
+  /* Etiqueta que sube al hacer focus (float label) */
+  .field-wrapper { position: relative; }
+  .field-input:focus + .field-label,
+  .field-input:not(:placeholder-shown) + .field-label {
+    transform: translateY(-1.6rem) scale(0.82);
+    color: #115cb9;
+  }
+
+  /* ══════════════════════════════════════════════════════════════
+     TARJETAS BENTO — hover con línea de acento superior
+  ══════════════════════════════════════════════════════════════ */
+  .bento-card {
+    transition: box-shadow 0.3s ease, transform 0.3s cubic-bezier(0.22, 1, 0.36, 1);
+    position: relative;
+    overflow: hidden;
+  }
+  .bento-card::after {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 3px;
+    background: linear-gradient(90deg, #115cb9, #f37a00);
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform 0.4s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+  .bento-card:hover::after  { transform: scaleX(1); }
+  .bento-card:hover {
+    box-shadow: 0 12px 36px rgba(0, 30, 64, 0.1);
+    transform: translateY(-3px);
+  }
+
+  /* ══════════════════════════════════════════════════════════════
+     VALORES (core values) — ícono con pulso al hover
+  ══════════════════════════════════════════════════════════════ */
+  .value-card { transition: transform 0.3s ease, box-shadow 0.3s ease; }
+  .value-card:hover { transform: translateY(-4px); box-shadow: 0 8px 24px rgba(0,30,64,0.09); }
+  .value-card .value-icon {
+    transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1), color 0.3s;
+  }
+  .value-card:hover .value-icon { transform: scale(1.25); color: #f37a00; }
+
+  /* ══════════════════════════════════════════════════════════════
+     TOAST DE CONFIRMACIÓN
+  ══════════════════════════════════════════════════════════════ */
+  #toast {
+    position: fixed; bottom: 2rem; right: 2rem; z-index: 9999;
+    background: #001e40; color: #fff;
+    padding: 1rem 1.5rem;
+    font-size: 0.875rem; font-weight: 600;
+    border-left: 4px solid #f37a00;
+    transform: translateX(120%);
+    transition: transform 0.45s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+  #toast.show { transform: translateX(0); }
+
+  /* ══════════════════════════════════════════════════════════════
+     MENÚ MÓVIL OVERLAY
+  ══════════════════════════════════════════════════════════════ */
+  #mobile-menu {
+    display: none;
+    position: fixed; inset: 0; z-index: 40;
+    background: #001e40;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 2rem;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+  }
+  #mobile-menu.open {
+    display: flex;
+    animation: mobileIn 0.3s ease forwards;
+  }
+  @keyframes mobileIn {
+    from { opacity: 0; }
+    to   { opacity: 1; }
+  }
+
+  /* ══════════════════════════════════════════════════════════════
+     CONTADOR ANIMADO — clase aplicada al span del número
+  ══════════════════════════════════════════════════════════════ */
+  .counter-value {
+    display: inline-block;
+    transition: transform 0.1s ease;
+  }
+
+  /* Línea decorativa animada debajo de títulos de sección */
+  .section-title::after {
+    content: '';
+    display: block;
+    width: 0;
+    height: 3px;
+    background: linear-gradient(90deg, #115cb9, #f37a00);
+    margin-top: 0.5rem;
+    transition: width 0.6s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+  .section-title.visible::after { width: 4rem; }
+
+  /* ══════════════════════════════════════════════════════════════
+     MODAL DE PRODUCTO — entrada con escala
+  ══════════════════════════════════════════════════════════════ */
+  #modal-inner {
+    transition: transform 0.35s cubic-bezier(0.22, 1, 0.36, 1), opacity 0.35s ease;
+    transform: scale(0.92);
+    opacity: 0;
+  }
+  #product-modal.open #modal-inner {
+    transform: scale(1);
+    opacity: 1;
+  }
+
+  /* Scroll suave */
+  html { scroll-behavior: smooth; }
+</style>
+</head>
+
+<!-- ════════════════════════════════════════════════════════════════ -->
+<body class="bg-surface text-on-surface min-h-screen flex flex-col antialiased">
+
+<!-- ── NAVEGACIÓN PRINCIPAL ──────────────────────────────────────── -->
+<nav class="bg-primary sticky top-0 z-50 shadow-lg shadow-primary/30">
+  <div class="max-w-[1440px] mx-auto px-6 py-4 flex items-center justify-between">
+
+    <!-- Logotipo -->
+    <button onclick="navigate('home')"
+            class="btn-ripple flex items-center gap-2 text-white text-xl font-black tracking-tighter uppercase">
+      <span class="material-symbols-outlined text-[#f37a00] text-2xl icon-fill"
+            style="transition: transform 0.4s cubic-bezier(0.34,1.56,0.64,1);"
+            onmouseenter="this.style.transform='rotate(-15deg) scale(1.15)'"
+            onmouseleave="this.style.transform=''">precision_manufacturing</span>
+      BECA INDUSTRIAL
+    </button>
+
+    <!-- Links escritorio -->
+    <div class="hidden md:flex items-center gap-8">
+      <button onclick="navigate('home')"     class="nav-link active   font-semibold text-sm tracking-tight uppercase pb-1" data-page="home">Home</button>
+      <button onclick="navigate('products')" class="nav-link          font-semibold text-sm tracking-tight uppercase pb-1" data-page="products">Products</button>
+      <button onclick="navigate('about')"    class="nav-link          font-semibold text-sm tracking-tight uppercase pb-1" data-page="about">About Us</button>
+      <button onclick="navigate('contact')"  class="nav-link          font-semibold text-sm tracking-tight uppercase pb-1" data-page="contact">Contact</button>
+    </div>
+
+    <!-- CTA escritorio -->
+    <button onclick="navigate('contact')"
+            class="btn-ripple hidden md:inline-flex bg-[#f37a00] hover:bg-[#ff8000] text-white font-bold text-sm px-6 py-2.5 uppercase tracking-tight transition-colors">
+      Request a Quote
+    </button>
+
+    <!-- Hamburger móvil -->
+    <button onclick="toggleMobile()" class="md:hidden text-white btn-ripple p-1">
+      <span class="material-symbols-outlined text-3xl">menu</span>
+    </button>
+  </div>
+</nav>
+
+<!-- ── MENÚ MÓVIL OVERLAY ─────────────────────────────────────────── -->
+<div id="mobile-menu">
+  <button onclick="toggleMobile()" class="absolute top-6 right-6 text-white">
+    <span class="material-symbols-outlined text-3xl">close</span>
+  </button>
+  <button onclick="navigate('home');     toggleMobile()" class="text-white font-black text-2xl uppercase tracking-tight hover:text-[#f37a00] transition-colors">Home</button>
+  <button onclick="navigate('products'); toggleMobile()" class="text-white font-black text-2xl uppercase tracking-tight hover:text-[#f37a00] transition-colors">Products</button>
+  <button onclick="navigate('about');    toggleMobile()" class="text-white font-black text-2xl uppercase tracking-tight hover:text-[#f37a00] transition-colors">About Us</button>
+  <button onclick="navigate('contact');  toggleMobile()" class="text-white font-black text-2xl uppercase tracking-tight hover:text-[#f37a00] transition-colors">Contact</button>
+  <button onclick="navigate('contact');  toggleMobile()"
+          class="btn-ripple bg-[#f37a00] text-white font-bold px-8 py-3 uppercase tracking-tight mt-4">
+    Request a Quote
+  </button>
+</div>
+
+<!-- ════════════════════════════════════════════════════════════════ -->
+<!--  PÁGINA: HOME                                                    -->
+<!-- ════════════════════════════════════════════════════════════════ -->
+<div id="page-home" class="page active">
+
+  <!-- ── HERO ──────────────────────────────────────────────────── -->
+  <section id="hero-section" class="relative bg-primary min-h-[680px] flex items-center overflow-hidden">
+
+    <!-- Gradiente metálico de fondo -->
+    <div class="absolute inset-0 bg-gradient-to-br from-primary to-primary-container/90 z-0"></div>
+
+    <!-- Patrón de puntos con parallax — el JS lo mueve al scrollear -->
+    <div id="hero-dots"
+         class="absolute inset-0 z-0 opacity-10"
+         style="background-image: radial-gradient(#fff 1px, transparent 1px); background-size: 28px 28px;"></div>
+
+    <!-- Líneas diagonales decorativas (capa extra de profundidad) -->
+    <div class="absolute inset-0 z-0 opacity-[0.04]"
+         style="background: repeating-linear-gradient(135deg, #a7c8ff, #a7c8ff 1px, transparent 1px, transparent 20px);"></div>
+
+    <div class="relative z-10 max-w-[1440px] mx-auto px-8 py-24 flex flex-col md:flex-row items-center gap-16 w-full">
+
+      <!-- Texto hero -->
+      <div class="w-full md:w-3/5">
+        <span class="anim-fade-up delay-1 inline-block bg-tertiary-fixed text-on-tertiary-fixed-variant
+                     text-xs font-black px-3 py-1 uppercase tracking-widest mb-6">
+          Industrial Fluid Transfer
+        </span>
+        <h1 class="anim-fade-up delay-2 font-black text-white uppercase tracking-[-0.02em]
+                   text-[2.8rem] md:text-[3.5rem] leading-[1.05] mb-6">
+          Precision Engineered<br>
+          <span class="text-secondary-fixed-dim">Hydraulic Systems</span>
+        </h1>
+        <p class="anim-fade-up delay-3 text-surface-dim text-base md:text-lg font-medium leading-relaxed max-w-2xl mb-10">
+          High-performance industrial hoses, hydraulic assemblies, and rigorous testing protocols
+          designed for environments where structural integrity and absolute reliability are non-negotiable.
+        </p>
+        <div class="anim-fade-up delay-4 flex flex-col sm:flex-row gap-4">
+          <button onclick="navigate('products')"
+                  class="btn-ripple bg-[#f37a00] hover:bg-[#ff8000] text-white font-bold text-sm px-8 py-3
+                         uppercase tracking-wide transition-colors">
+            View Product Catalog
+          </button>
+          <button onclick="navigate('contact')"
+                  class="btn-ripple bg-transparent border border-white/40 hover:border-white text-white
+                         font-semibold text-sm px-8 py-3 uppercase tracking-wide transition-colors">
+            Request a Quote
+          </button>
+        </div>
+      </div>
+
+      <!-- Panel de métricas con contadores animados -->
+      <div class="anim-fade-in delay-4 w-full md:w-2/5">
+        <div class="bg-white/5 backdrop-blur-md border border-white/10 p-8">
+
+          <!-- Métrica 1: 99.9% -->
+          <div class="mb-6 metric-block" data-target="99.9" data-suffix="%" data-prefix="">
+            <p class="text-4xl font-black text-white tracking-tighter">
+              <span class="counter-value" data-counter>99.9%</span>
+            </p>
+            <p class="text-xs font-semibold text-surface-variant uppercase tracking-widest mt-1">Pressure Tolerance</p>
+          </div>
+          <div class="h-px bg-white/10 mb-6"></div>
+
+          <!-- Métrica 2: ISO 9001 (estática, no numérica) -->
+          <div class="mb-6">
+            <p class="text-4xl font-black text-white tracking-tighter">ISO 9001</p>
+            <p class="text-xs font-semibold text-surface-variant uppercase tracking-widest mt-1">Certified Assembly</p>
+          </div>
+          <div class="h-px bg-white/10 mb-6"></div>
+
+          <!-- Métrica 3: 24/7 (estática) -->
+          <div class="mb-6">
+            <p class="text-4xl font-black text-[#ff8000] tracking-tighter">24/7</p>
+            <p class="text-xs font-semibold text-surface-variant uppercase tracking-widest mt-1">Emergency Support</p>
+          </div>
+          <div class="h-px bg-white/10 mb-6"></div>
+
+          <!-- Métrica 4: +3,000 clientes -->
+          <div class="metric-block" data-target="3000" data-suffix="" data-prefix="+">
+            <p class="text-4xl font-black text-white tracking-tighter">
+              <span class="counter-value" data-counter>+3,000</span>
+            </p>
+            <p class="text-xs font-semibold text-surface-variant uppercase tracking-widest mt-1">Active Clients</p>
+          </div>
+
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── TECHNICAL SERVICES — BENTO GRID ───────────────────────── -->
+  <section class="py-24 bg-surface">
+    <div class="max-w-[1440px] mx-auto px-8">
+
+      <div class="mb-16 flex flex-col md:flex-row justify-between items-end gap-6 reveal">
+        <div>
+          <h2 class="text-3xl font-bold text-primary mb-3 uppercase tracking-tight section-title">Technical Services</h2>
+          <p class="text-sm text-on-surface-variant max-w-xl">
+            Comprehensive engineering solutions designed to optimize operational throughput
+            and guarantee safety compliance in extreme industrial conditions.
+          </p>
+        </div>
+        <button onclick="navigate('products')"
+                class="text-secondary font-bold text-sm flex items-center gap-1 hover:text-primary transition-colors uppercase tracking-wide whitespace-nowrap btn-ripple p-1">
+          View All Services <span class="material-symbols-outlined text-base">arrow_forward</span>
+        </button>
+      </div>
+
+      <!-- Grid bento -->
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+
+        <!-- Tarjeta grande: Custom Assembly -->
+        <div class="bento-card md:col-span-2 bg-surface-container-low p-8 md:p-12 min-h-[360px] flex flex-col justify-end
+                    relative overflow-hidden group reveal reveal-d1">
+          <div class="absolute inset-0 bg-gradient-to-br from-surface-container to-surface-container-high opacity-60 z-0"></div>
+          <div class="absolute inset-0 z-0 opacity-5"
+               style="background: repeating-linear-gradient(45deg, #001e40, #001e40 1px, transparent 1px, transparent 12px);">
+          </div>
+          <div class="relative z-10 max-w-lg">
+            <div class="bg-primary text-white w-12 h-12 flex items-center justify-center mb-6
+                        transition-transform duration-300 group-hover:scale-110 group-hover:rotate-3">
+              <span class="material-symbols-outlined">manufacturing</span>
+            </div>
+            <h3 class="text-2xl font-bold text-primary mb-3">Custom Hose Assembly</h3>
+            <p class="text-sm text-on-surface-variant mb-6 leading-relaxed">
+              Fabricated to exact operational specifications using high-grade materials to withstand
+              extreme temperatures, pressures, and abrasive environments.
+            </p>
+            <button onclick="navigate('products')"
+                    class="btn-ripple bg-transparent border border-primary text-primary hover:bg-primary hover:text-white
+                           font-semibold text-xs px-6 py-2 uppercase tracking-wider transition-colors">
+              View Specs
+            </button>
+          </div>
+        </div>
+
+        <!-- Tarjeta pequeña: Diagnostic Testing -->
+        <div class="bento-card bg-surface-container-lowest border border-outline-variant/15 p-8 flex flex-col justify-between
+                    shadow-[0_8px_24px_rgba(0,30,64,0.04)] reveal reveal-d2">
+          <div>
+            <span class="material-symbols-outlined text-secondary text-[2rem] mb-4 block
+                         transition-transform duration-300 hover:scale-110">verified</span>
+            <h3 class="text-xl font-bold text-primary mb-3">Diagnostic Testing</h3>
+            <p class="text-sm text-on-surface-variant leading-relaxed">
+              Hydrostatic pressure testing and material analysis to ensure absolute compliance prior to deployment.
+            </p>
+          </div>
+          <div class="mt-8 pt-6 border-t border-surface-container-high">
+            <button onclick="navigate('contact')"
+                    class="text-secondary font-bold text-xs uppercase tracking-wider hover:underline hover:text-primary transition-colors">
+              Learn More →
+            </button>
+          </div>
+        </div>
+
+        <!-- Tarjeta pequeña: Preventive Maintenance -->
+        <div class="bento-card bg-surface-container-lowest border border-outline-variant/15 p-8 flex flex-col justify-between
+                    shadow-[0_8px_24px_rgba(0,30,64,0.04)] reveal reveal-d3">
+          <div>
+            <span class="material-symbols-outlined text-secondary text-[2rem] mb-4 block
+                         transition-transform duration-300 hover:scale-110">engineering</span>
+            <h3 class="text-xl font-bold text-primary mb-3">Preventive Maintenance</h3>
+            <p class="text-sm text-on-surface-variant leading-relaxed">
+              Scheduled inspections and part replacements to mitigate catastrophic failure and operational downtime.
+            </p>
+          </div>
+          <div class="mt-8 pt-6 border-t border-surface-container-high">
+            <button onclick="navigate('contact')"
+                    class="text-secondary font-bold text-xs uppercase tracking-wider hover:underline hover:text-primary transition-colors">
+              Learn More →
+            </button>
+          </div>
+        </div>
+
+        <!-- Tarjeta CTA ancha: Technical Consulting -->
+        <div class="bento-card md:col-span-2 bg-primary p-8 md:p-12 flex flex-col md:flex-row items-center
+                    justify-between gap-8 relative overflow-hidden reveal reveal-d4">
+          <div class="absolute inset-0 bg-gradient-to-br from-primary to-primary-container/90 z-0"></div>
+          <div class="relative z-10">
+            <h3 class="text-2xl font-bold text-white mb-2">Technical Consulting</h3>
+            <p class="text-sm text-surface-dim max-w-md leading-relaxed">
+              Partner with our senior engineering team to design fluid transfer systems tailored
+              to your unique facility layout and throughput demands.
+            </p>
+          </div>
+          <div class="relative z-10 shrink-0">
+            <button onclick="navigate('contact')"
+                    class="btn-ripple bg-[#f37a00] hover:bg-[#ff8000] text-white font-bold text-sm px-8 py-3
+                           uppercase tracking-wide transition-colors w-full md:w-auto">
+              Schedule Audit
+            </button>
+          </div>
+        </div>
+
+      </div><!-- /bento grid -->
+    </div>
+  </section>
+
+  <!-- ── BANNER CTA INFERIOR ────────────────────────────────────── -->
+  <section class="bg-surface-container-low py-20">
+    <div class="max-w-[1440px] mx-auto px-8 flex flex-col md:flex-row items-center justify-between gap-8 reveal">
+      <div>
+        <h2 class="text-2xl font-black text-primary uppercase tracking-tight mb-2">Ready to engineer your solution?</h2>
+        <p class="text-sm text-on-surface-variant">Speak directly with a senior field engineer today.</p>
+      </div>
+      <button onclick="navigate('contact')"
+              class="btn-ripple bg-primary hover:bg-primary-container text-white font-bold text-sm px-10 py-4
+                     uppercase tracking-wide transition-colors whitespace-nowrap">
+        Contact Engineering Team
+      </button>
+    </div>
+  </section>
+
+</div><!-- /page-home -->
+
+
+<!-- ════════════════════════════════════════════════════════════════ -->
+<!--  PÁGINA: PRODUCTS                                                -->
+<!-- ════════════════════════════════════════════════════════════════ -->
+<div id="page-products" class="page">
+
+  <!-- Header de sección -->
+  <section class="bg-primary py-20 relative overflow-hidden">
+    <div class="absolute inset-0 bg-gradient-to-br from-primary to-primary-container/80 z-0"></div>
+    <div class="absolute inset-0 opacity-10 z-0"
+         style="background-image: radial-gradient(#fff 1px, transparent 1px); background-size: 28px 28px;"></div>
+    <div class="relative z-10 max-w-[1440px] mx-auto px-8">
+      <span class="inline-block bg-tertiary-container text-on-tertiary-container text-xs font-black
+                   px-3 py-1 uppercase tracking-widest mb-4">Product Catalog</span>
+      <h1 class="text-4xl md:text-5xl font-black text-white uppercase tracking-[-0.02em] mb-4">
+        Industrial Hose Catalog
+      </h1>
+      <p class="text-surface-dim text-base max-w-2xl leading-relaxed">
+        Engineered for extreme operational demands — pressure, temperature, and chemical resistance
+        specifications for every industrial application.
+      </p>
+    </div>
+  </section>
+
+  <!-- Filtros + Grid de productos -->
+  <section class="py-16 bg-surface">
+    <div class="max-w-[1440px] mx-auto px-8">
+
+      <!-- Filtros por categoría -->
+      <div class="flex flex-wrap gap-3 mb-12 reveal">
+        <button class="filter-btn active font-semibold text-xs px-5 py-2 border border-outline-variant/30
+                       uppercase tracking-wide bg-primary text-white"
+                onclick="filterProducts('all', this)">All Products</button>
+        <button class="filter-btn font-semibold text-xs px-5 py-2 border border-outline-variant/30
+                       uppercase tracking-wide bg-surface-container-lowest text-on-surface-variant"
+                onclick="filterProducts('hydraulic', this)">Hydraulic</button>
+        <button class="filter-btn font-semibold text-xs px-5 py-2 border border-outline-variant/30
+                       uppercase tracking-wide bg-surface-container-lowest text-on-surface-variant"
+                onclick="filterProducts('chemical', this)">Chemical</button>
+        <button class="filter-btn font-semibold text-xs px-5 py-2 border border-outline-variant/30
+                       uppercase tracking-wide bg-surface-container-lowest text-on-surface-variant"
+                onclick="filterProducts('water', this)">Water Transfer</button>
+        <button class="filter-btn font-semibold text-xs px-5 py-2 border border-outline-variant/30
+                       uppercase tracking-wide bg-surface-container-lowest text-on-surface-variant"
+                onclick="filterProducts('steam', this)">Steam &amp; High Temp</button>
+      </div>
+
+      <!-- Grid de productos (6 tarjetas) -->
+      <div id="product-grid" class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-8">
+
+        <!-- Producto 1: Hydro-Tough -->
+        <article class="product-card bg-surface-container-lowest flex flex-col overflow-hidden group reveal reveal-d1" data-cat="hydraulic">
+          <div class="w-full h-52 bg-surface-variant relative overflow-hidden">
+            <div class="w-full h-full bg-gradient-to-br from-slate-700 to-slate-900 flex items-center justify-center">
+              <span class="material-symbols-outlined text-white product-icon text-[5rem]">cable</span>
+            </div>
+            <!-- Shimmer overlay decorativo -->
+            <div class="shimmer-overlay"></div>
+            <div class="absolute top-3 right-3 bg-tertiary-fixed text-on-tertiary-fixed
+                        text-[10px] font-black px-2 py-1 uppercase tracking-widest">In Stock</div>
+          </div>
+          <div class="p-6 flex flex-col flex-1">
+            <h3 class="font-bold text-xl text-primary mb-3 group-hover:text-secondary transition-colors duration-300">
+              Hydro-Tough™ Series 5000
+            </h3>
+            <div class="flex flex-wrap gap-2 mb-4">
+              <span class="bg-surface-container-low text-on-surface-variant text-xs px-2 py-1 font-mono uppercase">5000 PSI</span>
+              <span class="bg-surface-container-low text-on-surface-variant text-xs px-2 py-1 font-mono uppercase">Nitrile Base</span>
+            </div>
+            <p class="text-sm text-on-surface-variant mb-8 flex-1 leading-relaxed">
+              High-pressure hydraulic hose designed for petroleum-based fluids. Double wire braid reinforcement
+              for superior burst resistance in extreme conditions.
+            </p>
+            <button onclick="openModal('Hydro-Tough™ Series 5000','5000 PSI operating pressure | Nitrile base tube | Double wire braid | Temp range: -40°C to +100°C | Petroleum-based fluids compatibility')"
+                    class="btn-ripple inline-flex justify-center items-center bg-secondary text-on-secondary
+                           py-3 px-4 text-sm font-bold uppercase tracking-wide hover:bg-primary transition-colors">
+              View Details
+            </button>
+          </div>
+        </article>
+
+        <!-- Producto 2: Chem-Safe -->
+        <article class="product-card bg-surface-container-lowest flex flex-col overflow-hidden group reveal reveal-d2" data-cat="chemical">
+          <div class="w-full h-52 bg-surface-variant relative overflow-hidden">
+            <div class="w-full h-full bg-gradient-to-br from-amber-800 to-yellow-900 flex items-center justify-center">
+              <span class="material-symbols-outlined text-white product-icon text-[5rem]">science</span>
+            </div>
+            <div class="shimmer-overlay"></div>
+            <div class="absolute top-3 right-3 bg-surface-container-high text-on-surface-variant
+                        text-[10px] font-black px-2 py-1 uppercase tracking-widest border border-outline-variant/30">
+              Custom Order
+            </div>
+          </div>
+          <div class="p-6 flex flex-col flex-1">
+            <h3 class="font-bold text-xl text-primary mb-3 group-hover:text-secondary transition-colors duration-300">
+              Chem-Safe Flex UHMWPE
+            </h3>
+            <div class="flex flex-wrap gap-2 mb-4">
+              <span class="bg-surface-container-low text-on-surface-variant text-xs px-2 py-1 font-mono uppercase">250 PSI</span>
+              <span class="bg-surface-container-low text-on-surface-variant text-xs px-2 py-1 font-mono uppercase">UHMWPE Tube</span>
+            </div>
+            <p class="text-sm text-on-surface-variant mb-8 flex-1 leading-relaxed">
+              Engineered for handling 98% of common industrial chemicals, solvents, and corrosive acids.
+              Highly flexible with EPDM abrasion-resistant cover.
+            </p>
+            <button onclick="openModal('Chem-Safe Flex UHMWPE','250 PSI | UHMWPE inner tube | EPDM cover | 98% chemical resistance | Temp: -30°C to +80°C | Custom lengths available')"
+                    class="btn-ripple inline-flex justify-center items-center bg-secondary text-on-secondary
+                           py-3 px-4 text-sm font-bold uppercase tracking-wide hover:bg-primary transition-colors">
+              View Details
+            </button>
+          </div>
+        </article>
+
+        <!-- Producto 3: Aero-Steel PTFE -->
+        <article class="product-card bg-surface-container-lowest flex flex-col overflow-hidden group reveal reveal-d3" data-cat="steam">
+          <div class="w-full h-52 bg-surface-variant relative overflow-hidden">
+            <div class="w-full h-full bg-gradient-to-br from-zinc-700 to-zinc-900 flex items-center justify-center">
+              <span class="material-symbols-outlined text-white product-icon text-[5rem]">thermostat</span>
+            </div>
+            <div class="shimmer-overlay"></div>
+            <div class="absolute top-3 right-3 bg-tertiary-fixed text-on-tertiary-fixed
+                        text-[10px] font-black px-2 py-1 uppercase tracking-widest">In Stock</div>
+          </div>
+          <div class="p-6 flex flex-col flex-1">
+            <h3 class="font-bold text-xl text-primary mb-3 group-hover:text-secondary transition-colors duration-300">
+              Aero-Steel™ PTFE Core
+            </h3>
+            <div class="flex flex-wrap gap-2 mb-4">
+              <span class="bg-surface-container-low text-on-surface-variant text-xs px-2 py-1 font-mono uppercase">3000 PSI</span>
+              <span class="bg-surface-container-low text-on-surface-variant text-xs px-2 py-1 font-mono uppercase">SS Braid</span>
+            </div>
+            <p class="text-sm text-on-surface-variant mb-8 flex-1 leading-relaxed">
+              Smooth bore PTFE core with high-tensile 304 stainless steel wire braid. Ideal for high temperature
+              steam, compressor discharge, and aggressive media.
+            </p>
+            <button onclick="openModal('Aero-Steel™ PTFE Core','3000 PSI | PTFE smooth bore | 304 SS braid | Temp: -73°C to +260°C | Steam & aggressive media rated | SAE 100R14')"
+                    class="btn-ripple inline-flex justify-center items-center bg-secondary text-on-secondary
+                           py-3 px-4 text-sm font-bold uppercase tracking-wide hover:bg-primary transition-colors">
+              View Details
+            </button>
+          </div>
+        </article>
+
+        <!-- Producto 4: Aqua-Max -->
+        <article class="product-card bg-surface-container-lowest flex flex-col overflow-hidden group reveal reveal-d1" data-cat="water">
+          <div class="w-full h-52 bg-surface-variant relative overflow-hidden">
+            <div class="w-full h-full bg-gradient-to-br from-blue-800 to-blue-950 flex items-center justify-center">
+              <span class="material-symbols-outlined text-white product-icon text-[5rem]">water</span>
+            </div>
+            <div class="shimmer-overlay"></div>
+            <div class="absolute top-3 right-3 bg-tertiary-fixed text-on-tertiary-fixed
+                        text-[10px] font-black px-2 py-1 uppercase tracking-widest">In Stock</div>
+          </div>
+          <div class="p-6 flex flex-col flex-1">
+            <h3 class="font-bold text-xl text-primary mb-3 group-hover:text-secondary transition-colors duration-300">
+              Aqua-Max Layflat Series
+            </h3>
+            <div class="flex flex-wrap gap-2 mb-4">
+              <span class="bg-surface-container-low text-on-surface-variant text-xs px-2 py-1 font-mono uppercase">150 PSI</span>
+              <span class="bg-surface-container-low text-on-surface-variant text-xs px-2 py-1 font-mono uppercase">PVC / Nitrile</span>
+            </div>
+            <p class="text-sm text-on-surface-variant mb-8 flex-1 leading-relaxed">
+              Heavy-duty layflat water discharge hose. Premium PVC/Nitrile blend for enhanced abrasion resistance
+              in mining and construction environments.
+            </p>
+            <button onclick="openModal('Aqua-Max Layflat Series','150 PSI | PVC/Nitrile blend | Layflat design | Mining & construction rated | Abrasion resistant cover | Diameters: 2&quot; to 10&quot;')"
+                    class="btn-ripple inline-flex justify-center items-center bg-secondary text-on-secondary
+                           py-3 px-4 text-sm font-bold uppercase tracking-wide hover:bg-primary transition-colors">
+              View Details
+            </button>
+          </div>
+        </article>
+
+        <!-- Producto 5: ProFlex R15 -->
+        <article class="product-card bg-surface-container-lowest flex flex-col overflow-hidden group reveal reveal-d2" data-cat="hydraulic">
+          <div class="w-full h-52 bg-surface-variant relative overflow-hidden">
+            <div class="w-full h-full bg-gradient-to-br from-slate-600 to-slate-800 flex items-center justify-center">
+              <span class="material-symbols-outlined text-white product-icon text-[5rem]">settings</span>
+            </div>
+            <div class="shimmer-overlay"></div>
+            <div class="absolute top-3 right-3 bg-tertiary-fixed text-on-tertiary-fixed
+                        text-[10px] font-black px-2 py-1 uppercase tracking-widest">In Stock</div>
+          </div>
+          <div class="p-6 flex flex-col flex-1">
+            <h3 class="font-bold text-xl text-primary mb-3 group-hover:text-secondary transition-colors duration-300">
+              ProFlex™ Multi-Spiral R15
+            </h3>
+            <div class="flex flex-wrap gap-2 mb-4">
+              <span class="bg-surface-container-low text-on-surface-variant text-xs px-2 py-1 font-mono uppercase">6000 PSI</span>
+              <span class="bg-surface-container-low text-on-surface-variant text-xs px-2 py-1 font-mono uppercase">6-Spiral</span>
+            </div>
+            <p class="text-sm text-on-surface-variant mb-8 flex-1 leading-relaxed">
+              Six-spiral wire reinforcement for ultra-high pressure hydraulic systems.
+              Superior impulse resistance for mobile heavy equipment applications.
+            </p>
+            <button onclick="openModal('ProFlex™ Multi-Spiral R15','6000 PSI | 6-spiral wire reinforcement | SAE 100R15 | Temp: -40°C to +121°C | Mobile heavy equipment | Impulse tested to 500,000 cycles')"
+                    class="btn-ripple inline-flex justify-center items-center bg-secondary text-on-secondary
+                           py-3 px-4 text-sm font-bold uppercase tracking-wide hover:bg-primary transition-colors">
+              View Details
+            </button>
+          </div>
+        </article>
+
+        <!-- Producto 6: CorroPro EPDM -->
+        <article class="product-card bg-surface-container-lowest flex flex-col overflow-hidden group reveal reveal-d3" data-cat="chemical">
+          <div class="w-full h-52 bg-surface-variant relative overflow-hidden">
+            <div class="w-full h-full bg-gradient-to-br from-emerald-900 to-teal-900 flex items-center justify-center">
+              <span class="material-symbols-outlined text-white product-icon text-[5rem]">local_gas_station</span>
+            </div>
+            <div class="shimmer-overlay"></div>
+            <div class="absolute top-3 right-3 bg-surface-container-high text-on-surface-variant
+                        text-[10px] font-black px-2 py-1 uppercase tracking-widest border border-outline-variant/30">
+              Lead Time: 5 Days
+            </div>
+          </div>
+          <div class="p-6 flex flex-col flex-1">
+            <h3 class="font-bold text-xl text-primary mb-3 group-hover:text-secondary transition-colors duration-300">
+              CorroPro™ EPDM Industrial
+            </h3>
+            <div class="flex flex-wrap gap-2 mb-4">
+              <span class="bg-surface-container-low text-on-surface-variant text-xs px-2 py-1 font-mono uppercase">400 PSI</span>
+              <span class="bg-surface-container-low text-on-surface-variant text-xs px-2 py-1 font-mono uppercase">EPDM Core</span>
+            </div>
+            <p class="text-sm text-on-surface-variant mb-8 flex-1 leading-relaxed">
+              Industrial-grade EPDM hose for steam, hot water, and weathering applications.
+              Ozone and UV resistant outer cover for outdoor installations.
+            </p>
+            <button onclick="openModal('CorroPro™ EPDM Industrial','400 PSI | EPDM core | Ozone/UV resistant cover | Steam rated up to 203°C | Weathering applications | NSF-61 approved')"
+                    class="btn-ripple inline-flex justify-center items-center bg-secondary text-on-secondary
+                           py-3 px-4 text-sm font-bold uppercase tracking-wide hover:bg-primary transition-colors">
+              View Details
+            </button>
+          </div>
+        </article>
+
+      </div><!-- /product-grid -->
+    </div>
+  </section>
+
+  <!-- Modal de detalle de producto -->
+  <div id="product-modal"
+       class="fixed inset-0 z-50 flex items-center justify-center bg-primary/80 backdrop-blur-sm"
+       style="display:none;">
+    <div id="modal-inner" class="bg-surface-container-lowest max-w-lg w-full mx-4 p-8 relative shadow-2xl">
+      <button onclick="closeModal()" class="absolute top-4 right-4 text-on-surface-variant hover:text-primary
+                                            transition-colors hover:rotate-90 duration-300 inline-block">
+        <span class="material-symbols-outlined">close</span>
+      </button>
+      <div class="mb-2">
+        <span class="bg-tertiary-container text-on-tertiary-container text-xs font-black px-2 py-1 uppercase tracking-widest">
+          Technical Sheet
+        </span>
+      </div>
+      <h3 id="modal-title" class="text-2xl font-black text-primary uppercase tracking-tight mt-4 mb-6"></h3>
+      <div id="modal-specs" class="space-y-3 mb-8"></div>
+      <div class="flex gap-4">
+        <button onclick="navigate('contact'); closeModal()"
+                class="btn-ripple bg-[#f37a00] hover:bg-[#ff8000] text-white font-bold text-sm px-8 py-3 uppercase tracking-wide transition-colors">
+          Request a Quote
+        </button>
+        <button onclick="closeModal()"
+                class="btn-ripple border border-outline-variant/40 text-on-surface-variant font-semibold text-sm px-6 py-3
+                       uppercase tracking-wide hover:border-primary hover:text-primary transition-colors">
+          Close
+        </button>
+      </div>
+    </div>
+  </div>
+
+</div><!-- /page-products -->
+
+
+<!-- ════════════════════════════════════════════════════════════════ -->
+<!--  PÁGINA: ABOUT US                                                -->
+<!-- ════════════════════════════════════════════════════════════════ -->
+<div id="page-about" class="page">
+
+  <!-- Hero about -->
+  <section class="bg-primary py-24 relative overflow-hidden">
+    <div class="absolute inset-0 bg-gradient-to-br from-primary to-primary-container/80 z-0"></div>
+    <div class="absolute inset-0 opacity-10 z-0"
+         style="background-image: radial-gradient(#fff 1px, transparent 1px); background-size: 28px 28px;"></div>
+    <div class="relative z-10 max-w-[1440px] mx-auto px-8">
+      <span class="inline-block bg-tertiary-container text-on-tertiary-container text-xs font-black
+                   px-3 py-1 uppercase tracking-widest mb-4">Who We Are</span>
+      <h1 class="text-4xl md:text-5xl font-black text-white uppercase tracking-[-0.02em] mb-4 max-w-3xl">
+        Mission, Vision &amp; Values
+      </h1>
+      <p class="text-surface-dim text-base max-w-2xl leading-relaxed">
+        Engineering reliability since 1998. Three decades of precision manufacturing and
+        industrial fluid transfer expertise serving critical infrastructure across Latin America.
+      </p>
+    </div>
+  </section>
+
+  <!-- Misión / Visión -->
+  <section class="py-24 bg-surface">
+    <div class="max-w-[1440px] mx-auto px-8 grid grid-cols-1 md:grid-cols-2 gap-12">
+
+      <!-- Misión -->
+      <div class="bg-surface-container-lowest p-10 border-l-4 border-secondary reveal from-left
+                  hover:shadow-lg transition-shadow duration-300">
+        <div class="flex items-center gap-3 mb-6">
+          <span class="material-symbols-outlined text-secondary text-3xl icon-fill
+                       transition-transform duration-300 hover:scale-110">flag</span>
+          <h2 class="text-2xl font-black text-primary uppercase tracking-tight">Mission</h2>
+        </div>
+        <p class="text-on-surface-variant text-base leading-relaxed">
+          To engineer, manufacture, and supply the most reliable industrial fluid transfer solutions
+          in the market — guaranteeing zero-failure performance in the most demanding operational
+          environments, backed by rigorous quality certifications and a world-class technical team.
+        </p>
+      </div>
+
+      <!-- Visión -->
+      <div class="bg-primary p-10 relative overflow-hidden reveal from-right
+                  hover:shadow-xl transition-shadow duration-300">
+        <div class="absolute inset-0 bg-gradient-to-br from-primary to-primary-container/80 z-0"></div>
+        <div class="relative z-10">
+          <div class="flex items-center gap-3 mb-6">
+            <span class="material-symbols-outlined text-[#f37a00] text-3xl icon-fill
+                         transition-transform duration-300 hover:scale-110">visibility</span>
+            <h2 class="text-2xl font-black text-white uppercase tracking-tight">Vision</h2>
+          </div>
+          <p class="text-surface-dim text-base leading-relaxed">
+            To be the foremost reference for industrial hydraulic solutions in Latin America by 2030,
+            expanding our ISO-certified manufacturing capacity and digital engineering capabilities
+            to serve global-scale infrastructure projects.
+          </p>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- Valores -->
+  <section class="py-16 bg-surface-container-low">
+    <div class="max-w-[1440px] mx-auto px-8">
+      <h2 class="text-3xl font-black text-primary uppercase tracking-tight mb-12 section-title reveal">Core Values</h2>
+      <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-6">
+
+        <div class="value-card bg-surface-container-lowest p-8 reveal reveal-d1">
+          <span class="material-symbols-outlined text-secondary text-3xl mb-4 block value-icon">shield</span>
+          <h3 class="font-bold text-primary text-lg mb-3 uppercase">Safety First</h3>
+          <p class="text-sm text-on-surface-variant leading-relaxed">
+            Every product undergoes hydrostatic pressure testing before delivery.
+            Zero compromises on structural integrity.
+          </p>
+        </div>
+
+        <div class="value-card bg-surface-container-lowest p-8 reveal reveal-d2">
+          <span class="material-symbols-outlined text-secondary text-3xl mb-4 block value-icon">precision_manufacturing</span>
+          <h3 class="font-bold text-primary text-lg mb-3 uppercase">Precision</h3>
+          <p class="text-sm text-on-surface-variant leading-relaxed">
+            Millimeter-accurate fabrication. Every assembly is built to exact technical specifications
+            with traceable material certifications.
+          </p>
+        </div>
+
+        <div class="value-card bg-surface-container-lowest p-8 reveal reveal-d3">
+          <span class="material-symbols-outlined text-secondary text-3xl mb-4 block value-icon">handshake</span>
+          <h3 class="font-bold text-primary text-lg mb-3 uppercase">Commitment</h3>
+          <p class="text-sm text-on-surface-variant leading-relaxed">
+            24/7 emergency response. Our engineering team is always available for critical
+            field support and rapid deployment logistics.
+          </p>
+        </div>
+
+        <div class="value-card bg-surface-container-lowest p-8 reveal reveal-d4">
+          <span class="material-symbols-outlined text-secondary text-3xl mb-4 block value-icon">eco</span>
+          <h3 class="font-bold text-primary text-lg mb-3 uppercase">Sustainability</h3>
+          <p class="text-sm text-on-surface-variant leading-relaxed">
+            Responsible sourcing, waste reduction in our manufacturing process,
+            and long-life products that reduce total environmental impact.
+          </p>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- Estadísticas empresa con contadores -->
+  <section class="py-20 bg-primary relative overflow-hidden">
+    <div class="absolute inset-0 bg-gradient-to-br from-primary to-primary-container/80 z-0"></div>
+    <div class="relative z-10 max-w-[1440px] mx-auto px-8">
+      <div class="grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
+
+        <div class="reveal reveal-d1 scale-in">
+          <p class="text-4xl font-black text-white tracking-tighter mb-2">1998</p>
+          <p class="text-xs font-semibold text-surface-variant uppercase tracking-widest">Founded</p>
+        </div>
+
+        <div class="reveal reveal-d2 scale-in metric-block" data-target="3000" data-prefix="+" data-suffix="">
+          <p class="text-4xl font-black text-[#ff8000] tracking-tighter mb-2">
+            <span data-counter>+3,000</span>
+          </p>
+          <p class="text-xs font-semibold text-surface-variant uppercase tracking-widest">Active Clients</p>
+        </div>
+
+        <div class="reveal reveal-d3 scale-in metric-block" data-target="18" data-prefix="" data-suffix="">
+          <p class="text-4xl font-black text-white tracking-tighter mb-2">
+            <span data-counter>18</span>
+          </p>
+          <p class="text-xs font-semibold text-surface-variant uppercase tracking-widest">Countries Served</p>
+        </div>
+
+        <div class="reveal reveal-d4 scale-in">
+          <p class="text-4xl font-black text-secondary-fixed-dim tracking-tighter mb-2">ISO 9001</p>
+          <p class="text-xs font-semibold text-surface-variant uppercase tracking-widest">Certified</p>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+</div><!-- /page-about -->
+
+
+<!-- ════════════════════════════════════════════════════════════════ -->
+<!--  PÁGINA: CONTACT                                                 -->
+<!-- ════════════════════════════════════════════════════════════════ -->
+<div id="page-contact" class="page">
+
+  <!-- Hero contact -->
+  <section class="bg-primary py-24 relative overflow-hidden">
+    <div class="absolute inset-0 bg-gradient-to-br from-primary to-primary-container/80 z-0"></div>
+    <div class="absolute inset-0 opacity-10 z-0"
+         style="background-image: radial-gradient(#fff 1px, transparent 1px); background-size: 28px 28px;"></div>
+    <div class="relative z-10 max-w-[1440px] mx-auto px-8">
+      <span class="inline-flex items-center gap-2 bg-tertiary-container text-on-tertiary-container
+                   text-xs font-black px-3 py-1 uppercase tracking-widest mb-4">
+        <span class="material-symbols-outlined text-sm icon-fill">headset_mic</span>
+        Global Assistance
+      </span>
+      <h1 class="text-4xl md:text-5xl font-black text-white uppercase tracking-[-0.02em] mb-4">
+        Engineering Support
+      </h1>
+      <p class="text-surface-dim text-base max-w-2xl leading-relaxed">
+        Direct line to our technical specialists and field engineering teams for precision guidance,
+        specification inquiries, and rapid deployment support.
+      </p>
+    </div>
+  </section>
+
+  <!-- Formulario + datos de contacto -->
+  <section class="py-24 bg-surface">
+    <div class="max-w-[1440px] mx-auto px-8 grid grid-cols-1 lg:grid-cols-12 gap-16">
+
+      <!-- Formulario -->
+      <div class="lg:col-span-7 reveal from-left">
+        <div class="bg-surface-container-lowest p-8 md:p-12 border border-outline-variant/10">
+          <h2 class="text-3xl font-black text-primary uppercase tracking-tight mb-2">Direct Inquiry</h2>
+          <p class="text-on-surface-variant text-sm mb-10">
+            Submit your technical requirements or support request.
+            A specialist will be assigned within 2 hours during standard operating times.
+          </p>
+
+          <div class="space-y-8">
+            <!-- Fila nombre -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div class="flex flex-col">
+                <label class="text-xs font-black text-primary uppercase tracking-wider mb-2">First Name</label>
+                <input id="f-firstname" type="text" placeholder="Enter first name"
+                       class="field-input bg-surface-container-highest border border-outline-variant/15
+                              text-on-surface p-3.5 rounded-sm">
+              </div>
+              <div class="flex flex-col">
+                <label class="text-xs font-black text-primary uppercase tracking-wider mb-2">Last Name</label>
+                <input id="f-lastname" type="text" placeholder="Enter last name"
+                       class="field-input bg-surface-container-highest border border-outline-variant/15
+                              text-on-surface p-3.5 rounded-sm">
+              </div>
+            </div>
+
+            <!-- Email -->
+            <div class="flex flex-col">
+              <label class="text-xs font-black text-primary uppercase tracking-wider mb-2">Corporate Email</label>
+              <input id="f-email" type="email" placeholder="name@company.com"
+                     class="field-input bg-surface-container-highest border border-outline-variant/15
+                            text-on-surface p-3.5 rounded-sm">
+            </div>
+
+            <!-- Empresa -->
+            <div class="flex flex-col">
+              <label class="text-xs font-black text-primary uppercase tracking-wider mb-2">Company / Organization</label>
+              <input id="f-company" type="text" placeholder="Legal entity name"
+                     class="field-input bg-surface-container-highest border border-outline-variant/15
+                            text-on-surface p-3.5 rounded-sm">
+            </div>
+
+            <!-- Tipo de consulta -->
+            <div class="flex flex-col">
+              <label class="text-xs font-black text-primary uppercase tracking-wider mb-2">Inquiry Type</label>
+              <select id="f-type"
+                      class="field-input bg-surface-container-highest border border-outline-variant/15
+                             text-on-surface p-3.5 rounded-sm appearance-none cursor-pointer">
+                <option>Technical Specification Request</option>
+                <option>Equipment Maintenance</option>
+                <option>Procurement &amp; Logistics</option>
+                <option>Custom Hose Assembly</option>
+                <option>General Support</option>
+              </select>
+            </div>
+
+            <!-- Mensaje -->
+            <div class="flex flex-col">
+              <label class="text-xs font-black text-primary uppercase tracking-wider mb-2">Detailed Message</label>
+              <textarea id="f-message" rows="5" placeholder="Include relevant part numbers or project parameters..."
+                        class="field-input bg-surface-container-highest border border-outline-variant/15
+                               text-on-surface p-3.5 rounded-sm resize-none"></textarea>
+            </div>
+
+            <!-- Submit -->
+            <div>
+              <button onclick="submitForm()"
+                      class="btn-ripple bg-[#f37a00] hover:bg-[#ff8000] text-white font-black text-sm
+                             px-10 py-4 uppercase tracking-widest transition-colors
+                             inline-flex items-center gap-3">
+                Transmit Protocol
+                <span class="material-symbols-outlined text-[18px]">send</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Datos de contacto -->
+      <div class="lg:col-span-5 space-y-6 reveal from-right">
+
+        <!-- Headquarters -->
+        <div class="bg-surface-container-low p-8 flex items-start gap-5 bento-card">
+          <div class="w-12 h-12 bg-primary-container flex items-center justify-center shrink-0
+                      transition-transform duration-300 hover:scale-110">
+            <span class="material-symbols-outlined text-inverse-primary icon-fill">domain</span>
+          </div>
+          <div>
+            <h3 class="font-black text-primary uppercase tracking-tight mb-1">Headquarters</h3>
+            <p class="text-sm text-on-surface-variant leading-relaxed">
+              Av. Industria 4200, Zona Industrial Norte<br>
+              Monterrey, N.L. 64000 — México
+            </p>
+          </div>
+        </div>
+
+        <!-- Teléfono -->
+        <div class="bg-surface-container-low p-8 flex items-start gap-5 bento-card">
+          <div class="w-12 h-12 bg-primary-container flex items-center justify-center shrink-0
+                      transition-transform duration-300 hover:scale-110">
+            <span class="material-symbols-outlined text-inverse-primary icon-fill">call</span>
+          </div>
+          <div>
+            <h3 class="font-black text-primary uppercase tracking-tight mb-1">Direct Line</h3>
+            <p class="text-sm text-on-surface-variant">+52 (81) 8000-4200</p>
+            <p class="text-xs text-on-surface-variant mt-1">Mon–Fri 08:00–18:00 CST</p>
+          </div>
+        </div>
+
+        <!-- Emergencias 24/7 -->
+        <div class="bg-tertiary-container p-8 flex items-start gap-5 bento-card">
+          <div class="w-12 h-12 bg-[#f37a00] flex items-center justify-center shrink-0
+                      transition-transform duration-300 hover:scale-110 hover:rotate-12">
+            <span class="material-symbols-outlined text-white icon-fill">emergency</span>
+          </div>
+          <div>
+            <h3 class="font-black text-on-tertiary-container uppercase tracking-tight mb-1">24/7 Emergency</h3>
+            <p class="text-sm text-on-tertiary-container/80">+52 (81) 8000-9911</p>
+            <p class="text-xs text-on-tertiary-container/70 mt-1">Critical field support, always on.</p>
+          </div>
+        </div>
+
+        <!-- Email técnico -->
+        <div class="bg-surface-container-low p-8 flex items-start gap-5 bento-card">
+          <div class="w-12 h-12 bg-primary-container flex items-center justify-center shrink-0
+                      transition-transform duration-300 hover:scale-110">
+            <span class="material-symbols-outlined text-inverse-primary icon-fill">mail</span>
+          </div>
+          <div>
+            <h3 class="font-black text-primary uppercase tracking-tight mb-1">Technical Email</h3>
+            <p class="text-sm text-secondary">engineering@becaindustrial.com</p>
+            <p class="text-xs text-on-surface-variant mt-1">Response within 2 business hours</p>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+</div><!-- /page-contact -->
+
+
+<!-- ════════════════════════════════════════════════════════════════ -->
+<!--  FOOTER COMPARTIDO                                               -->
+<!-- ════════════════════════════════════════════════════════════════ -->
+<footer class="bg-surface-container-low border-t border-slate-200 mt-auto">
+  <div class="max-w-[1440px] mx-auto px-8 py-12 grid grid-cols-1 md:grid-cols-4 gap-8">
+    <!-- Brand -->
+    <div class="md:col-span-2 flex flex-col gap-4">
+      <div class="flex items-center gap-2">
+        <span class="material-symbols-outlined text-[#f37a00] icon-fill">precision_manufacturing</span>
+        <span class="font-black text-primary uppercase tracking-tighter">BECA INDUSTRIAL</span>
+      </div>
+      <p class="text-xs text-slate-500 max-w-sm">
+        © 2025 BECA INDUSTRIAL. PRECISION ENGINEERED. ALL RIGHTS RESERVED.
+      </p>
+    </div>
+    <!-- Links col 1 -->
+    <div class="flex flex-col gap-3 text-xs font-medium text-slate-600">
+      <button onclick="navigate('home')"     class="text-left hover:text-[#f37a00] transition-colors uppercase">Home</button>
+      <button onclick="navigate('products')" class="text-left hover:text-[#f37a00] transition-colors uppercase">Products</button>
+      <button onclick="navigate('about')"    class="text-left hover:text-[#f37a00] transition-colors uppercase">About Us</button>
+    </div>
+    <!-- Links col 2 -->
+    <div class="flex flex-col gap-3 text-xs font-medium text-slate-600">
+      <button onclick="navigate('contact')"  class="text-left text-secondary font-bold hover:text-[#f37a00] transition-colors uppercase">Safety Compliance</button>
+      <button onclick="navigate('contact')"  class="text-left hover:text-[#f37a00] transition-colors uppercase">Technical Support</button>
+      <a href="#"                            class="text-left hover:text-[#f37a00] transition-colors uppercase">Privacy Policy</a>
+    </div>
+  </div>
+</footer>
+
+<!-- Toast de confirmación -->
+<div id="toast">
+  <span class="material-symbols-outlined text-[#f37a00] text-sm mr-2 align-middle icon-fill">check_circle</span>
+  Inquiry transmitted — a specialist will contact you within 2 hours.
+</div>
+
+
+<!-- ════════════════════════════════════════════════════════════════ -->
+<!--  LÓGICA JS                                                       -->
+<!-- ════════════════════════════════════════════════════════════════ -->
+<script>
+// ══════════════════════════════════════════════════════════════════
+// NAVEGACIÓN SPA — con transición fade entre páginas
+// ══════════════════════════════════════════════════════════════════
+function navigate(page) {
+  // Obtener página activa actual
+  const current = document.querySelector('.page.active');
+
+  // Si ya estamos en esa página, no hacer nada
+  if (current && current.id === 'page-' + page) return;
+
+  // Ocultar página actual
+  if (current) current.classList.remove('active');
+
+  // Activar la nueva página
+  const next = document.getElementById('page-' + page);
+  next.classList.add('active');
+
+  // Actualizar estado activo en los links de navegación
+  document.querySelectorAll('.nav-link').forEach(link => {
+    link.classList.remove('active');
+    if (link.dataset.page === page) link.classList.add('active');
+  });
+
+  // Scroll al tope con comportamiento suave
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+
+  // Re-inicializar IntersectionObserver para los elementos de la nueva página
+  // (porque los .reveal de páginas ocultas no se observan correctamente)
+  setTimeout(initReveal, 50);
+
+  // Disparar contadores si los hay en la nueva página visible
+  setTimeout(triggerVisibleCounters, 200);
+}
+
+// ══════════════════════════════════════════════════════════════════
+// MENÚ MÓVIL
+// ══════════════════════════════════════════════════════════════════
+function toggleMobile() {
+  document.getElementById('mobile-menu').classList.toggle('open');
+}
+
+// ══════════════════════════════════════════════════════════════════
+// FILTRO DE PRODUCTOS — con micro-animación de desvanecimiento
+// ══════════════════════════════════════════════════════════════════
+function filterProducts(cat, btn) {
+  // Actualizar botón activo
+  document.querySelectorAll('.filter-btn').forEach(b => {
+    b.classList.remove('active', 'bg-primary', 'text-white');
+    b.classList.add('bg-surface-container-lowest', 'text-on-surface-variant');
+  });
+  btn.classList.add('active', 'bg-primary', 'text-white');
+  btn.classList.remove('bg-surface-container-lowest', 'text-on-surface-variant');
+
+  // Animar tarjetas: fade out → filter → fade in
+  const cards = document.querySelectorAll('#product-grid article');
+  cards.forEach(card => {
+    card.style.transition = 'opacity 0.2s ease, transform 0.2s ease';
+    card.style.opacity = '0';
+    card.style.transform = 'scale(0.97)';
+  });
+
+  setTimeout(() => {
+    cards.forEach(card => {
+      const visible = cat === 'all' || card.dataset.cat === cat;
+      card.style.display = visible ? '' : 'none';
+    });
+    // Pequeño retraso para el repaint antes del fade-in
+    requestAnimationFrame(() => {
+      cards.forEach(card => {
+        if (card.style.display !== 'none') {
+          card.style.opacity = '1';
+          card.style.transform = '';
+        }
+      });
+    });
+  }, 200);
+}
+
+// ══════════════════════════════════════════════════════════════════
+// MODAL DE PRODUCTO — con animación de escala
+// ══════════════════════════════════════════════════════════════════
+function openModal(title, specs) {
+  document.getElementById('modal-title').textContent = title;
+
+  // Generar filas de specs desde string separado por pipe
+  const specsHtml = specs.split('|').map(s => `
+    <div class="flex items-start gap-3 py-2 border-b border-surface-container-high last:border-0">
+      <span class="material-symbols-outlined text-secondary text-sm mt-0.5">check_small</span>
+      <span class="text-sm text-on-surface-variant">${s.trim()}</span>
+    </div>
+  `).join('');
+
+  document.getElementById('modal-specs').innerHTML = specsHtml;
+
+  const modal = document.getElementById('product-modal');
+  modal.style.display = 'flex';
+  document.body.style.overflow = 'hidden';
+
+  // Activar la transición de entrada del modal-inner
+  requestAnimationFrame(() => {
+    modal.classList.add('open');
+  });
+}
+
+function closeModal() {
+  const modal = document.getElementById('product-modal');
+  modal.classList.remove('open');
+  // Esperar a que termine la transición antes de ocultar
+  setTimeout(() => {
+    modal.style.display = 'none';
+    document.body.style.overflow = '';
+  }, 350);
+}
+
+// Cerrar modal con Escape
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape') closeModal();
+});
+
+// Cerrar modal al clic en el overlay (fuera del contenido)
+document.getElementById('product-modal').addEventListener('click', function(e) {
+  if (e.target === this) closeModal();
+});
+
+// ══════════════════════════════════════════════════════════════════
+// FORMULARIO DE CONTACTO — validación + animación de error
+// ══════════════════════════════════════════════════════════════════
+function submitForm() {
+  const required = ['f-firstname', 'f-email', 'f-message'];
+  let valid = true;
+
+  required.forEach(id => {
+    const el = document.getElementById(id);
+    if (!el.value.trim()) {
+      // Marcar campo con borde rojo y animación de shake
+      el.style.borderColor = '#ba1a1a';
+      el.style.animation = 'shakeField 0.4s ease';
+      valid = false;
+      setTimeout(() => {
+        el.style.borderColor = '';
+        el.style.animation = '';
+      }, 3000);
+    }
+  });
+
+  if (!valid) return;
+
+  // Limpiar campos
+  ['f-firstname','f-lastname','f-email','f-company','f-message'].forEach(id => {
+    document.getElementById(id).value = '';
+  });
+
+  // Mostrar toast de confirmación
+  const toast = document.getElementById('toast');
+  toast.classList.add('show');
+  setTimeout(() => toast.classList.remove('show'), 4500);
+}
+
+// Animación shake para campos inválidos
+const shakeStyle = document.createElement('style');
+shakeStyle.textContent = `
+  @keyframes shakeField {
+    0%, 100% { transform: translateX(0); }
+    20%       { transform: translateX(-6px); }
+    40%       { transform: translateX(6px); }
+    60%       { transform: translateX(-4px); }
+    80%       { transform: translateX(4px); }
+  }
+`;
+document.head.appendChild(shakeStyle);
+
+// ══════════════════════════════════════════════════════════════════
+// EFECTO RIPPLE en botones con clase .btn-ripple
+// ══════════════════════════════════════════════════════════════════
+document.addEventListener('click', function(e) {
+  const btn = e.target.closest('.btn-ripple');
+  if (!btn) return;
+
+  const rect = btn.getBoundingClientRect();
+  const size = Math.max(rect.width, rect.height) * 2;
+  const x = e.clientX - rect.left - size / 2;
+  const y = e.clientY - rect.top  - size / 2;
+
+  const ripple = document.createElement('span');
+  ripple.className = 'ripple';
+  ripple.style.cssText = `width:${size}px; height:${size}px; left:${x}px; top:${y}px;`;
+  btn.appendChild(ripple);
+
+  // Limpiar el elemento ripple después de la animación
+  ripple.addEventListener('animationend', () => ripple.remove());
+});
+
+// ══════════════════════════════════════════════════════════════════
+// INTERSECTION OBSERVER — scroll reveal para elementos .reveal
+// ══════════════════════════════════════════════════════════════════
+let revealObserver;
+
+function initReveal() {
+  // Desconectar observer previo si existe
+  if (revealObserver) revealObserver.disconnect();
+
+  revealObserver = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('visible');
+        // Disparar contador si el elemento tiene data-counter
+        const counters = entry.target.querySelectorAll('[data-counter]');
+        counters.forEach(el => animateCounter(el));
+        // Activar línea decorativa de títulos
+        if (entry.target.classList.contains('section-title')) {
+          entry.target.classList.add('visible');
+        }
+        // Una vez visible, ya no necesitamos observarlo
+        revealObserver.unobserve(entry.target);
+      }
+    });
+  }, {
+    threshold: 0.12,      // Activar cuando 12% del elemento es visible
+    rootMargin: '0px 0px -40px 0px'  // Margen inferior negativo para activación anticipada
+  });
+
+  // Observar todos los .reveal dentro de la página activa
+  document.querySelectorAll('.page.active .reveal').forEach(el => {
+    revealObserver.observe(el);
+  });
+
+  // También observar .section-title dentro de páginas activas
+  document.querySelectorAll('.page.active .section-title').forEach(el => {
+    revealObserver.observe(el);
+  });
+}
+
+// ══════════════════════════════════════════════════════════════════
+// CONTADOR ANIMADO — easing suave de 0 al valor destino
+// ══════════════════════════════════════════════════════════════════
+function animateCounter(el) {
+  // Evitar re-animaciones si ya corrió
+  if (el.dataset.animated) return;
+  el.dataset.animated = '1';
+
+  // Leer configuración desde el bloque padre (.metric-block)
+  const block  = el.closest('.metric-block');
+  if (!block) return;
+
+  const target  = parseFloat(block.dataset.target);   // Valor final
+  const prefix  = block.dataset.prefix  || '';         // Ejemplo: "+"
+  const suffix  = block.dataset.suffix  || '';         // Ejemplo: "%"
+  const isFloat = !Number.isInteger(target);
+  const decimals = isFloat ? 1 : 0;
+
+  const duration = 1800; // ms de duración de la animación
+  const startTime = performance.now();
+
+  function step(now) {
+    const elapsed  = now - startTime;
+    const progress = Math.min(elapsed / duration, 1);
+    // Easing: easeOutCubic
+    const ease     = 1 - Math.pow(1 - progress, 3);
+    const current  = target * ease;
+
+    // Formatear con separador de miles si aplica
+    const formatted = current >= 1000
+      ? Math.round(current).toLocaleString('en-US')
+      : current.toFixed(decimals);
+
+    el.textContent = prefix + formatted + suffix;
+
+    if (progress < 1) requestAnimationFrame(step);
+  }
+
+  requestAnimationFrame(step);
+}
+
+// Disparar contadores que ya son visibles (p.ej. al navegar a la sección)
+function triggerVisibleCounters() {
+  document.querySelectorAll('.page.active .metric-block').forEach(block => {
+    const rect = block.getBoundingClientRect();
+    if (rect.top < window.innerHeight && rect.bottom > 0) {
+      const counter = block.querySelector('[data-counter]');
+      if (counter) animateCounter(counter);
+    }
+  });
+}
+
+// ══════════════════════════════════════════════════════════════════
+// PARALLAX DEL HERO — mover el patrón de puntos al scrollear
+// ══════════════════════════════════════════════════════════════════
+(function initParallax() {
+  const dots   = document.getElementById('hero-dots');
+  const hero   = document.getElementById('hero-section');
+  if (!dots || !hero) return;
+
+  let ticking = false;
+
+  window.addEventListener('scroll', () => {
+    if (ticking) return;
+    requestAnimationFrame(() => {
+      const scrollY  = window.scrollY;
+      const heroH    = hero.offsetHeight;
+      // Solo aplicar parallax mientras el hero sea visible
+      if (scrollY < heroH) {
+        // Factor 0.3: el fondo se mueve a 30% de la velocidad del scroll
+        dots.style.transform = `translateY(${scrollY * 0.3}px)`;
+      }
+      ticking = false;
+    });
+    ticking = true;
+  }, { passive: true });
+})();
+
+// ══════════════════════════════════════════════════════════════════
+// INICIALIZACIÓN AL CARGAR
+// ══════════════════════════════════════════════════════════════════
+window.addEventListener('DOMContentLoaded', () => {
+  initReveal();
+
+  // Disparar contadores del hero después de sus animaciones de entrada
+  setTimeout(() => {
+    document.querySelectorAll('#page-home .metric-block').forEach(block => {
+      const counter = block.querySelector('[data-counter]');
+      if (counter) animateCounter(counter);
+    });
+  }, 800); // Esperar al delay-4 del hero
+});
+</script>
+
+</body>
+</html>

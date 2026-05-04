@@ -1338,7 +1338,9 @@ function calcBodyFat({ sexo, altura, cintura, cuello, cadera }) {
   if (!isFinite(bf) || bf < 2 || bf > 60) return null;
   return +bf.toFixed(1);
 }
-const calcLeanMass = bf => bf == null ? null : +(100 - bf).toFixed(1);
+// NOTA TDZ: declaración (no `const`) para que esté hoisted y sea accesible
+// desde `loadState() → seedSample()`, que corre antes de llegar a esta línea.
+function calcLeanMass(bf) { return bf == null ? null : +(100 - bf).toFixed(1); }
 
 /* ============================================================
    D.  DATOS DE EJEMPLO — sólo 3 de cada tipo
@@ -1485,7 +1487,10 @@ function loadPerfilToForm() {
   formPerfil.querySelector("input[name=sexo]").value = sexo || "hombre";
   onSexoChange(sexo || "hombre");
 }
-loadPerfilToForm();
+// IMPORTANTE: la llamada inicial a loadPerfilToForm() se difiere hasta el
+// final del script (justo antes de renderAll()). Si se invoca aquí, dispara
+// onSexoChange → updateCalcPreview, que lee `formMedicion` declarado más
+// abajo: ese `const` está en su Temporal Dead Zone y lanza ReferenceError.
 
 formPerfil.addEventListener("submit", e => {
   e.preventDefault();
@@ -2256,6 +2261,10 @@ function renderAll() {
   if (active === "dashboard") renderDashboard();
   if (active === "resumen")   renderSummary();
 }
+// Inicialización diferida: llamamos loadPerfilToForm() aquí, NO arriba
+// donde se declara, para que `formMedicion` ya esté inicializado y
+// updateCalcPreview() no falle con TDZ.
+loadPerfilToForm();
 renderAll();
 
 /* ============================================================

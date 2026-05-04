@@ -1,0 +1,26 @@
+{
+  "name": "Tracker — Performance Dashboard",
+  "short_name": "Tracker",
+  "description": "Seguimiento personal de fitness: ejercicios, mediciones, comidas y métricas semanales.",
+  "start_url": "./tracker.html",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#0a0d10",
+  "theme_color": "#00ff88",
+  "lang": "es",
+  "icons": [
+    {
+      "src": "assets/img/tracker-icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    },
+    {
+      "src": "assets/img/tracker-icon-maskable.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "maskable"
+    }
+  ]
+}

@@ -1,0 +1,2281 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Tracker — Performance Dashboard</title>
+
+<!-- ============================================================
+     PWA · meta básica
+     Edita "name", "theme-color" y "manifest" si reusas el archivo
+     ============================================================ -->
+<link rel="manifest" href="./manifest.json">
+<meta name="theme-color" content="#00ff88">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Tracker">
+<link rel="icon" href="assets/img/tracker-icon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="assets/img/tracker-icon.svg">
+
+<!-- Tipografías: monoespaciada para datos, sans para UI -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+<!-- Chart.js (única dependencia externa) -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+
+<style>
+/* ============================================================
+   1.  TOKENS DE DISEÑO
+   ------------------------------------------------------------
+   Paleta inspirada en dashboards de análisis deportivo:
+   fondo casi negro + verde neón + azul eléctrico.
+   Cambia los valores aquí para repintar toda la app.
+   ============================================================ */
+:root {
+  --bg:           #0a0d10;
+  --bg-elev:      #11161b;
+  --bg-elev-2:    #161c22;
+  --bg-elev-3:    #1c242c;
+  --border:       #1e2530;
+  --border-strong:#2a3340;
+
+  --text:         #e6edf3;
+  --text-muted:   #8b96a3;
+  --text-dim:     #5a6573;
+
+  --green:        #00ff88;
+  --green-soft:   rgba(0,255,136,0.18);
+  --green-bg:     rgba(0,255,136,0.08);
+  --blue:         #0066ff;
+  --blue-soft:    rgba(0,102,255,0.22);
+  --blue-bg:      rgba(0,102,255,0.10);
+
+  --red:          #ff3355;
+  --red-soft:     rgba(255,51,85,0.22);
+  --amber:        #ffaa00;
+  --amber-soft:   rgba(255,170,0,0.22);
+
+  --font-mono: 'JetBrains Mono','Fira Code',ui-monospace,monospace;
+  --font-sans: 'Inter',system-ui,-apple-system,Segoe UI,sans-serif;
+}
+
+/* ============================================================
+   2.  RESET + BASE
+   ============================================================ */
+*,*::before,*::after { box-sizing: border-box; margin: 0; padding: 0; }
+html, body { background: var(--bg); color: var(--text); }
+body {
+  font-family: var(--font-sans);
+  font-size: 14px;
+  line-height: 1.5;
+  min-height: 100vh;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+  padding-bottom: 40px;
+}
+button, input, textarea, select { font-family: inherit; color: inherit; }
+button { cursor: pointer; }
+a { color: var(--green); text-decoration: none; }
+
+/* ============================================================
+   3.  CABECERA (logo + tabs)
+   ============================================================ */
+.app-header {
+  position: sticky; top: 0; z-index: 50;
+  background: rgba(10,13,16,0.92);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border-bottom: 1px solid var(--border);
+}
+.brand {
+  display: flex; align-items: center; gap: 12px;
+  padding: 14px 16px;
+  max-width: 1280px; margin: 0 auto;
+}
+.brand-mark {
+  width: 30px; height: 30px;
+  background: linear-gradient(135deg, var(--green) 0%, var(--blue) 100%);
+  display: grid; place-items: center;
+  font: 800 14px/1 var(--font-mono);
+  color: #001810;
+  position: relative;
+}
+.brand-mark::after {
+  content: ""; position: absolute; inset: 2px;
+  background: var(--bg);
+  z-index: 0;
+}
+.brand-mark span { position: relative; z-index: 1; color: var(--green); }
+.brand h1 {
+  font: 700 12px/1 var(--font-mono);
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+}
+.brand .brand-sub {
+  font: 500 10px/1 var(--font-mono);
+  color: var(--text-dim);
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  margin-top: 3px;
+}
+.brand-actions {
+  margin-left: auto;
+  display: flex; gap: 6px;
+}
+.icon-btn {
+  width: 36px; height: 36px;
+  background: var(--bg-elev);
+  border: 1px solid var(--border);
+  color: var(--text-muted);
+  display: grid; place-items: center;
+  font-size: 16px;
+  transition: all .15s;
+}
+.icon-btn:hover { color: var(--green); border-color: var(--green); }
+
+.tabs {
+  display: flex;
+  overflow-x: auto;
+  border-top: 1px solid var(--border);
+  scrollbar-width: none;
+  max-width: 1280px; margin: 0 auto;
+}
+.tabs::-webkit-scrollbar { display: none; }
+.tab {
+  flex: 0 0 auto;
+  padding: 14px 16px;
+  background: transparent; border: 0;
+  border-bottom: 2px solid transparent;
+  font: 600 11px/1 var(--font-mono);
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  display: flex; align-items: center; gap: 8px;
+  white-space: nowrap;
+  transition: color .15s, border-color .15s;
+}
+.tab .tab-num {
+  font-size: 9px;
+  color: var(--text-dim);
+  background: var(--bg-elev);
+  padding: 2px 5px;
+}
+.tab.active { color: var(--green); border-bottom-color: var(--green); }
+.tab.active .tab-num { color: var(--green); border-color: var(--green); }
+.tab:hover:not(.active) { color: var(--text); }
+
+/* ============================================================
+   4.  LAYOUT GENERAL
+   ============================================================ */
+main {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 20px 16px 40px;
+}
+.tab-panel { display: none; animation: fadeIn .25s ease; }
+.tab-panel.active { display: block; }
+@keyframes fadeIn { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: none; } }
+
+.section-title {
+  display: flex; align-items: baseline; gap: 12px;
+  margin-bottom: 18px;
+}
+.section-title h2 {
+  font: 700 22px/1.1 var(--font-sans);
+  letter-spacing: -0.01em;
+}
+.section-title .section-tag {
+  font: 600 10px/1 var(--font-mono);
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--green);
+  padding: 4px 8px;
+  border: 1px solid var(--green-soft);
+  background: var(--green-bg);
+}
+.section-desc {
+  font-size: 13px;
+  color: var(--text-muted);
+  margin-bottom: 24px;
+  max-width: 60ch;
+}
+
+/* ============================================================
+   5.  FORMULARIOS
+   ============================================================ */
+.form-card {
+  background: var(--bg-elev);
+  border: 1px solid var(--border);
+  padding: 18px 16px;
+}
+.form-card + .form-card { margin-top: 16px; }
+
+.field { display: block; margin-bottom: 16px; }
+.field-row { display: grid; gap: 12px; }
+@media(min-width: 520px) { .field-row.cols-2 { grid-template-columns: 1fr 1fr; } }
+@media(min-width: 520px) { .field-row.cols-3 { grid-template-columns: 1fr 1fr 1fr; } }
+
+.field-label {
+  display: flex; justify-content: space-between; align-items: center;
+  font: 600 10px/1 var(--font-mono);
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  margin-bottom: 6px;
+}
+.field-label .value-out {
+  color: var(--green);
+  font-size: 12px;
+  letter-spacing: 0;
+}
+
+.input, .textarea, select {
+  width: 100%;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  color: var(--text);
+  padding: 12px 14px;
+  font: 500 14px/1.3 var(--font-sans);
+  border-radius: 0;
+  transition: border-color .15s, box-shadow .15s;
+}
+.input.mono { font-family: var(--font-mono); }
+.input:focus, .textarea:focus, select:focus {
+  outline: none;
+  border-color: var(--green);
+  box-shadow: 0 0 0 3px var(--green-bg);
+}
+.textarea { min-height: 72px; resize: vertical; }
+
+/* Toggle de tipo (en lugar de dropdown) */
+.toggle-group {
+  display: flex;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  padding: 4px;
+}
+.toggle-btn {
+  flex: 1;
+  padding: 10px 6px;
+  background: transparent;
+  border: 0;
+  font: 600 11px/1 var(--font-mono);
+  text-transform: uppercase;
+  letter-spacing: 0.14em;
+  color: var(--text-muted);
+  transition: all .15s;
+}
+.toggle-btn.active {
+  background: var(--green);
+  color: #001810;
+}
+.toggle-btn:not(.active):hover { color: var(--text); }
+
+/* Slider personalizado */
+input[type=range] {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 100%;
+  background: transparent;
+  height: 26px;
+}
+input[type=range]::-webkit-slider-runnable-track {
+  height: 4px;
+  background: linear-gradient(90deg, var(--green) var(--val,50%), var(--bg-elev-2) var(--val,50%));
+}
+input[type=range]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 18px; height: 18px;
+  background: var(--green);
+  border: 2px solid var(--bg);
+  border-radius: 50%;
+  margin-top: -8px;
+  box-shadow: 0 0 12px var(--green-soft);
+}
+input[type=range]::-moz-range-track {
+  height: 4px;
+  background: var(--bg-elev-2);
+}
+input[type=range]::-moz-range-progress {
+  height: 4px;
+  background: var(--green);
+}
+input[type=range]::-moz-range-thumb {
+  width: 18px; height: 18px;
+  background: var(--green);
+  border: 2px solid var(--bg);
+  border-radius: 50%;
+  box-shadow: 0 0 12px var(--green-soft);
+}
+
+/* Series y velocidades dinámicas */
+.dyn-list { display: flex; flex-direction: column; gap: 8px; margin-bottom: 8px; }
+.dyn-row {
+  display: grid;
+  grid-template-columns: 38px 1fr 1fr 36px;
+  gap: 8px;
+  align-items: center;
+}
+.dyn-row .dyn-num {
+  font: 700 11px/1 var(--font-mono);
+  color: var(--green);
+  text-align: center;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  padding: 12px 0;
+}
+.dyn-row .input { padding: 10px 10px; font-size: 13px; }
+.btn-remove {
+  width: 36px; height: 38px;
+  background: transparent;
+  border: 1px solid var(--border);
+  color: var(--red);
+  font-size: 14px;
+  display: grid; place-items: center;
+  transition: all .15s;
+}
+.btn-remove:hover { border-color: var(--red); background: var(--red-soft); }
+
+/* Botones */
+.btn-primary {
+  display: inline-flex; justify-content: center; align-items: center;
+  gap: 8px;
+  width: 100%;
+  background: var(--green);
+  color: #001810;
+  border: 0;
+  padding: 14px 18px;
+  font: 700 12px/1 var(--font-mono);
+  text-transform: uppercase;
+  letter-spacing: 0.2em;
+  transition: filter .15s, transform .1s;
+}
+.btn-primary:hover { filter: brightness(1.08); }
+.btn-primary:active { transform: translateY(1px); }
+
+.btn-secondary {
+  display: inline-flex; justify-content: center; align-items: center;
+  gap: 8px;
+  background: transparent;
+  color: var(--text);
+  border: 1px solid var(--border);
+  padding: 12px 16px;
+  font: 600 11px/1 var(--font-mono);
+  text-transform: uppercase;
+  letter-spacing: 0.18em;
+  transition: all .15s;
+}
+.btn-secondary:hover { border-color: var(--green); color: var(--green); }
+.btn-secondary.danger:hover { border-color: var(--red); color: var(--red); }
+
+.btn-add {
+  display: block; width: 100%;
+  background: transparent;
+  color: var(--green);
+  border: 1px dashed var(--border-strong);
+  padding: 11px;
+  font: 600 11px/1 var(--font-mono);
+  text-transform: uppercase;
+  letter-spacing: 0.18em;
+  transition: all .15s;
+}
+.btn-add:hover { border-color: var(--green); background: var(--green-bg); }
+
+.actions-row {
+  display: flex; flex-wrap: wrap; gap: 10px;
+  margin-top: 18px;
+}
+.actions-row .btn-secondary { flex: 1; min-width: 130px; }
+
+/* ============================================================
+   6.  LISTAS DE REGISTROS
+   ============================================================ */
+.records-section {
+  margin-top: 28px;
+}
+.records-header {
+  display: flex; justify-content: space-between; align-items: center;
+  margin-bottom: 12px;
+}
+.records-header h3 {
+  font: 700 11px/1 var(--font-mono);
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+.records-header .records-count {
+  font: 600 11px/1 var(--font-mono);
+  color: var(--green);
+}
+
+.record-item {
+  display: flex; gap: 12px;
+  background: var(--bg-elev);
+  border: 1px solid var(--border);
+  border-left: 2px solid var(--green);
+  padding: 12px 14px;
+  margin-bottom: 8px;
+}
+.record-item.cardio    { border-left-color: var(--blue); }
+.record-item.flexibilidad { border-left-color: var(--amber); }
+.record-item .record-body { flex: 1; min-width: 0; }
+.record-item .record-meta {
+  font: 500 10px/1 var(--font-mono);
+  color: var(--text-dim);
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  margin-bottom: 6px;
+}
+.record-item .record-title {
+  font: 600 14px/1.3 var(--font-sans);
+  margin-bottom: 4px;
+}
+.record-item .record-detail {
+  font: 500 12px/1.4 var(--font-mono);
+  color: var(--text-muted);
+}
+.record-item .record-detail strong { color: var(--text); font-weight: 600; }
+.btn-delete {
+  background: transparent;
+  border: 0;
+  color: var(--text-dim);
+  width: 30px; height: 30px;
+  display: grid; place-items: center;
+  font-size: 16px;
+  transition: color .15s;
+  flex: 0 0 30px;
+}
+.btn-delete:hover { color: var(--red); }
+
+.empty-state {
+  text-align: center;
+  padding: 40px 20px;
+  color: var(--text-dim);
+  font: 500 12px/1.5 var(--font-mono);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  border: 1px dashed var(--border);
+}
+
+/* ============================================================
+   7.  DASHBOARD
+   ============================================================ */
+.summary-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 10px;
+  margin-bottom: 20px;
+}
+@media(min-width: 640px) { .summary-grid { grid-template-columns: repeat(3, 1fr); } }
+@media(min-width: 900px) { .summary-grid { grid-template-columns: repeat(5, 1fr); } }
+
+.stat-card {
+  background: var(--bg-elev);
+  border: 1px solid var(--border);
+  padding: 14px;
+  position: relative;
+  overflow: hidden;
+}
+.stat-card::before {
+  content: ""; position: absolute; left: 0; top: 0; bottom: 0;
+  width: 2px; background: var(--green);
+}
+.stat-card.blue::before { background: var(--blue); }
+.stat-card.amber::before { background: var(--amber); }
+
+.stat-label {
+  font: 600 9px/1 var(--font-mono);
+  color: var(--text-muted);
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  margin-bottom: 10px;
+}
+.stat-value {
+  font: 700 24px/1 var(--font-mono);
+  color: var(--text);
+  display: flex; align-items: baseline;
+}
+.stat-unit {
+  font: 500 11px/1 var(--font-mono);
+  color: var(--text-muted);
+  margin-left: 4px;
+}
+.stat-delta {
+  font: 600 10px/1 var(--font-mono);
+  margin-top: 8px;
+  display: inline-flex; align-items: center; gap: 4px;
+}
+.stat-delta.up { color: var(--green); }
+.stat-delta.down { color: var(--red); }
+.stat-delta.neutral { color: var(--text-muted); }
+
+/* Grid de gráficas */
+.charts-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 12px;
+}
+@media(min-width: 760px) { .charts-grid { grid-template-columns: 1fr 1fr; } }
+
+.chart-card {
+  background: var(--bg-elev);
+  border: 1px solid var(--border);
+  padding: 14px;
+}
+.chart-card.full { grid-column: 1 / -1; }
+.chart-card .chart-head {
+  display: flex; justify-content: space-between; align-items: baseline;
+  margin-bottom: 10px;
+}
+.chart-card .chart-title {
+  font: 600 10px/1 var(--font-mono);
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+.chart-card .chart-meta {
+  font: 600 11px/1 var(--font-mono);
+  color: var(--green);
+}
+.chart-wrap {
+  position: relative;
+  height: 220px;
+}
+
+/* Gauge de consistencia */
+.gauge {
+  display: flex; align-items: center; gap: 18px;
+  padding: 4px 0;
+}
+.gauge-ring {
+  width: 110px; height: 110px;
+  position: relative;
+  flex: 0 0 110px;
+}
+.gauge-ring svg { width: 100%; height: 100%; transform: rotate(-90deg); }
+.gauge-ring .gauge-bg { stroke: var(--bg-elev-2); fill: none; stroke-width: 10; }
+.gauge-ring .gauge-fg { stroke: var(--green); fill: none; stroke-width: 10; transition: stroke-dasharray .8s ease; }
+.gauge-ring.warn .gauge-fg { stroke: var(--red); }
+.gauge-ring.ok .gauge-fg { stroke: var(--green); }
+.gauge-ring .gauge-text {
+  position: absolute; inset: 0;
+  display: grid; place-items: center;
+  font: 700 26px/1 var(--font-mono);
+  color: var(--text);
+}
+.gauge-info { flex: 1; }
+.gauge-info .gauge-headline {
+  font: 700 13px/1.2 var(--font-sans);
+  margin-bottom: 4px;
+}
+.gauge-info .gauge-sub {
+  font: 500 11px/1.4 var(--font-mono);
+  color: var(--text-muted);
+}
+
+/* Insights / animaciones de progreso */
+.insights-panel {
+  background: var(--bg-elev);
+  border: 1px solid var(--border);
+  padding: 16px;
+  margin-bottom: 16px;
+  position: relative;
+  overflow: hidden;
+}
+.insights-panel h3 {
+  font: 700 11px/1 var(--font-mono);
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  margin-bottom: 12px;
+}
+.insight-row {
+  display: flex; align-items: flex-start; gap: 12px;
+  padding: 10px 0;
+  border-bottom: 1px solid var(--border);
+}
+.insight-row:last-child { border-bottom: 0; }
+.insight-icon {
+  width: 28px; height: 28px;
+  display: grid; place-items: center;
+  font: 700 14px/1 var(--font-mono);
+  flex: 0 0 28px;
+}
+.insight-icon.green { color: var(--green); background: var(--green-bg); }
+.insight-icon.red   { color: var(--red);   background: var(--red-soft); }
+.insight-icon.amber { color: var(--amber); background: var(--amber-soft); }
+.insight-icon.blue  { color: var(--blue);  background: var(--blue-bg); }
+.insight-body { flex: 1; }
+.insight-text { font-size: 13px; line-height: 1.4; }
+.insight-text strong { color: var(--green); font-weight: 600; }
+.insight-progress {
+  height: 5px;
+  background: var(--bg-elev-2);
+  margin-top: 8px;
+  overflow: hidden;
+  position: relative;
+}
+.insight-progress::after {
+  content: "";
+  position: absolute; inset: 0;
+  background: linear-gradient(90deg, var(--green), var(--blue));
+  width: var(--w, 0%);
+  animation: progress-fill .9s cubic-bezier(0.2,0.8,0.2,1);
+}
+@keyframes progress-fill { from { width: 0; } }
+
+/* Animaciones */
+@keyframes pulse-red {
+  0%,100% { box-shadow: 0 0 0 0 var(--red-soft); }
+  50%     { box-shadow: 0 0 0 10px rgba(255,51,85,0); }
+}
+.alert-pulse { animation: pulse-red 1.6s ease-in-out infinite; }
+
+@keyframes arrow-up {
+  0%   { transform: translateY(0);     opacity: .4; }
+  50%  { transform: translateY(-4px);  opacity: 1; }
+  100% { transform: translateY(0);     opacity: .4; }
+}
+.icon-arrow-up { display: inline-block; animation: arrow-up 1.4s ease-in-out infinite; }
+
+@keyframes confetti-fall {
+  0%   { transform: translateY(-30px) rotate(0);   opacity: 1; }
+  100% { transform: translateY(160px) rotate(540deg); opacity: 0; }
+}
+.confetti-layer {
+  position: absolute; inset: 0;
+  pointer-events: none;
+  overflow: hidden;
+}
+.confetti {
+  position: absolute;
+  width: 6px; height: 12px;
+  top: -20px;
+  animation: confetti-fall var(--dur,1.6s) ease-out forwards;
+  animation-delay: var(--delay,0s);
+}
+
+/* ============================================================
+   8.  RESUMEN SEMANAL
+   ============================================================ */
+.week-picker {
+  background: var(--bg-elev);
+  border: 1px solid var(--border);
+  padding: 14px;
+  margin-bottom: 16px;
+  display: flex; flex-wrap: wrap; gap: 10px;
+  align-items: center;
+}
+.week-picker .week-nav {
+  display: flex; align-items: center; gap: 8px;
+  flex: 1; min-width: 0;
+}
+.week-picker .week-label {
+  flex: 1;
+  font: 700 13px/1.3 var(--font-mono);
+  text-align: center;
+}
+.week-picker .week-range {
+  font: 500 10px/1 var(--font-mono);
+  color: var(--text-muted);
+  display: block;
+  margin-top: 4px;
+}
+
+.summary-output {
+  background: var(--bg-elev);
+  border: 1px solid var(--border);
+  padding: 16px;
+  font: 500 12px/1.6 var(--font-mono);
+  color: var(--text-muted);
+  white-space: pre-wrap;
+  max-height: 480px;
+  overflow-y: auto;
+  margin-bottom: 14px;
+}
+.summary-output strong { color: var(--green); font-weight: 700; }
+
+/* ============================================================
+   9.  TOAST
+   ============================================================ */
+#toast {
+  position: fixed;
+  left: 50%; bottom: 20px;
+  transform: translateX(-50%) translateY(20px);
+  background: var(--bg-elev-3);
+  border: 1px solid var(--green);
+  color: var(--text);
+  padding: 12px 18px;
+  font: 600 12px/1 var(--font-mono);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  opacity: 0;
+  transition: all .25s;
+  z-index: 100;
+  pointer-events: none;
+}
+#toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+#toast.error { border-color: var(--red); }
+#toast.warn  { border-color: var(--amber); }
+
+/* ============================================================
+   10. UTILIDADES
+   ============================================================ */
+.hidden { display: none !important; }
+.divider { height: 1px; background: var(--border); margin: 18px 0; }
+.tag {
+  display: inline-block;
+  font: 600 9px/1 var(--font-mono);
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  padding: 3px 6px;
+  border: 1px solid var(--border);
+  color: var(--text-muted);
+}
+.tag.green { color: var(--green); border-color: var(--green-soft); background: var(--green-bg); }
+.tag.blue  { color: var(--blue);  border-color: var(--blue-soft);  background: var(--blue-bg); }
+.tag.amber { color: var(--amber); border-color: var(--amber-soft); background: var(--amber-soft); }
+
+/* Footer */
+.app-footer {
+  max-width: 1280px;
+  margin: 40px auto 0;
+  padding: 20px 16px;
+  border-top: 1px solid var(--border);
+  font: 500 11px/1.4 var(--font-mono);
+  color: var(--text-dim);
+  letter-spacing: 0.08em;
+  text-align: center;
+}
+.app-footer a { color: var(--text-muted); }
+.app-footer a:hover { color: var(--green); }
+</style>
+</head>
+
+<body>
+
+<!-- ============================================================
+     CABECERA — logo + tabs
+     ============================================================ -->
+<header class="app-header">
+  <div class="brand">
+    <div class="brand-mark"><span>T</span></div>
+    <div>
+      <h1>Tracker</h1>
+      <div class="brand-sub">Performance · v1.0</div>
+    </div>
+    <div class="brand-actions">
+      <button class="icon-btn" id="btn-export" title="Exportar JSON" aria-label="Exportar JSON">↓</button>
+      <button class="icon-btn" id="btn-import" title="Importar JSON" aria-label="Importar JSON">↑</button>
+      <input type="file" id="file-import" accept="application/json" hidden>
+    </div>
+  </div>
+
+  <nav class="tabs" role="tablist">
+    <button class="tab active" data-tab="ejercicios" role="tab"><span class="tab-num">01</span>Ejercicios</button>
+    <button class="tab"        data-tab="mediciones" role="tab"><span class="tab-num">02</span>Mediciones</button>
+    <button class="tab"        data-tab="comidas"    role="tab"><span class="tab-num">03</span>Comidas</button>
+    <button class="tab"        data-tab="dashboard"  role="tab"><span class="tab-num">04</span>Dashboard</button>
+    <button class="tab"        data-tab="resumen"    role="tab"><span class="tab-num">05</span>Resumen</button>
+  </nav>
+</header>
+
+<main>
+
+<!-- ============================================================
+     TAB 1 · EJERCICIOS
+     ============================================================ -->
+<section class="tab-panel active" id="tab-ejercicios" role="tabpanel">
+  <div class="section-title">
+    <h2>Sesión de entrenamiento</h2>
+    <span class="section-tag">01 · LOG</span>
+  </div>
+  <p class="section-desc">Registra cada sesión con el detalle suficiente para que el dashboard pueda calcular volumen, intensidad y consistencia.</p>
+
+  <form class="form-card" id="form-ejercicio" autocomplete="off">
+
+    <div class="field-row cols-2">
+      <label class="field">
+        <span class="field-label">Fecha</span>
+        <input type="date" name="fecha" class="input mono" required>
+      </label>
+      <div class="field">
+        <span class="field-label">Tipo</span>
+        <div class="toggle-group" data-toggle="tipo">
+          <button type="button" class="toggle-btn active" data-value="fuerza">Fuerza</button>
+          <button type="button" class="toggle-btn"        data-value="cardio">Cardio</button>
+          <button type="button" class="toggle-btn"        data-value="flexibilidad">Flex</button>
+        </div>
+        <input type="hidden" name="tipo" value="fuerza">
+      </div>
+    </div>
+
+    <label class="field">
+      <span class="field-label">Nombre del ejercicio</span>
+      <input type="text" name="nombre" class="input" placeholder="Sentadilla, banca, trote..." required>
+    </label>
+
+    <label class="field">
+      <span class="field-label">Intensidad <span class="value-out" id="intensidad-out">5/10</span></span>
+      <input type="range" min="1" max="10" value="5" name="intensidad" id="intensidad-input">
+    </label>
+
+    <!-- Bloque condicional: FUERZA -->
+    <div class="block-tipo" data-tipo="fuerza">
+      <span class="field-label">Series</span>
+      <div class="dyn-list" id="series-list"></div>
+      <button type="button" class="btn-add" id="add-serie">+ Serie</button>
+    </div>
+
+    <!-- Bloque condicional: CARDIO -->
+    <div class="block-tipo" data-tipo="cardio" hidden>
+      <div class="field-row cols-2">
+        <label class="field">
+          <span class="field-label">Minutos totales</span>
+          <input type="number" name="minutos" class="input mono" min="0" step="1" placeholder="30">
+        </label>
+        <label class="field">
+          <span class="field-label">Pendiente %</span>
+          <input type="number" name="pendiente" class="input mono" min="0" step="0.5" value="0">
+        </label>
+      </div>
+      <span class="field-label">Velocidades</span>
+      <div class="dyn-list" id="velocidades-list"></div>
+      <button type="button" class="btn-add" id="add-velocidad">+ Velocidad</button>
+    </div>
+
+    <!-- Bloque condicional: FLEXIBILIDAD -->
+    <div class="block-tipo" data-tipo="flexibilidad" hidden>
+      <div class="field-row cols-2">
+        <label class="field">
+          <span class="field-label">Minutos</span>
+          <input type="number" name="flexMinutos" class="input mono" min="0" step="1" placeholder="20">
+        </label>
+        <label class="field">
+          <span class="field-label">Series</span>
+          <input type="number" name="flexSeries" class="input mono" min="0" step="1" value="1">
+        </label>
+      </div>
+    </div>
+
+    <label class="field">
+      <span class="field-label">Notas</span>
+      <textarea name="notas" class="textarea" placeholder="Sensaciones, técnica, RPE..."></textarea>
+    </label>
+
+    <button type="submit" class="btn-primary">Registrar sesión →</button>
+  </form>
+
+  <div class="records-section">
+    <div class="records-header">
+      <h3>Últimos registros</h3>
+      <span class="records-count" id="ejercicios-count">0</span>
+    </div>
+    <div id="ejercicios-list"></div>
+  </div>
+</section>
+
+<!-- ============================================================
+     TAB 2 · MEDICIONES
+     ============================================================ -->
+<section class="tab-panel" id="tab-mediciones" role="tabpanel">
+  <div class="section-title">
+    <h2>Mediciones corporales</h2>
+    <span class="section-tag">02 · BODY</span>
+  </div>
+  <p class="section-desc">Una entrada por semana es suficiente. El dashboard calcula tendencias y el índice de composición corporal.</p>
+
+  <form class="form-card" id="form-medicion" autocomplete="off">
+    <div class="field-row cols-2">
+      <label class="field">
+        <span class="field-label">Fecha</span>
+        <input type="date" name="fecha" class="input mono" required>
+      </label>
+      <label class="field">
+        <span class="field-label">Peso (kg)</span>
+        <input type="number" name="peso" class="input mono" step="0.1" min="0" required>
+      </label>
+    </div>
+    <div class="field-row cols-2">
+      <label class="field">
+        <span class="field-label">Grasa %</span>
+        <input type="number" name="grasa" class="input mono" step="0.1" min="0" max="100">
+      </label>
+      <label class="field">
+        <span class="field-label">Músculo %</span>
+        <input type="number" name="musculo" class="input mono" step="0.1" min="0" max="100">
+      </label>
+    </div>
+    <div class="field-row cols-3">
+      <label class="field">
+        <span class="field-label">Cintura (cm)</span>
+        <input type="number" name="cintura" class="input mono" step="0.1" min="0">
+      </label>
+      <label class="field">
+        <span class="field-label">Pecho (cm)</span>
+        <input type="number" name="pecho" class="input mono" step="0.1" min="0">
+      </label>
+      <label class="field">
+        <span class="field-label">Cadera (cm)</span>
+        <input type="number" name="cadera" class="input mono" step="0.1" min="0">
+      </label>
+    </div>
+    <label class="field">
+      <span class="field-label">Nota</span>
+      <textarea name="nota" class="textarea" placeholder="Hidratación, descanso, contexto..."></textarea>
+    </label>
+    <button type="submit" class="btn-primary">Registrar medición →</button>
+  </form>
+
+  <div class="records-section">
+    <div class="records-header">
+      <h3>Histórico</h3>
+      <span class="records-count" id="mediciones-count">0</span>
+    </div>
+    <div id="mediciones-list"></div>
+  </div>
+</section>
+
+<!-- ============================================================
+     TAB 3 · COMIDAS
+     ============================================================ -->
+<section class="tab-panel" id="tab-comidas" role="tabpanel">
+  <div class="section-title">
+    <h2>Registro de alimentación</h2>
+    <span class="section-tag">03 · FUEL</span>
+  </div>
+  <p class="section-desc">Anotar el momento del día permite ver patrones y completitud (≥3 comidas/día).</p>
+
+  <form class="form-card" id="form-comida" autocomplete="off">
+    <div class="field-row cols-2">
+      <label class="field">
+        <span class="field-label">Fecha</span>
+        <input type="date" name="fecha" class="input mono" required>
+      </label>
+      <label class="field">
+        <span class="field-label">Momento</span>
+        <select name="momento" class="input" required>
+          <option value="desayuno">Desayuno</option>
+          <option value="media-mañana">Media mañana</option>
+          <option value="almuerzo">Almuerzo</option>
+          <option value="merienda">Merienda</option>
+          <option value="cena">Cena</option>
+          <option value="post-entreno">Post-entreno</option>
+        </select>
+      </label>
+    </div>
+    <label class="field">
+      <span class="field-label">Alimento</span>
+      <input type="text" name="alimento" class="input" placeholder="Avena con plátano y nueces..." required>
+    </label>
+    <label class="field">
+      <span class="field-label">Cantidad aproximada</span>
+      <input type="text" name="cantidad" class="input" placeholder="1 plato, 200g, 1 puñado...">
+    </label>
+    <button type="submit" class="btn-primary">Registrar comida →</button>
+  </form>
+
+  <div class="records-section">
+    <div class="records-header">
+      <h3>Últimas comidas</h3>
+      <span class="records-count" id="comidas-count">0</span>
+    </div>
+    <div id="comidas-list"></div>
+  </div>
+</section>
+
+<!-- ============================================================
+     TAB 4 · DASHBOARD
+     ============================================================ -->
+<section class="tab-panel" id="tab-dashboard" role="tabpanel">
+  <div class="section-title">
+    <h2>Performance Dashboard</h2>
+    <span class="section-tag">04 · ANALYTICS</span>
+  </div>
+  <p class="section-desc">Comparativa de las últimas dos semanas. Las animaciones reaccionan a los cambios reales en tus datos.</p>
+
+  <!-- Tarjetas resumen -->
+  <div class="summary-grid" id="summary-cards"></div>
+
+  <!-- Insights / animaciones de progreso -->
+  <div id="insights-container"></div>
+
+  <!-- Grid de gráficas -->
+  <div class="charts-grid">
+
+    <div class="chart-card">
+      <div class="chart-head">
+        <span class="chart-title">Peso</span>
+        <span class="chart-meta" id="meta-peso">—</span>
+      </div>
+      <div class="chart-wrap"><canvas id="chart-peso"></canvas></div>
+    </div>
+
+    <div class="chart-card">
+      <div class="chart-head">
+        <span class="chart-title">Grasa % vs Músculo %</span>
+      </div>
+      <div class="chart-wrap"><canvas id="chart-composicion"></canvas></div>
+    </div>
+
+    <div class="chart-card">
+      <div class="chart-head">
+        <span class="chart-title">Índice de composición (músculo % − grasa %)</span>
+      </div>
+      <div class="chart-wrap"><canvas id="chart-indice"></canvas></div>
+    </div>
+
+    <div class="chart-card">
+      <div class="chart-head">
+        <span class="chart-title">Volumen semanal de fuerza</span>
+        <span class="chart-meta">kg</span>
+      </div>
+      <div class="chart-wrap"><canvas id="chart-volumen"></canvas></div>
+    </div>
+
+    <div class="chart-card">
+      <div class="chart-head">
+        <span class="chart-title">Minutos de cardio por semana</span>
+      </div>
+      <div class="chart-wrap"><canvas id="chart-cardio"></canvas></div>
+    </div>
+
+    <div class="chart-card">
+      <div class="chart-head">
+        <span class="chart-title">Intensidad promedio por sesión</span>
+      </div>
+      <div class="chart-wrap"><canvas id="chart-intensidad"></canvas></div>
+    </div>
+
+    <div class="chart-card">
+      <div class="chart-head">
+        <span class="chart-title">Distribución por tipo</span>
+      </div>
+      <div class="chart-wrap"><canvas id="chart-distribucion"></canvas></div>
+    </div>
+
+    <div class="chart-card">
+      <div class="chart-head">
+        <span class="chart-title">Consistencia semanal</span>
+        <span class="chart-meta" id="meta-consistencia">—</span>
+      </div>
+      <div id="gauge-consistencia"></div>
+    </div>
+
+    <div class="chart-card">
+      <div class="chart-head">
+        <span class="chart-title">Comidas por momento del día</span>
+      </div>
+      <div class="chart-wrap"><canvas id="chart-momentos"></canvas></div>
+    </div>
+
+    <div class="chart-card">
+      <div class="chart-head">
+        <span class="chart-title">Días con registro completo (≥3)</span>
+      </div>
+      <div class="chart-wrap"><canvas id="chart-completos"></canvas></div>
+    </div>
+
+  </div>
+
+  <div class="actions-row">
+    <button class="btn-secondary" id="btn-clear-sample">Limpiar datos de ejemplo</button>
+    <button class="btn-secondary danger" id="btn-clear-all">Borrar TODO</button>
+  </div>
+</section>
+
+<!-- ============================================================
+     TAB 5 · RESUMEN SEMANAL
+     ============================================================ -->
+<section class="tab-panel" id="tab-resumen" role="tabpanel">
+  <div class="section-title">
+    <h2>Resumen semanal</h2>
+    <span class="section-tag">05 · EXPORT</span>
+  </div>
+  <p class="section-desc">Selecciona la semana y obtén un JSON estructurado listo para análisis (LLM, hojas de cálculo, coach).</p>
+
+  <div class="week-picker">
+    <div class="week-nav">
+      <button class="icon-btn" id="week-prev" aria-label="Semana anterior">←</button>
+      <div class="week-label">
+        <span id="week-title">—</span>
+        <span class="week-range" id="week-range">—</span>
+      </div>
+      <button class="icon-btn" id="week-next" aria-label="Semana siguiente">→</button>
+    </div>
+    <button class="btn-secondary" id="btn-week-current">Hoy</button>
+  </div>
+
+  <pre class="summary-output" id="summary-text">—</pre>
+
+  <div class="actions-row">
+    <button class="btn-primary" id="btn-copy-summary" style="flex:2">Copiar JSON para análisis</button>
+    <button class="btn-secondary" id="btn-download-summary" style="flex:1">Descargar .json</button>
+  </div>
+</section>
+
+</main>
+
+<footer class="app-footer">
+  Tracker · localStorage únicamente · sin tracking ·
+  <a href="index.html">← Volver al portfolio</a>
+</footer>
+
+<div id="toast"></div>
+
+<!-- ============================================================
+     SCRIPT PRINCIPAL
+     ============================================================ -->
+<script>
+"use strict";
+
+/* ============================================================
+   A.  PERSISTENCIA
+   ------------------------------------------------------------
+   Toda la app vive en localStorage bajo una sola clave.
+   Si quieres versionar el esquema, sube STORAGE_VERSION.
+   ============================================================ */
+const STORAGE_KEY = "tracker.v1.data";
+const STORAGE_VERSION = 1;
+
+const defaultState = () => ({
+  version: STORAGE_VERSION,
+  ejercicios: [],
+  mediciones: [],
+  comidas: [],
+  meta: { sampleLoaded: false, createdAt: new Date().toISOString() }
+});
+
+let state = loadState();
+
+function loadState() {
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if (!raw) return seedSample(defaultState());
+    const parsed = JSON.parse(raw);
+    if (parsed.version !== STORAGE_VERSION) return seedSample(defaultState());
+    return parsed;
+  } catch (e) {
+    console.warn("Estado corrupto, reinicializando", e);
+    return seedSample(defaultState());
+  }
+}
+
+function saveState() {
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+}
+
+/* ============================================================
+   B.  HELPERS DE FECHAS
+   ------------------------------------------------------------
+   Trabajamos siempre en formato YYYY-MM-DD (string) en estado
+   para evitar líos de timezone. Las semanas son lunes→domingo.
+   ============================================================ */
+function isoDate(d) {
+  const dt = (d instanceof Date) ? d : new Date(d);
+  const y = dt.getFullYear();
+  const m = String(dt.getMonth()+1).padStart(2,"0");
+  const day = String(dt.getDate()).padStart(2,"0");
+  return `${y}-${m}-${day}`;
+}
+function parseDate(s) { return new Date(s + "T12:00:00"); }
+function todayISO() { return isoDate(new Date()); }
+function addDays(d, n) {
+  const dt = (d instanceof Date) ? new Date(d) : parseDate(d);
+  dt.setDate(dt.getDate()+n);
+  return dt;
+}
+function startOfWeek(d) {
+  const dt = (d instanceof Date) ? new Date(d) : parseDate(d);
+  const dow = dt.getDay();              // 0=domingo
+  const diff = (dow === 0 ? -6 : 1 - dow); // mover a lunes
+  dt.setDate(dt.getDate() + diff);
+  dt.setHours(0,0,0,0);
+  return dt;
+}
+function endOfWeek(d) { return addDays(startOfWeek(d), 6); }
+function fmtDateShort(s) {
+  const dt = parseDate(s);
+  return dt.toLocaleDateString("es-MX", { day:"2-digit", month:"short" });
+}
+function fmtDateLong(s) {
+  const dt = parseDate(s);
+  return dt.toLocaleDateString("es-MX", { weekday:"short", day:"2-digit", month:"short" });
+}
+function uid() { return Date.now().toString(36) + Math.random().toString(36).slice(2,7); }
+
+/* ============================================================
+   C.  DATOS DE EJEMPLO
+   ------------------------------------------------------------
+   3 semanas hacia atrás desde hoy. Realistas pero variables.
+   El usuario puede borrarlos con el botón "Limpiar datos".
+   ============================================================ */
+function seedSample(s) {
+  const today = new Date();
+  const start = addDays(today, -20);    // ~3 semanas atrás
+  const day = (offset) => isoDate(addDays(start, offset));
+
+  // Ejemplos de ejercicios
+  const ejer = [
+    // Semana 1
+    { fecha: day(0),  tipo:"fuerza",       nombre:"Sentadilla con barra", intensidad:7, notas:"Técnica sólida.",
+      series:[{reps:10,kg:60},{reps:10,kg:60},{reps:8,kg:65}] },
+    { fecha: day(1),  tipo:"cardio",       nombre:"Cinta intervalos",     intensidad:6, notas:"",
+      minutos:25, pendiente:2, velocidades:[{kmh:8,mins:5},{kmh:12,mins:15},{kmh:7,mins:5}] },
+    { fecha: day(3),  tipo:"fuerza",       nombre:"Press banca",          intensidad:7, notas:"",
+      series:[{reps:8,kg:50},{reps:8,kg:52.5},{reps:6,kg:55}] },
+    { fecha: day(5),  tipo:"flexibilidad", nombre:"Yoga vinyasa",         intensidad:4, notas:"Movilidad cadera",
+      flexMinutos:30, flexSeries:1 },
+    // Semana 2
+    { fecha: day(7),  tipo:"fuerza",       nombre:"Peso muerto",          intensidad:8, notas:"PR ligero",
+      series:[{reps:6,kg:90},{reps:6,kg:95},{reps:5,kg:100}] },
+    { fecha: day(8),  tipo:"cardio",       nombre:"Trote suave",          intensidad:5, notas:"",
+      minutos:30, pendiente:1, velocidades:[{kmh:9,mins:30}] },
+    { fecha: day(10), tipo:"fuerza",       nombre:"Sentadilla con barra", intensidad:8, notas:"+5kg sobre semana 1",
+      series:[{reps:10,kg:65},{reps:10,kg:65},{reps:8,kg:70}] },
+    { fecha: day(11), tipo:"cardio",       nombre:"Bici estática",        intensidad:6, notas:"",
+      minutos:35, pendiente:0, velocidades:[{kmh:22,mins:35}] },
+    { fecha: day(13), tipo:"flexibilidad", nombre:"Estiramiento full",    intensidad:3, notas:"",
+      flexMinutos:25, flexSeries:1 },
+    // Semana 3 (parcial — hasta hoy)
+    { fecha: day(14), tipo:"fuerza",       nombre:"Press banca",          intensidad:8, notas:"+2.5kg",
+      series:[{reps:8,kg:52.5},{reps:8,kg:55},{reps:6,kg:57.5}] },
+    { fecha: day(16), tipo:"cardio",       nombre:"Cinta intervalos",     intensidad:7, notas:"+ minutos",
+      minutos:35, pendiente:3, velocidades:[{kmh:8,mins:5},{kmh:13,mins:20},{kmh:7,mins:10}] },
+    { fecha: day(18), tipo:"fuerza",       nombre:"Peso muerto",          intensidad:8, notas:"",
+      series:[{reps:6,kg:95},{reps:5,kg:100},{reps:5,kg:105}] },
+    { fecha: day(19), tipo:"flexibilidad", nombre:"Yoga vinyasa",         intensidad:4, notas:"",
+      flexMinutos:30, flexSeries:1 }
+  ].map(e => ({ id: uid(), ...e }));
+
+  // Mediciones (1 por semana)
+  const meds = [
+    { fecha: day(0),  peso:78.5, grasa:22.0, musculo:38.0, cintura:88, pecho:102, cadera:96, nota:"Inicio plan." },
+    { fecha: day(7),  peso:78.0, grasa:21.4, musculo:38.4, cintura:87, pecho:102, cadera:96, nota:"Buen descanso." },
+    { fecha: day(14), peso:77.4, grasa:20.8, musculo:38.9, cintura:86, pecho:103, cadera:95, nota:"Sigue la tendencia." }
+  ].map(m => ({ id: uid(), ...m }));
+
+  // Comidas (5 por día durante ~10 días)
+  const momentos = ["desayuno","media-mañana","almuerzo","merienda","cena"];
+  const platos = {
+    "desayuno":     ["Avena con plátano","Huevos revueltos","Yogur con granola","Pan integral con aguacate"],
+    "media-mañana": ["Manzana","Almendras","Plátano","Té verde"],
+    "almuerzo":     ["Pollo con arroz","Pasta integral","Ensalada con atún","Tacos de nopal"],
+    "merienda":     ["Smoothie de frutos rojos","Tostadas con humus","Galletas integrales"],
+    "cena":         ["Salmón con verduras","Tortilla francesa","Crema de calabaza","Wrap de pavo"],
+    "post-entreno": ["Batido de proteína","Plátano + mantequilla de maní"]
+  };
+  const cantidades = ["1 plato","1 porción","200g","250ml","1 puñado"];
+  const comidas = [];
+  for (let i = 0; i < 14; i++) {
+    const d = day(i);
+    momentos.forEach(m => {
+      // 80% de probabilidad de registrarla
+      if (Math.random() > 0.2) {
+        const arr = platos[m];
+        comidas.push({
+          id: uid(),
+          fecha: d,
+          momento: m,
+          alimento: arr[Math.floor(Math.random()*arr.length)],
+          cantidad: cantidades[Math.floor(Math.random()*cantidades.length)]
+        });
+      }
+    });
+  }
+
+  s.ejercicios = ejer;
+  s.mediciones = meds;
+  s.comidas = comidas;
+  s.meta.sampleLoaded = true;
+  return s;
+}
+
+/* ============================================================
+   D.  TOAST
+   ============================================================ */
+function toast(msg, type = "ok") {
+  const el = document.getElementById("toast");
+  el.textContent = msg;
+  el.className = "show " + (type === "ok" ? "" : type);
+  setTimeout(() => { el.className = type === "ok" ? "" : type; }, 2200);
+}
+
+/* ============================================================
+   E.  ROUTING DE TABS
+   ============================================================ */
+const tabs = document.querySelectorAll(".tab");
+const panels = document.querySelectorAll(".tab-panel");
+function activateTab(name) {
+  tabs.forEach(t => t.classList.toggle("active", t.dataset.tab === name));
+  panels.forEach(p => p.classList.toggle("active", p.id === "tab-" + name));
+  if (name === "dashboard") renderDashboard();
+  if (name === "resumen") renderSummary();
+}
+tabs.forEach(t => t.addEventListener("click", () => activateTab(t.dataset.tab)));
+
+/* ============================================================
+   F.  TOGGLE GROUPS GENÉRICOS
+   ------------------------------------------------------------
+   Cualquier .toggle-group con data-toggle escribe en
+   un input[type=hidden] con ese mismo name.
+   ============================================================ */
+document.querySelectorAll(".toggle-group").forEach(group => {
+  const targetName = group.dataset.toggle;
+  const hidden = group.parentElement.querySelector(`input[type=hidden][name="${targetName}"]`);
+  group.addEventListener("click", e => {
+    const btn = e.target.closest(".toggle-btn");
+    if (!btn) return;
+    group.querySelectorAll(".toggle-btn").forEach(b => b.classList.toggle("active", b === btn));
+    if (hidden) hidden.value = btn.dataset.value;
+    if (targetName === "tipo") syncTipoBlocks(btn.dataset.value);
+  });
+});
+
+function syncTipoBlocks(tipo) {
+  document.querySelectorAll(".block-tipo").forEach(b => {
+    b.hidden = (b.dataset.tipo !== tipo);
+  });
+}
+
+/* ============================================================
+   G.  SLIDER DE INTENSIDAD
+   ============================================================ */
+const intensidadInput = document.getElementById("intensidad-input");
+const intensidadOut = document.getElementById("intensidad-out");
+function syncIntensidad() {
+  const v = intensidadInput.value;
+  intensidadOut.textContent = `${v}/10`;
+  intensidadInput.style.setProperty("--val", `${(v-1)/9*100}%`);
+}
+intensidadInput.addEventListener("input", syncIntensidad);
+syncIntensidad();
+
+/* ============================================================
+   H.  LISTAS DINÁMICAS (series y velocidades)
+   ============================================================ */
+function buildDynRow(num, fields) {
+  const row = document.createElement("div");
+  row.className = "dyn-row";
+  row.innerHTML = `
+    <div class="dyn-num">${num}</div>
+    <input class="input mono" type="number" min="0" step="0.5" name="${fields[0]}" placeholder="${fields[0]}">
+    <input class="input mono" type="number" min="0" step="0.5" name="${fields[1]}" placeholder="${fields[1]}">
+    <button type="button" class="btn-remove" aria-label="Eliminar">×</button>
+  `;
+  row.querySelector(".btn-remove").addEventListener("click", () => {
+    row.remove();
+    renumberRows(row.parentElement);
+  });
+  return row;
+}
+function renumberRows(list) {
+  list.querySelectorAll(".dyn-row").forEach((r, i) => r.querySelector(".dyn-num").textContent = i+1);
+}
+
+const seriesList = document.getElementById("series-list");
+const velocidadesList = document.getElementById("velocidades-list");
+function addSerieRow() {
+  const row = buildDynRow(seriesList.children.length+1, ["reps","kg"]);
+  seriesList.appendChild(row);
+}
+function addVelocidadRow() {
+  const row = buildDynRow(velocidadesList.children.length+1, ["kmh","mins"]);
+  velocidadesList.appendChild(row);
+}
+document.getElementById("add-serie").addEventListener("click", addSerieRow);
+document.getElementById("add-velocidad").addEventListener("click", addVelocidadRow);
+addSerieRow();        // 1 serie inicial
+addVelocidadRow();    // 1 velocidad inicial
+
+/* ============================================================
+   I.  FORMULARIO EJERCICIOS
+   ============================================================ */
+const formEjercicio = document.getElementById("form-ejercicio");
+formEjercicio.querySelector("input[name=fecha]").value = todayISO();
+
+formEjercicio.addEventListener("submit", e => {
+  e.preventDefault();
+  const fd = new FormData(formEjercicio);
+  const tipo = fd.get("tipo");
+  const base = {
+    id: uid(),
+    fecha: fd.get("fecha"),
+    tipo,
+    nombre: fd.get("nombre").trim(),
+    intensidad: Number(fd.get("intensidad")),
+    notas: (fd.get("notas")||"").trim()
+  };
+  if (tipo === "fuerza") {
+    base.series = [...seriesList.querySelectorAll(".dyn-row")].map(r => ({
+      reps: Number(r.querySelector("input[name=reps]").value)||0,
+      kg:   Number(r.querySelector("input[name=kg]").value)||0
+    })).filter(s => s.reps>0 || s.kg>0);
+    if (base.series.length === 0) return toast("Agrega al menos una serie", "error");
+  } else if (tipo === "cardio") {
+    base.minutos = Number(fd.get("minutos"))||0;
+    base.pendiente = Number(fd.get("pendiente"))||0;
+    base.velocidades = [...velocidadesList.querySelectorAll(".dyn-row")].map(r => ({
+      kmh:  Number(r.querySelector("input[name=kmh]").value)||0,
+      mins: Number(r.querySelector("input[name=mins]").value)||0
+    })).filter(v => v.kmh>0 || v.mins>0);
+    if (base.minutos === 0 && base.velocidades.length === 0) return toast("Indica minutos o velocidades", "error");
+  } else if (tipo === "flexibilidad") {
+    base.flexMinutos = Number(fd.get("flexMinutos"))||0;
+    base.flexSeries = Number(fd.get("flexSeries"))||1;
+    if (base.flexMinutos === 0) return toast("Indica los minutos", "error");
+  }
+
+  state.ejercicios.unshift(base);
+  saveState();
+  renderEjerciciosList();
+  toast("Sesión registrada");
+  // Reset suave (mantiene la fecha)
+  formEjercicio.querySelector("input[name=nombre]").value = "";
+  formEjercicio.querySelector("textarea[name=notas]").value = "";
+  seriesList.innerHTML = ""; addSerieRow();
+  velocidadesList.innerHTML = ""; addVelocidadRow();
+});
+
+function renderEjerciciosList() {
+  const cont = document.getElementById("ejercicios-list");
+  document.getElementById("ejercicios-count").textContent = state.ejercicios.length;
+  if (state.ejercicios.length === 0) {
+    cont.innerHTML = `<div class="empty-state">Sin sesiones registradas</div>`; return;
+  }
+  // Mostramos las últimas 20
+  cont.innerHTML = state.ejercicios.slice(0, 20).map(e => {
+    let detail = "";
+    if (e.tipo === "fuerza" && e.series) {
+      const vol = e.series.reduce((a,s) => a + s.reps*s.kg, 0);
+      detail = e.series.map((s,i) => `S${i+1}: <strong>${s.reps}×${s.kg}kg</strong>`).join(" · ")
+             + ` · Vol <strong>${vol}kg</strong>`;
+    } else if (e.tipo === "cardio") {
+      const totalMins = e.minutos || (e.velocidades||[]).reduce((a,v)=>a+v.mins,0);
+      const vels = (e.velocidades||[]).map(v => `${v.kmh}km/h ${v.mins}'`).join(" · ");
+      detail = `<strong>${totalMins}min</strong>${e.pendiente?` · ${e.pendiente}%`:""}${vels?` · ${vels}`:""}`;
+    } else {
+      detail = `<strong>${e.flexMinutos||0}min</strong> · ${e.flexSeries||1} serie(s)`;
+    }
+    return `
+      <div class="record-item ${e.tipo}">
+        <div class="record-body">
+          <div class="record-meta">${fmtDateLong(e.fecha)} · ${e.tipo} · int ${e.intensidad}/10</div>
+          <div class="record-title">${escapeHtml(e.nombre)}</div>
+          <div class="record-detail">${detail}</div>
+          ${e.notas ? `<div class="record-detail" style="margin-top:4px;font-style:italic">${escapeHtml(e.notas)}</div>`:""}
+        </div>
+        <button class="btn-delete" data-id="${e.id}" data-kind="ejercicios" aria-label="Eliminar">×</button>
+      </div>`;
+  }).join("");
+}
+
+/* ============================================================
+   J.  FORMULARIO MEDICIONES
+   ============================================================ */
+const formMedicion = document.getElementById("form-medicion");
+formMedicion.querySelector("input[name=fecha]").value = todayISO();
+
+formMedicion.addEventListener("submit", e => {
+  e.preventDefault();
+  const fd = new FormData(formMedicion);
+  const m = {
+    id: uid(),
+    fecha: fd.get("fecha"),
+    peso: Number(fd.get("peso"))||0,
+    grasa: Number(fd.get("grasa"))||null,
+    musculo: Number(fd.get("musculo"))||null,
+    cintura: Number(fd.get("cintura"))||null,
+    pecho: Number(fd.get("pecho"))||null,
+    cadera: Number(fd.get("cadera"))||null,
+    nota: (fd.get("nota")||"").trim()
+  };
+  if (!m.peso) return toast("Peso requerido", "error");
+  state.mediciones.unshift(m);
+  saveState();
+  renderMedicionesList();
+  toast("Medición guardada");
+  formMedicion.reset();
+  formMedicion.querySelector("input[name=fecha]").value = todayISO();
+});
+
+function renderMedicionesList() {
+  const cont = document.getElementById("mediciones-list");
+  document.getElementById("mediciones-count").textContent = state.mediciones.length;
+  const sorted = [...state.mediciones].sort((a,b) => b.fecha.localeCompare(a.fecha));
+  if (sorted.length === 0) {
+    cont.innerHTML = `<div class="empty-state">Sin mediciones</div>`; return;
+  }
+  cont.innerHTML = sorted.slice(0, 20).map(m => {
+    const parts = [];
+    parts.push(`Peso <strong>${m.peso}kg</strong>`);
+    if (m.grasa)   parts.push(`Grasa <strong>${m.grasa}%</strong>`);
+    if (m.musculo) parts.push(`Músculo <strong>${m.musculo}%</strong>`);
+    if (m.cintura) parts.push(`C <strong>${m.cintura}cm</strong>`);
+    if (m.pecho)   parts.push(`P <strong>${m.pecho}cm</strong>`);
+    if (m.cadera)  parts.push(`H <strong>${m.cadera}cm</strong>`);
+    return `
+      <div class="record-item">
+        <div class="record-body">
+          <div class="record-meta">${fmtDateLong(m.fecha)}</div>
+          <div class="record-detail">${parts.join(" · ")}</div>
+          ${m.nota ? `<div class="record-detail" style="margin-top:4px;font-style:italic">${escapeHtml(m.nota)}</div>`:""}
+        </div>
+        <button class="btn-delete" data-id="${m.id}" data-kind="mediciones" aria-label="Eliminar">×</button>
+      </div>`;
+  }).join("");
+}
+
+/* ============================================================
+   K.  FORMULARIO COMIDAS
+   ============================================================ */
+const formComida = document.getElementById("form-comida");
+formComida.querySelector("input[name=fecha]").value = todayISO();
+
+formComida.addEventListener("submit", e => {
+  e.preventDefault();
+  const fd = new FormData(formComida);
+  const c = {
+    id: uid(),
+    fecha: fd.get("fecha"),
+    momento: fd.get("momento"),
+    alimento: fd.get("alimento").trim(),
+    cantidad: (fd.get("cantidad")||"").trim()
+  };
+  if (!c.alimento) return toast("Alimento requerido", "error");
+  state.comidas.unshift(c);
+  saveState();
+  renderComidasList();
+  toast("Comida registrada");
+  formComida.querySelector("input[name=alimento]").value = "";
+  formComida.querySelector("input[name=cantidad]").value = "";
+});
+
+function renderComidasList() {
+  const cont = document.getElementById("comidas-list");
+  document.getElementById("comidas-count").textContent = state.comidas.length;
+  const sorted = [...state.comidas].sort((a,b) => b.fecha.localeCompare(a.fecha));
+  if (sorted.length === 0) {
+    cont.innerHTML = `<div class="empty-state">Sin comidas</div>`; return;
+  }
+  cont.innerHTML = sorted.slice(0, 30).map(c => `
+    <div class="record-item">
+      <div class="record-body">
+        <div class="record-meta">${fmtDateLong(c.fecha)} · ${c.momento.replace("-"," ")}</div>
+        <div class="record-title">${escapeHtml(c.alimento)}</div>
+        ${c.cantidad ? `<div class="record-detail">${escapeHtml(c.cantidad)}</div>`:""}
+      </div>
+      <button class="btn-delete" data-id="${c.id}" data-kind="comidas" aria-label="Eliminar">×</button>
+    </div>
+  `).join("");
+}
+
+/* ============================================================
+   L.  ELIMINAR REGISTROS (delegado)
+   ============================================================ */
+document.body.addEventListener("click", e => {
+  const btn = e.target.closest(".btn-delete");
+  if (!btn) return;
+  const { id, kind } = btn.dataset;
+  state[kind] = state[kind].filter(x => x.id !== id);
+  saveState();
+  if (kind === "ejercicios") renderEjerciciosList();
+  if (kind === "mediciones") renderMedicionesList();
+  if (kind === "comidas")    renderComidasList();
+  toast("Eliminado");
+});
+
+/* ============================================================
+   M.  CÁLCULOS / MÉTRICAS
+   ============================================================ */
+function volumeOf(e) {
+  if (e.tipo !== "fuerza" || !e.series) return 0;
+  return e.series.reduce((a,s) => a + s.reps*s.kg, 0);
+}
+function cardioMinsOf(e) {
+  if (e.tipo !== "cardio") return 0;
+  return e.minutos || (e.velocidades||[]).reduce((a,v)=>a+v.mins,0);
+}
+function weekKey(d) {
+  // Clave "yyyy-MM-dd" del lunes de la semana
+  return isoDate(startOfWeek(d));
+}
+function inWeek(itemFecha, weekStart) {
+  const ws = isoDate(weekStart);
+  const we = isoDate(addDays(weekStart, 6));
+  return itemFecha >= ws && itemFecha <= we;
+}
+function escapeHtml(s) {
+  return String(s).replace(/[&<>"']/g, c => ({
+    "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"
+  }[c]));
+}
+
+/* Devuelve métricas de una semana dada (lunes Date) */
+function weekMetrics(weekStart) {
+  const ej = state.ejercicios.filter(e => inWeek(e.fecha, weekStart));
+  const med = state.mediciones.filter(m => inWeek(m.fecha, weekStart))
+    .sort((a,b) => a.fecha.localeCompare(b.fecha));
+  const com = state.comidas.filter(c => inWeek(c.fecha, weekStart));
+
+  const sesionesTotales = ej.length;
+  const minutosCardio   = ej.reduce((a,e) => a + cardioMinsOf(e), 0);
+  const volumenFuerza   = ej.reduce((a,e) => a + volumeOf(e), 0);
+  const intensidadProm  = ej.length ? +(ej.reduce((a,e)=>a+e.intensidad,0)/ej.length).toFixed(1) : 0;
+  const diasEntrenados  = new Set(ej.map(e => e.fecha)).size;
+  const consistencia    = +(diasEntrenados/7*100).toFixed(0);
+
+  const distribucion = { fuerza:0, cardio:0, flexibilidad:0 };
+  ej.forEach(e => distribucion[e.tipo] = (distribucion[e.tipo]||0)+1);
+
+  // Comidas
+  const distMomentos = {};
+  com.forEach(c => distMomentos[c.momento] = (distMomentos[c.momento]||0)+1);
+  const porDia = {};
+  com.forEach(c => porDia[c.fecha] = (porDia[c.fecha]||0)+1);
+  const diasConRegistro = Object.keys(porDia).length;
+  const diasCompletos   = Object.values(porDia).filter(n => n >= 3).length;
+  const diasIncompletos = diasConRegistro - diasCompletos;
+
+  // Mediciones (primera y última de la semana)
+  const pesoInicio = med[0]?.peso ?? null;
+  const pesoFin    = med[med.length-1]?.peso ?? null;
+  const grasaIni   = med[0]?.grasa ?? null;
+  const grasaFin   = med[med.length-1]?.grasa ?? null;
+  const muscIni    = med[0]?.musculo ?? null;
+  const muscFin    = med[med.length-1]?.musculo ?? null;
+  const indiceCC   = (muscFin!=null && grasaFin!=null) ? +(muscFin - grasaFin).toFixed(1) : null;
+
+  return {
+    weekStart: isoDate(weekStart),
+    weekEnd:   isoDate(addDays(weekStart, 6)),
+    sesionesTotales, minutosCardio, volumenFuerza, intensidadProm,
+    diasEntrenados, consistencia, distribucion,
+    distMomentos, diasConRegistro, diasCompletos, diasIncompletos,
+    pesoInicio, pesoFin, deltaPeso: (pesoIni=>(pesoIni!=null&&pesoFin!=null)?+(pesoFin-pesoIni).toFixed(1):null)(pesoInicio),
+    grasaInicio: grasaIni, grasaFin, deltaGrasa: (grasaIni!=null&&grasaFin!=null)?+(grasaFin-grasaIni).toFixed(1):null,
+    musculoInicio: muscIni, musculoFin: muscFin, deltaMusculo: (muscIni!=null&&muscFin!=null)?+(muscFin-muscIni).toFixed(1):null,
+    indiceComposicion: indiceCC,
+    raw: { ejercicios: ej, mediciones: med, comidas: com }
+  };
+}
+
+/* Lista las últimas N semanas (incluyendo la actual) */
+function lastNWeeks(n) {
+  const out = [];
+  let cursor = startOfWeek(new Date());
+  for (let i = 0; i < n; i++) {
+    out.unshift(weekMetrics(cursor));
+    cursor = addDays(cursor, -7);
+  }
+  return out;
+}
+
+/* ============================================================
+   N.  DASHBOARD — gráficas
+   ============================================================ */
+const charts = {};
+const CHART_DEFAULTS = () => ({
+  responsive: true,
+  maintainAspectRatio: false,
+  animation: { duration: 600 },
+  plugins: {
+    legend: {
+      labels: { color: "#8b96a3", font: { family: "JetBrains Mono", size: 10 }, usePointStyle: true, boxWidth: 8 }
+    },
+    tooltip: {
+      backgroundColor: "#11161b",
+      titleColor: "#e6edf3",
+      bodyColor: "#e6edf3",
+      borderColor: "#1e2530",
+      borderWidth: 1,
+      padding: 10,
+      titleFont: { family: "JetBrains Mono", size: 11 },
+      bodyFont:  { family: "JetBrains Mono", size: 11 }
+    }
+  },
+  scales: {
+    x: {
+      grid: { color: "#161c22", drawBorder: false },
+      ticks: { color: "#8b96a3", font: { family: "JetBrains Mono", size: 10 } }
+    },
+    y: {
+      grid: { color: "#161c22", drawBorder: false },
+      ticks: { color: "#8b96a3", font: { family: "JetBrains Mono", size: 10 } }
+    }
+  }
+});
+
+function killChart(key) {
+  if (charts[key]) { charts[key].destroy(); delete charts[key]; }
+}
+
+function renderDashboard() {
+  const weeks = lastNWeeks(8);                   // últimas 8 semanas para gráficas
+  const last  = weeks[weeks.length-1];
+  const prev  = weeks[weeks.length-2] || null;
+
+  // ---- Tarjetas resumen ----
+  const peso = state.mediciones.length
+    ? [...state.mediciones].sort((a,b)=>a.fecha.localeCompare(b.fecha)).slice(-1)[0].peso
+    : null;
+  const pesoPrev = state.mediciones.length > 1
+    ? [...state.mediciones].sort((a,b)=>a.fecha.localeCompare(b.fecha)).slice(-2)[0].peso
+    : null;
+  const deltaPeso = (peso!=null && pesoPrev!=null) ? +(peso - pesoPrev).toFixed(1) : null;
+
+  const cards = [
+    { label: "Sesiones (semana)", value: last.sesionesTotales, unit: "" },
+    { label: "Cardio (min)", value: last.minutosCardio, unit: "min", cls: "blue" },
+    { label: "Volumen fuerza", value: last.volumenFuerza.toLocaleString(), unit: "kg" },
+    { label: "Peso actual", value: peso ?? "—", unit: peso!=null?"kg":"", cls: "amber",
+      delta: deltaPeso!=null ? { v: deltaPeso, label: (deltaPeso>0?"+":"")+deltaPeso+"kg" } : null },
+    { label: "Consistencia", value: last.consistencia, unit: "%", cls: last.consistencia>=43?"":"amber" }
+  ];
+  document.getElementById("summary-cards").innerHTML = cards.map(c => `
+    <div class="stat-card ${c.cls||""}">
+      <div class="stat-label">${c.label}</div>
+      <div class="stat-value">${c.value}<span class="stat-unit">${c.unit}</span></div>
+      ${c.delta ? `<div class="stat-delta ${c.delta.v<0?"down":c.delta.v>0?"up":"neutral"}">${c.delta.label}</div>`:""}
+    </div>
+  `).join("");
+
+  // ---- Insights / animaciones ----
+  renderInsights(last, prev);
+
+  // ---- Mediciones ordenadas (para charts de cuerpo) ----
+  const meds = [...state.mediciones].sort((a,b) => a.fecha.localeCompare(b.fecha));
+  const medLabels = meds.map(m => fmtDateShort(m.fecha));
+
+  // Peso
+  killChart("peso");
+  charts.peso = new Chart(document.getElementById("chart-peso"), {
+    type: "line",
+    data: {
+      labels: medLabels,
+      datasets: [{
+        label: "Peso (kg)",
+        data: meds.map(m => m.peso),
+        borderColor: "#00ff88",
+        backgroundColor: "rgba(0,255,136,0.08)",
+        borderWidth: 2,
+        tension: 0.3,
+        pointRadius: 4,
+        pointBackgroundColor: "#00ff88",
+        fill: true
+      }]
+    },
+    options: { ...CHART_DEFAULTS(), plugins: { ...CHART_DEFAULTS().plugins, legend: { display:false } } }
+  });
+  document.getElementById("meta-peso").textContent = peso != null ? `${peso} kg` : "—";
+
+  // Grasa % vs Músculo %
+  killChart("composicion");
+  charts.composicion = new Chart(document.getElementById("chart-composicion"), {
+    type: "line",
+    data: {
+      labels: medLabels,
+      datasets: [
+        { label:"Grasa %",   data: meds.map(m=>m.grasa),   borderColor:"#ff3355", backgroundColor:"rgba(255,51,85,0.06)",  borderWidth:2, tension:0.3, pointRadius:3 },
+        { label:"Músculo %", data: meds.map(m=>m.musculo), borderColor:"#0066ff", backgroundColor:"rgba(0,102,255,0.06)",  borderWidth:2, tension:0.3, pointRadius:3 }
+      ]
+    },
+    options: CHART_DEFAULTS()
+  });
+
+  // Índice de composición
+  killChart("indice");
+  const indices = meds.map(m => (m.musculo!=null && m.grasa!=null) ? +(m.musculo - m.grasa).toFixed(1) : null);
+  charts.indice = new Chart(document.getElementById("chart-indice"), {
+    type: "line",
+    data: {
+      labels: medLabels,
+      datasets: [{
+        label: "Índice CC",
+        data: indices,
+        borderColor: "#00ff88",
+        backgroundColor: "rgba(0,255,136,0.12)",
+        borderWidth: 2,
+        tension: 0.3,
+        pointRadius: 4,
+        fill: true
+      }]
+    },
+    options: { ...CHART_DEFAULTS(), plugins: { ...CHART_DEFAULTS().plugins, legend: { display:false } } }
+  });
+
+  // Volumen semanal de fuerza
+  const wLabels = weeks.map(w => fmtDateShort(w.weekStart));
+  killChart("volumen");
+  charts.volumen = new Chart(document.getElementById("chart-volumen"), {
+    type: "bar",
+    data: {
+      labels: wLabels,
+      datasets: [{
+        label: "Volumen (kg)",
+        data: weeks.map(w => w.volumenFuerza),
+        backgroundColor: "rgba(0,255,136,0.5)",
+        borderColor: "#00ff88",
+        borderWidth: 1
+      }]
+    },
+    options: { ...CHART_DEFAULTS(), plugins: { ...CHART_DEFAULTS().plugins, legend: { display:false } } }
+  });
+
+  // Cardio semanal
+  killChart("cardio");
+  charts.cardio = new Chart(document.getElementById("chart-cardio"), {
+    type: "bar",
+    data: {
+      labels: wLabels,
+      datasets: [{
+        label: "Minutos",
+        data: weeks.map(w => w.minutosCardio),
+        backgroundColor: "rgba(0,102,255,0.5)",
+        borderColor: "#0066ff",
+        borderWidth: 1
+      }]
+    },
+    options: { ...CHART_DEFAULTS(), plugins: { ...CHART_DEFAULTS().plugins, legend: { display:false } } }
+  });
+
+  // Intensidad promedio por sesión (cronológico)
+  const ejOrdenados = [...state.ejercicios].sort((a,b) => a.fecha.localeCompare(b.fecha));
+  killChart("intensidad");
+  charts.intensidad = new Chart(document.getElementById("chart-intensidad"), {
+    type: "line",
+    data: {
+      labels: ejOrdenados.map(e => fmtDateShort(e.fecha)),
+      datasets: [{
+        label: "Intensidad",
+        data: ejOrdenados.map(e => e.intensidad),
+        borderColor: "#ffaa00",
+        backgroundColor: "rgba(255,170,0,0.08)",
+        borderWidth: 2,
+        tension: 0.3,
+        pointRadius: 3,
+        fill: true
+      }]
+    },
+    options: { ...CHART_DEFAULTS(), plugins: { ...CHART_DEFAULTS().plugins, legend: { display:false } },
+      scales: { ...CHART_DEFAULTS().scales, y: { ...CHART_DEFAULTS().scales.y, min:0, max:10 } }
+    }
+  });
+
+  // Distribución por tipo (donut)
+  const dist = { fuerza:0, cardio:0, flexibilidad:0 };
+  state.ejercicios.forEach(e => dist[e.tipo] = (dist[e.tipo]||0)+1);
+  killChart("distribucion");
+  charts.distribucion = new Chart(document.getElementById("chart-distribucion"), {
+    type: "doughnut",
+    data: {
+      labels: ["Fuerza","Cardio","Flexibilidad"],
+      datasets: [{
+        data: [dist.fuerza, dist.cardio, dist.flexibilidad],
+        backgroundColor: ["#00ff88","#0066ff","#ffaa00"],
+        borderColor: "#0a0d10",
+        borderWidth: 2
+      }]
+    },
+    options: { ...CHART_DEFAULTS(), scales: {} }
+  });
+
+  // Gauge de consistencia (SVG inline)
+  renderGauge(last.consistencia);
+
+  // Comidas por momento (bar horizontal)
+  const allMomentos = ["desayuno","media-mañana","almuerzo","merienda","cena","post-entreno"];
+  const momentosCount = {};
+  state.comidas.forEach(c => momentosCount[c.momento] = (momentosCount[c.momento]||0)+1);
+  killChart("momentos");
+  charts.momentos = new Chart(document.getElementById("chart-momentos"), {
+    type: "bar",
+    data: {
+      labels: allMomentos.map(m => m.replace("-"," ")),
+      datasets: [{
+        label: "Registros",
+        data: allMomentos.map(m => momentosCount[m]||0),
+        backgroundColor: "rgba(0,255,136,0.4)",
+        borderColor: "#00ff88",
+        borderWidth: 1
+      }]
+    },
+    options: { ...CHART_DEFAULTS(), indexAxis: "y",
+      plugins: { ...CHART_DEFAULTS().plugins, legend: { display:false } }
+    }
+  });
+
+  // Días completos vs incompletos por semana
+  const completosPorSem = weeks.map(w => w.diasCompletos);
+  const incompletosPorSem = weeks.map(w => w.diasIncompletos);
+  killChart("completos");
+  charts.completos = new Chart(document.getElementById("chart-completos"), {
+    type: "bar",
+    data: {
+      labels: wLabels,
+      datasets: [
+        { label:"Completos",   data: completosPorSem,   backgroundColor:"#00ff88" },
+        { label:"Incompletos", data: incompletosPorSem, backgroundColor:"#ff3355" }
+      ]
+    },
+    options: { ...CHART_DEFAULTS(),
+      scales: { ...CHART_DEFAULTS().scales,
+        x: { ...CHART_DEFAULTS().scales.x, stacked: true },
+        y: { ...CHART_DEFAULTS().scales.y, stacked: true }
+      }
+    }
+  });
+}
+
+function renderGauge(pct) {
+  const radius = 45, circ = 2*Math.PI*radius;
+  const dash = (pct/100) * circ;
+  const cls = pct >= 71 ? "ok" : pct >= 43 ? "" : "warn";
+  document.getElementById("gauge-consistencia").innerHTML = `
+    <div class="gauge ${pct < 43 ? "alert-pulse" : ""}">
+      <div class="gauge-ring ${cls}">
+        <svg viewBox="0 0 110 110">
+          <circle class="gauge-bg" cx="55" cy="55" r="${radius}"></circle>
+          <circle class="gauge-fg" cx="55" cy="55" r="${radius}"
+                  stroke-dasharray="${dash} ${circ}"
+                  stroke-linecap="round"></circle>
+        </svg>
+        <div class="gauge-text">${pct}%</div>
+      </div>
+      <div class="gauge-info">
+        <div class="gauge-headline">${pct >= 71 ? "Consistencia alta" : pct >= 43 ? "Consistencia media" : "Consistencia baja"}</div>
+        <div class="gauge-sub">${Math.round(pct/100*7)} de 7 días con sesión esta semana</div>
+      </div>
+    </div>`;
+  document.getElementById("meta-consistencia").textContent = `${Math.round(pct/100*7)}/7 días`;
+}
+
+/* ============================================================
+   O.  INSIGHTS DINÁMICOS (animaciones reactivas)
+   ============================================================ */
+function renderInsights(curr, prev) {
+  const cont = document.getElementById("insights-container");
+  if (!prev) { cont.innerHTML = ""; return; }
+  const rows = [];
+
+  // 1) Peso ↓ + músculo ↑ + grasa ↓  → celebración
+  const recompose =
+    curr.deltaPeso != null && curr.deltaPeso < 0 &&
+    curr.deltaMusculo != null && curr.deltaMusculo > 0 &&
+    curr.deltaGrasa != null && curr.deltaGrasa < 0;
+
+  // 2) Volumen sube
+  const volUp = curr.volumenFuerza > prev.volumenFuerza && prev.volumenFuerza > 0;
+  const volPct = prev.volumenFuerza > 0 ? Math.round((curr.volumenFuerza/prev.volumenFuerza-1)*100) : 0;
+
+  // 3) Consistencia baja
+  const lowConsistency = curr.diasEntrenados < 3;
+
+  // 4) Intensidad sube
+  const intUp = curr.intensidadProm > prev.intensidadProm && prev.intensidadProm > 0;
+
+  // 5) Peso sube + grasa sube  → ámbar motivacional
+  const careful = (curr.deltaPeso != null && curr.deltaPeso > 0) &&
+                  (curr.deltaGrasa != null && curr.deltaGrasa > 0);
+
+  if (recompose) {
+    rows.push(`
+      <div class="insight-row" style="position:relative">
+        <div class="insight-icon green">★</div>
+        <div class="insight-body">
+          <div class="insight-text"><strong>Recomposición corporal en marcha.</strong> Bajaste ${Math.abs(curr.deltaPeso)}kg, +${curr.deltaMusculo}% músculo y −${Math.abs(curr.deltaGrasa)}% grasa.</div>
+        </div>
+        <div class="confetti-layer" id="confetti-target"></div>
+      </div>`);
+  }
+
+  if (volUp) {
+    rows.push(`
+      <div class="insight-row">
+        <div class="insight-icon green">↑</div>
+        <div class="insight-body">
+          <div class="insight-text">Volumen de fuerza <strong>+${volPct}%</strong> respecto a la semana pasada (${curr.volumenFuerza.toLocaleString()}kg).</div>
+          <div class="insight-progress" style="--w:${Math.min(100, 50 + volPct)}%"></div>
+        </div>
+      </div>`);
+  }
+
+  if (lowConsistency) {
+    rows.push(`
+      <div class="insight-row alert-pulse" style="border-radius:2px">
+        <div class="insight-icon red">!</div>
+        <div class="insight-body">
+          <div class="insight-text">Sólo <strong>${curr.diasEntrenados} día(s)</strong> entrenados esta semana. Suma una sesión corta para mantener el hábito.</div>
+        </div>
+      </div>`);
+  }
+
+  if (intUp) {
+    rows.push(`
+      <div class="insight-row">
+        <div class="insight-icon green"><span class="icon-arrow-up">↑</span></div>
+        <div class="insight-body">
+          <div class="insight-text">Intensidad promedio <strong>+${(curr.intensidadProm-prev.intensidadProm).toFixed(1)}</strong>. Sigue progresando con cuidado en la técnica.</div>
+        </div>
+      </div>`);
+  }
+
+  if (careful) {
+    rows.push(`
+      <div class="insight-row">
+        <div class="insight-icon amber">~</div>
+        <div class="insight-body">
+          <div class="insight-text">Peso y grasa subieron levemente — puede ser fluctuación normal. Mantén la consistencia y revisa hidratación/descanso.</div>
+        </div>
+      </div>`);
+  }
+
+  if (rows.length === 0) {
+    cont.innerHTML = "";
+    return;
+  }
+  cont.innerHTML = `
+    <div class="insights-panel">
+      <h3>Tendencias · últimas 2 semanas</h3>
+      ${rows.join("")}
+    </div>`;
+
+  // Confeti
+  const target = document.getElementById("confetti-target");
+  if (target) launchConfetti(target);
+}
+
+function launchConfetti(target) {
+  const colors = ["#00ff88","#0066ff","#ffaa00"];
+  for (let i = 0; i < 18; i++) {
+    const piece = document.createElement("div");
+    piece.className = "confetti";
+    piece.style.left = (Math.random()*100) + "%";
+    piece.style.background = colors[i%colors.length];
+    piece.style.setProperty("--dur", (1 + Math.random()*1) + "s");
+    piece.style.setProperty("--delay", (Math.random()*0.4) + "s");
+    piece.style.transform = `rotate(${Math.random()*360}deg)`;
+    target.appendChild(piece);
+    setTimeout(() => piece.remove(), 2400);
+  }
+}
+
+/* ============================================================
+   P.  RESUMEN SEMANAL — selector + JSON estructurado
+   ============================================================ */
+let selectedWeek = startOfWeek(new Date());
+
+function renderSummary() {
+  document.getElementById("week-title").textContent = formatWeekTitle(selectedWeek);
+  const e = endOfWeek(selectedWeek);
+  document.getElementById("week-range").textContent =
+    fmtDateShort(isoDate(selectedWeek)) + " → " + fmtDateShort(isoDate(e));
+
+  const m = weekMetrics(selectedWeek);
+  const prev = weekMetrics(addDays(selectedWeek, -7));
+  const tendencias = computeTrends(m, prev);
+
+  const summaryObj = {
+    semana: { inicio: m.weekStart, fin: m.weekEnd, etiqueta: formatWeekTitle(selectedWeek) },
+    metricas: {
+      sesionesTotales: m.sesionesTotales,
+      diasEntrenados: m.diasEntrenados,
+      consistenciaPct: m.consistencia,
+      minutosCardio: m.minutosCardio,
+      volumenFuerza: m.volumenFuerza,
+      intensidadPromedio: m.intensidadProm,
+      distribucionTipos: m.distribucion,
+      pesoInicio: m.pesoInicio, pesoFin: m.pesoFin, deltaPeso: m.deltaPeso,
+      grasaInicio: m.grasaInicio, grasaFin: m.grasaFin, deltaGrasa: m.deltaGrasa,
+      musculoInicio: m.musculoInicio, musculoFin: m.musculoFin, deltaMusculo: m.deltaMusculo,
+      indiceComposicion: m.indiceComposicion,
+      comidas: { total: m.raw.comidas.length, distribucionMomentos: m.distMomentos,
+                 diasConRegistro: m.diasConRegistro, diasCompletos: m.diasCompletos, diasIncompletos: m.diasIncompletos }
+    },
+    tendencias,
+    detalle: {
+      ejercicios: m.raw.ejercicios,
+      mediciones: m.raw.mediciones,
+      comidas: m.raw.comidas
+    }
+  };
+
+  const text = buildHumanSummary(summaryObj);
+  const el = document.getElementById("summary-text");
+  el.textContent = text + "\n\n--- JSON ---\n" + JSON.stringify(summaryObj, null, 2);
+  el.dataset.json = JSON.stringify(summaryObj);
+  el.dataset.text = text;
+}
+
+function computeTrends(curr, prev) {
+  const safeDelta = (a,b) => (a!=null && b!=null) ? +(a-b).toFixed(2) : null;
+  return {
+    volumenFuerzaDelta:    safeDelta(curr.volumenFuerza, prev.volumenFuerza),
+    minutosCardioDelta:    safeDelta(curr.minutosCardio, prev.minutosCardio),
+    sesionesDelta:         safeDelta(curr.sesionesTotales, prev.sesionesTotales),
+    intensidadDelta:       safeDelta(curr.intensidadProm, prev.intensidadProm),
+    consistenciaDelta:     safeDelta(curr.consistencia, prev.consistencia),
+    pesoDelta:             safeDelta(curr.pesoFin, prev.pesoFin),
+    indiceComposicionDelta:safeDelta(curr.indiceComposicion, prev.indiceComposicion)
+  };
+}
+
+function buildHumanSummary(s) {
+  const m = s.metricas, t = s.tendencias;
+  const arrow = (v, inv = false) => {
+    if (v == null || v === 0) return "→";
+    const up = v > 0;
+    return inv ? (up ? "▲" : "▼") : (up ? "▲" : "▼");
+  };
+  return [
+    `## ${s.semana.etiqueta} (${s.semana.inicio} → ${s.semana.fin})`,
+    ``,
+    `ENTRENAMIENTO`,
+    `  Sesiones:     ${m.sesionesTotales}  ${arrow(t.sesionesDelta)} ${fmtDelta(t.sesionesDelta)}`,
+    `  Días:         ${m.diasEntrenados}/7  (${m.consistenciaPct}%)`,
+    `  Volumen:      ${m.volumenFuerza.toLocaleString()} kg  ${arrow(t.volumenFuerzaDelta)} ${fmtDelta(t.volumenFuerzaDelta," kg")}`,
+    `  Cardio:       ${m.minutosCardio} min  ${arrow(t.minutosCardioDelta)} ${fmtDelta(t.minutosCardioDelta," min")}`,
+    `  Intensidad:   ${m.intensidadPromedio}/10  ${arrow(t.intensidadDelta)} ${fmtDelta(t.intensidadDelta)}`,
+    `  Distribución: F${m.distribucionTipos.fuerza} · C${m.distribucionTipos.cardio} · X${m.distribucionTipos.flexibilidad}`,
+    ``,
+    `CUERPO`,
+    `  Peso:    ${m.pesoFin ?? "—"} kg  (Δ ${fmtDelta(m.deltaPeso," kg")})`,
+    `  Grasa:   ${m.grasaFin ?? "—"} %   (Δ ${fmtDelta(m.deltaGrasa," %")})`,
+    `  Músculo: ${m.musculoFin ?? "—"} % (Δ ${fmtDelta(m.deltaMusculo," %")})`,
+    `  Índice:  ${m.indiceComposicion ?? "—"}`,
+    ``,
+    `ALIMENTACIÓN`,
+    `  Registros:    ${m.comidas.total}`,
+    `  Días con ≥3:  ${m.comidas.diasCompletos}/${m.comidas.diasConRegistro || 0}`,
+  ].join("\n");
+}
+function fmtDelta(v, unit = "") {
+  if (v == null) return "—";
+  if (v === 0) return "0" + unit;
+  return (v > 0 ? "+" : "") + v + unit;
+}
+function formatWeekTitle(d) {
+  const ws = startOfWeek(d);
+  const w = Math.ceil(((ws - new Date(ws.getFullYear(),0,1))/86400000 + new Date(ws.getFullYear(),0,1).getDay()+1)/7);
+  return `Semana ${w} · ${ws.getFullYear()}`;
+}
+
+document.getElementById("week-prev").addEventListener("click", () => {
+  selectedWeek = addDays(selectedWeek, -7); renderSummary();
+});
+document.getElementById("week-next").addEventListener("click", () => {
+  selectedWeek = addDays(selectedWeek, 7); renderSummary();
+});
+document.getElementById("btn-week-current").addEventListener("click", () => {
+  selectedWeek = startOfWeek(new Date()); renderSummary();
+});
+
+document.getElementById("btn-copy-summary").addEventListener("click", async () => {
+  const el = document.getElementById("summary-text");
+  const payload = el.textContent;
+  try {
+    await navigator.clipboard.writeText(payload);
+    toast("Copiado al portapapeles");
+  } catch {
+    toast("No se pudo copiar — selecciona manualmente", "error");
+  }
+});
+
+document.getElementById("btn-download-summary").addEventListener("click", () => {
+  const json = document.getElementById("summary-text").dataset.json;
+  if (!json) return;
+  downloadFile(`resumen-${isoDate(selectedWeek)}.json`, json, "application/json");
+});
+
+/* ============================================================
+   Q.  EXPORTAR / IMPORTAR
+   ============================================================ */
+document.getElementById("btn-export").addEventListener("click", () => {
+  downloadFile(`tracker-${todayISO()}.json`, JSON.stringify(state, null, 2), "application/json");
+  toast("Datos exportados");
+});
+
+document.getElementById("btn-import").addEventListener("click", () => {
+  document.getElementById("file-import").click();
+});
+document.getElementById("file-import").addEventListener("change", e => {
+  const file = e.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = () => {
+    try {
+      const parsed = JSON.parse(reader.result);
+      if (!parsed.ejercicios || !parsed.mediciones || !parsed.comidas) throw new Error("Formato inválido");
+      if (!confirm("¿Reemplazar todos los datos actuales con el archivo importado?")) return;
+      state = parsed;
+      saveState();
+      renderAll();
+      toast("Datos importados");
+    } catch (err) {
+      toast("Archivo inválido", "error");
+    }
+  };
+  reader.readAsText(file);
+  e.target.value = "";
+});
+
+function downloadFile(name, content, mime) {
+  const blob = new Blob([content], { type: mime });
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(blob);
+  a.download = name;
+  a.click();
+  setTimeout(() => URL.revokeObjectURL(a.href), 1000);
+}
+
+/* ============================================================
+   R.  LIMPIAR DATOS
+   ============================================================ */
+document.getElementById("btn-clear-sample").addEventListener("click", () => {
+  if (!confirm("Borrar los datos de ejemplo precargados?")) return;
+  if (!state.meta.sampleLoaded) { toast("No hay datos de ejemplo", "warn"); return; }
+  state = defaultState();
+  saveState();
+  renderAll();
+  toast("Datos de ejemplo limpiados");
+});
+
+document.getElementById("btn-clear-all").addEventListener("click", () => {
+  if (!confirm("ATENCIÓN: borrar TODOS tus datos. ¿Continuar?")) return;
+  state = defaultState();
+  state.meta.sampleLoaded = false;
+  saveState();
+  renderAll();
+  toast("Todo borrado");
+});
+
+/* ============================================================
+   S.  RENDER MAESTRO
+   ============================================================ */
+function renderAll() {
+  renderEjerciciosList();
+  renderMedicionesList();
+  renderComidasList();
+  // Refresca dashboard / resumen sólo si están abiertos
+  const active = document.querySelector(".tab.active").dataset.tab;
+  if (active === "dashboard") renderDashboard();
+  if (active === "resumen") renderSummary();
+}
+
+renderAll();
+
+/* ============================================================
+   T.  REGISTRO DEL SERVICE WORKER (PWA)
+   ============================================================ */
+if ("serviceWorker" in navigator) {
+  window.addEventListener("load", () => {
+    navigator.serviceWorker.register("./sw.js").catch(err => {
+      console.warn("SW no registrado:", err.message);
+    });
+  });
+}
+</script>
+</body>
+</html>

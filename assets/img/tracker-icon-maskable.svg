@@ -1,14 +1,14 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
   <!-- Maskable: deja un safe-area de 80px alrededor -->
-  <rect width="512" height="512" fill="#0a0d10"/>
+  <rect width="512" height="512" fill="#0b0c0f"/>
   <g transform="translate(56,56) scale(0.78)">
-    <rect width="512" height="512" fill="#0a0d10"/>
-    <rect x="32" y="32" width="448" height="448" fill="none" stroke="#00ff88" stroke-width="6"/>
-    <rect x="96"  y="320" width="48" height="96"  fill="#00ff88"/>
-    <rect x="160" y="272" width="48" height="144" fill="#00ff88"/>
-    <rect x="224" y="208" width="48" height="208" fill="#0066ff"/>
-    <rect x="288" y="240" width="48" height="176" fill="#00ff88"/>
-    <rect x="352" y="176" width="48" height="240" fill="#0066ff"/>
-    <path d="M96 96 H416 V128 H272 V224 H240 V128 H96 Z" fill="#00ff88"/>
+    <rect width="512" height="512" fill="#0b0c0f"/>
+    <rect x="32" y="32" width="448" height="448" fill="none" stroke="#10b981" stroke-width="6"/>
+    <rect x="96"  y="320" width="48" height="96"  fill="#10b981"/>
+    <rect x="160" y="272" width="48" height="144" fill="#10b981"/>
+    <rect x="224" y="208" width="48" height="208" fill="#60a5fa"/>
+    <rect x="288" y="240" width="48" height="176" fill="#10b981"/>
+    <rect x="352" y="176" width="48" height="240" fill="#60a5fa"/>
+    <path d="M96 96 H416 V128 H272 V224 H240 V128 H96 Z" fill="#10b981"/>
   </g>
 </svg>

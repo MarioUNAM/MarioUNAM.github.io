@@ -5,7 +5,7 @@
    network-first con fallback a cache para el resto.
    Sube CACHE_VERSION cuando publiques cambios para invalidar.
    ============================================================ */
-const CACHE_VERSION = "tracker-v3";
+const CACHE_VERSION = "tracker-v4";
 const CORE_ASSETS = [
   "./tracker.html",
   "./manifest.json",

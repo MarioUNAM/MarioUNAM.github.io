@@ -86,6 +86,43 @@
   --topbar-h:  56px;
 }
 
+/* ────────────────────────────────────────────────────────────
+   Tema claro — overrides cuando html[data-theme="light"]
+   ──────────────────────────────────────────────────────────── */
+:root[data-theme="light"] {
+  --bg:           #fafafb;
+  --bg-elev:      #ffffff;
+  --bg-elev-2:    #f3f4f6;
+  --bg-elev-3:    #e5e7eb;
+
+  --border:       #e5e7eb;
+  --border-strong:#d1d5db;
+
+  --text:         #111418;
+  --text-muted:   #4b5563;
+  --text-dim:     #9aa1ad;
+
+  --green:        #059669;
+  --green-bright: #10b981;
+  --green-soft:   rgba(5,150,105,0.18);
+  --green-bg:     rgba(5,150,105,0.08);
+
+  --blue:         #2563eb;
+  --blue-soft:    rgba(37,99,235,0.18);
+  --blue-bg:      rgba(37,99,235,0.08);
+
+  --red:          #dc2626;
+  --red-soft:     rgba(220,38,38,0.14);
+  --amber:        #d97706;
+  --amber-soft:   rgba(217,119,6,0.16);
+
+  --on-accent:    #ffffff;
+
+  --shadow-1: 0 1px 2px rgba(15,20,25,0.06);
+  --shadow-2: 0 8px 24px rgba(15,20,25,0.08);
+  --shadow-3: 0 12px 40px rgba(15,20,25,0.12);
+}
+
 /* ============================================================
    2.  RESET + BASE
    ============================================================ */
@@ -118,7 +155,7 @@ svg { display: block; }
   height: var(--topbar-h);
   display: flex; align-items: center; gap: 10px;
   padding: 0 14px;
-  background: rgba(11,12,15,0.85);
+  background: var(--bg-elev);
   backdrop-filter: blur(14px) saturate(1.2);
   -webkit-backdrop-filter: blur(14px) saturate(1.2);
   border-bottom: 1px solid var(--border);
@@ -387,6 +424,8 @@ input[type=date], input[type=time] {
 }
 input[type=date]::-webkit-calendar-picker-indicator,
 input[type=date]::-webkit-inner-spin-button { filter: invert(0.7) brightness(1.4); }
+:root[data-theme="light"] input[type=date]::-webkit-calendar-picker-indicator,
+:root[data-theme="light"] input[type=date]::-webkit-inner-spin-button { filter: none; opacity: 0.6; }
 
 .input.mono { font-family: var(--font-mono); font-weight: 500; }
 .input:focus, .textarea:focus, select:focus {
@@ -976,6 +1015,16 @@ input[type=range]::-moz-range-thumb {
   </nav>
 
   <div class="sidebar-actions">
+    <button class="icon-btn" id="btn-theme" title="Cambiar tema" aria-label="Cambiar tema">
+      <!-- Icono se intercambia por JS según tema activo -->
+      <svg class="theme-ic-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
+      </svg>
+      <svg class="theme-ic-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" hidden>
+        <circle cx="12" cy="12" r="4"/>
+        <path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/>
+      </svg>
+    </button>
     <button class="icon-btn" id="btn-export" title="Exportar JSON" aria-label="Exportar JSON">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
         <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
@@ -1496,6 +1545,29 @@ function toast(msg, type = "ok") {
   clearTimeout(toast._t);
   toast._t = setTimeout(() => { el.className = type === "ok" ? "" : type; }, 2200);
 }
+
+/* ============================================================
+   F0. THEME TOGGLE (dark/light)
+   ============================================================ */
+function applyTheme(theme) {
+  document.documentElement.setAttribute("data-theme", theme);
+  localStorage.setItem("tracker.theme", theme);
+  const btn = document.getElementById("btn-theme");
+  if (btn) {
+    btn.querySelector(".theme-ic-moon").hidden = theme === "dark";
+    btn.querySelector(".theme-ic-sun").hidden  = theme !== "dark";
+    btn.setAttribute("aria-label", theme === "dark" ? "Cambiar a tema claro" : "Cambiar a tema oscuro");
+  }
+}
+(function initTheme() {
+  const saved = localStorage.getItem("tracker.theme");
+  const prefersLight = window.matchMedia("(prefers-color-scheme: light)").matches;
+  applyTheme(saved || (prefersLight ? "light" : "dark"));
+})();
+document.getElementById("btn-theme")?.addEventListener("click", () => {
+  const cur = document.documentElement.getAttribute("data-theme");
+  applyTheme(cur === "dark" ? "light" : "dark");
+});
 
 /* ============================================================
    F.  DRAWER LATERAL (mobile) + TAB ROUTING

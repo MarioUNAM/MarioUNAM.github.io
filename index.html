@@ -106,7 +106,6 @@
       <a href="#skills"       class="nav-link text-on-surface-variant hover:text-on-surface transition-colors" data-section="skills"       data-i18n="nav.skills">Skills</a>
       <a href="#case-studies"  class="nav-link text-on-surface-variant hover:text-on-surface transition-colors" data-section="case-studies"  data-i18n="nav.caseStudies">Case Studies</a>
       <a href="#ui-showcases"  class="nav-link text-on-surface-variant hover:text-on-surface transition-colors" data-section="ui-showcases">UI Lab</a>
-      <a href="tracker.html"   class="nav-link text-on-surface-variant hover:text-on-surface transition-colors inline-flex items-center gap-1">Tracker<span class="material-symbols-outlined text-[14px] leading-none">open_in_new</span></a>
       <a href="#journey"       class="nav-link text-on-surface-variant hover:text-on-surface transition-colors" data-section="journey"      data-i18n="nav.journey">Journey</a>
       <a href="#contact"      class="nav-link text-on-surface-variant hover:text-on-surface transition-colors" data-section="contact"      data-i18n="nav.contact">Contact</a>
     </div>
@@ -151,7 +150,6 @@
   <a href="#skills"       class="mobile-nav-link text-on-surface-variant hover:text-primary transition-colors" data-i18n="nav.skills">Skills</a>
   <a href="#case-studies"  class="mobile-nav-link text-on-surface-variant hover:text-primary transition-colors" data-i18n="nav.caseStudies">Case Studies</a>
   <a href="#ui-showcases"  class="mobile-nav-link text-on-surface-variant hover:text-primary transition-colors">UI Lab</a>
-  <a href="tracker.html"   class="mobile-nav-link text-on-surface-variant hover:text-primary transition-colors">Tracker ↗</a>
   <a href="#journey"       class="mobile-nav-link text-on-surface-variant hover:text-primary transition-colors" data-i18n="nav.journey">Journey</a>
   <a href="#contact"      class="mobile-nav-link text-on-surface-variant hover:text-primary transition-colors" data-i18n="nav.contact">Contact</a>
 
@@ -1302,4 +1300,112 @@
 
     /* ── Mobile nav ──────────────────────────────────────── */
     var toggle   = document.getElementById('nav-toggle');
-    var closeBtn = document.getElementById('n
+    var closeBtn = document.getElementById('nav-close');
+    var mobileNav = document.getElementById('mobile-nav');
+    function openNav(){
+      if(!mobileNav) return;
+      mobileNav.hidden = false;
+      toggle?.setAttribute('aria-expanded','true');
+      document.body.style.overflow = 'hidden';
+    }
+    function closeNav(){
+      if(!mobileNav) return;
+      mobileNav.hidden = true;
+      toggle?.setAttribute('aria-expanded','false');
+      document.body.style.overflow = '';
+    }
+    if(toggle)   toggle.addEventListener('click', openNav);
+    if(closeBtn) closeBtn.addEventListener('click', closeNav);
+    document.querySelectorAll('.mobile-nav-link').forEach(function(l){ l.addEventListener('click', closeNav); });
+    document.addEventListener('keydown', function(e){
+      if(e.key === 'Escape' && mobileNav && !mobileNav.hidden) closeNav();
+    });
+
+    /* ── Sticky nav scroll ───────────────────────────────── */
+    var nav = document.getElementById('main-nav');
+    window.addEventListener('scroll', function(){
+      if(nav) nav.classList.toggle('scrolled', window.scrollY > 40);
+    }, { passive: true });
+
+    /* ── Active nav link on scroll ───────────────────────── */
+    var sections = document.querySelectorAll('section[id], main[id]');
+    var navLinks = document.querySelectorAll('.nav-link');
+    if('IntersectionObserver' in window){
+      var sectionObs = new IntersectionObserver(function(entries){
+        entries.forEach(function(e){
+          if(e.isIntersecting){
+            navLinks.forEach(function(l){
+              var active = l.dataset.section === e.target.id;
+              l.classList.toggle('nav-link-active', active);
+              if(active) l.classList.remove('text-on-surface-variant');
+              else l.classList.add('text-on-surface-variant');
+            });
+          }
+        });
+      },{ rootMargin:'-40% 0px -55% 0px' });
+      sections.forEach(function(s){ sectionObs.observe(s); });
+
+      /* ── Scroll reveal ───────────────────────────────────── */
+      var revealObs = new IntersectionObserver(function(entries){
+        entries.forEach(function(e){
+          if(e.isIntersecting){ e.target.classList.add('active'); revealObs.unobserve(e.target); }
+        });
+      },{ threshold: 0.1 });
+      document.querySelectorAll('.reveal,.reveal-left,.reveal-right,.reveal-stagger').forEach(function(el){
+        revealObs.observe(el);
+      });
+    }
+
+    /* ── Typing effect ───────────────────────────────────── */
+    var phrases = ['MDM Consultant','TIBCO EBX Developer','Java Developer','Data Consultant'];
+    var pi=0, ci=0, del=false;
+    var tgt = document.getElementById('typing-target');
+    function type(){
+      if(!tgt) return;
+      var cur=phrases[pi];
+      if(!del){ tgt.textContent=cur.slice(0,++ci); if(ci===cur.length){del=true;setTimeout(type,1800);return;} }
+      else { tgt.textContent=cur.slice(0,--ci); if(ci===0){del=false;pi=(pi+1)%phrases.length;} }
+      setTimeout(type,del?50:80);
+    }
+    type();
+
+    /* ── Testimonials (render + hide if empty) ───────────── */
+    var grid = document.getElementById('testimonials-grid');
+    var testimonialsSection = document.getElementById('testimonials');
+    if(grid && testimonialsSection){
+      var testimonialsItems = [];
+      var idx = 0;
+      while(T[currentLang] && T[currentLang]['testimonials.items.'+idx+'.quote']){
+        testimonialsItems.push(idx); idx++;
+      }
+      if(!testimonialsItems.length){
+        var idx2=0;
+        while(T['en'] && T['en']['testimonials.items.'+idx2+'.quote']){ testimonialsItems.push(idx2); idx2++; }
+      }
+      if(!testimonialsItems.length){
+        testimonialsSection.setAttribute('hidden','');
+      } else {
+        testimonialsItems.slice(0,3).forEach(function(n){
+          var base='testimonials.items.'+n+'.';
+          var card=document.createElement('div');
+          card.className='testimonial-card';
+          card.innerHTML =
+            '<p class="testimonial-quote" data-i18n="'+base+'quote">'+(t(base+'quote')||'')+'</p>'+
+            '<div class="testimonial-divider"></div>'+
+            '<div class="flex items-center gap-3">'+
+              '<div class="testimonial-avatar">'+(t(base+'initials')||'?')+'</div>'+
+              '<div>'+
+                '<p class="testimonial-name" data-i18n="'+base+'name">'+(t(base+'name')||'')+'</p>'+
+                '<p class="testimonial-role" data-i18n="'+base+'role">'+(t(base+'role')||'')+'</p>'+
+              '</div>'+
+            '</div>';
+          grid.appendChild(card);
+        });
+      }
+    }
+
+  }); // DOMContentLoaded
+</script>
+
+</body>
+</html>

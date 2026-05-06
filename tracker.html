@@ -768,6 +768,25 @@ input[type=range]::-moz-range-thumb {
 }
 .record-detail strong { color: var(--text); font-weight: 500; }
 .record-detail .num { font-family: var(--font-mono); font-weight: 500; }
+
+/* Badges de feedback dentro de cada registro */
+.record-badges {
+  display: flex; gap: 6px; flex-wrap: wrap;
+  margin-top: 8px;
+}
+.record-badge {
+  display: inline-flex; align-items: center; gap: 4px;
+  padding: 4px 8px;
+  border-radius: var(--r-xs);
+  font: 600 10px/1.1 var(--font-mono);
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  background: var(--bg-elev-2);
+  color: var(--text-muted);
+}
+.record-badge.ok   { color: var(--green-bright); background: var(--green-bg); }
+.record-badge.warn { color: var(--amber); background: var(--amber-soft); }
+.record-badge.bad  { color: var(--red); background: var(--red-soft); }
 .btn-delete {
   color: var(--text-dim);
   width: 30px; height: 30px;
@@ -2171,6 +2190,91 @@ function initToolbars() {
   });
 }
 
+/* ============================================================
+   K1. FEEDBACK POR REGISTRO · PR detection, badges contextuales
+   ============================================================ */
+function maxKgBefore(name, beforeFecha) {
+  if (!name) return 0;
+  const target = name.trim().toLowerCase();
+  let max = 0;
+  state.ejercicios.forEach(e => {
+    if (e.tipo !== "fuerza" || !e.series) return;
+    if ((e.nombre||"").trim().toLowerCase() !== target) return;
+    if (e.fecha >= beforeFecha) return;
+    e.series.forEach(s => { if (s.kg > max) max = s.kg; });
+  });
+  return max;
+}
+function maxRepsAtKgBefore(name, kg, beforeFecha) {
+  if (!name || !kg) return 0;
+  const target = name.trim().toLowerCase();
+  let max = 0;
+  state.ejercicios.forEach(e => {
+    if (e.tipo !== "fuerza" || !e.series) return;
+    if ((e.nombre||"").trim().toLowerCase() !== target) return;
+    if (e.fecha >= beforeFecha) return;
+    e.series.forEach(s => { if (s.kg === kg && s.reps > max) max = s.reps; });
+  });
+  return max;
+}
+
+function ejBadges(e) {
+  const out = [];
+  if (e.tipo === "fuerza" && e.series && e.series.length) {
+    const sessionMax = e.series.reduce((m,s) => Math.max(m, s.kg), 0);
+    const prevMax = maxKgBefore(e.nombre, e.fecha);
+    if (sessionMax > 0 && prevMax === 0) {
+      out.push({ cls: "ok", text: "★ Primer registro" });
+    } else if (sessionMax > prevMax) {
+      out.push({ cls: "ok", text: `★ PR ${sessionMax}kg (+${(sessionMax-prevMax).toFixed(1).replace(/\.0$/,"")})` });
+    } else if (sessionMax === prevMax && prevMax > 0) {
+      // Empate de peso — chequear si superó reps a ese peso
+      const sessReps = e.series.filter(s => s.kg === sessionMax).reduce((m,s) => Math.max(m, s.reps), 0);
+      const prevReps = maxRepsAtKgBefore(e.nombre, sessionMax, e.fecha);
+      if (sessReps > prevReps && prevReps > 0) {
+        out.push({ cls: "ok", text: `★ PR reps · ${sessReps}×${sessionMax}kg` });
+      }
+    }
+  }
+  if (e.intensidad >= 9) {
+    out.push({ cls: "warn", text: `Intensidad ${e.intensidad}/10` });
+  }
+  if (e.tipo === "cardio") {
+    const totalMins = e.minutos || (e.velocidades||[]).reduce((a,v)=>a+v.mins,0);
+    if (totalMins >= 45) out.push({ cls: "ok", text: `${totalMins} min cardio` });
+  }
+  return out;
+}
+
+function medBadges(m, prev) {
+  const out = [];
+  if (!prev) return out;
+  if (m.grasa != null && prev.grasa != null) {
+    const dg = +(m.grasa - prev.grasa).toFixed(1);
+    if (dg <= -0.5) out.push({ cls: "ok",   text: `↓ ${Math.abs(dg)}% grasa` });
+    if (dg >=  0.5) out.push({ cls: "warn", text: `↑ ${dg}% grasa` });
+  }
+  if (m.peso != null && prev.peso != null) {
+    const dp = +(m.peso - prev.peso).toFixed(1);
+    const dg = (m.grasa != null && prev.grasa != null) ? (m.grasa - prev.grasa) : null;
+    if (dp < 0 && m.masaMagra != null && prev.masaMagra != null && m.masaMagra < prev.masaMagra - 0.3) {
+      out.push({ cls: "warn", text: "Pérdida de magra" });
+    }
+    if (dp > 0.3 && dg != null && dg > 0.3) {
+      out.push({ cls: "warn", text: "Peso + grasa ↑" });
+    }
+    if (dp < -0.2 && dg != null && dg < -0.2) {
+      out.push({ cls: "ok", text: "Recomposición" });
+    }
+  }
+  return out;
+}
+
+function renderBadges(arr) {
+  if (!arr || !arr.length) return "";
+  return `<div class="record-badges">${arr.map(b => `<span class="record-badge ${b.cls}">${b.text}</span>`).join("")}</div>`;
+}
+
 function renderEjerciciosList() {
   const cont = document.getElementById("ejercicios-list");
   const all  = state.ejercicios;
@@ -2197,6 +2301,7 @@ function renderEjerciciosList() {
     } else {
       detail = `<strong>${e.flexMinutos||0}min</strong> · ${e.flexSeries||1} serie(s)`;
     }
+    const badges = renderBadges(ejBadges(e));
     return `
       <div class="record-item ${e.tipo}">
         <div class="record-body">
@@ -2204,6 +2309,7 @@ function renderEjerciciosList() {
           <div class="record-title">${escapeHtml(e.nombre)}</div>
           <div class="record-detail">${detail}</div>
           ${e.notas ? `<div class="record-detail" style="margin-top:6px;font-style:italic">${escapeHtml(e.notas)}</div>`:""}
+          ${badges}
         </div>
         <button class="btn-delete" data-id="${e.id}" data-kind="ejercicios" aria-label="Eliminar">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6M14 11v6"/></svg>
@@ -2304,6 +2410,12 @@ function renderMedicionesList() {
   const visible = filtered.slice(0, limit);
   const hidden = Math.max(0, filtered.length - visible.length);
 
+  // Para badges: comparar contra la medición inmediatamente anterior en
+  // orden cronológico ascendente. Construimos un mapa id → previa.
+  const asc = [...all].sort((a,b) => a.fecha.localeCompare(b.fecha));
+  const prevById = new Map();
+  asc.forEach((m, i) => { if (i > 0) prevById.set(m.id, asc[i-1]); });
+
   cont.innerHTML = visible.map(m => {
     const parts = [];
     parts.push(`Peso <strong>${m.peso}kg</strong>`);
@@ -2312,12 +2424,14 @@ function renderMedicionesList() {
     if (m.cuello)            parts.push(`Cuello <strong>${m.cuello}</strong>`);
     if (m.cintura)           parts.push(`Cintura <strong>${m.cintura}</strong>`);
     if (m.cadera)            parts.push(`Cadera <strong>${m.cadera}</strong>`);
+    const badges = renderBadges(medBadges(m, prevById.get(m.id)));
     return `
       <div class="record-item">
         <div class="record-body">
           <div class="record-meta">${fmtDateLong(m.fecha)}</div>
           <div class="record-detail">${parts.join(" · ")}</div>
           ${m.nota ? `<div class="record-detail" style="margin-top:6px;font-style:italic">${escapeHtml(m.nota)}</div>`:""}
+          ${badges}
         </div>
         <button class="btn-delete" data-id="${m.id}" data-kind="mediciones" aria-label="Eliminar">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6M14 11v6"/></svg>
@@ -2783,24 +2897,31 @@ function renderGauge(pct) {
 }
 
 /* ============================================================
-   Q.  INSIGHTS
+   Q.  INSIGHTS — coach panel: reglas de feedback bien/mal
+   ------------------------------------------------------------
+   Cada regla devuelve una fila si aplica. Mezclamos lo positivo
+   (PR, recomposición, volumen subiendo) con lo accionable (poca
+   consistencia, falta de cardio, posible deload).
    ============================================================ */
+function countWeekPRs(curr) {
+  // Cuenta sesiones que tienen al menos un PR o primer registro
+  if (!curr.raw || !curr.raw.ejercicios) return 0;
+  let prs = 0;
+  curr.raw.ejercicios.forEach(e => {
+    if (ejBadges(e).some(b => b.text.startsWith("★"))) prs++;
+  });
+  return prs;
+}
+
 function renderInsights(curr, prev) {
   const cont = document.getElementById("insights-container");
-  if (!prev) { cont.innerHTML = ""; return; }
   const rows = [];
 
-  const recompose =
+  // ── Reglas POSITIVAS (verdes) ────────────────────────────────────────
+  const recompose = prev &&
     curr.deltaPeso != null && curr.deltaPeso < 0 &&
     curr.deltaMasaMagra != null && curr.deltaMasaMagra > 0 &&
     curr.deltaGrasa != null && curr.deltaGrasa < 0;
-
-  const volUp  = curr.volumenFuerza > prev.volumenFuerza && prev.volumenFuerza > 0;
-  const volPct = prev.volumenFuerza > 0 ? Math.round((curr.volumenFuerza/prev.volumenFuerza-1)*100) : 0;
-  const lowConsistency = curr.diasEntrenados < 3;
-  const intUp   = curr.intensidadProm > prev.intensidadProm && prev.intensidadProm > 0;
-  const careful = (curr.deltaPeso != null && curr.deltaPeso > 0) && (curr.deltaGrasa != null && curr.deltaGrasa > 0);
-
   if (recompose) rows.push(`
     <div class="insight-row" style="position:relative">
       <div class="insight-icon green">★</div>
@@ -2810,7 +2931,18 @@ function renderInsights(curr, prev) {
       <div class="confetti-layer" id="confetti-target"></div>
     </div>`);
 
-  if (volUp) rows.push(`
+  const prCount = countWeekPRs(curr);
+  if (prCount > 0) rows.push(`
+    <div class="insight-row">
+      <div class="insight-icon green">★</div>
+      <div class="insight-body">
+        <div class="insight-text"><strong>${prCount} PR${prCount>1?"s":""} esta semana.</strong> Sigues progresando — registra peso/reps en la próxima para confirmar la tendencia.</div>
+      </div>
+    </div>`);
+
+  if (prev && prev.volumenFuerza > 0 && curr.volumenFuerza > prev.volumenFuerza) {
+    const volPct = Math.round((curr.volumenFuerza/prev.volumenFuerza-1)*100);
+    rows.push(`
     <div class="insight-row">
       <div class="insight-icon green">↑</div>
       <div class="insight-body">
@@ -2818,16 +2950,9 @@ function renderInsights(curr, prev) {
         <div class="insight-progress" style="--w:${Math.min(100, 50 + volPct)}%"></div>
       </div>
     </div>`);
+  }
 
-  if (lowConsistency) rows.push(`
-    <div class="insight-row alert-pulse">
-      <div class="insight-icon red">!</div>
-      <div class="insight-body">
-        <div class="insight-text">Sólo <strong>${curr.diasEntrenados} día(s)</strong> entrenados esta semana. Suma una sesión corta para mantener el hábito.</div>
-      </div>
-    </div>`);
-
-  if (intUp) rows.push(`
+  if (prev && curr.intensidadProm > prev.intensidadProm && prev.intensidadProm > 0) rows.push(`
     <div class="insight-row">
       <div class="insight-icon green"><span class="icon-arrow-up">↑</span></div>
       <div class="insight-body">
@@ -2835,7 +2960,64 @@ function renderInsights(curr, prev) {
       </div>
     </div>`);
 
-  if (careful) rows.push(`
+  // Adherencia alimentaria
+  if (curr.diasConRegistro >= 5 && curr.diasIncompletos === 0) rows.push(`
+    <div class="insight-row">
+      <div class="insight-icon green">✓</div>
+      <div class="insight-body">
+        <div class="insight-text"><strong>Adherencia perfecta</strong> · ${curr.diasCompletos} días con ≥3 comidas registradas.</div>
+      </div>
+    </div>`);
+
+  // ── Reglas ACCIONABLES (amber/red) ───────────────────────────────────
+  if (curr.diasEntrenados > 0 && curr.diasEntrenados < 3) rows.push(`
+    <div class="insight-row alert-pulse">
+      <div class="insight-icon red">!</div>
+      <div class="insight-body">
+        <div class="insight-text">Sólo <strong>${curr.diasEntrenados} día(s)</strong> entrenados esta semana. Suma una sesión corta para mantener el hábito.</div>
+      </div>
+    </div>`);
+  if (curr.diasEntrenados === 0) rows.push(`
+    <div class="insight-row alert-pulse">
+      <div class="insight-icon red">!</div>
+      <div class="insight-body">
+        <div class="insight-text">Sin sesiones registradas esta semana. Vuelve con algo corto y manejable.</div>
+      </div>
+    </div>`);
+
+  // Sin cardio cuando hay actividad
+  if (curr.diasEntrenados >= 3 && curr.minutosCardio === 0) rows.push(`
+    <div class="insight-row">
+      <div class="insight-icon amber">~</div>
+      <div class="insight-body">
+        <div class="insight-text">Entrenaste ${curr.diasEntrenados} días sin cardio. Suma <strong>20-30 min</strong> ligero para balance cardiovascular (referencia OMS: 150 min/sem).</div>
+      </div>
+    </div>`);
+
+  // Sólo fuerza (sin variedad)
+  const totalSes = curr.distribucion.fuerza + curr.distribucion.cardio + curr.distribucion.flexibilidad;
+  if (totalSes >= 3 && curr.distribucion.fuerza === totalSes) rows.push(`
+    <div class="insight-row">
+      <div class="insight-icon amber">~</div>
+      <div class="insight-body">
+        <div class="insight-text">Sólo trabajaste <strong>fuerza</strong>. Una sesión de flexibilidad o cardio reduce riesgo de lesión y mejora recovery.</div>
+      </div>
+    </div>`);
+
+  // Posible deload (volumen cae fuerte pero sigue entrenando)
+  if (prev && prev.volumenFuerza > 0) {
+    const volDropPct = Math.round((curr.volumenFuerza/prev.volumenFuerza-1)*100);
+    if (volDropPct <= -25 && curr.diasEntrenados >= 3) rows.push(`
+    <div class="insight-row">
+      <div class="insight-icon amber">~</div>
+      <div class="insight-body">
+        <div class="insight-text">Volumen <strong>${volDropPct}%</strong> vs semana pasada con misma frecuencia. ¿Deload intencional o fatiga? Revisa descanso/sueño.</div>
+      </div>
+    </div>`);
+  }
+
+  // Peso + grasa al alza
+  if (prev && curr.deltaPeso != null && curr.deltaPeso > 0 && curr.deltaGrasa != null && curr.deltaGrasa > 0) rows.push(`
     <div class="insight-row">
       <div class="insight-icon amber">~</div>
       <div class="insight-body">
@@ -2843,8 +3025,17 @@ function renderInsights(curr, prev) {
       </div>
     </div>`);
 
+  // Días con registro de comidas pero incompletos
+  if (curr.diasIncompletos >= 3) rows.push(`
+    <div class="insight-row">
+      <div class="insight-icon amber">~</div>
+      <div class="insight-body">
+        <div class="insight-text"><strong>${curr.diasIncompletos} día(s) incompletos</strong> en alimentación (menos de 3 comidas registradas). Apunta al menos 3 momentos: desayuno · comida · cena.</div>
+      </div>
+    </div>`);
+
   if (!rows.length) { cont.innerHTML = ""; return; }
-  cont.innerHTML = `<div class="insights-panel"><h3>Tendencias · últimas 2 semanas</h3>${rows.join("")}</div>`;
+  cont.innerHTML = `<div class="insights-panel"><h3>Coach · esta semana</h3>${rows.join("")}</div>`;
 
   const target = document.getElementById("confetti-target");
   if (target) launchConfetti(target);

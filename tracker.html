@@ -835,6 +835,92 @@ input[type=range]::-moz-range-thumb {
 .stat-delta.down    { color: var(--red); }
 .stat-delta.neutral { color: var(--text-muted); }
 
+/* Tag de categoría/rango debajo del valor */
+.stat-tag {
+  display: inline-block;
+  margin-top: 10px;
+  font: 600 10px/1.2 var(--font-mono);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  padding: 5px 8px;
+  border-radius: var(--r-xs);
+  background: var(--bg-elev-2);
+  color: var(--text-muted);
+  white-space: nowrap;
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.stat-tag.ok   { color: var(--green-bright); background: var(--green-bg); }
+.stat-tag.warn { color: var(--amber); background: var(--amber-soft); }
+.stat-tag.bad  { color: var(--red); background: var(--red-soft); }
+
+/* Panel "Cómo leer estos valores" — rangos de referencia */
+.ranges-help {
+  background: var(--bg-elev);
+  border: 1px solid var(--border);
+  border-radius: var(--r);
+  margin-bottom: 16px;
+  overflow: hidden;
+}
+.ranges-help > summary {
+  list-style: none;
+  cursor: pointer;
+  padding: 14px 18px;
+  display: flex; align-items: center; justify-content: space-between;
+  font: 600 13px/1.2 var(--font-sans);
+  color: var(--text);
+  user-select: none;
+}
+.ranges-help > summary::-webkit-details-marker { display: none; }
+.ranges-help > summary::after {
+  content: "+";
+  font: 600 18px/1 var(--font-mono);
+  color: var(--text-muted);
+  transition: transform .2s;
+}
+.ranges-help[open] > summary::after { content: "−"; }
+.ranges-help > summary:hover { background: var(--bg-elev-2); }
+.ranges-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 14px;
+  padding: 6px 18px 18px;
+  border-top: 1px solid var(--border);
+}
+@media(min-width: 640px) { .ranges-grid { grid-template-columns: 1fr 1fr; } }
+@media(min-width: 920px) { .ranges-grid { grid-template-columns: repeat(3, 1fr); } }
+.range-block h4 {
+  font: 600 12px/1.2 var(--font-sans);
+  color: var(--text);
+  margin: 8px 0 8px;
+  letter-spacing: -0.005em;
+}
+.range-block ul { list-style: none; display: flex; flex-direction: column; gap: 5px; }
+.range-block li {
+  display: flex; align-items: center; gap: 8px;
+  font: 400 12px/1.4 var(--font-sans);
+  color: var(--text-muted);
+}
+.range-block li strong { color: var(--text); font-weight: 600; font-family: var(--font-mono); font-size: 11px; }
+.range-block .dot {
+  width: 8px; height: 8px;
+  flex: 0 0 8px;
+  border-radius: 50%;
+  background: var(--text-dim);
+}
+.range-block .dot.ok   { background: var(--green); }
+.range-block .dot.warn { background: var(--amber); }
+.range-block .dot.bad  { background: var(--red); }
+.range-block cite {
+  display: block;
+  font-style: normal;
+  font: 500 10px/1 var(--font-mono);
+  color: var(--text-dim);
+  margin-top: 6px;
+  letter-spacing: 0.04em;
+}
+
 .charts-grid {
   display: grid;
   grid-template-columns: 1fr;
@@ -1406,6 +1492,7 @@ input[type=range]::-moz-range-thumb {
   <p class="section-desc">Comparativa de las últimas dos semanas. Las animaciones reaccionan a los cambios reales en tus datos.</p>
 
   <div class="summary-grid" id="summary-cards"></div>
+  <div id="ranges-help-container"></div>
   <div id="insights-container"></div>
 
   <div class="charts-grid">
@@ -2418,6 +2505,56 @@ const CHART_DEFAULTS = () => ({
 });
 function killChart(key) { if (charts[key]) { charts[key].destroy(); delete charts[key]; } }
 
+/* Evalúa una métrica y devuelve {tag,level} para mostrar como categoría.
+   level ∈ {ok, warn, bad, muted}. Las referencias son guidelines mainstream
+   (OMS para cardio, OMS/CDC para IMC). */
+function evaluateMetric(kind, value, ctx = {}) {
+  if (value == null || (typeof value === "number" && isNaN(value))) {
+    return { tag: "Sin datos", level: "muted" };
+  }
+  switch (kind) {
+    case "sesiones":
+      if (value === 0) return { tag: "Sin actividad", level: "bad" };
+      if (value <= 2)  return { tag: "Básico", level: "warn" };
+      if (value <= 4)  return { tag: "Regular", level: "ok" };
+      if (value <= 6)  return { tag: "Alto", level: "ok" };
+      return { tag: "Sin descanso", level: "warn" };
+    case "cardio":
+      if (value === 0)   return { tag: "Sin cardio", level: "bad" };
+      if (value < 75)    return { tag: "Bajo", level: "warn" };
+      if (value < 150)   return { tag: "Aceptable", level: "ok" };
+      if (value <= 300)  return { tag: "Óptimo · OMS", level: "ok" };
+      return { tag: "Muy alto", level: "ok" };
+    case "volumen": {
+      // Compara con prev semana (en ctx.prev). Si no hay base, sólo informa.
+      const prev = ctx.prev;
+      if (value === 0) return { tag: "Sin fuerza", level: "muted" };
+      if (prev == null || prev === 0) return { tag: "Línea base", level: "muted" };
+      const pct = Math.round((value / prev - 1) * 100);
+      if (pct >= 5)   return { tag: `+${pct}% vs sem ant`, level: "ok" };
+      if (pct <= -10) return { tag: `${pct}% vs sem ant`, level: "warn" };
+      if (pct <= -25) return { tag: `${pct}% vs sem ant`, level: "bad" };
+      return { tag: pct >= 0 ? `+${pct}% vs sem ant` : `${pct}% vs sem ant`, level: "muted" };
+    }
+    case "imc":
+      if (value < 18.5) return { tag: `IMC ${value} · Bajo peso`, level: "warn" };
+      if (value < 25)   return { tag: `IMC ${value} · Normal`, level: "ok" };
+      if (value < 30)   return { tag: `IMC ${value} · Sobrepeso`, level: "warn" };
+      return { tag: `IMC ${value} · Obesidad`, level: "bad" };
+    case "consistencia":
+      if (value >= 71) return { tag: "Alta", level: "ok" };
+      if (value >= 43) return { tag: "Media", level: "warn" };
+      return { tag: "Baja", level: "bad" };
+  }
+  return { tag: "—", level: "muted" };
+}
+
+function calcIMC(pesoKg, alturaCm) {
+  if (!pesoKg || !alturaCm) return null;
+  const m = alturaCm / 100;
+  return +(pesoKg / (m * m)).toFixed(1);
+}
+
 function renderDashboard() {
   const weeks = lastNWeeks(8);
   const last  = weeks[weeks.length-1];
@@ -2427,21 +2564,31 @@ function renderDashboard() {
   const peso     = pesoOrdered.slice(-1)[0]?.peso ?? null;
   const pesoPrev = pesoOrdered.slice(-2,-1)[0]?.peso ?? null;
   const deltaPeso = (peso!=null && pesoPrev!=null) ? +(peso - pesoPrev).toFixed(1) : null;
+  const imc = calcIMC(peso, state.perfil?.altura);
 
-  document.getElementById("summary-cards").innerHTML = [
-    { label: "Sesiones (semana)", value: last.sesionesTotales, unit: "" },
-    { label: "Cardio (min)",      value: last.minutosCardio,    unit: "min", cls: "blue" },
-    { label: "Volumen fuerza",    value: last.volumenFuerza.toLocaleString(), unit: "kg" },
-    { label: "Peso actual",       value: peso ?? "—", unit: peso!=null?"kg":"", cls: "amber",
+  const cards = [
+    { kind: "sesiones",    label: "Sesiones (semana)", value: last.sesionesTotales, unit: "", display: last.sesionesTotales },
+    { kind: "cardio",      label: "Cardio (min)",      value: last.minutosCardio, unit: "min", display: last.minutosCardio, cls: "blue" },
+    { kind: "volumen",     label: "Volumen fuerza",    value: last.volumenFuerza, unit: "kg", display: last.volumenFuerza.toLocaleString(),
+      ctx: { prev: prev?.volumenFuerza } },
+    { kind: "imc",         label: "Peso actual",       value: imc, unit: peso!=null?"kg":"", display: peso ?? "—", cls: "amber",
       delta: deltaPeso!=null ? { v: deltaPeso, label: (deltaPeso>0?"+":"")+deltaPeso+"kg" } : null },
-    { label: "Consistencia",      value: last.consistencia, unit: "%", cls: last.consistencia>=43?"":"amber" }
-  ].map(c => `
+    { kind: "consistencia",label: "Consistencia",      value: last.consistencia, unit: "%", display: last.consistencia,
+      cls: last.consistencia>=43?"":"amber" }
+  ];
+
+  document.getElementById("summary-cards").innerHTML = cards.map(c => {
+    const ev = evaluateMetric(c.kind, c.value, c.ctx);
+    return `
     <div class="stat-card ${c.cls||""}">
       <div class="stat-label">${c.label}</div>
-      <div class="stat-value">${c.value}<span class="stat-unit">${c.unit}</span></div>
+      <div class="stat-value">${c.display}<span class="stat-unit">${c.unit}</span></div>
       ${c.delta ? `<div class="stat-delta ${c.delta.v<0?"down":c.delta.v>0?"up":"neutral"}">${c.delta.label}</div>`:""}
-    </div>`).join("");
+      <div class="stat-tag ${ev.level}">${ev.tag}</div>
+    </div>`;
+  }).join("");
 
+  renderRangesHelp();
   renderInsights(last, prev);
 
   const meds = pesoOrdered;
@@ -2557,6 +2704,61 @@ function renderDashboard() {
         y: { ...CHART_DEFAULTS().scales.y, stacked: true } }
     }
   });
+}
+
+function renderRangesHelp() {
+  const cont = document.getElementById("ranges-help-container");
+  if (!cont) return;
+  const blocks = [
+    { title: "Sesiones / semana", cite: "Volumen total de entrenamiento", items: [
+      ["bad",  "0",     "sin actividad"],
+      ["warn", "1-2",   "básico"],
+      ["ok",   "3-4",   "regular"],
+      ["ok",   "5-6",   "alto"],
+      ["warn", "7+",    "sin descanso"]
+    ]},
+    { title: "Cardio (min/sem)", cite: "OMS · 150-300 min moderado", items: [
+      ["bad",  "0",         "sin cardio"],
+      ["warn", "&lt; 75",   "bajo"],
+      ["ok",   "75-149",    "aceptable"],
+      ["ok",   "150-300",   "óptimo"],
+      ["ok",   "&gt; 300",  "muy alto"]
+    ]},
+    { title: "IMC (peso/altura²)", cite: "OMS · adulto", items: [
+      ["warn", "&lt; 18.5",  "bajo peso"],
+      ["ok",   "18.5-24.9",  "normal"],
+      ["warn", "25-29.9",    "sobrepeso"],
+      ["bad",  "≥ 30",       "obesidad"]
+    ]},
+    { title: "Volumen vs sem ant.", cite: "Progresión semanal", items: [
+      ["ok",   "+5% o más",  "subiendo"],
+      ["",     "−4% a +4%",  "línea base"],
+      ["warn", "−5% a −24%", "descenso"],
+      ["bad",  "≤ −25%",     "caída fuerte"]
+    ]},
+    { title: "Consistencia", cite: "Días con sesión / 7", items: [
+      ["bad",  "&lt; 43%", "baja · 0-2 días"],
+      ["warn", "43-70%",   "media · 3-4 días"],
+      ["ok",   "≥ 71%",    "alta · 5-7 días"]
+    ]},
+    { title: "% Grasa corporal", cite: "ACE · referencia general", items: [
+      ["ok",   "H 14-17 / M 21-24",  "fitness"],
+      ["ok",   "H 18-24 / M 25-31",  "aceptable"],
+      ["warn", "H 25+ / M 32+",      "alto"]
+    ]}
+  ];
+  cont.innerHTML = `
+    <details class="ranges-help">
+      <summary>Cómo leer estos valores</summary>
+      <div class="ranges-grid">
+        ${blocks.map(b => `
+          <div class="range-block">
+            <h4>${b.title}</h4>
+            <ul>${b.items.map(([lv,k,v]) => `<li><span class="dot ${lv}"></span><strong>${k}</strong> ${v}</li>`).join("")}</ul>
+            ${b.cite ? `<cite>${b.cite}</cite>` : ""}
+          </div>`).join("")}
+      </div>
+    </details>`;
 }
 
 function renderGauge(pct) {

@@ -19,3 +19,8 @@ npm-debug.log*
 # Build output
 dist/
 build/
+
+# Notas internas — no publicables
+IMPROVEMENTS.md
+NOTES.md
+TODO.md

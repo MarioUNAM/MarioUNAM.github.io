@@ -929,10 +929,29 @@ input[type=range]::-moz-range-thumb {
   z-index: 100;
   pointer-events: none;
   box-shadow: var(--shadow-2);
+  display: inline-flex;
+  align-items: center;
+  gap: 0;
+  max-width: calc(100vw - 32px);
 }
-#toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+#toast.show { opacity: 1; transform: translateX(-50%) translateY(0); pointer-events: auto; }
 #toast.error { border-color: var(--red); }
 #toast.warn  { border-color: var(--amber); }
+#toast.with-action { padding: 0; }
+#toast .toast-msg { padding: 12px 16px; }
+#toast .toast-action {
+  background: transparent;
+  color: var(--green-bright);
+  font: 600 12px/1 var(--font-sans);
+  padding: 12px 16px;
+  letter-spacing: 0.02em;
+  border-left: 1px solid var(--border-strong);
+  border-radius: 0 var(--r-sm) var(--r-sm) 0;
+  align-self: stretch;
+  transition: color .15s, background .15s;
+}
+#toast .toast-action:hover { color: var(--text); background: var(--bg-elev-2); }
+#toast.error .toast-action { color: var(--red); }
 
 /* ============================================================
    13. FOOTER
@@ -1536,14 +1555,37 @@ function seedSample(s) {
 }
 
 /* ============================================================
-   E.  TOAST
+   E.  TOAST — soporta acción opcional (ej. Deshacer)
    ============================================================ */
-function toast(msg, type = "ok") {
+function toast(msg, type = "ok", opts = {}) {
   const el = document.getElementById("toast");
-  el.textContent = msg;
-  el.className = "show " + (type === "ok" ? "" : type);
+  const cls = ["show"];
+  if (type !== "ok") cls.push(type);
+  if (opts.action) cls.push("with-action");
+
+  if (opts.action) {
+    el.innerHTML = "";
+    const span = document.createElement("span");
+    span.className = "toast-msg";
+    span.textContent = msg;
+    el.appendChild(span);
+    const btn = document.createElement("button");
+    btn.type = "button";
+    btn.className = "toast-action";
+    btn.textContent = opts.action.label;
+    btn.addEventListener("click", () => {
+      clearTimeout(toast._t);
+      el.className = "";
+      try { opts.action.fn(); } catch (err) { console.warn(err); }
+    });
+    el.appendChild(btn);
+  } else {
+    el.textContent = msg;
+  }
+  el.className = cls.join(" ");
+
   clearTimeout(toast._t);
-  toast._t = setTimeout(() => { el.className = type === "ok" ? "" : type; }, 2200);
+  toast._t = setTimeout(() => { el.className = type === "ok" ? "" : type; }, opts.duration || 2200);
 }
 
 /* ============================================================
@@ -1946,18 +1988,36 @@ function renderComidasList() {
 }
 
 /* ============================================================
-   N.  ELIMINAR (delegado)
+   N.  ELIMINAR (delegado) — con undo de 5s
    ============================================================ */
+function rerenderList(kind) {
+  if (kind === "ejercicios") renderEjerciciosList();
+  if (kind === "mediciones") renderMedicionesList();
+  if (kind === "comidas")    renderComidasList();
+}
 document.body.addEventListener("click", e => {
   const btn = e.target.closest(".btn-delete");
   if (!btn) return;
   const { id, kind } = btn.dataset;
-  state[kind] = state[kind].filter(x => x.id !== id);
+  const idx = state[kind].findIndex(x => x.id === id);
+  if (idx === -1) return;
+  const item = state[kind][idx];
+  state[kind].splice(idx, 1);
   saveState();
-  if (kind === "ejercicios") renderEjerciciosList();
-  if (kind === "mediciones") renderMedicionesList();
-  if (kind === "comidas")    renderComidasList();
-  toast("Eliminado");
+  rerenderList(kind);
+  toast("Eliminado", "ok", {
+    duration: 5000,
+    action: {
+      label: "Deshacer",
+      fn: () => {
+        const insertAt = Math.min(idx, state[kind].length);
+        state[kind].splice(insertAt, 0, item);
+        saveState();
+        rerenderList(kind);
+        toast("Restaurado");
+      }
+    }
+  });
 });
 
 /* ============================================================

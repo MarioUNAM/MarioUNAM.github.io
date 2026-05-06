@@ -646,6 +646,91 @@ input[type=range]::-moz-range-thumb {
   font: 500 12px/1 var(--font-sans);
   color: var(--text-muted);
 }
+.records-header .records-count.filtered { color: var(--green); }
+
+/* Toolbar de listas (búsqueda, filtros, chips) */
+.list-toolbar {
+  display: flex; flex-direction: column; gap: 10px;
+  margin-bottom: 12px;
+}
+.list-toolbar:empty { display: none; }
+.toolbar-row {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 8px;
+}
+@media(min-width: 480px) {
+  .toolbar-row { grid-template-columns: 1fr auto auto; align-items: stretch; }
+}
+.search-wrap { position: relative; min-width: 0; }
+.search-wrap .input { padding-left: 38px; padding-right: 36px; }
+.search-icon {
+  position: absolute; left: 12px; top: 50%; transform: translateY(-50%);
+  width: 16px; height: 16px; color: var(--text-dim); pointer-events: none;
+}
+.search-clear {
+  position: absolute; right: 6px; top: 50%; transform: translateY(-50%);
+  width: 28px; height: 28px;
+  color: var(--text-dim);
+  display: grid; place-items: center;
+  border-radius: var(--r-xs);
+  transition: color .15s, background .15s;
+}
+.search-clear:hover { color: var(--text); background: var(--bg-elev-2); }
+.search-clear svg { width: 14px; height: 14px; }
+.search-clear.hidden { display: none; }
+
+.filter-select {
+  width: 100%;
+  min-height: 42px;
+}
+@media(min-width: 480px) { .filter-select { width: auto; min-width: 130px; } }
+
+.chips {
+  display: flex; gap: 6px; flex-wrap: nowrap;
+  overflow-x: auto;
+  scrollbar-width: thin;
+  margin: 0 -2px;
+  padding: 0 2px 4px;
+  -webkit-overflow-scrolling: touch;
+}
+.chips::-webkit-scrollbar { height: 4px; }
+.chips::-webkit-scrollbar-thumb { background: var(--bg-elev-3); border-radius: 2px; }
+.chip {
+  flex: 0 0 auto;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  color: var(--text-muted);
+  padding: 8px 14px;
+  border-radius: 999px;
+  font: 500 12px/1 var(--font-sans);
+  white-space: nowrap;
+  transition: all .15s;
+}
+.chip:hover { color: var(--text); border-color: var(--border-strong); }
+.chip.active {
+  background: var(--green-bg);
+  color: var(--green-bright);
+  border-color: var(--green-soft);
+}
+
+/* Botón cargar más */
+.load-more {
+  display: block; width: 100%;
+  margin-top: 4px;
+  background: transparent;
+  border: 1px dashed var(--border-strong);
+  color: var(--text-muted);
+  padding: 12px;
+  border-radius: var(--r-sm);
+  font: 500 13px/1 var(--font-sans);
+  transition: all .15s;
+}
+.load-more:hover {
+  color: var(--text); background: var(--bg-elev);
+  border-color: var(--green); border-style: solid;
+}
+.load-more strong { color: var(--text); font-weight: 600; }
 
 .record-item {
   display: flex; gap: 12px;
@@ -1158,6 +1243,7 @@ input[type=range]::-moz-range-thumb {
       <h3>Últimos registros</h3>
       <span class="records-count" id="ejercicios-count">0</span>
     </div>
+    <div class="list-toolbar" id="ejercicios-toolbar"></div>
     <div id="ejercicios-list"></div>
   </div>
 </section>
@@ -1252,6 +1338,7 @@ input[type=range]::-moz-range-thumb {
       <h3>Histórico</h3>
       <span class="records-count" id="mediciones-count">0</span>
     </div>
+    <div class="list-toolbar" id="mediciones-toolbar"></div>
     <div id="mediciones-list"></div>
   </div>
 </section>
@@ -1303,6 +1390,7 @@ input[type=range]::-moz-range-thumb {
       <h3>Últimas comidas</h3>
       <span class="records-count" id="comidas-count">0</span>
     </div>
+    <div class="list-toolbar" id="comidas-toolbar"></div>
     <div id="comidas-list"></div>
   </div>
 </section>
@@ -1803,13 +1891,213 @@ formEjercicio.addEventListener("submit", e => {
   velocidadesList.innerHTML = ""; addVelocidadRow();
 });
 
+/* ============================================================
+   K0. FILTROS DE LISTAS · búsqueda + rango + chips + paginación
+   ------------------------------------------------------------
+   Estado persistido en localStorage. El "limit" se reinicia a
+   PAGE_SIZE cada vez que cambia un filtro y crece con "Cargar más".
+   ============================================================ */
+const FILTERS_KEY = "tracker.filters.v1";
+const PAGE_SIZE = 15;
+const RANGE_DAYS = { "7d": 7, "30d": 30, "90d": 90, "all": Infinity };
+
+function defaultFilters() {
+  return {
+    ejercicios: { q: "", tipo: "all", range: "30d", limit: PAGE_SIZE },
+    mediciones: { q: "",               range: "all", limit: PAGE_SIZE },
+    comidas:    { q: "", momento: "all", range: "30d", limit: PAGE_SIZE }
+  };
+}
+let filters = (function loadFilters() {
+  const def = defaultFilters();
+  try {
+    const saved = JSON.parse(localStorage.getItem(FILTERS_KEY) || "null");
+    if (!saved) return def;
+    Object.keys(def).forEach(k => Object.assign(def[k], saved[k] || {}));
+    Object.keys(def).forEach(k => def[k].limit = PAGE_SIZE); // siempre arrancar con 1ra página
+  } catch {}
+  return def;
+})();
+function saveFilters() { localStorage.setItem(FILTERS_KEY, JSON.stringify(filters)); }
+function resetLimit(kind) { filters[kind].limit = PAGE_SIZE; }
+
+const LIST_CONFIG = {
+  ejercicios: {
+    placeholder: "Buscar nombre, notas...",
+    typeField: "tipo",
+    chips: [
+      { value: "all",         label: "Todos" },
+      { value: "fuerza",      label: "Fuerza" },
+      { value: "cardio",      label: "Cardio" },
+      { value: "flexibilidad",label: "Flex" }
+    ],
+    searchOf: e => `${e.nombre || ""} ${e.notas || ""}`,
+    dateOf: e => e.fecha,
+    emptyAll: "Sin sesiones registradas"
+  },
+  mediciones: {
+    placeholder: "Buscar en notas...",
+    typeField: null,
+    chips: null,
+    searchOf: m => m.nota || "",
+    dateOf: m => m.fecha,
+    emptyAll: "Sin mediciones"
+  },
+  comidas: {
+    placeholder: "Buscar alimento, cantidad...",
+    typeField: "momento",
+    chips: [
+      { value: "all",          label: "Todos" },
+      { value: "desayuno",     label: "Desayuno" },
+      { value: "media-mañana", label: "M. mañana" },
+      { value: "almuerzo",     label: "Almuerzo" },
+      { value: "merienda",     label: "Merienda" },
+      { value: "cena",         label: "Cena" },
+      { value: "post-entreno", label: "Post-entreno" }
+    ],
+    searchOf: c => `${c.alimento || ""} ${c.cantidad || ""}`,
+    dateOf: c => c.fecha,
+    emptyAll: "Sin comidas"
+  }
+};
+
+function applyListFilters(kind, items) {
+  const f = filters[kind];
+  const cfg = LIST_CONFIG[kind];
+  let arr = items.slice();
+  if (f.range && f.range !== "all") {
+    const cutoff = isoDate(addDays(new Date(), -RANGE_DAYS[f.range]));
+    arr = arr.filter(it => cfg.dateOf(it) >= cutoff);
+  }
+  if (cfg.typeField && f[cfg.typeField] && f[cfg.typeField] !== "all") {
+    arr = arr.filter(it => it[cfg.typeField] === f[cfg.typeField]);
+  }
+  const q = (f.q || "").trim().toLowerCase();
+  if (q) arr = arr.filter(it => cfg.searchOf(it).toLowerCase().includes(q));
+  arr.sort((a,b) => cfg.dateOf(b).localeCompare(cfg.dateOf(a)));
+  return arr;
+}
+
+function updateListCount(kind, totalAll, totalFiltered) {
+  const el = document.getElementById(kind + "-count");
+  if (!el) return;
+  if (totalFiltered === totalAll) {
+    el.textContent = String(totalAll);
+    el.classList.remove("filtered");
+  } else {
+    el.textContent = `${totalFiltered} / ${totalAll}`;
+    el.classList.add("filtered");
+  }
+}
+
+function loadMoreHTML(kind, hidden) {
+  if (hidden <= 0) return "";
+  const next = Math.min(PAGE_SIZE, hidden);
+  return `<button type="button" class="load-more" data-kind="${kind}">Cargar <strong>${next}</strong> más · ${hidden} restantes</button>`;
+}
+
+function renderListToolbar(kind) {
+  const cfg = LIST_CONFIG[kind];
+  const f = filters[kind];
+  const root = document.getElementById(kind + "-toolbar");
+  if (!root) return;
+
+  const chipsHTML = cfg.chips ? `
+    <div class="chips" data-kind="${kind}" data-field="${cfg.typeField}">
+      ${cfg.chips.map(c =>
+        `<button type="button" class="chip ${f[cfg.typeField]===c.value?"active":""}" data-value="${c.value}">${c.label}</button>`
+      ).join("")}
+    </div>` : "";
+
+  root.innerHTML = `
+    <div class="toolbar-row">
+      <div class="search-wrap">
+        <svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
+        </svg>
+        <input type="text" class="input search-input" placeholder="${cfg.placeholder}" value="${escapeHtml(f.q || "")}" data-kind="${kind}" aria-label="Buscar en ${kind}">
+        <button type="button" class="search-clear ${f.q ? "" : "hidden"}" data-kind="${kind}" aria-label="Limpiar búsqueda">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+        </button>
+      </div>
+      <select class="input filter-select" data-kind="${kind}" data-field="range" aria-label="Rango de fechas">
+        <option value="7d"  ${f.range==="7d" ?"selected":""}>Últimos 7 días</option>
+        <option value="30d" ${f.range==="30d"?"selected":""}>Últimos 30 días</option>
+        <option value="90d" ${f.range==="90d"?"selected":""}>Últimos 90 días</option>
+        <option value="all" ${f.range==="all"?"selected":""}>Todo el historial</option>
+      </select>
+    </div>
+    ${chipsHTML}
+  `;
+}
+
+function bindToolbar(kind) {
+  const root = document.getElementById(kind + "-toolbar");
+  if (!root || root.dataset.bound === "1") return;
+  root.dataset.bound = "1";
+
+  const cfg = LIST_CONFIG[kind];
+  const search = root.querySelector(".search-input");
+  const clear  = root.querySelector(".search-clear");
+  const select = root.querySelector(".filter-select");
+  const chipsEl = root.querySelector(".chips");
+
+  search.addEventListener("input", () => {
+    filters[kind].q = search.value;
+    resetLimit(kind);
+    saveFilters();
+    clear.classList.toggle("hidden", !search.value);
+    rerenderList(kind);
+  });
+  clear.addEventListener("click", () => {
+    search.value = "";
+    filters[kind].q = "";
+    resetLimit(kind);
+    saveFilters();
+    clear.classList.add("hidden");
+    rerenderList(kind);
+    search.focus();
+  });
+  select.addEventListener("change", () => {
+    filters[kind].range = select.value;
+    resetLimit(kind);
+    saveFilters();
+    rerenderList(kind);
+  });
+  if (chipsEl && cfg.typeField) {
+    chipsEl.addEventListener("click", e => {
+      const chip = e.target.closest(".chip");
+      if (!chip) return;
+      chipsEl.querySelectorAll(".chip").forEach(c => c.classList.toggle("active", c === chip));
+      filters[kind][cfg.typeField] = chip.dataset.value;
+      resetLimit(kind);
+      saveFilters();
+      rerenderList(kind);
+    });
+  }
+}
+
+function initToolbars() {
+  ["ejercicios","mediciones","comidas"].forEach(k => {
+    renderListToolbar(k);
+    bindToolbar(k);
+  });
+}
+
 function renderEjerciciosList() {
   const cont = document.getElementById("ejercicios-list");
-  document.getElementById("ejercicios-count").textContent = state.ejercicios.length;
-  if (!state.ejercicios.length) {
-    cont.innerHTML = `<div class="empty-state">Sin sesiones registradas</div>`; return;
-  }
-  cont.innerHTML = state.ejercicios.slice(0, 20).map(e => {
+  const all  = state.ejercicios;
+  const filtered = applyListFilters("ejercicios", all);
+  updateListCount("ejercicios", all.length, filtered.length);
+
+  if (!all.length)      { cont.innerHTML = `<div class="empty-state">Sin sesiones registradas</div>`; return; }
+  if (!filtered.length) { cont.innerHTML = `<div class="empty-state">Sin resultados con esos filtros</div>`; return; }
+
+  const limit = filters.ejercicios.limit;
+  const visible = filtered.slice(0, limit);
+  const hidden = Math.max(0, filtered.length - visible.length);
+
+  cont.innerHTML = visible.map(e => {
     let detail = "";
     if (e.tipo === "fuerza" && e.series) {
       const vol = e.series.reduce((a,s) => a + s.reps*s.kg, 0);
@@ -1834,7 +2122,7 @@ function renderEjerciciosList() {
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6M14 11v6"/></svg>
         </button>
       </div>`;
-  }).join("");
+  }).join("") + loadMoreHTML("ejercicios", hidden);
 }
 
 /* ============================================================
@@ -1918,10 +2206,18 @@ formMedicion.addEventListener("submit", e => {
 
 function renderMedicionesList() {
   const cont = document.getElementById("mediciones-list");
-  document.getElementById("mediciones-count").textContent = state.mediciones.length;
-  const sorted = [...state.mediciones].sort((a,b) => b.fecha.localeCompare(a.fecha));
-  if (!sorted.length) { cont.innerHTML = `<div class="empty-state">Sin mediciones</div>`; return; }
-  cont.innerHTML = sorted.slice(0, 20).map(m => {
+  const all  = state.mediciones;
+  const filtered = applyListFilters("mediciones", all);
+  updateListCount("mediciones", all.length, filtered.length);
+
+  if (!all.length)      { cont.innerHTML = `<div class="empty-state">Sin mediciones</div>`; return; }
+  if (!filtered.length) { cont.innerHTML = `<div class="empty-state">Sin resultados con esos filtros</div>`; return; }
+
+  const limit = filters.mediciones.limit;
+  const visible = filtered.slice(0, limit);
+  const hidden = Math.max(0, filtered.length - visible.length);
+
+  cont.innerHTML = visible.map(m => {
     const parts = [];
     parts.push(`Peso <strong>${m.peso}kg</strong>`);
     if (m.grasa != null)     parts.push(`Grasa <strong>${m.grasa}%</strong>`);
@@ -1940,7 +2236,7 @@ function renderMedicionesList() {
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6M14 11v6"/></svg>
         </button>
       </div>`;
-  }).join("");
+  }).join("") + loadMoreHTML("mediciones", hidden);
 }
 
 /* ============================================================
@@ -1970,10 +2266,18 @@ formComida.addEventListener("submit", e => {
 
 function renderComidasList() {
   const cont = document.getElementById("comidas-list");
-  document.getElementById("comidas-count").textContent = state.comidas.length;
-  const sorted = [...state.comidas].sort((a,b) => b.fecha.localeCompare(a.fecha));
-  if (!sorted.length) { cont.innerHTML = `<div class="empty-state">Sin comidas</div>`; return; }
-  cont.innerHTML = sorted.slice(0, 30).map(c => `
+  const all  = state.comidas;
+  const filtered = applyListFilters("comidas", all);
+  updateListCount("comidas", all.length, filtered.length);
+
+  if (!all.length)      { cont.innerHTML = `<div class="empty-state">Sin comidas</div>`; return; }
+  if (!filtered.length) { cont.innerHTML = `<div class="empty-state">Sin resultados con esos filtros</div>`; return; }
+
+  const limit = filters.comidas.limit;
+  const visible = filtered.slice(0, limit);
+  const hidden = Math.max(0, filtered.length - visible.length);
+
+  cont.innerHTML = visible.map(c => `
     <div class="record-item">
       <div class="record-body">
         <div class="record-meta">${fmtDateLong(c.fecha)} · ${c.momento.replace("-"," ")}</div>
@@ -1984,7 +2288,7 @@ function renderComidasList() {
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6M14 11v6"/></svg>
       </button>
     </div>
-  `).join("");
+  `).join("") + loadMoreHTML("comidas", hidden);
 }
 
 /* ============================================================
@@ -1996,6 +2300,16 @@ function rerenderList(kind) {
   if (kind === "comidas")    renderComidasList();
 }
 document.body.addEventListener("click", e => {
+  // Cargar más en una lista
+  const more = e.target.closest(".load-more");
+  if (more) {
+    const k = more.dataset.kind;
+    filters[k].limit += PAGE_SIZE;
+    saveFilters();
+    rerenderList(k);
+    return;
+  }
+  // Eliminar registro con undo
   const btn = e.target.closest(".btn-delete");
   if (!btn) return;
   const { id, kind } = btn.dataset;
@@ -2529,6 +2843,7 @@ function renderAll() {
 // donde se declara, para que `formMedicion` ya esté inicializado y
 // updateCalcPreview() no falle con TDZ.
 loadPerfilToForm();
+initToolbars();
 renderAll();
 
 /* ============================================================

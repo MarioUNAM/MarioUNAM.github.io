@@ -798,6 +798,55 @@ input[type=range]::-moz-range-thumb {
 .btn-delete svg { width: 14px; height: 14px; }
 .btn-delete:hover { color: var(--red); background: var(--bg-elev-2); }
 
+/* Botón editar — junto al botón borrar */
+.btn-edit {
+  color: var(--text-dim);
+  width: 30px; height: 30px;
+  border-radius: var(--r-sm);
+  display: grid; place-items: center;
+  transition: color .15s, background .15s;
+  flex: 0 0 30px;
+}
+.btn-edit svg { width: 14px; height: 14px; }
+.btn-edit:hover { color: var(--green-bright); background: var(--bg-elev-2); }
+.record-actions { display: flex; gap: 4px; flex: 0 0 auto; }
+
+/* Botón link inline (ej. "Repetir última") */
+.btn-link {
+  background: transparent;
+  color: var(--green-bright);
+  font: 600 11px/1 var(--font-sans);
+  padding: 2px 0;
+  border-radius: 0;
+  letter-spacing: 0.02em;
+}
+.btn-link:hover { color: var(--text); text-decoration: underline; }
+.btn-link:disabled { color: var(--text-dim); cursor: not-allowed; }
+
+/* Banner de edición */
+.edit-banner {
+  display: flex; align-items: center; justify-content: space-between; gap: 12px;
+  background: var(--green-bg);
+  border: 1px solid var(--green-soft);
+  border-radius: var(--r-sm);
+  padding: 10px 14px;
+  margin-bottom: 14px;
+  font: 500 12px/1.4 var(--font-sans);
+  color: var(--text);
+}
+.edit-banner strong { font-weight: 600; }
+.edit-banner .edit-cancel {
+  background: transparent;
+  color: var(--text-muted);
+  font: 600 11px/1 var(--font-sans);
+  padding: 6px 10px;
+  border-radius: var(--r-xs);
+  border: 1px solid var(--border);
+  white-space: nowrap;
+  flex: 0 0 auto;
+}
+.edit-banner .edit-cancel:hover { color: var(--red); border-color: var(--red); }
+
 .empty-state {
   text-align: center;
   padding: 36px 20px;
@@ -1267,6 +1316,10 @@ input[type=range]::-moz-range-thumb {
   <p class="section-desc">Registra cada sesión con el detalle suficiente para que el dashboard pueda calcular volumen, intensidad y consistencia.</p>
 
   <form class="card" id="form-ejercicio" autocomplete="off">
+    <div class="edit-banner" id="edit-banner-ejercicio" hidden>
+      <span>Editando sesión <strong id="edit-name-ejercicio">—</strong></span>
+      <button type="button" class="edit-cancel" data-cancel="ejercicios">Cancelar</button>
+    </div>
 
     <div class="field-row cols-2">
       <label class="field">
@@ -1285,8 +1338,11 @@ input[type=range]::-moz-range-thumb {
     </div>
 
     <label class="field">
-      <span class="field-label">Nombre del ejercicio</span>
-      <input type="text" name="nombre" class="input" placeholder="Sentadilla, banca, trote..." required>
+      <span class="field-label">
+        <span>Nombre del ejercicio</span>
+        <button type="button" class="btn-link" id="btn-repeat-last" title="Repetir última sesión con este nombre" hidden>↻ Repetir última</button>
+      </span>
+      <input type="text" name="nombre" class="input" placeholder="Sentadilla, banca, trote..." list="dl-ejercicios" required>
     </label>
 
     <label class="field">
@@ -1338,7 +1394,7 @@ input[type=range]::-moz-range-thumb {
     </label>
 
     <button type="submit" class="btn-primary">
-      <span>Registrar sesión</span>
+      <span id="submit-label-ejercicio">Registrar sesión</span>
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
     </button>
   </form>
@@ -1389,6 +1445,10 @@ input[type=range]::-moz-range-thumb {
 
   <!-- Formulario de medición -->
   <form class="card" id="form-medicion" autocomplete="off">
+    <div class="edit-banner" id="edit-banner-medicion" hidden>
+      <span>Editando medición <strong id="edit-name-medicion">—</strong></span>
+      <button type="button" class="edit-cancel" data-cancel="mediciones">Cancelar</button>
+    </div>
     <div class="field-row cols-2">
       <label class="field">
         <span class="field-label">Fecha</span>
@@ -1433,7 +1493,7 @@ input[type=range]::-moz-range-thumb {
     </label>
 
     <button type="submit" class="btn-primary">
-      <span>Registrar medición</span>
+      <span id="submit-label-medicion">Registrar medición</span>
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
     </button>
   </form>
@@ -1459,6 +1519,10 @@ input[type=range]::-moz-range-thumb {
   <p class="section-desc">Anotar el momento del día permite ver patrones y completitud (≥3 comidas/día).</p>
 
   <form class="card" id="form-comida" autocomplete="off">
+    <div class="edit-banner" id="edit-banner-comida" hidden>
+      <span>Editando comida <strong id="edit-name-comida">—</strong></span>
+      <button type="button" class="edit-cancel" data-cancel="comidas">Cancelar</button>
+    </div>
     <div class="field-row cols-2">
       <label class="field">
         <span class="field-label">Fecha</span>
@@ -1478,14 +1542,14 @@ input[type=range]::-moz-range-thumb {
     </div>
     <label class="field">
       <span class="field-label">Alimento</span>
-      <input type="text" name="alimento" class="input" placeholder="Avena con plátano y nueces..." required>
+      <input type="text" name="alimento" class="input" placeholder="Avena con plátano y nueces..." list="dl-alimentos" required>
     </label>
     <label class="field">
       <span class="field-label">Cantidad aproximada</span>
-      <input type="text" name="cantidad" class="input" placeholder="1 plato, 200g, 1 puñado...">
+      <input type="text" name="cantidad" class="input" placeholder="1 plato, 200g, 1 puñado..." list="dl-cantidades">
     </label>
     <button type="submit" class="btn-primary">
-      <span>Registrar comida</span>
+      <span id="submit-label-comida">Registrar comida</span>
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
     </button>
   </form>
@@ -1606,6 +1670,10 @@ input[type=range]::-moz-range-thumb {
   Tracker · localStorage únicamente · sin tracking ·
   <a href="index.html">← Volver al portfolio</a>
 </footer>
+
+<datalist id="dl-ejercicios"></datalist>
+<datalist id="dl-alimentos"></datalist>
+<datalist id="dl-cantidades"></datalist>
 
 <div id="toast"></div>
 
@@ -2311,9 +2379,14 @@ function renderEjerciciosList() {
           ${e.notas ? `<div class="record-detail" style="margin-top:6px;font-style:italic">${escapeHtml(e.notas)}</div>`:""}
           ${badges}
         </div>
-        <button class="btn-delete" data-id="${e.id}" data-kind="ejercicios" aria-label="Eliminar">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6M14 11v6"/></svg>
-        </button>
+        <div class="record-actions">
+          <button class="btn-edit" data-id="${e.id}" data-kind="ejercicios" aria-label="Editar">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
+          </button>
+          <button class="btn-delete" data-id="${e.id}" data-kind="ejercicios" aria-label="Eliminar">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6M14 11v6"/></svg>
+          </button>
+        </div>
       </div>`;
   }).join("") + loadMoreHTML("ejercicios", hidden);
 }
@@ -2433,9 +2506,14 @@ function renderMedicionesList() {
           ${m.nota ? `<div class="record-detail" style="margin-top:6px;font-style:italic">${escapeHtml(m.nota)}</div>`:""}
           ${badges}
         </div>
-        <button class="btn-delete" data-id="${m.id}" data-kind="mediciones" aria-label="Eliminar">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6M14 11v6"/></svg>
-        </button>
+        <div class="record-actions">
+          <button class="btn-edit" data-id="${m.id}" data-kind="mediciones" aria-label="Editar">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
+          </button>
+          <button class="btn-delete" data-id="${m.id}" data-kind="mediciones" aria-label="Eliminar">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6M14 11v6"/></svg>
+          </button>
+        </div>
       </div>`;
   }).join("") + loadMoreHTML("mediciones", hidden);
 }
@@ -2485,9 +2563,14 @@ function renderComidasList() {
         <div class="record-title">${escapeHtml(c.alimento)}</div>
         ${c.cantidad ? `<div class="record-detail">${escapeHtml(c.cantidad)}</div>`:""}
       </div>
-      <button class="btn-delete" data-id="${c.id}" data-kind="comidas" aria-label="Eliminar">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6M14 11v6"/></svg>
-      </button>
+      <div class="record-actions">
+        <button class="btn-edit" data-id="${c.id}" data-kind="comidas" aria-label="Editar">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
+        </button>
+        <button class="btn-delete" data-id="${c.id}" data-kind="comidas" aria-label="Eliminar">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6M14 11v6"/></svg>
+        </button>
+      </div>
     </div>
   `).join("") + loadMoreHTML("comidas", hidden);
 }
@@ -3232,12 +3315,315 @@ function renderAll() {
   if (active === "dashboard") renderDashboard();
   if (active === "resumen")   renderSummary();
 }
+/* ============================================================
+   T2. EDICIÓN DE REGISTROS · datalists · "Repetir última"
+   ------------------------------------------------------------
+   Definido al final del script para que todas las referencias
+   (formEjercicio, seriesList, etc.) ya existan al ejecutarse.
+   ============================================================ */
+const editing = { ejercicios: null, mediciones: null, comidas: null };
+
+function refreshDatalists() {
+  const dlEj = document.getElementById("dl-ejercicios");
+  const dlAl = document.getElementById("dl-alimentos");
+  const dlCa = document.getElementById("dl-cantidades");
+  if (dlEj) {
+    const names = [...new Set(state.ejercicios.map(e => (e.nombre||"").trim()).filter(Boolean))].sort();
+    dlEj.innerHTML = names.map(n => `<option value="${escapeHtml(n)}"></option>`).join("");
+  }
+  if (dlAl) {
+    const ali = [...new Set(state.comidas.map(c => (c.alimento||"").trim()).filter(Boolean))].sort();
+    dlAl.innerHTML = ali.map(a => `<option value="${escapeHtml(a)}"></option>`).join("");
+  }
+  if (dlCa) {
+    const can = [...new Set(state.comidas.map(c => (c.cantidad||"").trim()).filter(Boolean))].sort();
+    dlCa.innerHTML = can.map(c => `<option value="${escapeHtml(c)}"></option>`).join("");
+  }
+}
+
+const EDIT_META = {
+  ejercicios: { banner: "edit-banner-ejercicio", name: "edit-name-ejercicio", labelId: "submit-label-ejercicio", btnEdit: "Actualizar sesión",   btnNew: "Registrar sesión",   formId: "form-ejercicio" },
+  mediciones: { banner: "edit-banner-medicion",  name: "edit-name-medicion",  labelId: "submit-label-medicion",  btnEdit: "Actualizar medición", btnNew: "Registrar medición", formId: "form-medicion" },
+  comidas:    { banner: "edit-banner-comida",    name: "edit-name-comida",    labelId: "submit-label-comida",    btnEdit: "Actualizar comida",   btnNew: "Registrar comida",   formId: "form-comida" }
+};
+
+function showEditBanner(kind, item) {
+  const meta = EDIT_META[kind]; if (!meta) return;
+  const banner = document.getElementById(meta.banner);
+  const nameEl = document.getElementById(meta.name);
+  const lblEl  = document.getElementById(meta.labelId);
+  if (banner) banner.hidden = false;
+  if (nameEl) nameEl.textContent = `${item.nombre || item.alimento || "—"} · ${fmtDateLong(item.fecha)}`;
+  if (lblEl)  lblEl.textContent  = meta.btnEdit;
+}
+function hideEditBanner(kind) {
+  const meta = EDIT_META[kind]; if (!meta) return;
+  const banner = document.getElementById(meta.banner);
+  const lblEl  = document.getElementById(meta.labelId);
+  if (banner) banner.hidden = true;
+  if (lblEl)  lblEl.textContent = meta.btnNew;
+}
+
+function loadEjercicioToForm(e) {
+  formEjercicio.reset();
+  formEjercicio.querySelector("input[name=fecha]").value = e.fecha;
+  formEjercicio.querySelectorAll("[data-toggle=tipo] .toggle-btn").forEach(b =>
+    b.classList.toggle("active", b.dataset.value === e.tipo));
+  formEjercicio.querySelector("input[name=tipo]").value = e.tipo;
+  syncTipoBlocks(e.tipo);
+  formEjercicio.querySelector("input[name=nombre]").value = e.nombre || "";
+  intensidadInput.value = e.intensidad || 5;
+  syncIntensidad();
+  formEjercicio.querySelector("textarea[name=notas]").value = e.notas || "";
+  seriesList.innerHTML = "";
+  velocidadesList.innerHTML = "";
+  if (e.tipo === "fuerza") {
+    (e.series || []).forEach((s, i) => {
+      const row = buildDynRow(i+1, ["reps","kg"]);
+      row.querySelector("input[name=reps]").value = s.reps;
+      row.querySelector("input[name=kg]").value   = s.kg;
+      seriesList.appendChild(row);
+    });
+    if (!seriesList.children.length) addSerieRow();
+    addVelocidadRow();
+  } else if (e.tipo === "cardio") {
+    formEjercicio.querySelector("input[name=minutos]").value   = e.minutos || "";
+    formEjercicio.querySelector("input[name=pendiente]").value = e.pendiente ?? 0;
+    (e.velocidades || []).forEach((v, i) => {
+      const row = buildDynRow(i+1, ["kmh","mins"]);
+      row.querySelector("input[name=kmh]").value  = v.kmh;
+      row.querySelector("input[name=mins]").value = v.mins;
+      velocidadesList.appendChild(row);
+    });
+    if (!velocidadesList.children.length) addVelocidadRow();
+    addSerieRow();
+  } else {
+    formEjercicio.querySelector("input[name=flexMinutos]").value = e.flexMinutos || "";
+    formEjercicio.querySelector("input[name=flexSeries]").value  = e.flexSeries || 1;
+    addSerieRow();
+    addVelocidadRow();
+  }
+}
+
+function loadMedicionToForm(m) {
+  formMedicion.reset();
+  formMedicion.querySelector("input[name=fecha]").value   = m.fecha;
+  formMedicion.querySelector("input[name=peso]").value    = m.peso ?? "";
+  formMedicion.querySelector("input[name=cuello]").value  = m.cuello ?? "";
+  formMedicion.querySelector("input[name=cintura]").value = m.cintura ?? "";
+  const cad = formMedicion.querySelector("input[name=cadera]");
+  if (cad) cad.value = m.cadera ?? "";
+  formMedicion.querySelector("textarea[name=nota]").value = m.nota || "";
+  updateCalcPreview();
+}
+
+function loadComidaToForm(c) {
+  formComida.reset();
+  formComida.querySelector("input[name=fecha]").value     = c.fecha;
+  formComida.querySelector("select[name=momento]").value  = c.momento;
+  formComida.querySelector("input[name=alimento]").value  = c.alimento || "";
+  formComida.querySelector("input[name=cantidad]").value  = c.cantidad || "";
+}
+
+function enterEdit(kind, id) {
+  const item = state[kind].find(x => x.id === id);
+  if (!item) return;
+  editing[kind] = id;
+  if (kind === "ejercicios") loadEjercicioToForm(item);
+  if (kind === "mediciones") loadMedicionToForm(item);
+  if (kind === "comidas")    loadComidaToForm(item);
+  showEditBanner(kind, item);
+  // Activar la pestaña correspondiente
+  activateTab(kind);
+  // Scroll al form
+  const meta = EDIT_META[kind];
+  const formEl = document.getElementById(meta.formId);
+  if (formEl) setTimeout(() => formEl.scrollIntoView({ behavior: "smooth", block: "start" }), 60);
+}
+
+function exitEdit(kind) {
+  if (!editing[kind]) return;
+  editing[kind] = null;
+  hideEditBanner(kind);
+  if (kind === "ejercicios") {
+    formEjercicio.reset();
+    formEjercicio.querySelector("input[name=fecha]").value = todayISO();
+    formEjercicio.querySelectorAll("[data-toggle=tipo] .toggle-btn").forEach(b =>
+      b.classList.toggle("active", b.dataset.value === "fuerza"));
+    formEjercicio.querySelector("input[name=tipo]").value = "fuerza";
+    syncTipoBlocks("fuerza");
+    intensidadInput.value = 5; syncIntensidad();
+    seriesList.innerHTML = ""; addSerieRow();
+    velocidadesList.innerHTML = ""; addVelocidadRow();
+  }
+  if (kind === "mediciones") {
+    formMedicion.reset();
+    formMedicion.querySelector("input[name=fecha]").value = todayISO();
+    updateCalcPreview();
+  }
+  if (kind === "comidas") {
+    formComida.reset();
+    formComida.querySelector("input[name=fecha]").value = todayISO();
+  }
+}
+
+// Delegate: edit + cancel
+document.body.addEventListener("click", e => {
+  const editBtn = e.target.closest(".btn-edit");
+  if (editBtn) {
+    enterEdit(editBtn.dataset.kind, editBtn.dataset.id);
+    return;
+  }
+  const cancel = e.target.closest(".edit-cancel");
+  if (cancel) {
+    exitEdit(cancel.dataset.cancel);
+    return;
+  }
+});
+
+/* ── "Repetir última" ────────────────────────────────────────────────── */
+const btnRepeat = document.getElementById("btn-repeat-last");
+const nombreInput = formEjercicio.querySelector("input[name=nombre]");
+
+function findLastEjercicioByName(name) {
+  const target = (name || "").trim().toLowerCase();
+  if (!target) {
+    return [...state.ejercicios].sort((a,b) => b.fecha.localeCompare(a.fecha))[0] || null;
+  }
+  return [...state.ejercicios]
+    .filter(e => (e.nombre||"").trim().toLowerCase() === target)
+    .sort((a,b) => b.fecha.localeCompare(a.fecha))[0] || null;
+}
+function updateRepeatButtonVisibility() {
+  if (!btnRepeat) return;
+  const name = nombreInput.value.trim();
+  const cand = findLastEjercicioByName(name);
+  if (cand && (!editing.ejercicios)) {
+    btnRepeat.hidden = false;
+    btnRepeat.textContent = name
+      ? `↻ Repetir última de "${cand.nombre}" (${fmtDateShort(cand.fecha)})`
+      : `↻ Repetir última sesión (${fmtDateShort(cand.fecha)})`;
+  } else {
+    btnRepeat.hidden = true;
+  }
+}
+nombreInput.addEventListener("input", updateRepeatButtonVisibility);
+btnRepeat?.addEventListener("click", () => {
+  const cand = findLastEjercicioByName(nombreInput.value);
+  if (!cand) { toast("Sin sesiones previas", "warn"); return; }
+  // Cargar manteniendo fecha = hoy (es una nueva sesión)
+  loadEjercicioToForm(cand);
+  formEjercicio.querySelector("input[name=fecha]").value = todayISO();
+  toast(`Repetida de ${fmtDateShort(cand.fecha)}`);
+});
+
+/* ── Override de submits para soportar modo edición ──────────────────── */
+formEjercicio.addEventListener("submit", e => {
+  if (!editing.ejercicios) return;
+  e.preventDefault();
+  e.stopImmediatePropagation();
+  const fd = new FormData(formEjercicio);
+  const tipo = fd.get("tipo");
+  const idx = state.ejercicios.findIndex(x => x.id === editing.ejercicios);
+  if (idx === -1) { exitEdit("ejercicios"); return; }
+  const updated = {
+    ...state.ejercicios[idx],
+    fecha: fd.get("fecha"),
+    tipo,
+    nombre: fd.get("nombre").trim(),
+    intensidad: Number(fd.get("intensidad")),
+    notas: (fd.get("notas")||"").trim()
+  };
+  // Limpiar campos del tipo anterior y poblar del actual
+  delete updated.series; delete updated.minutos; delete updated.pendiente;
+  delete updated.velocidades; delete updated.flexMinutos; delete updated.flexSeries;
+  if (tipo === "fuerza") {
+    updated.series = [...seriesList.querySelectorAll(".dyn-row")].map(r => ({
+      reps: Number(r.querySelector("input[name=reps]").value)||0,
+      kg:   Number(r.querySelector("input[name=kg]").value)||0
+    })).filter(s => s.reps>0 || s.kg>0);
+    if (!updated.series.length) return toast("Agrega al menos una serie", "error");
+  } else if (tipo === "cardio") {
+    updated.minutos   = Number(fd.get("minutos"))||0;
+    updated.pendiente = Number(fd.get("pendiente"))||0;
+    updated.velocidades = [...velocidadesList.querySelectorAll(".dyn-row")].map(r => ({
+      kmh:  Number(r.querySelector("input[name=kmh]").value)||0,
+      mins: Number(r.querySelector("input[name=mins]").value)||0
+    })).filter(v => v.kmh>0 || v.mins>0);
+    if (!updated.minutos && !updated.velocidades.length) return toast("Indica minutos o velocidades", "error");
+  } else {
+    updated.flexMinutos = Number(fd.get("flexMinutos"))||0;
+    updated.flexSeries  = Number(fd.get("flexSeries"))||1;
+  }
+  state.ejercicios[idx] = updated;
+  saveState();
+  exitEdit("ejercicios");
+  refreshDatalists();
+  renderEjerciciosList();
+  toast("Sesión actualizada");
+}, true); // capture: corre antes del listener original
+
+formMedicion.addEventListener("submit", e => {
+  if (!editing.mediciones) return;
+  e.preventDefault();
+  e.stopImmediatePropagation();
+  const fd = new FormData(formMedicion);
+  const sexo   = state.perfil?.sexo || "hombre";
+  const altura = Number(state.perfil?.altura) || 0;
+  if (!altura) return toast("Guarda primero tu altura", "error");
+  const idx = state.mediciones.findIndex(x => x.id === editing.mediciones);
+  if (idx === -1) { exitEdit("mediciones"); return; }
+  const peso = Number(fd.get("peso"))||0;
+  if (!peso) return toast("Peso requerido", "error");
+  const updated = {
+    ...state.mediciones[idx],
+    fecha: fd.get("fecha"),
+    peso,
+    cuello:  Number(fd.get("cuello"))||null,
+    cintura: Number(fd.get("cintura"))||null,
+    cadera:  Number(fd.get("cadera"))||null,
+    nota: (fd.get("nota")||"").trim()
+  };
+  updated.grasa     = calcBodyFat({ sexo, altura, ...updated });
+  updated.masaMagra = calcLeanMass(updated.grasa);
+  state.mediciones[idx] = updated;
+  saveState();
+  exitEdit("mediciones");
+  renderMedicionesList();
+  toast("Medición actualizada");
+}, true);
+
+formComida.addEventListener("submit", e => {
+  if (!editing.comidas) return;
+  e.preventDefault();
+  e.stopImmediatePropagation();
+  const fd = new FormData(formComida);
+  const idx = state.comidas.findIndex(x => x.id === editing.comidas);
+  if (idx === -1) { exitEdit("comidas"); return; }
+  const alimento = (fd.get("alimento")||"").trim();
+  if (!alimento) return toast("Alimento requerido", "error");
+  state.comidas[idx] = {
+    ...state.comidas[idx],
+    fecha: fd.get("fecha"),
+    momento: fd.get("momento"),
+    alimento,
+    cantidad: (fd.get("cantidad")||"").trim()
+  };
+  saveState();
+  exitEdit("comidas");
+  refreshDatalists();
+  renderComidasList();
+  toast("Comida actualizada");
+}, true);
+
 // Inicialización diferida: llamamos loadPerfilToForm() aquí, NO arriba
 // donde se declara, para que `formMedicion` ya esté inicializado y
 // updateCalcPreview() no falle con TDZ.
 loadPerfilToForm();
 initToolbars();
+refreshDatalists();
 renderAll();
+updateRepeatButtonVisibility();
 
 /* ============================================================
    V.  SERVICE WORKER (PWA)

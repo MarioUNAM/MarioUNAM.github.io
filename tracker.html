@@ -1435,11 +1435,55 @@ input[type=range]::-moz-range-thumb {
         <span class="field-label">Altura (cm)</span>
         <input type="number" name="altura" class="input mono" min="100" max="230" step="0.5" placeholder="175" required>
       </label>
+      <label class="field" style="margin:0">
+        <span class="field-label">Edad (años)</span>
+        <input type="number" name="edad" class="input mono" min="10" max="100" step="1" placeholder="30">
+      </label>
+    </div>
+    <div class="profile-row" style="margin-top:10px">
+      <label class="field" style="margin:0">
+        <span class="field-label">Nivel de actividad</span>
+        <select name="actividad" class="input mono">
+          <option value="sedentario">Sedentario · oficina, sin ejercicio</option>
+          <option value="ligero">Ligero · 1-3 sesiones/sem</option>
+          <option value="moderado" selected>Moderado · 3-5 sesiones/sem</option>
+          <option value="intenso">Intenso · 6-7 sesiones/sem</option>
+          <option value="muy_intenso">Muy intenso · atleta, doble sesión</option>
+        </select>
+      </label>
+      <label class="field" style="margin:0">
+        <span class="field-label">Objetivo</span>
+        <select name="objetivo" class="input mono">
+          <option value="deficit">Déficit · corte (−500 kcal)</option>
+          <option value="mantener" selected>Mantenimiento</option>
+          <option value="volumen">Volumen · lean bulk (+300 kcal)</option>
+        </select>
+      </label>
       <button type="submit" class="btn-secondary" style="height:42px">Guardar</button>
     </div>
     <div class="profile-saved" id="profile-saved" hidden>
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
       <span id="profile-saved-text">Perfil guardado</span>
+    </div>
+    <!-- Preview de calorías calculadas en vivo -->
+    <div class="calc-preview" id="kcal-preview" style="margin-top:12px">
+      <div class="calc-cell">
+        <span class="calc-label">BMR</span>
+        <span class="calc-value muted" id="kcal-bmr">— kcal</span>
+      </div>
+      <div class="calc-cell">
+        <span class="calc-label">TDEE</span>
+        <span class="calc-value muted" id="kcal-tdee">— kcal</span>
+      </div>
+      <div class="calc-cell">
+        <span class="calc-label">Objetivo</span>
+        <span class="calc-value" id="kcal-goal">— kcal</span>
+      </div>
+      <div class="calc-cell">
+        <span class="calc-label">Proteína</span>
+        <span class="calc-value muted" id="kcal-prot">— g</span>
+      </div>
+      <p class="calc-hint" id="kcal-hint">Completa edad y registra al menos un peso para calcular calorías diarias.</p>
     </div>
   </form>
 
@@ -1686,14 +1730,27 @@ input[type=range]::-moz-range-thumb {
 /* ============================================================
    A.  PERSISTENCIA
    ------------------------------------------------------------
-   Subimos a v2 porque cambió el esquema (perfil + masaMagra).
+   v2: perfil + masaMagra
+   v3: perfil ampliado (edad, actividad, objetivo) +
+       state.objetivos (kcal/proteina) + state.analisisIA[]
    ============================================================ */
 const STORAGE_KEY = "tracker.v1.data";
-const STORAGE_VERSION = 2;
+const STORAGE_VERSION = 3;
 
 const defaultState = () => ({
   version: STORAGE_VERSION,
-  perfil: { sexo: "hombre", altura: 175 },
+  perfil: {
+    sexo: "hombre",
+    altura: 175,
+    edad: null,
+    actividad: "moderado",   // sedentario | ligero | moderado | intenso | muy_intenso
+    objetivo: "mantener"     // deficit | mantener | volumen
+  },
+  objetivos: {
+    kcalDiarias: null,       // override manual; si null se usa el calculado
+    proteinaG: null
+  },
+  analisisIA: [],            // historial de análisis IA aplicados
   ejercicios: [],
   mediciones: [],
   comidas: [],
@@ -1707,12 +1764,24 @@ function loadState() {
     const raw = localStorage.getItem(STORAGE_KEY);
     if (!raw) return seedSample(defaultState());
     const parsed = JSON.parse(raw);
+    // Migración v2 → v3: preserva datos, añade defaults
+    if (parsed.version === 2) return migrateV2toV3(parsed);
     if (parsed.version !== STORAGE_VERSION) return seedSample(defaultState());
     return parsed;
   } catch (e) {
     console.warn("Estado corrupto, reinicializando", e);
     return seedSample(defaultState());
   }
+}
+function migrateV2toV3(s) {
+  s.version = 3;
+  s.perfil = Object.assign({
+    sexo: "hombre", altura: 175, edad: null,
+    actividad: "moderado", objetivo: "mantener"
+  }, s.perfil || {});
+  s.objetivos = Object.assign({ kcalDiarias: null, proteinaG: null }, s.objetivos || {});
+  if (!Array.isArray(s.analisisIA)) s.analisisIA = [];
+  return s;
 }
 function saveState() { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); }
 
@@ -1785,12 +1854,76 @@ function calcBodyFat({ sexo, altura, cintura, cuello, cadera }) {
 function calcLeanMass(bf) { return bf == null ? null : +(100 - bf).toFixed(1); }
 
 /* ============================================================
+   C2.  CÁLCULO DE CALORÍAS DIARIAS — Mifflin-St Jeor + TDEE
+   ------------------------------------------------------------
+   Mifflin, M.D. & St Jeor, S.T. (1990). A new predictive
+   equation for resting energy expenditure in healthy individuals.
+   Am J Clin Nutr 51: 241–247.
+   Recomendada por la Academy of Nutrition and Dietetics (2005)
+   como la más precisa (±10% del gold standard) en población
+   sana adulta. Más fiable que Harris-Benedict para población
+   actual con mayor IMC.
+
+   BMR (Basal Metabolic Rate):
+     Hombres: 10·peso(kg) + 6.25·altura(cm) − 5·edad(años) + 5
+     Mujeres: 10·peso(kg) + 6.25·altura(cm) − 5·edad(años) − 161
+
+   TDEE = BMR · factor de actividad
+     sedentario:    1.2   (oficina, sin ejercicio)
+     ligero:        1.375 (1-3 sesiones/sem ligeras)
+     moderado:      1.55  (3-5 sesiones/sem moderadas)
+     intenso:       1.725 (6-7 sesiones/sem intensas)
+     muy_intenso:   1.9   (atleta, doble sesión)
+
+   Ajuste por objetivo:
+     déficit (corte):     TDEE − 500   (~0.5 kg/sem)
+     mantener:            TDEE
+     volumen (lean bulk): TDEE + 300   (~0.25 kg/sem)
+   ============================================================ */
+const ACTIVIDAD_FACTOR = {
+  sedentario: 1.2, ligero: 1.375, moderado: 1.55, intenso: 1.725, muy_intenso: 1.9
+};
+const OBJETIVO_AJUSTE = { deficit: -500, mantener: 0, volumen: 300 };
+
+function calcCalorias({ sexo, altura, peso, edad, actividad, objetivo }) {
+  altura = Number(altura); peso = Number(peso); edad = Number(edad);
+  if (!altura || !peso || !edad || edad < 10 || edad > 100) return null;
+  const baseBMR = 10*peso + 6.25*altura - 5*edad;
+  const bmr = sexo === "mujer" ? baseBMR - 161 : baseBMR + 5;
+  const factor = ACTIVIDAD_FACTOR[actividad] || ACTIVIDAD_FACTOR.moderado;
+  const tdee = bmr * factor;
+  const ajuste = OBJETIVO_AJUSTE[objetivo] ?? 0;
+  const objetivoKcal = tdee + ajuste;
+  // Proteína sugerida: 1.6 g/kg (mantener) · 1.8 (déficit, preserva masa) · 1.6 (volumen)
+  const protPorKg = objetivo === "deficit" ? 1.8 : 1.6;
+  return {
+    bmr: Math.round(bmr),
+    tdee: Math.round(tdee),
+    objetivoKcal: Math.round(objetivoKcal),
+    proteinaG: Math.round(peso * protPorKg),
+    factor,
+    ajuste
+  };
+}
+// Devuelve el cálculo usando el último peso registrado y el perfil actual.
+function calcCaloriasFromState() {
+  const ultPeso = [...(state.mediciones || [])]
+    .sort((a,b) => a.fecha.localeCompare(b.fecha))
+    .slice(-1)[0]?.peso;
+  const p = state.perfil || {};
+  return calcCalorias({
+    sexo: p.sexo, altura: p.altura, peso: ultPeso,
+    edad: p.edad, actividad: p.actividad, objetivo: p.objetivo
+  });
+}
+
+/* ============================================================
    D.  DATOS DE EJEMPLO — sólo 3 de cada tipo
    ============================================================ */
 function seedSample(s) {
   const day = (offset) => isoDate(addDays(new Date(), offset));
 
-  s.perfil = { sexo: "hombre", altura: 175 };
+  s.perfil = { sexo: "hombre", altura: 175, edad: null, actividad: "moderado", objetivo: "mantener" };
 
   // 3 ejercicios — uno de cada tipo, distribuidos en la última semana
   s.ejercicios = [
@@ -2005,15 +2138,63 @@ addVelocidadRow();
    ============================================================ */
 const formPerfil = document.getElementById("form-perfil");
 function loadPerfilToForm() {
-  const { sexo, altura } = state.perfil || {};
-  formPerfil.querySelector("input[name=altura]").value = altura ?? "";
+  const p = state.perfil || {};
+  formPerfil.querySelector("input[name=altura]").value = p.altura ?? "";
+  formPerfil.querySelector("input[name=edad]").value   = p.edad   ?? "";
+  formPerfil.querySelector("select[name=actividad]").value = p.actividad || "moderado";
+  formPerfil.querySelector("select[name=objetivo]").value  = p.objetivo  || "mantener";
   // Set toggle activo
   formPerfil.querySelectorAll("[data-toggle=sexo] .toggle-btn").forEach(b =>
-    b.classList.toggle("active", b.dataset.value === (sexo || "hombre"))
+    b.classList.toggle("active", b.dataset.value === (p.sexo || "hombre"))
   );
-  formPerfil.querySelector("input[name=sexo]").value = sexo || "hombre";
-  onSexoChange(sexo || "hombre");
+  formPerfil.querySelector("input[name=sexo]").value = p.sexo || "hombre";
+  onSexoChange(p.sexo || "hombre");
+  updateKcalPreview();
 }
+
+// Calcula calorías con los valores actuales del form (sin requerir guardar)
+function updateKcalPreview() {
+  const fd = new FormData(formPerfil);
+  const ultPeso = [...(state.mediciones || [])]
+    .sort((a,b) => a.fecha.localeCompare(b.fecha))
+    .slice(-1)[0]?.peso;
+  const data = calcCalorias({
+    sexo: fd.get("sexo"),
+    altura: fd.get("altura"),
+    peso: ultPeso,
+    edad: fd.get("edad"),
+    actividad: fd.get("actividad"),
+    objetivo: fd.get("objetivo")
+  });
+  const $ = id => document.getElementById(id);
+  if (!data) {
+    $("kcal-bmr").textContent = "— kcal";
+    $("kcal-tdee").textContent = "— kcal";
+    $("kcal-goal").textContent = "— kcal";
+    $("kcal-prot").textContent = "— g";
+    $("kcal-bmr").classList.add("muted");
+    $("kcal-tdee").classList.add("muted");
+    $("kcal-goal").classList.add("muted");
+    $("kcal-hint").textContent = ultPeso == null
+      ? "Registra al menos un peso para calcular calorías."
+      : "Completa edad para calcular calorías.";
+    return;
+  }
+  $("kcal-bmr").textContent  = data.bmr  + " kcal";
+  $("kcal-tdee").textContent = data.tdee + " kcal";
+  $("kcal-goal").textContent = data.objetivoKcal + " kcal";
+  $("kcal-prot").textContent = data.proteinaG + " g";
+  $("kcal-bmr").classList.remove("muted");
+  $("kcal-tdee").classList.remove("muted");
+  $("kcal-goal").classList.remove("muted");
+  $("kcal-hint").textContent = `BMR · Mifflin-St Jeor × ${data.factor.toFixed(3)} (actividad) ${data.ajuste >= 0 ? "+" : ""}${data.ajuste} kcal (objetivo)`;
+}
+// Reactive: cualquier cambio en el form actualiza el preview
+formPerfil.addEventListener("input", updateKcalPreview);
+formPerfil.addEventListener("change", updateKcalPreview);
+formPerfil.querySelectorAll("[data-toggle=sexo] .toggle-btn").forEach(b =>
+  b.addEventListener("click", () => setTimeout(updateKcalPreview, 0))
+);
 // IMPORTANTE: la llamada inicial a loadPerfilToForm() se difiere hasta el
 // final del script (justo antes de renderAll()). Si se invoca aquí, dispara
 // onSexoChange → updateCalcPreview, que lee `formMedicion` declarado más
@@ -2024,15 +2205,29 @@ formPerfil.addEventListener("submit", e => {
   const fd = new FormData(formPerfil);
   const altura = Number(fd.get("altura"));
   const sexo   = fd.get("sexo");
+  const edadRaw = fd.get("edad");
+  const edad = edadRaw === "" || edadRaw == null ? null : Number(edadRaw);
+  const actividad = fd.get("actividad") || "moderado";
+  const objetivo  = fd.get("objetivo")  || "mantener";
   if (!altura || altura < 100 || altura > 230) return toast("Altura inválida", "error");
-  state.perfil = { sexo, altura };
+  if (edad != null && (edad < 10 || edad > 100)) return toast("Edad fuera de rango (10-100)", "error");
+  state.perfil = { sexo, altura, edad, actividad, objetivo };
   saveState();
-  // Recalcular el preview por si ya tenía datos en el form de medición
+  // Recalcular previews dependientes del perfil
   updateCalcPreview();
+  updateKcalPreview();
+  if (typeof renderDashboard === "function" &&
+      document.getElementById("tab-dashboard")?.classList.contains("active")) {
+    renderDashboard();
+  }
   // Indicador visible de "guardado"
   const saved = document.getElementById("profile-saved");
   saved.hidden = false;
-  document.getElementById("profile-saved-text").textContent = `Perfil guardado: ${sexo} · ${altura} cm`;
+  const partes = [sexo, altura + " cm"];
+  if (edad)      partes.push(edad + " años");
+  partes.push(actividad);
+  partes.push(objetivo);
+  document.getElementById("profile-saved-text").textContent = "Perfil guardado: " + partes.join(" · ");
   toast("Perfil guardado");
 });
 
@@ -2776,6 +2971,12 @@ function evaluateMetric(kind, value, ctx = {}) {
       if (value >= 71) return { tag: "Alta", level: "ok" };
       if (value >= 43) return { tag: "Media", level: "warn" };
       return { tag: "Baja", level: "bad" };
+    case "kcal": {
+      // ctx: { objetivo: "deficit"|"mantener"|"volumen", tdee, bmr }
+      if (!ctx || ctx.objetivo == null) return { tag: "Sin objetivo", level: "muted" };
+      const map = { deficit: "Déficit · corte", mantener: "Mantenimiento", volumen: "Volumen · lean bulk" };
+      return { tag: map[ctx.objetivo] || "—", level: "ok" };
+    }
   }
   return { tag: "—", level: "muted" };
 }
@@ -2797,6 +2998,8 @@ function renderDashboard() {
   const deltaPeso = (peso!=null && pesoPrev!=null) ? +(peso - pesoPrev).toFixed(1) : null;
   const imc = calcIMC(peso, state.perfil?.altura);
 
+  // Calorías objetivo (TDEE Mifflin-St Jeor) — null si falta edad o peso
+  const kcal = calcCaloriasFromState();
   const cards = [
     { kind: "sesiones",    label: "Sesiones (semana)", value: last.sesionesTotales, unit: "", display: last.sesionesTotales },
     { kind: "cardio",      label: "Cardio (min)",      value: last.minutosCardio, unit: "min", display: last.minutosCardio, cls: "blue" },
@@ -2805,7 +3008,13 @@ function renderDashboard() {
     { kind: "imc",         label: "Peso actual",       value: imc, unit: peso!=null?"kg":"", display: peso ?? "—", cls: "amber",
       delta: deltaPeso!=null ? { v: deltaPeso, label: (deltaPeso>0?"+":"")+deltaPeso+"kg" } : null },
     { kind: "consistencia",label: "Consistencia",      value: last.consistencia, unit: "%", display: last.consistencia,
-      cls: last.consistencia>=43?"":"amber" }
+      cls: last.consistencia>=43?"":"amber" },
+    { kind: "kcal",
+      label: kcal ? `Calorías objetivo · TDEE ${kcal.tdee}` : "Calorías objetivo",
+      value: kcal?.objetivoKcal ?? null, unit: kcal ? "kcal" : "",
+      display: kcal ? kcal.objetivoKcal : "—",
+      cls: "blue",
+      ctx: { objetivo: state.perfil?.objetivo, tdee: kcal?.tdee, bmr: kcal?.bmr } }
   ];
 
   document.getElementById("summary-cards").innerHTML = cards.map(c => {

@@ -213,6 +213,7 @@ svg { display: block; }
   position: fixed;
   top: 0; left: 0; bottom: 0;
   width: var(--sidebar-w);
+  max-width: 320px; /* iPad landscape: evita que cubra casi toda la pantalla */
   background: var(--bg-elev);
   border-right: 1px solid var(--border);
   display: flex; flex-direction: column;
@@ -1858,7 +1859,32 @@ function migrateV2toV3(s) {
   if (!Array.isArray(s.analisisIA)) s.analisisIA = [];
   return s;
 }
-function saveState() { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); }
+// localStorage cap ~5MB. Detectamos QuotaExceededError y avisamos.
+// También avisamos preventivamente al pasar 4MB (~80% de la cuota típica).
+let _lastQuotaWarn = 0;
+function saveState() {
+  const data = JSON.stringify(state);
+  // Warning preventivo (rate-limited 1 vez cada 5 min)
+  if (data.length > 4_000_000 && Date.now() - _lastQuotaWarn > 5 * 60 * 1000) {
+    _lastQuotaWarn = Date.now();
+    if (typeof toast === "function") {
+      toast(`Espacio bajo: localStorage ${(data.length/1024/1024).toFixed(1)}MB de ~5MB. Considera exportar y limpiar datos viejos.`, "warn", { duration: 6000 });
+    }
+  }
+  try {
+    localStorage.setItem(STORAGE_KEY, data);
+  } catch (e) {
+    if (e && (e.name === "QuotaExceededError" || e.code === 22 || e.code === 1014)) {
+      if (typeof toast === "function") {
+        toast("localStorage lleno · exporta y borra datos antiguos para liberar espacio", "error", { duration: 8000 });
+      } else {
+        console.error("localStorage quota exceeded", e);
+      }
+    } else {
+      console.error("saveState error", e);
+    }
+  }
+}
 
 /* ============================================================
    B.  HELPERS DE FECHAS
@@ -2258,6 +2284,14 @@ function activateTab(name) {
   if (isMobileNav()) closeDrawer();
   // Reset scroll para que el panel nuevo arranque desde arriba
   if (typeof window !== "undefined" && window.scrollTo) window.scrollTo({ top: 0, behavior: "auto" });
+  // Foco al panel para lectores de pantalla / navegación con teclado.
+  // tabindex=-1 permite focus programático sin que el panel sea tab-stop.
+  const panel = document.getElementById("tab-" + name);
+  if (panel) {
+    if (!panel.hasAttribute("tabindex")) panel.setAttribute("tabindex", "-1");
+    // Usamos preventScroll porque ya hicimos scrollTo arriba.
+    try { panel.focus({ preventScroll: true }); } catch (_) { panel.focus(); }
+  }
 }
 tabs.forEach(t => t.addEventListener("click", () => activateTab(t.dataset.tab)));
 
@@ -3911,40 +3945,87 @@ document.getElementById("btn-export").addEventListener("click", () => {
   toast("Datos exportados");
 });
 document.getElementById("btn-import").addEventListener("click", () => document.getElementById("file-import").click());
+// Aplica el import al state según el modo elegido. Devuelve { collisions, added }.
+function doImport(parsed, mode) {
+  if (mode === "merge") {
+    // Fusionar: agregar items del archivo evitando duplicados por id o por
+    // (fecha + nombre/alimento) según colección. Conserva los datos actuales.
+    let added = 0, skipped = 0;
+    const keyByCol = {
+      ejercicios: x => `${x.fecha}|${(x.nombre||"").trim().toLowerCase()}`,
+      mediciones: x => `${x.fecha}|peso${x.peso||""}`,
+      comidas:    x => `${x.fecha}|${(x.alimento||"").trim().toLowerCase()}|${x.momento||""}`
+    };
+    ["ejercicios","mediciones","comidas"].forEach(col => {
+      if (!Array.isArray(parsed[col])) return;
+      const existingIds = new Set(state[col].map(i => i.id));
+      const existingKeys = new Set(state[col].map(keyByCol[col]));
+      parsed[col].forEach(item => {
+        if (!item) return;
+        const k = keyByCol[col](item);
+        // Saltar si ya existe (por id o por clave de negocio)
+        if ((item.id && existingIds.has(item.id)) || existingKeys.has(k)) {
+          skipped++; return;
+        }
+        // Re-asignar id si colisiona con existente o con otro item del batch
+        if (!item.id || existingIds.has(item.id)) item.id = uid();
+        existingIds.add(item.id);
+        existingKeys.add(k);
+        state[col].push(item);
+        added++;
+      });
+    });
+    saveState();
+    loadPerfilToForm();
+    renderAll();
+    toast(`Fusionados: +${added} registros · ${skipped} duplicados saltados`);
+    return;
+  }
+  // Reemplazar: lo del archivo gana, regenerando IDs duplicados.
+  const seen = new Set();
+  let collisions = 0;
+  ["ejercicios","mediciones","comidas"].forEach(key => {
+    if (!Array.isArray(parsed[key])) return;
+    parsed[key].forEach(item => {
+      if (item && (item.id == null || seen.has(item.id))) {
+        item.id = uid();
+        collisions++;
+      }
+      if (item && item.id != null) seen.add(item.id);
+    });
+  });
+  state = parsed;
+  saveState();
+  loadPerfilToForm();
+  renderAll();
+  toast(collisions
+    ? `Datos importados (${collisions} ID${collisions===1?"":"s"} regenerado${collisions===1?"":"s"})`
+    : "Datos importados");
+}
+
 document.getElementById("file-import").addEventListener("change", e => {
   const file = e.target.files[0];
   if (!file) return;
   const reader = new FileReader();
   reader.onload = async () => {
+    let parsed;
     try {
-      const parsed = JSON.parse(reader.result);
+      parsed = JSON.parse(reader.result);
       if (!parsed.ejercicios || !parsed.mediciones || !parsed.comidas) throw new Error("Formato inválido");
-      const ok = await confirmModal("Se reemplazarán todos los datos actuales con el contenido del archivo importado.", {
-        title: "Importar JSON", okLabel: "Sí, reemplazar todo", danger: true
-      });
-      if (!ok) return;
-      // Detectar y regenerar IDs duplicados (entre colecciones o dentro de cada una)
-      // para evitar corrupción de findIndex(x=>x.id===id) tras el import.
-      const seen = new Set();
-      let collisions = 0;
-      ["ejercicios","mediciones","comidas"].forEach(key => {
-        if (!Array.isArray(parsed[key])) return;
-        parsed[key].forEach(item => {
-          if (item && (item.id == null || seen.has(item.id))) {
-            item.id = uid();
-            collisions++;
-          }
-          if (item && item.id != null) seen.add(item.id);
-        });
-      });
-      state = parsed;
-      saveState();
-      loadPerfilToForm();
-      renderAll();
-      toast(collisions
-        ? `Datos importados (${collisions} ID${collisions===1?"":"s"} regenerado${collisions===1?"":"s"})`
-        : "Datos importados");
-    } catch { toast("Archivo inválido", "error"); }
+    } catch {
+      return toast("Archivo inválido", "error");
+    }
+    // Estrategia: confirmModal con dos rondas (Aceptar=Fusionar; Cancelar=preguntar Reemplazar).
+    const wantsMerge = await confirmModal(
+      `Importando: ${parsed.ejercicios.length} ejercicios, ${parsed.mediciones.length} mediciones, ${parsed.comidas.length} comidas.\n\nAceptar = FUSIONAR (saltar duplicados por id o por fecha+nombre).\nCancelar = decidir si REEMPLAZAR todo.`,
+      { title: "Importar JSON", okLabel: "Fusionar (recomendado)" }
+    );
+    if (wantsMerge) return doImport(parsed, "merge");
+    const wantsReplace = await confirmModal(
+      "Se eliminarán TODOS los datos actuales y se reemplazarán con los del archivo.",
+      { title: "Reemplazar todo", okLabel: "Sí, reemplazar", danger: true }
+    );
+    if (wantsReplace) doImport(parsed, "replace");
   };
   reader.readAsText(file);
   e.target.value = "";

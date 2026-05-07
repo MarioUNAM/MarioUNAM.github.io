@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 630" width="1200" height="630">
+  <!-- Background: Precision Architect dark palette -->
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#071325"/>
+      <stop offset="100%" stop-color="#030e20"/>
+    </linearGradient>
+    <radialGradient id="glow" cx="0.85" cy="0.15" r="0.7">
+      <stop offset="0%" stop-color="#4cd6fb" stop-opacity="0.15"/>
+      <stop offset="60%" stop-color="#4cd6fb" stop-opacity="0"/>
+    </radialGradient>
+    <pattern id="dots" x="0" y="0" width="32" height="32" patternUnits="userSpaceOnUse">
+      <circle cx="2" cy="2" r="1" fill="#4cd6fb" opacity="0.08"/>
+    </pattern>
+  </defs>
+
+  <rect width="1200" height="630" fill="url(#bg)"/>
+  <rect width="1200" height="630" fill="url(#dots)"/>
+  <rect width="1200" height="630" fill="url(#glow)"/>
+
+  <!-- Left accent bar -->
+  <rect x="0" y="0" width="6" height="630" fill="#4cd6fb"/>
+
+  <!-- Top label -->
+  <text x="80" y="140" font-family="'Space Grotesk', 'Inter', sans-serif" font-size="20" font-weight="700"
+        letter-spacing="6" fill="#4cd6fb" text-transform="uppercase">PORTFOLIO · MAHUNO</text>
+
+  <!-- Name (Manrope Black) -->
+  <text x="80" y="240" font-family="'Manrope', 'Inter', sans-serif" font-size="78" font-weight="800"
+        fill="#e8f4f8" letter-spacing="-2">Mario Huarte</text>
+  <text x="80" y="320" font-family="'Manrope', 'Inter', sans-serif" font-size="78" font-weight="800"
+        fill="#e8f4f8" letter-spacing="-2">Nolasco</text>
+
+  <!-- Role: cyan accent -->
+  <text x="80" y="400" font-family="'Inter', sans-serif" font-size="38" font-weight="600"
+        fill="#4cd6fb" letter-spacing="-0.5">MDM Specialist · Java Developer</text>
+
+  <!-- Subtitle / pitch -->
+  <text x="80" y="450" font-family="'Inter', sans-serif" font-size="22" font-weight="400"
+        fill="#bcc9ce" letter-spacing="0.2">TIBCO EBX · SnapLogic · AI Data Governance</text>
+
+  <!-- Bottom row: URL + UNAM badge -->
+  <line x1="80" y1="510" x2="1120" y2="510" stroke="#3d494d" stroke-width="1"/>
+  <text x="80" y="555" font-family="'Space Grotesk', monospace" font-size="22" font-weight="600"
+        fill="#bcc9ce" letter-spacing="3" text-transform="uppercase">mariounam.github.io</text>
+
+  <text x="1120" y="555" text-anchor="end" font-family="'Space Grotesk', monospace" font-size="20" font-weight="700"
+        fill="#869398" letter-spacing="3">UNAM · CDMX · 4+ YRS @ ALLDATUM</text>
+
+  <!-- Right side decorative geometry -->
+  <g opacity="0.5">
+    <circle cx="1020" cy="180" r="120" fill="none" stroke="#4cd6fb" stroke-width="1.5"/>
+    <circle cx="1020" cy="180" r="80" fill="none" stroke="#4cd6fb" stroke-width="1" opacity="0.5"/>
+    <circle cx="1020" cy="180" r="40" fill="none" stroke="#4cd6fb" stroke-width="0.8" opacity="0.3"/>
+    <circle cx="1020" cy="180" r="6" fill="#4cd6fb"/>
+    <!-- Small data nodes -->
+    <circle cx="900" cy="180" r="4" fill="#58d6f1"/>
+    <circle cx="1140" cy="180" r="4" fill="#58d6f1"/>
+    <circle cx="1020" cy="60"  r="4" fill="#58d6f1"/>
+    <circle cx="1020" cy="300" r="4" fill="#58d6f1"/>
+    <line x1="900"  y1="180" x2="1014" y2="180" stroke="#4cd6fb" stroke-width="1" opacity="0.4"/>
+    <line x1="1026" y1="180" x2="1140" y2="180" stroke="#4cd6fb" stroke-width="1" opacity="0.4"/>
+    <line x1="1020" y1="60"  x2="1020" y2="174" stroke="#4cd6fb" stroke-width="1" opacity="0.4"/>
+    <line x1="1020" y1="186" x2="1020" y2="300" stroke="#4cd6fb" stroke-width="1" opacity="0.4"/>
+  </g>
+</svg>

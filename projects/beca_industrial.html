@@ -30,6 +30,9 @@
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
         integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin="" defer></script>
 
+<!-- Chart.js (KPIs en Tools) -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js" defer></script>
+
 <!-- Design system con CSS vars para soportar dark/light theme -->
 <script>
   tailwind.config = {
@@ -195,6 +198,113 @@
     outline-offset: 2px;
     border-radius: 2px;
   }
+
+  /* ══════════════════════════════════════════════════════════════
+     PRESENTATION MODE — oculta nav/footer y agranda tipografía
+  ══════════════════════════════════════════════════════════════ */
+  body.presenting nav, body.presenting footer, body.presenting #mobile-menu { display: none !important; }
+  body.presenting { font-size: 1.15rem; }
+  body.presenting h1 { font-size: 4rem !important; }
+  body.presenting h2 { font-size: 2.4rem !important; }
+
+  /* Botón "salir presentación" flotante */
+  #presenting-exit {
+    display: none; position: fixed; top: 1rem; right: 1rem; z-index: 100;
+    background: var(--c-primary); color: #fff; padding: 6px 12px;
+    font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em;
+    border: none; cursor: pointer;
+  }
+  body.presenting #presenting-exit { display: block; }
+
+  /* ══════════════════════════════════════════════════════════════
+     PRINT — limpia chrome, deja contenido legible en blanco/negro
+  ══════════════════════════════════════════════════════════════ */
+  @media print {
+    nav, footer, #mobile-menu, #toast, #presenting-exit, #toc-sticky, #search-overlay { display: none !important; }
+    .page { display: block !important; opacity: 1 !important; transform: none !important; page-break-after: always; }
+    body { background: #fff; color: #000; }
+    .bg-primary, .bg-primary-container { background: #001e40 !important; }
+    a { color: #001e40; text-decoration: underline; }
+    .btn-ripple, button { display: none !important; }
+  }
+
+  /* ══════════════════════════════════════════════════════════════
+     SEARCH OVERLAY (Ctrl+K)
+  ══════════════════════════════════════════════════════════════ */
+  #search-overlay {
+    position: fixed; inset: 0; z-index: 90; background: rgba(0,30,64,0.7);
+    backdrop-filter: blur(4px); display: none; align-items: flex-start;
+    justify-content: center; padding-top: 12vh;
+  }
+  #search-overlay.open { display: flex; }
+  #search-box {
+    width: 90%; max-width: 600px;
+    background: var(--c-surface-container-lowest);
+    border: 1px solid var(--c-outline-variant);
+    box-shadow: 0 30px 80px rgba(0,30,64,0.4);
+  }
+  #search-input {
+    width: 100%; padding: 1.2rem 1.4rem; border: 0; outline: 0;
+    font-size: 1.1rem; background: transparent; color: var(--c-on-surface);
+    border-bottom: 1px solid var(--c-outline-variant);
+  }
+  #search-results { max-height: 50vh; overflow-y: auto; }
+  #search-results .sr-item {
+    display: block; padding: 0.8rem 1.4rem; cursor: pointer;
+    border-bottom: 1px solid var(--c-outline-variant);
+    color: var(--c-on-surface);
+  }
+  #search-results .sr-item:hover, #search-results .sr-item.active {
+    background: var(--c-surface-container-low);
+  }
+  #search-results mark {
+    background: var(--c-tertiary-fixed); color: var(--c-on-tertiary-fixed); padding: 0 2px;
+  }
+
+  /* ══════════════════════════════════════════════════════════════
+     TOC STICKY (about + contact)
+  ══════════════════════════════════════════════════════════════ */
+  #toc-sticky {
+    position: fixed; top: 50%; right: 1rem; transform: translateY(-50%);
+    z-index: 40; background: var(--c-surface-container-lowest);
+    border: 1px solid var(--c-outline-variant); padding: 0.6rem 0.8rem;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.08); font-size: 11px;
+    text-transform: uppercase; letter-spacing: 0.05em; max-width: 180px;
+    display: none;
+  }
+  #toc-sticky.show { display: block; }
+  #toc-sticky a {
+    display: block; padding: 4px 0; color: var(--c-on-surface-variant);
+    text-decoration: none; border-left: 2px solid transparent; padding-left: 6px;
+    transition: color 0.2s, border-color 0.2s;
+  }
+  #toc-sticky a:hover, #toc-sticky a.active {
+    color: var(--c-secondary); border-left-color: var(--c-secondary);
+  }
+
+  /* ══════════════════════════════════════════════════════════════
+     TIMELINE (Tools page)
+  ══════════════════════════════════════════════════════════════ */
+  .tl-step {
+    position: relative; padding-left: 2.5rem; padding-bottom: 2rem;
+    border-left: 2px solid var(--c-outline-variant);
+  }
+  .tl-step::before {
+    content: ''; position: absolute; left: -9px; top: 0;
+    width: 16px; height: 16px; border-radius: 50%;
+    background: var(--c-accent); border: 3px solid var(--c-surface);
+  }
+  .tl-step:last-child { border-left-color: transparent; }
+
+  /* Glosario — detalles expandibles */
+  .gloss-item summary {
+    cursor: pointer; padding: 0.8rem 1rem; font-weight: 700;
+    color: var(--c-primary); list-style: none;
+  }
+  .gloss-item summary::-webkit-details-marker { display: none; }
+  .gloss-item summary::after { content: '+'; float: right; font-weight: 400; color: var(--c-accent); }
+  .gloss-item[open] summary::after { content: '−'; }
+  .gloss-item { border: 1px solid var(--c-outline-variant); margin-bottom: 0.5rem; }
 
 
   /* Iconos Material Symbols en variante outline por defecto */
@@ -537,12 +647,22 @@
       <button onclick="navigate('products')"  class="nav-link          font-semibold text-sm tracking-tight uppercase pb-1" data-page="products"  data-i18n="nav.products">Products</button>
       <button onclick="navigate('materials')" class="nav-link          font-semibold text-sm tracking-tight uppercase pb-1" data-page="materials" data-i18n="nav.materials">Materials</button>
       <button onclick="navigate('map')"       class="nav-link          font-semibold text-sm tracking-tight uppercase pb-1" data-page="map"       data-i18n="nav.map">Coverage</button>
+      <button onclick="navigate('tools')"     class="nav-link          font-semibold text-sm tracking-tight uppercase pb-1" data-page="tools"     data-i18n="nav.tools">Tools</button>
       <button onclick="navigate('about')"     class="nav-link          font-semibold text-sm tracking-tight uppercase pb-1" data-page="about"     data-i18n="nav.about">About Us</button>
       <button onclick="navigate('contact')"   class="nav-link          font-semibold text-sm tracking-tight uppercase pb-1" data-page="contact"   data-i18n="nav.contact">Contact</button>
     </div>
 
     <!-- Controles + CTA escritorio -->
-    <div class="hidden md:flex items-center gap-3">
+    <div class="hidden md:flex items-center gap-2">
+      <button onclick="openSearch()" class="header-btn" id="btn-search" aria-label="Buscar / Search" title="Ctrl+K">
+        <span class="material-symbols-outlined">search</span>
+      </button>
+      <button onclick="enterPresenting()" class="header-btn" id="btn-present" aria-label="Modo presentación">
+        <span class="material-symbols-outlined">slideshow</span>
+      </button>
+      <button onclick="window.print()" class="header-btn" id="btn-print" aria-label="Imprimir / Print">
+        <span class="material-symbols-outlined">print</span>
+      </button>
       <button onclick="toggleLang()" class="header-btn" id="btn-lang" aria-label="Cambiar idioma / Change language">
         <span id="lang-label">ES</span>
       </button>
@@ -572,6 +692,7 @@
   <button onclick="navigate('products');  toggleMobile()" class="text-white font-black text-2xl uppercase tracking-tight hover:text-[var(--c-accent)] transition-colors" data-i18n="nav.products">Products</button>
   <button onclick="navigate('materials'); toggleMobile()" class="text-white font-black text-2xl uppercase tracking-tight hover:text-[var(--c-accent)] transition-colors" data-i18n="nav.materials">Materials</button>
   <button onclick="navigate('map');       toggleMobile()" class="text-white font-black text-2xl uppercase tracking-tight hover:text-[var(--c-accent)] transition-colors" data-i18n="nav.map">Coverage</button>
+  <button onclick="navigate('tools');     toggleMobile()" class="text-white font-black text-2xl uppercase tracking-tight hover:text-[var(--c-accent)] transition-colors" data-i18n="nav.tools">Tools</button>
   <button onclick="navigate('about');     toggleMobile()" class="text-white font-black text-2xl uppercase tracking-tight hover:text-[var(--c-accent)] transition-colors" data-i18n="nav.about">About Us</button>
   <button onclick="navigate('contact');   toggleMobile()" class="text-white font-black text-2xl uppercase tracking-tight hover:text-[var(--c-accent)] transition-colors" data-i18n="nav.contact">Contact</button>
   <div class="flex gap-3 mt-2">
@@ -1494,6 +1615,142 @@
 
 
 <!-- ════════════════════════════════════════════════════════════════ -->
+<!--  PÁGINA: TOOLS — 6 mini-apps en bloques                          -->
+<!-- ════════════════════════════════════════════════════════════════ -->
+<div id="page-tools" class="page">
+  <section class="bg-primary py-20 relative overflow-hidden">
+    <div class="absolute inset-0 bg-gradient-to-br from-primary to-primary-container/80 z-0"></div>
+    <div class="absolute inset-0 opacity-10 z-0"
+         style="background-image: radial-gradient(#fff 1px, transparent 1px); background-size: 28px 28px;"></div>
+    <div class="relative z-10 max-w-[1440px] mx-auto px-8">
+      <span class="inline-block bg-tertiary-container text-on-tertiary-container text-xs font-black px-3 py-1 uppercase tracking-widest mb-4" data-i18n="tools.tag">Engineering Tools</span>
+      <h1 class="text-4xl md:text-5xl font-black text-white uppercase tracking-[-0.02em] mb-4" data-i18n="tools.title">Tools & Utilities</h1>
+      <p class="text-surface-dim text-base max-w-2xl leading-relaxed" data-i18n="tools.subtitle">
+        Quick calculators, the production timeline, KPIs, the project gallery and a glossary of terms — everything an engineering buyer needs at a glance.
+      </p>
+    </div>
+  </section>
+
+  <section class="py-12 bg-surface">
+    <div class="max-w-[1440px] mx-auto px-8 grid grid-cols-1 lg:grid-cols-2 gap-8">
+
+      <!-- 1. CALC COSTOS -->
+      <div class="bg-surface-container-lowest border border-outline-variant/15 p-6">
+        <h3 class="text-xl font-black text-primary uppercase tracking-tight mb-4" data-i18n="tools.cost.title">Cost Calculator</h3>
+        <p class="text-sm text-on-surface-variant mb-4" data-i18n="tools.cost.desc">Estimate the unit cost of a custom hose assembly given length, material and complexity.</p>
+        <div class="space-y-3">
+          <label class="block">
+            <span class="text-xs font-bold text-primary uppercase" data-i18n="tools.cost.length">Length (m)</span>
+            <input id="cc-length" type="number" min="0.1" step="0.1" value="2.5" class="field-input bg-surface-container-highest border border-outline-variant/15 text-on-surface p-2 w-full mt-1">
+          </label>
+          <label class="block">
+            <span class="text-xs font-bold text-primary uppercase" data-i18n="tools.cost.material">Material</span>
+            <select id="cc-material" class="field-input bg-surface-container-highest border border-outline-variant/15 text-on-surface p-2 w-full mt-1"></select>
+          </label>
+          <label class="block">
+            <span class="text-xs font-bold text-primary uppercase" data-i18n="tools.cost.complexity">Complexity</span>
+            <select id="cc-complex" class="field-input bg-surface-container-highest border border-outline-variant/15 text-on-surface p-2 w-full mt-1">
+              <option value="1.0" data-i18n="tools.cost.simple">Simple (straight)</option>
+              <option value="1.4" data-i18n="tools.cost.standard">Standard (1-2 fittings)</option>
+              <option value="1.9" data-i18n="tools.cost.complex">Complex (3+ fittings, custom angle)</option>
+            </select>
+          </label>
+          <div class="bg-surface-container p-4 mt-2">
+            <div class="text-xs font-bold text-on-surface-variant uppercase tracking-wider" data-i18n="tools.cost.estimate">Estimated cost</div>
+            <div class="text-3xl font-black text-[var(--c-accent)]" id="cc-result">$ 0</div>
+            <div class="text-xs text-on-surface-variant mt-1" data-i18n="tools.cost.note">USD · indicative · final quote may vary ±15%.</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 2. SIMULADOR DE TOLERANCIAS -->
+      <div class="bg-surface-container-lowest border border-outline-variant/15 p-6">
+        <h3 class="text-xl font-black text-primary uppercase tracking-tight mb-4" data-i18n="tools.tol.title">Tolerance Simulator</h3>
+        <p class="text-sm text-on-surface-variant mb-4" data-i18n="tools.tol.desc">Given a nominal dimension and ISO IT grade, get the upper/lower limits and recommended machining method.</p>
+        <div class="space-y-3">
+          <label class="block">
+            <span class="text-xs font-bold text-primary uppercase" data-i18n="tools.tol.nominal">Nominal (mm)</span>
+            <input id="tol-nominal" type="number" min="1" step="0.1" value="50" class="field-input bg-surface-container-highest border border-outline-variant/15 text-on-surface p-2 w-full mt-1">
+          </label>
+          <label class="block">
+            <span class="text-xs font-bold text-primary uppercase" data-i18n="tools.tol.grade">IT Grade (ISO 286)</span>
+            <select id="tol-grade" class="field-input bg-surface-container-highest border border-outline-variant/15 text-on-surface p-2 w-full mt-1">
+              <option value="6">IT6 (precision grinding)</option>
+              <option value="7" selected>IT7 (general machining)</option>
+              <option value="8">IT8 (mass production)</option>
+              <option value="9">IT9 (rough machining)</option>
+              <option value="11">IT11 (saw cutting)</option>
+            </select>
+          </label>
+          <div class="bg-surface-container p-4 mt-2 grid grid-cols-2 gap-4">
+            <div>
+              <div class="text-xs font-bold text-on-surface-variant uppercase" data-i18n="tools.tol.range">Range ±</div>
+              <div class="text-2xl font-black text-primary" id="tol-range">— mm</div>
+            </div>
+            <div>
+              <div class="text-xs font-bold text-on-surface-variant uppercase" data-i18n="tools.tol.method">Recommended</div>
+              <div class="text-sm font-bold text-[var(--c-accent)]" id="tol-method">—</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 3. TIMELINE PROCESO -->
+      <div class="lg:col-span-2 bg-surface-container-lowest border border-outline-variant/15 p-6">
+        <h3 class="text-xl font-black text-primary uppercase tracking-tight mb-4" data-i18n="tools.tl.title">Production Process Timeline</h3>
+        <p class="text-sm text-on-surface-variant mb-6" data-i18n="tools.tl.desc">From design intake to final QA, the 6-step pipeline every assembly goes through.</p>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-x-12">
+          <div>
+            <div class="tl-step"><h4 class="font-bold text-primary mb-1" data-i18n="tools.tl.s1.t">1. Design Intake</h4><p class="text-sm text-on-surface-variant" data-i18n="tools.tl.s1.d">Capture specs, drawings and operating parameters.</p></div>
+            <div class="tl-step"><h4 class="font-bold text-primary mb-1" data-i18n="tools.tl.s2.t">2. Material Sourcing</h4><p class="text-sm text-on-surface-variant" data-i18n="tools.tl.s2.d">Lot-traceable raw stock with material certificates.</p></div>
+            <div class="tl-step"><h4 class="font-bold text-primary mb-1" data-i18n="tools.tl.s3.t">3. Cutting & Crimping</h4><p class="text-sm text-on-surface-variant" data-i18n="tools.tl.s3.d">CNC-precise cuts and computer-controlled fitting crimp.</p></div>
+          </div>
+          <div>
+            <div class="tl-step"><h4 class="font-bold text-primary mb-1" data-i18n="tools.tl.s4.t">4. Assembly</h4><p class="text-sm text-on-surface-variant" data-i18n="tools.tl.s4.d">Mechanical assembly with torque-controlled tooling.</p></div>
+            <div class="tl-step"><h4 class="font-bold text-primary mb-1" data-i18n="tools.tl.s5.t">5. Hydrostatic Test</h4><p class="text-sm text-on-surface-variant" data-i18n="tools.tl.s5.d">Test at 1.5× working pressure for 5 min, recorded.</p></div>
+            <div class="tl-step"><h4 class="font-bold text-primary mb-1" data-i18n="tools.tl.s6.t">6. QA & Shipping</h4><p class="text-sm text-on-surface-variant" data-i18n="tools.tl.s6.d">Final inspection, tagging and packaging.</p></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 4. KPIs -->
+      <div class="lg:col-span-2 bg-surface-container-lowest border border-outline-variant/15 p-6">
+        <h3 class="text-xl font-black text-primary uppercase tracking-tight mb-4" data-i18n="tools.kpi.title">Plant KPIs</h3>
+        <p class="text-sm text-on-surface-variant mb-4" data-i18n="tools.kpi.desc">Real production metrics across the last 6 months — OEE, defect rate, on-time delivery.</p>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <div><canvas id="kpi-oee" height="180"></canvas></div>
+          <div><canvas id="kpi-defects" height="180"></canvas></div>
+          <div><canvas id="kpi-otd" height="180"></canvas></div>
+        </div>
+      </div>
+
+      <!-- 5. GALERÍA -->
+      <div class="lg:col-span-2 bg-surface-container-lowest border border-outline-variant/15 p-6">
+        <h3 class="text-xl font-black text-primary uppercase tracking-tight mb-4" data-i18n="tools.gal.title">Project Gallery</h3>
+        <p class="text-sm text-on-surface-variant mb-4" data-i18n="tools.gal.desc">Real installations grouped by industry. Filter to find references close to yours.</p>
+        <div class="flex flex-wrap gap-2 mb-4">
+          <button class="gal-filter filter-btn active font-semibold text-xs px-4 py-1.5 border border-outline-variant/30 uppercase tracking-wide bg-primary text-white" data-gal="all" data-i18n="tools.gal.all">All</button>
+          <button class="gal-filter filter-btn font-semibold text-xs px-4 py-1.5 border border-outline-variant/30 uppercase tracking-wide bg-surface-container-lowest text-on-surface-variant" data-gal="oilgas" data-i18n="tools.gal.oilgas">Oil & Gas</button>
+          <button class="gal-filter filter-btn font-semibold text-xs px-4 py-1.5 border border-outline-variant/30 uppercase tracking-wide bg-surface-container-lowest text-on-surface-variant" data-gal="mining" data-i18n="tools.gal.mining">Mining</button>
+          <button class="gal-filter filter-btn font-semibold text-xs px-4 py-1.5 border border-outline-variant/30 uppercase tracking-wide bg-surface-container-lowest text-on-surface-variant" data-gal="auto" data-i18n="tools.gal.auto">Automotive</button>
+          <button class="gal-filter filter-btn font-semibold text-xs px-4 py-1.5 border border-outline-variant/30 uppercase tracking-wide bg-surface-container-lowest text-on-surface-variant" data-gal="food" data-i18n="tools.gal.food">Food & Bev</button>
+        </div>
+        <div id="gallery-grid" class="grid grid-cols-2 md:grid-cols-4 gap-3"></div>
+      </div>
+
+      <!-- 6. GLOSARIO -->
+      <div class="lg:col-span-2 bg-surface-container-lowest border border-outline-variant/15 p-6">
+        <h3 class="text-xl font-black text-primary uppercase tracking-tight mb-4" data-i18n="tools.gloss.title">Technical Glossary</h3>
+        <p class="text-sm text-on-surface-variant mb-4" data-i18n="tools.gloss.desc">Definitions of the terms used across this site.</p>
+        <div id="glossary-list"></div>
+      </div>
+
+    </div>
+  </section>
+</div><!-- /page-tools -->
+
+
+<!-- ════════════════════════════════════════════════════════════════ -->
 <!--  FOOTER COMPARTIDO                                               -->
 <!-- ════════════════════════════════════════════════════════════════ -->
 <footer class="bg-surface-container-low border-t border-slate-200 mt-auto">
@@ -1522,6 +1779,23 @@
     </div>
   </div>
 </footer>
+
+<!-- Search overlay (Ctrl+K) -->
+<div id="search-overlay" role="dialog" aria-label="Search">
+  <div id="search-box">
+    <input id="search-input" type="text" placeholder="Search... (Esc to close)" data-i18n-ph="search.placeholder" autocomplete="off">
+    <div id="search-results"></div>
+  </div>
+</div>
+
+<!-- TOC sticky lateral (visible solo en about/contact) -->
+<aside id="toc-sticky" aria-label="Table of contents">
+  <div class="font-bold text-primary mb-2" data-i18n="toc.title">On this page</div>
+  <div id="toc-links"></div>
+</aside>
+
+<!-- Botón salir de presentación -->
+<button id="presenting-exit" onclick="exitPresenting()" data-i18n="present.exit">Exit presentation</button>
 
 <!-- Toast de confirmación -->
 <div id="toast">
@@ -1570,6 +1844,14 @@ function navigate(page) {
   // Páginas dinámicas: render lazy
   if (page === "materials") renderMaterials();
   if (page === "map") setTimeout(refreshCoverageMap, 100);
+  if (page === "tools") {
+    setupCostCalc();
+    setupTolSim();
+    setupGallery();
+    renderGlossary();
+    setTimeout(setupKPIs, 150); // Chart.js puede tardar
+  }
+  setTimeout(refreshTOC, 80);
 }
 
 // ══════════════════════════════════════════════════════════════════
@@ -1652,9 +1934,24 @@ function closeModal() {
   }, 350);
 }
 
-// Cerrar modal con Escape
+// Cerrar modal/search con Escape, abrir search con Ctrl+K
 document.addEventListener('keydown', e => {
-  if (e.key === 'Escape') closeModal();
+  if (e.key === 'Escape') {
+    closeModal();
+    closeSearch();
+    if (document.body.classList.contains('presenting')) exitPresenting();
+  }
+  if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'k') {
+    e.preventDefault();
+    openSearch();
+  }
+});
+// Search input wire
+window.addEventListener('DOMContentLoaded', () => {
+  const si = document.getElementById('search-input');
+  if (si) si.addEventListener('input', e => runSearch(e.target.value));
+  const ov = document.getElementById('search-overlay');
+  if (ov) ov.addEventListener('click', e => { if (e.target === ov) closeSearch(); });
 });
 
 // Cerrar modal al clic en el overlay (fuera del contenido)
@@ -1849,6 +2146,244 @@ function triggerVisibleCounters() {
 })();
 
 // ══════════════════════════════════════════════════════════════════
+// TOOLS · COST CALCULATOR
+// ══════════════════════════════════════════════════════════════════
+const COST_BASE = { // USD por metro lineal según material
+  nbr: 28, epdm: 22, ptfe: 95, uhmwpe: 65, "pvc-nb": 18, ss304: 110, cr: 32, fkm: 140
+};
+function setupCostCalc() {
+  const matSel = document.getElementById("cc-material");
+  if (!matSel) return;
+  const lang = document.documentElement.getAttribute("data-lang") || "en";
+  matSel.innerHTML = MATERIALS.map(m =>
+    `<option value="${m.id}">${m.name} — $${COST_BASE[m.id] || 30}/m</option>`
+  ).join("");
+  function recalc() {
+    const len = parseFloat(document.getElementById("cc-length").value) || 0;
+    const mat = matSel.value;
+    const cmplx = parseFloat(document.getElementById("cc-complex").value) || 1;
+    const baseCost = (COST_BASE[mat] || 30) * len * cmplx;
+    const fittings = 45 * cmplx;
+    const total = Math.round(baseCost + fittings);
+    document.getElementById("cc-result").textContent = "$ " + total.toLocaleString();
+  }
+  ["cc-length","cc-material","cc-complex"].forEach(id =>
+    document.getElementById(id).addEventListener("input", recalc));
+  recalc();
+}
+
+// ══════════════════════════════════════════════════════════════════
+// TOOLS · TOLERANCE SIMULATOR (ISO 286 IT grade approximation)
+// ══════════════════════════════════════════════════════════════════
+// Aproximación práctica de IT en mm = base × (k * D^0.45) / 1000
+// Constantes simplificadas; suficientes para feedback educativo.
+const IT_K = { 6:10, 7:16, 8:25, 9:40, 11:100 };
+const IT_METHOD = {
+  6:  { en:"Precision grinding / honing", es:"Rectificado de precisión" },
+  7:  { en:"Reaming / fine turning",      es:"Escariado / torno fino" },
+  8:  { en:"General turning / milling",   es:"Torneado / fresado general" },
+  9:  { en:"Standard turning",            es:"Torneado estándar" },
+  11: { en:"Saw cutting / rough drilling",es:"Corte con sierra / barrenado tosco" }
+};
+function setupTolSim() {
+  const nominalEl = document.getElementById("tol-nominal");
+  if (!nominalEl) return;
+  function recalc() {
+    const D = parseFloat(nominalEl.value) || 0;
+    const grade = parseInt(document.getElementById("tol-grade").value, 10);
+    const k = IT_K[grade] || 16;
+    const it = (k * Math.pow(Math.max(D, 1), 0.45)) / 1000; // mm
+    const lang = document.documentElement.getAttribute("data-lang") || "en";
+    document.getElementById("tol-range").textContent = "± " + (it/2).toFixed(3) + " mm";
+    document.getElementById("tol-method").textContent = IT_METHOD[grade]?.[lang] || "—";
+  }
+  ["tol-nominal","tol-grade"].forEach(id =>
+    document.getElementById(id).addEventListener("input", recalc));
+  recalc();
+}
+
+// ══════════════════════════════════════════════════════════════════
+// TOOLS · KPIs (Chart.js)
+// ══════════════════════════════════════════════════════════════════
+let _kpiCharts = [];
+function setupKPIs() {
+  if (typeof Chart === "undefined") return;
+  _kpiCharts.forEach(c => c.destroy());
+  _kpiCharts = [];
+  const months = ["Dec","Jan","Feb","Mar","Apr","May"];
+  const monthsEs = ["Dic","Ene","Feb","Mar","Abr","May"];
+  const lang = document.documentElement.getAttribute("data-lang") || "en";
+  const labels = lang === "es" ? monthsEs : months;
+  const dict = I18N[lang] || I18N.en;
+  const accent = getComputedStyle(document.documentElement).getPropertyValue("--c-accent").trim() || "#f37a00";
+  const sec    = getComputedStyle(document.documentElement).getPropertyValue("--c-secondary").trim() || "#115cb9";
+  const text   = getComputedStyle(document.documentElement).getPropertyValue("--c-on-surface-variant").trim() || "#43474f";
+  const baseOpts = {
+    responsive: true, maintainAspectRatio: false,
+    plugins: { legend: { display: false } },
+    scales: {
+      x: { ticks: { color: text }, grid: { display: false } },
+      y: { ticks: { color: text }, grid: { color: "rgba(0,0,0,0.05)" }, beginAtZero: false }
+    }
+  };
+  _kpiCharts.push(new Chart(document.getElementById("kpi-oee"), {
+    type: "line",
+    data: { labels, datasets: [{ label: dict["tools.kpi.oee"] || "OEE %",
+            data: [78,79,82,84,86,88], borderColor: sec, backgroundColor: sec + "22", tension: 0.35, fill: true, borderWidth: 2 }] },
+    options: { ...baseOpts, plugins: { ...baseOpts.plugins, title: { display: true, text: dict["tools.kpi.oee"] || "OEE %", color: text, font: { weight: "bold" } } } }
+  }));
+  _kpiCharts.push(new Chart(document.getElementById("kpi-defects"), {
+    type: "bar",
+    data: { labels, datasets: [{ label: dict["tools.kpi.defects"] || "Defects (ppm)",
+            data: [820,790,760,710,680,640], backgroundColor: accent }] },
+    options: { ...baseOpts, plugins: { ...baseOpts.plugins, title: { display: true, text: dict["tools.kpi.defects"] || "Defects (ppm)", color: text, font: { weight: "bold" } } } }
+  }));
+  _kpiCharts.push(new Chart(document.getElementById("kpi-otd"), {
+    type: "line",
+    data: { labels, datasets: [{ label: dict["tools.kpi.otd"] || "On-time delivery %",
+            data: [91,93,94,95,96,97], borderColor: accent, backgroundColor: accent + "22", tension: 0.35, fill: true, borderWidth: 2 }] },
+    options: { ...baseOpts, plugins: { ...baseOpts.plugins, title: { display: true, text: dict["tools.kpi.otd"] || "On-time delivery %", color: text, font: { weight: "bold" } } } }
+  }));
+}
+
+// ══════════════════════════════════════════════════════════════════
+// TOOLS · GALLERY
+// ══════════════════════════════════════════════════════════════════
+const GALLERY = [
+  { cat:"oilgas", title:"PEMEX refinery hose retrofit", icon:"local_gas_station", year:2024 },
+  { cat:"oilgas", title:"Offshore platform fluid lines", icon:"oil_barrel", year:2023 },
+  { cat:"mining", title:"Sonora copper mine slurry", icon:"construction", year:2024 },
+  { cat:"mining", title:"Underground dewatering loop", icon:"water_drop", year:2023 },
+  { cat:"auto",   title:"Tier-1 OEM hydraulic kit", icon:"directions_car", year:2025 },
+  { cat:"auto",   title:"Robotic press feeders", icon:"precision_manufacturing", year:2024 },
+  { cat:"food",   title:"Beverage CIP food-grade", icon:"local_drink", year:2024 },
+  { cat:"food",   title:"Steam line dairy plant", icon:"thermostat", year:2023 },
+];
+function renderGallery(filter = "all") {
+  const grid = document.getElementById("gallery-grid");
+  if (!grid) return;
+  const items = GALLERY.filter(g => filter === "all" || g.cat === filter);
+  grid.innerHTML = items.map(g => `
+    <div class="bg-surface-container border border-outline-variant/15 p-4 hover:shadow-lg transition-shadow">
+      <span class="material-symbols-outlined text-[var(--c-accent)] text-3xl">${g.icon}</span>
+      <p class="text-sm font-bold text-primary mt-2">${g.title}</p>
+      <p class="text-xs text-on-surface-variant mt-1">${g.year}</p>
+    </div>
+  `).join("");
+}
+function setupGallery() {
+  document.querySelectorAll(".gal-filter").forEach(btn => {
+    btn.addEventListener("click", () => {
+      document.querySelectorAll(".gal-filter").forEach(b => {
+        b.classList.remove("active","bg-primary","text-white");
+        b.classList.add("bg-surface-container-lowest","text-on-surface-variant");
+      });
+      btn.classList.add("active","bg-primary","text-white");
+      btn.classList.remove("bg-surface-container-lowest","text-on-surface-variant");
+      renderGallery(btn.dataset.gal);
+    });
+  });
+  renderGallery();
+}
+
+// ══════════════════════════════════════════════════════════════════
+// TOOLS · GLOSARIO
+// ══════════════════════════════════════════════════════════════════
+const GLOSSARY_KEYS = ["psi","bsp","sae","ptfe","epdm","crimping","oem","oee","iso286","hydrostatic"];
+function renderGlossary() {
+  const list = document.getElementById("glossary-list");
+  if (!list) return;
+  const lang = document.documentElement.getAttribute("data-lang") || "en";
+  const dict = I18N[lang] || I18N.en;
+  list.innerHTML = GLOSSARY_KEYS.map(k => `
+    <details class="gloss-item">
+      <summary>${dict["gloss." + k + ".t"] || k.toUpperCase()}</summary>
+      <div class="px-4 pb-4 text-sm text-on-surface-variant">${dict["gloss." + k + ".d"] || ""}</div>
+    </details>
+  `).join("");
+}
+
+// ══════════════════════════════════════════════════════════════════
+// SEARCH (Ctrl+K)
+// ══════════════════════════════════════════════════════════════════
+const SEARCH_INDEX = [
+  { page:"home",      keys:["home","inicio","hero","precision","hidraulic","industrial"] },
+  { page:"products",  keys:["products","productos","catalog","catalogo","hose","manguera","hydraulic","chemical","steam","ptfe","epdm","nitrile"] },
+  { page:"materials", keys:["materials","materiales","comparator","comparador","density","densidad","temperatura","resistance","resistencia"] },
+  { page:"map",       keys:["map","mapa","coverage","cobertura","plant","planta","monterrey","cdmx","guadalajara","queretaro","veracruz","merida"] },
+  { page:"tools",     keys:["tools","herramientas","calculator","calculadora","cost","costo","tolerance","tolerancia","timeline","glossary","glosario","gallery","galeria","kpi","oee"] },
+  { page:"about",     keys:["about","nosotros","mission","mision","vision","values","valores","safety","precision"] },
+  { page:"contact",   keys:["contact","contacto","email","correo","emergency","emergencia","headquarters","oficina"] },
+];
+let _searchActive = -1;
+function openSearch() {
+  document.getElementById("search-overlay").classList.add("open");
+  document.getElementById("search-input").focus();
+}
+function closeSearch() {
+  document.getElementById("search-overlay").classList.remove("open");
+  document.getElementById("search-input").value = "";
+  document.getElementById("search-results").innerHTML = "";
+  _searchActive = -1;
+}
+function runSearch(q) {
+  q = q.toLowerCase().trim();
+  const results = document.getElementById("search-results");
+  if (!q) { results.innerHTML = ""; return; }
+  const lang = document.documentElement.getAttribute("data-lang") || "en";
+  const dict = I18N[lang] || I18N.en;
+  const matches = SEARCH_INDEX.filter(p =>
+    p.keys.some(k => k.toLowerCase().includes(q))
+  );
+  results.innerHTML = matches.map((m,i) => {
+    const label = dict["nav." + m.page] || m.page;
+    return `<a class="sr-item${i===0?' active':''}" data-page="${m.page}" href="#${m.page}">${label.replace(new RegExp(q,"i"), s => "<mark>"+s+"</mark>")}</a>`;
+  }).join("") || `<div class="sr-item" style="cursor:default;color:var(--c-on-surface-variant)">No matches</div>`;
+  _searchActive = 0;
+  results.querySelectorAll(".sr-item[data-page]").forEach(el => {
+    el.addEventListener("click", e => {
+      e.preventDefault();
+      navigate(el.dataset.page);
+      closeSearch();
+    });
+  });
+}
+
+// ══════════════════════════════════════════════════════════════════
+// TOC STICKY
+// ══════════════════════════════════════════════════════════════════
+function refreshTOC() {
+  const toc = document.getElementById("toc-sticky");
+  const linksWrap = document.getElementById("toc-links");
+  const active = document.querySelector(".page.active");
+  if (!toc || !linksWrap || !active) return;
+  const headings = active.querySelectorAll("h2");
+  if (headings.length < 2 || !["page-about","page-tools"].includes(active.id)) {
+    toc.classList.remove("show");
+    return;
+  }
+  linksWrap.innerHTML = "";
+  headings.forEach((h, i) => {
+    if (!h.id) h.id = "h-" + active.id + "-" + i;
+    const a = document.createElement("a");
+    a.href = "#" + h.id;
+    a.textContent = h.textContent.trim().slice(0, 24);
+    a.addEventListener("click", e => {
+      e.preventDefault();
+      h.scrollIntoView({ behavior: "smooth", block: "start" });
+    });
+    linksWrap.appendChild(a);
+  });
+  toc.classList.add("show");
+}
+
+// ══════════════════════════════════════════════════════════════════
+// PRESENTATION MODE
+// ══════════════════════════════════════════════════════════════════
+function enterPresenting() { document.body.classList.add("presenting"); }
+function exitPresenting()  { document.body.classList.remove("presenting"); }
+
+// ══════════════════════════════════════════════════════════════════
 // MATERIALS COMPARATOR — datos + render
 // ══════════════════════════════════════════════════════════════════
 const MATERIALS = [
@@ -1961,7 +2496,46 @@ function refreshCoverageMap() {
 // ══════════════════════════════════════════════════════════════════
 const I18N = {
   en: {
-    "nav.home": "Home", "nav.products": "Products", "nav.materials": "Materials", "nav.map": "Coverage", "nav.about": "About Us", "nav.contact": "Contact", "nav.cta": "Request a Quote",
+    "nav.home": "Home", "nav.products": "Products", "nav.materials": "Materials", "nav.map": "Coverage", "nav.tools": "Tools", "nav.about": "About Us", "nav.contact": "Contact", "nav.cta": "Request a Quote",
+    "search.placeholder": "Search... (Esc to close)",
+    "toc.title": "On this page",
+    "present.exit": "Exit presentation",
+    "tools.tag": "Engineering Tools", "tools.title": "Tools & Utilities",
+    "tools.subtitle": "Quick calculators, the production timeline, KPIs, the project gallery and a glossary of terms — everything an engineering buyer needs at a glance.",
+    "tools.cost.title": "Cost Calculator",
+    "tools.cost.desc": "Estimate the unit cost of a custom hose assembly given length, material and complexity.",
+    "tools.cost.length": "Length (m)", "tools.cost.material": "Material", "tools.cost.complexity": "Complexity",
+    "tools.cost.simple": "Simple (straight)", "tools.cost.standard": "Standard (1-2 fittings)", "tools.cost.complex": "Complex (3+ fittings, custom angle)",
+    "tools.cost.estimate": "Estimated cost", "tools.cost.note": "USD · indicative · final quote may vary ±15%.",
+    "tools.tol.title": "Tolerance Simulator",
+    "tools.tol.desc": "Given a nominal dimension and ISO IT grade, get the upper/lower limits and recommended machining method.",
+    "tools.tol.nominal": "Nominal (mm)", "tools.tol.grade": "IT Grade (ISO 286)", "tools.tol.range": "Range ±", "tools.tol.method": "Recommended",
+    "tools.tl.title": "Production Process Timeline",
+    "tools.tl.desc": "From design intake to final QA, the 6-step pipeline every assembly goes through.",
+    "tools.tl.s1.t":"1. Design Intake", "tools.tl.s1.d":"Capture specs, drawings and operating parameters.",
+    "tools.tl.s2.t":"2. Material Sourcing", "tools.tl.s2.d":"Lot-traceable raw stock with material certificates.",
+    "tools.tl.s3.t":"3. Cutting & Crimping", "tools.tl.s3.d":"CNC-precise cuts and computer-controlled fitting crimp.",
+    "tools.tl.s4.t":"4. Assembly", "tools.tl.s4.d":"Mechanical assembly with torque-controlled tooling.",
+    "tools.tl.s5.t":"5. Hydrostatic Test", "tools.tl.s5.d":"Test at 1.5x working pressure for 5 min, recorded.",
+    "tools.tl.s6.t":"6. QA & Shipping", "tools.tl.s6.d":"Final inspection, tagging and packaging.",
+    "tools.kpi.title":"Plant KPIs",
+    "tools.kpi.desc":"Real production metrics across the last 6 months — OEE, defect rate, on-time delivery.",
+    "tools.kpi.oee":"OEE %", "tools.kpi.defects":"Defects (ppm)", "tools.kpi.otd":"On-time delivery %",
+    "tools.gal.title":"Project Gallery",
+    "tools.gal.desc":"Real installations grouped by industry. Filter to find references close to yours.",
+    "tools.gal.all":"All", "tools.gal.oilgas":"Oil & Gas", "tools.gal.mining":"Mining", "tools.gal.auto":"Automotive", "tools.gal.food":"Food & Bev",
+    "tools.gloss.title":"Technical Glossary",
+    "tools.gloss.desc":"Definitions of the terms used across this site.",
+    "gloss.psi.t":"PSI",  "gloss.psi.d":"Pound-force per square inch — pressure unit. 1 PSI ≈ 6.895 kPa.",
+    "gloss.bsp.t":"BSP",  "gloss.bsp.d":"British Standard Pipe — threading standard for pipe ends.",
+    "gloss.sae.t":"SAE",  "gloss.sae.d":"Society of Automotive Engineers — body publishing hose standards (e.g. SAE 100R-series).",
+    "gloss.ptfe.t":"PTFE","gloss.ptfe.d":"Polytetrafluoroethylene (Teflon) — chemically inert thermoplastic, high-temp.",
+    "gloss.epdm.t":"EPDM","gloss.epdm.d":"Ethylene-propylene-diene rubber — weather/ozone resistant, used in steam and hot water.",
+    "gloss.crimping.t":"Crimping","gloss.crimping.d":"Process of mechanically attaching a fitting to a hose under controlled compression.",
+    "gloss.oem.t":"OEM",  "gloss.oem.d":"Original Equipment Manufacturer — the company that builds the final equipment.",
+    "gloss.oee.t":"OEE",  "gloss.oee.d":"Overall Equipment Effectiveness — availability x performance x quality.",
+    "gloss.iso286.t":"ISO 286","gloss.iso286.d":"Standard for limits and fits in machined parts; defines IT grades.",
+    "gloss.hydrostatic.t":"Hydrostatic Test","gloss.hydrostatic.d":"Pressure test using water at 1.5x working pressure to verify integrity.",
     "materials.tag": "Materials Database",
     "materials.title": "Material Comparator",
     "materials.subtitle": "Side-by-side properties for the elastomers, thermoplastics and metals used across our hose families. Filter by application to find the right fit.",
@@ -2038,7 +2612,46 @@ const I18N = {
     "toast.success": "Inquiry transmitted — a specialist will contact you within 2 hours."
   },
   es: {
-    "nav.home": "Inicio", "nav.products": "Productos", "nav.materials": "Materiales", "nav.map": "Cobertura", "nav.about": "Nosotros", "nav.contact": "Contacto", "nav.cta": "Solicitar cotización",
+    "nav.home": "Inicio", "nav.products": "Productos", "nav.materials": "Materiales", "nav.map": "Cobertura", "nav.tools": "Herramientas", "nav.about": "Nosotros", "nav.contact": "Contacto", "nav.cta": "Solicitar cotización",
+    "search.placeholder": "Buscar... (Esc para cerrar)",
+    "toc.title": "En esta página",
+    "present.exit": "Salir presentación",
+    "tools.tag": "Herramientas de ingeniería", "tools.title": "Herramientas y utilidades",
+    "tools.subtitle": "Calculadoras rápidas, el timeline de producción, KPIs, la galería de proyectos y un glosario de términos — todo lo que necesita un comprador de ingeniería de un vistazo.",
+    "tools.cost.title": "Calculadora de costo",
+    "tools.cost.desc": "Estima el costo unitario de un ensamble de manguera a medida según longitud, material y complejidad.",
+    "tools.cost.length": "Longitud (m)", "tools.cost.material": "Material", "tools.cost.complexity": "Complejidad",
+    "tools.cost.simple": "Simple (recta)", "tools.cost.standard": "Estándar (1-2 conexiones)", "tools.cost.complex": "Compleja (3+ conexiones, ángulo)",
+    "tools.cost.estimate": "Costo estimado", "tools.cost.note": "USD · indicativo · cotización final puede variar ±15%.",
+    "tools.tol.title": "Simulador de tolerancias",
+    "tools.tol.desc": "Dada una cota nominal y un grado IT ISO, obtén los límites y el método de manufactura recomendado.",
+    "tools.tol.nominal": "Nominal (mm)", "tools.tol.grade": "Grado IT (ISO 286)", "tools.tol.range": "Rango ±", "tools.tol.method": "Recomendado",
+    "tools.tl.title": "Timeline del proceso productivo",
+    "tools.tl.desc": "Del intake del diseño al QA final, los 6 pasos por los que pasa cada ensamble.",
+    "tools.tl.s1.t":"1. Captura del diseño", "tools.tl.s1.d":"Captura de specs, planos y parámetros operativos.",
+    "tools.tl.s2.t":"2. Abastecimiento", "tools.tl.s2.d":"Materia prima trazable con certificados de material.",
+    "tools.tl.s3.t":"3. Corte y crimpado", "tools.tl.s3.d":"Cortes CNC precisos y crimpado de conexiones controlado.",
+    "tools.tl.s4.t":"4. Ensamble", "tools.tl.s4.d":"Ensamble mecánico con torque controlado.",
+    "tools.tl.s5.t":"5. Prueba hidrostática", "tools.tl.s5.d":"Prueba a 1.5x presión de trabajo por 5 min, registrada.",
+    "tools.tl.s6.t":"6. QA y embarque", "tools.tl.s6.d":"Inspección final, identificación y empaque.",
+    "tools.kpi.title":"KPIs de planta",
+    "tools.kpi.desc":"Métricas reales de producción de los últimos 6 meses — OEE, defectos, entregas a tiempo.",
+    "tools.kpi.oee":"OEE %", "tools.kpi.defects":"Defectos (ppm)", "tools.kpi.otd":"Entregas a tiempo %",
+    "tools.gal.title":"Galería de proyectos",
+    "tools.gal.desc":"Instalaciones reales agrupadas por industria. Filtra para encontrar referencias cercanas a la tuya.",
+    "tools.gal.all":"Todos", "tools.gal.oilgas":"Petróleo y gas", "tools.gal.mining":"Minería", "tools.gal.auto":"Automotriz", "tools.gal.food":"Alimentos y bebidas",
+    "tools.gloss.title":"Glosario técnico",
+    "tools.gloss.desc":"Definiciones de los términos usados en este sitio.",
+    "gloss.psi.t":"PSI",  "gloss.psi.d":"Libra por pulgada cuadrada — unidad de presión. 1 PSI ≈ 6.895 kPa.",
+    "gloss.bsp.t":"BSP",  "gloss.bsp.d":"British Standard Pipe — estándar de roscado para extremos de tubería.",
+    "gloss.sae.t":"SAE",  "gloss.sae.d":"Society of Automotive Engineers — organismo que publica estándares de mangueras (ej. serie SAE 100R).",
+    "gloss.ptfe.t":"PTFE","gloss.ptfe.d":"Politetrafluoroetileno (Teflón) — termoplástico químicamente inerte y de alta temperatura.",
+    "gloss.epdm.t":"EPDM","gloss.epdm.d":"Etileno-propileno-dieno — caucho resistente a clima y ozono, para vapor y agua caliente.",
+    "gloss.crimping.t":"Crimpado","gloss.crimping.d":"Proceso de unir mecánicamente una conexión a la manguera con compresión controlada.",
+    "gloss.oem.t":"OEM",  "gloss.oem.d":"Original Equipment Manufacturer — empresa que ensambla el equipo final.",
+    "gloss.oee.t":"OEE",  "gloss.oee.d":"Overall Equipment Effectiveness — disponibilidad x desempeño x calidad.",
+    "gloss.iso286.t":"ISO 286","gloss.iso286.d":"Estándar de límites y ajustes en partes maquinadas; define los grados IT.",
+    "gloss.hydrostatic.t":"Prueba hidrostática","gloss.hydrostatic.d":"Prueba a 1.5x presión de trabajo con agua para verificar la integridad.",
     "materials.tag": "Base de datos de materiales",
     "materials.title": "Comparador de materiales",
     "materials.subtitle": "Propiedades lado a lado de los elastómeros, termoplásticos y metales usados en nuestras familias de mangueras. Filtra por aplicación.",
@@ -2139,8 +2752,17 @@ function toggleLang() {
   applyI18n(next);
   // Re-render contenido dinámico que mezcla idioma con datos
   if (typeof renderMaterials === "function") {
-    const active = document.querySelector(".mat-filter-btn.active");
-    renderMaterials(active ? active.dataset.matFilter : "all");
+    const activeMat = document.querySelector(".mat-filter-btn.active");
+    renderMaterials(activeMat ? activeMat.dataset.matFilter : "all");
+  }
+  if (typeof renderGlossary === "function") renderGlossary();
+  if (typeof setupTolSim === "function") {
+    // Re-disparar el cálculo para que el método cambie de idioma
+    const ev = new Event("input");
+    document.getElementById("tol-grade")?.dispatchEvent(ev);
+  }
+  if (typeof setupKPIs === "function" && document.getElementById("page-tools")?.classList.contains("active")) {
+    setupKPIs();
   }
   // Re-popular popups del mapa con descripciones del nuevo idioma
   if (_coverageMap) {
@@ -2150,6 +2772,7 @@ function toggleLang() {
       setTimeout(initCoverageMap, 50);
     }
   }
+  refreshTOC();
 }
 
 // ══════════════════════════════════════════════════════════════════

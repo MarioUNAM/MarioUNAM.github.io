@@ -147,33 +147,50 @@ projects/
 ├── rpa-invoice-automation.html
 ├── data-analytics-dashboard.html
 ├── ebx-mdm-hub.html
-└── data-quality-observability.html
+├── data-quality-observability.html
+└── beca_industrial.html       # SPA bilingüe con mapa, materiales y herramientas
 ```
 
-Cada página usa Bootstrap + `assets/css/project-detail.css` y `assets/js/i18n.js`.  
-Edita los textos en `i18n.js` bajo las claves `projects.rpa.*`, `projects.analytics.*`, `projects.mdm.*`, `projects.quality.*`.
+Cada página usa **Tailwind (CDN)** + `assets/css/main.css` con i18n inline ES/EN, dark/light toggle y FOUC prevention.
+
+`beca_industrial.html` es un demo conceptual extendido: 7 sub-páginas SPA, Leaflet (mapa de cobertura), Chart.js (KPIs), tabla comparativa de materiales, calculadora de costos, simulador de tolerancias ISO 286, glosario, búsqueda Ctrl+K, modo presentación e impresión.
 
 ---
 
-## Proyectos personales (en desarrollo)
+## Tracker personal — `tracker.html`
 
-Repositorios en `E:/ProyectosPersonales/` que darán contenido real a los casos de estudio:
+PWA standalone sin tracking ni servidor. Datos solo en `localStorage`.
 
-| Repo | Descripción | Integración portfolio |
-|------|-------------|----------------------|
-| `pumas-data-hub` | MDM hub para datos de Pumas / Liga MX con metodología EBX | Reemplazará el caso "MDM Hub" |
-| `liga-mx-analytics` | Pipeline + Power BI para estadísticas Liga MX | Reemplazará el caso "Power BI Dashboard" |
-| `gaming-stats-pipeline` | ETL + SQL para stats de FIFA, Rocket League, Marvel Rivals | Caso nuevo |
-| `futbol-data-quality` | Observabilidad y calidad de datos deportivos con GE + Airflow | Reemplazará el caso "Data Observability" |
+- Schema v3 con migración suave desde v2.
+- Cálculo de calorías diarias (Mifflin-St Jeor 1990) con perfil ampliado (sexo, altura, edad, actividad, objetivo).
+- Asistente IA: genera prompt con contexto + valida/aplica análisis JSON devuelto por LLM externo.
+- Charts theme-aware (Chart.js) que reaccionan al toggle dark/light.
+- SW (`sw.js`) con update prompt y offline fallback explícito.
+- Atajos teclado: `Ctrl+S` export, `1-5` cambiar tab, `Esc` cancelar edit, `/` focus search.
 
-Para crear los repos remotos en GitHub:
-```bash
-# Ejecutar dentro de cada carpeta de proyecto
-gh repo create MarioUNAM/<nombre-repo> --public --source=. --push
-# O sin gh CLI:
-# 1. Crear el repo en github.com/new
-# 2. git push -u origin main
-```
+---
+
+## Formulario de contacto
+
+GitHub Pages es estático puro (no procesa POST). El form usa **Formspree** como backend gratuito (50 envíos/mes).
+
+**Para activarlo**:
+
+1. Regístrate en [formspree.io](https://formspree.io/) con `mario_huarte@outlook.com`.
+2. Crea un nuevo form, copia el endpoint (`https://formspree.io/f/xxxxxxxx`).
+3. Edita `index.html` línea ~1206 (atributo `data-endpoint` del `<form id="contact-form">`):
+
+   ```html
+   <form id="contact-form"
+         data-endpoint="https://formspree.io/f/xxxxxxxx"
+         method="POST" ...>
+   ```
+
+Mientras el endpoint sea el placeholder, el form hace **fallback a `mailto:`** con el contenido pre-rellenado, así que sigue siendo funcional.
+
+Las páginas de feedback son `contact-success.html` y `contact-error.html` (Tailwind, bilingües, `noindex`).
+
+Alternativas a Formspree: Web3Forms (gratis sin límite mensual), EmailJS, Netlify Forms (requiere migrar de hosting).
 
 ---
 
@@ -187,12 +204,32 @@ git commit -m "descripción del cambio"
 git push origin main
 ```
 
+Después de subir cambios al `tracker.html` o `sw.js`, sube `CACHE_VERSION` en `sw.js` para que el prompt de "Nueva versión" aparezca en sesiones abiertas.
+
 ---
 
 ## Ejecución local
 
 ```bash
-cd E:/GitHub/MarioUNAM.github.io
 python -m http.server 8080
 # Abrir http://localhost:8080
 ```
+
+> El tracker usa `crypto.randomUUID()` que requiere HTTPS o localhost. Servir con `python -m http.server` funciona; abrir `tracker.html` directo desde el filesystem (`file://`) usará el fallback casero de `uid()`.
+
+---
+
+## Pruebas
+
+```bash
+# Smoke test de sintaxis JS inline (no rompe nada)
+node -e "const fs=require('fs');const html=fs.readFileSync('tracker.html','utf8');const re=/<script(?![^>]*\bsrc=)[^>]*>([\s\S]*?)<\/script>/g;let m,ok=0;while((m=re.exec(html))){new Function(m[1]);ok++;}console.log('inline scripts ok:',ok);"
+```
+
+Para Lighthouse local: Chrome DevTools → Lighthouse → run en mobile + desktop.
+
+---
+
+## Archivos no rastreados
+
+`IMPROVEMENTS.md`, `NOTES.md`, `TODO.md` están en `.gitignore` — son notas internas locales, no se publican.

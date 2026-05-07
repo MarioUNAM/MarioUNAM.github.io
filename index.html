@@ -1175,7 +1175,7 @@
         </div>
       </div>
 
-      <!-- Direct contact CTAs -->
+      <!-- Direct contact CTAs + form -->
       <div class="lg:col-span-7 reveal-right flex flex-col justify-center gap-6">
         <p class="font-body text-on-surface-variant text-lg leading-relaxed" data-i18n="contact.cta.intro">
           The fastest way to reach me is directly. Pick your preferred channel below.
@@ -1196,6 +1196,42 @@
           <span data-i18n="contact.cta.linkedin">Connect on LinkedIn</span>
           <span class="material-symbols-outlined text-base group-hover:translate-x-1 transition-transform ml-auto">open_in_new</span>
         </a>
+
+        <!-- ── Form opcional (Formspree-ready) ─────────────────────────
+             Para activarlo: registrate en https://formspree.io/, obten
+             tu endpoint y reemplaza el data-endpoint del form. Mientras
+             el endpoint sea el placeholder, el form usa fallback a mailto.
+        ──────────────────────────────────────────────────────────── -->
+        <form id="contact-form"
+              data-endpoint="REPLACE_WITH_FORMSPREE_ENDPOINT"
+              method="POST"
+              class="flex flex-col gap-4 pt-6 border-t border-outline-variant/20"
+              novalidate>
+          <p class="font-label text-xs text-outline uppercase tracking-widest mb-1" data-i18n="contact.form.or">Or send a message</p>
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <label class="flex flex-col gap-1.5">
+              <span class="font-label text-[10px] uppercase tracking-widest text-on-surface-variant" data-i18n="contact.form.name">Name</span>
+              <input type="text" name="name" required minlength="2" maxlength="80" autocomplete="name"
+                     class="bg-surface-container-lowest border border-outline-variant/40 rounded px-3 py-2.5 text-on-surface focus:border-primary focus:outline-none transition-colors">
+            </label>
+            <label class="flex flex-col gap-1.5">
+              <span class="font-label text-[10px] uppercase tracking-widest text-on-surface-variant" data-i18n="contact.form.email">Email</span>
+              <input type="email" name="email" required autocomplete="email"
+                     class="bg-surface-container-lowest border border-outline-variant/40 rounded px-3 py-2.5 text-on-surface focus:border-primary focus:outline-none transition-colors">
+            </label>
+          </div>
+          <label class="flex flex-col gap-1.5">
+            <span class="font-label text-[10px] uppercase tracking-widest text-on-surface-variant" data-i18n="contact.form.message">Message</span>
+            <textarea name="message" required minlength="10" maxlength="2000" rows="4"
+                      class="bg-surface-container-lowest border border-outline-variant/40 rounded px-3 py-2.5 text-on-surface focus:border-primary focus:outline-none transition-colors resize-none"></textarea>
+          </label>
+          <!-- Honeypot anti-spam: oculto para humanos, los bots lo llenan -->
+          <input type="text" name="_gotcha" tabindex="-1" autocomplete="off" style="position:absolute;left:-9999px" aria-hidden="true">
+          <div class="flex items-center justify-between gap-4">
+            <p id="contact-form-status" class="font-label text-xs text-on-surface-variant" aria-live="polite"></p>
+            <button type="submit" class="btn-primary text-sm py-3 px-6 justify-center" data-i18n="contact.form.send">Send</button>
+          </div>
+        </form>
 
         <div class="flex items-center gap-4 pt-4 border-t border-outline-variant/20">
           <span class="font-label text-xs text-outline uppercase tracking-widest" data-i18n="contact.cta.or">Or find me on</span>
@@ -1433,6 +1469,64 @@
           grid.appendChild(card);
         });
       }
+    }
+
+    /* ── Contact form (Formspree-ready) ─────────────────────
+       Si el endpoint sigue siendo el placeholder, hacemos
+       fallback a mailto. Si está configurado, hacemos POST
+       fetch al endpoint y mostramos feedback inline. */
+    var cf = document.getElementById('contact-form');
+    if (cf) {
+      cf.addEventListener('submit', function(ev){
+        ev.preventDefault();
+        var endpoint = cf.dataset.endpoint || '';
+        var status = document.getElementById('contact-form-status');
+        var fd = new FormData(cf);
+        // Honeypot check
+        if (fd.get('_gotcha')) return;
+        // Validación HTML5 manual
+        if (!cf.checkValidity()) {
+          status.textContent = currentLang === 'es'
+            ? 'Completa todos los campos correctamente.'
+            : 'Please fill in all fields correctly.';
+          status.style.color = 'var(--error, #ffb4ab)';
+          return;
+        }
+        // Sin endpoint configurado → fallback mailto con el mensaje
+        if (!endpoint || endpoint === 'REPLACE_WITH_FORMSPREE_ENDPOINT') {
+          var subject = encodeURIComponent('Portfolio Contact — ' + (fd.get('name') || ''));
+          var body = encodeURIComponent(
+            (fd.get('name') || '') + ' <' + (fd.get('email') || '') + '>\n\n' + (fd.get('message') || '')
+          );
+          window.location.href = 'mailto:mario_huarte@outlook.com?subject=' + subject + '&body=' + body;
+          status.textContent = currentLang === 'es'
+            ? 'Abriendo tu cliente de correo... (configura Formspree para envío directo)'
+            : 'Opening your mail client... (configure Formspree for direct send)';
+          status.style.color = '';
+          return;
+        }
+        // Envío real a Formspree
+        status.textContent = currentLang === 'es' ? 'Enviando...' : 'Sending...';
+        status.style.color = '';
+        fetch(endpoint, {
+          method: 'POST', body: fd, headers: { 'Accept': 'application/json' }
+        }).then(function(r){
+          if (r.ok) {
+            window.location.href = 'contact-success.html';
+          } else {
+            r.json().then(function(d){
+              status.textContent = (d && d.errors)
+                ? d.errors.map(function(e){return e.message;}).join(', ')
+                : (currentLang === 'es' ? 'No se pudo enviar. Inténtalo más tarde.' : 'Could not send. Try again later.');
+              status.style.color = 'var(--error, #ffb4ab)';
+            }).catch(function(){
+              window.location.href = 'contact-error.html';
+            });
+          }
+        }).catch(function(){
+          window.location.href = 'contact-error.html';
+        });
+      });
     }
 
   }); // DOMContentLoaded

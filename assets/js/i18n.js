@@ -442,7 +442,12 @@
       'contact.cta.intro': 'The fastest way to reach me is directly. Pick your preferred channel below.',
       'contact.cta.email': 'mario_huarte@outlook.com',
       'contact.cta.linkedin': 'Connect on LinkedIn',
-      'contact.cta.or': 'Or find me on'
+      'contact.cta.or': 'Or find me on',
+      'contact.form.or': 'Or send a message',
+      'contact.form.name': 'Name',
+      'contact.form.email': 'Email',
+      'contact.form.message': 'Message',
+      'contact.form.send': 'Send'
     },
     es: {
       'meta.title': 'MAHUNO',
@@ -886,7 +891,12 @@
       'contact.cta.intro': 'La forma más rápida de contactarme es de manera directa. Elige tu canal preferido.',
       'contact.cta.email': 'mario_huarte@outlook.com',
       'contact.cta.linkedin': 'Conectar en LinkedIn',
-      'contact.cta.or': 'O encuéntrame en'
+      'contact.cta.or': 'O encuéntrame en',
+      'contact.form.or': 'O envíame un mensaje',
+      'contact.form.name': 'Nombre',
+      'contact.form.email': 'Correo',
+      'contact.form.message': 'Mensaje',
+      'contact.form.send': 'Enviar'
     }
   };
 

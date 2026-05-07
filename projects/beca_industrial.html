@@ -1764,6 +1764,9 @@
       <p class="text-xs text-slate-500 max-w-sm" data-i18n="footer.copy">
         © 2025 BECA INDUSTRIAL. PRECISION ENGINEERED. ALL RIGHTS RESERVED.
       </p>
+      <p class="text-[10px] uppercase tracking-widest text-[var(--c-accent)] font-bold mt-2" data-i18n="footer.demo">
+        Demo concept · fictional company by Mario Huarte for portfolio
+      </p>
     </div>
     <!-- Links col 1 -->
     <div class="flex flex-col gap-3 text-xs font-medium text-slate-600">
@@ -2326,19 +2329,68 @@ function closeSearch() {
   document.getElementById("search-results").innerHTML = "";
   _searchActive = -1;
 }
+// Index dinámico: extrae headings + primer párrafo por página al cargar.
+// Se reconstruye al cambiar idioma.
+let _searchIndexDynamic = null;
+function buildSearchIndex() {
+  const out = [];
+  document.querySelectorAll("div.page").forEach(p => {
+    const id = p.id.replace(/^page-/, "");
+    const headings = [...p.querySelectorAll("h1, h2, h3")]
+      .map(h => h.textContent.trim()).filter(Boolean);
+    const firstP = p.querySelector("p")?.textContent.trim() || "";
+    // Texto buscable = headings + intro
+    const text = (headings.join(" · ") + " " + firstP).toLowerCase();
+    out.push({ page: id, text, headings });
+  });
+  _searchIndexDynamic = out;
+}
+let _searchTimer = null;
 function runSearch(q) {
+  // Debounce 150ms — evita re-render por cada keystroke
+  clearTimeout(_searchTimer);
+  _searchTimer = setTimeout(() => runSearchNow(q), 150);
+}
+function runSearchNow(q) {
   q = q.toLowerCase().trim();
   const results = document.getElementById("search-results");
   if (!q) { results.innerHTML = ""; return; }
   const lang = document.documentElement.getAttribute("data-lang") || "en";
   const dict = I18N[lang] || I18N.en;
-  const matches = SEARCH_INDEX.filter(p =>
-    p.keys.some(k => k.toLowerCase().includes(q))
-  );
-  results.innerHTML = matches.map((m,i) => {
-    const label = dict["nav." + m.page] || m.page;
-    return `<a class="sr-item${i===0?' active':''}" data-page="${m.page}" href="#${m.page}">${label.replace(new RegExp(q,"i"), s => "<mark>"+s+"</mark>")}</a>`;
-  }).join("") || `<div class="sr-item" style="cursor:default;color:var(--c-on-surface-variant)">No matches</div>`;
+  if (!_searchIndexDynamic) buildSearchIndex();
+  // Combinar index dinámico (extraído del DOM) con keywords estáticos
+  const seen = new Set();
+  const matches = [];
+  _searchIndexDynamic.forEach(p => {
+    if (p.text.includes(q) && !seen.has(p.page)) {
+      // Encontrar el heading que contiene la query, o el primero
+      const matchHeading = p.headings.find(h => h.toLowerCase().includes(q)) || p.headings[0] || p.page;
+      matches.push({ page: p.page, snippet: matchHeading });
+      seen.add(p.page);
+    }
+  });
+  // Fallback a keywords estáticos por si la query no aparece literalmente en DOM
+  SEARCH_INDEX.forEach(p => {
+    if (seen.has(p.page)) return;
+    if (p.keys.some(k => k.toLowerCase().includes(q))) {
+      matches.push({ page: p.page, snippet: dict["nav." + p.page] || p.page });
+      seen.add(p.page);
+    }
+  });
+  if (!matches.length) {
+    results.innerHTML = `<div class="sr-item" style="cursor:default;color:var(--c-on-surface-variant)">${dict["search.empty"] || "No matches"}</div>`;
+    return;
+  }
+  // Resaltar la query en el snippet
+  const qre = new RegExp(q.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"), "ig");
+  results.innerHTML = matches.map((m, i) => {
+    const navLabel = dict["nav." + m.page] || m.page;
+    const snippet = m.snippet.replace(qre, s => "<mark>" + s + "</mark>");
+    return `<a class="sr-item${i===0?' active':''}" data-page="${m.page}" href="#${m.page}">
+      <strong style="font-size:11px;letter-spacing:0.05em;color:var(--c-on-surface-variant);text-transform:uppercase">${navLabel}</strong>
+      <div style="font-size:14px;color:var(--c-on-surface)">${snippet}</div>
+    </a>`;
+  }).join("");
   _searchActive = 0;
   results.querySelectorAll(".sr-item[data-page]").forEach(el => {
     el.addEventListener("click", e => {
@@ -2350,19 +2402,23 @@ function runSearch(q) {
 }
 
 // ══════════════════════════════════════════════════════════════════
-// TOC STICKY
+// TOC STICKY · scroll-spy con IntersectionObserver
 // ══════════════════════════════════════════════════════════════════
+let _tocObserver = null;
 function refreshTOC() {
   const toc = document.getElementById("toc-sticky");
   const linksWrap = document.getElementById("toc-links");
   const active = document.querySelector(".page.active");
   if (!toc || !linksWrap || !active) return;
+  // Limpia observer previo (cambio de página)
+  if (_tocObserver) { _tocObserver.disconnect(); _tocObserver = null; }
   const headings = active.querySelectorAll("h2");
   if (headings.length < 2 || !["page-about","page-tools"].includes(active.id)) {
     toc.classList.remove("show");
     return;
   }
   linksWrap.innerHTML = "";
+  const linkByHeading = new Map();
   headings.forEach((h, i) => {
     if (!h.id) h.id = "h-" + active.id + "-" + i;
     const a = document.createElement("a");
@@ -2373,8 +2429,22 @@ function refreshTOC() {
       h.scrollIntoView({ behavior: "smooth", block: "start" });
     });
     linksWrap.appendChild(a);
+    linkByHeading.set(h, a);
   });
   toc.classList.add("show");
+  // Scroll-spy: marca el heading visible más cercano al top
+  _tocObserver = new IntersectionObserver(entries => {
+    entries.forEach(entry => {
+      const link = linkByHeading.get(entry.target);
+      if (!link) return;
+      if (entry.isIntersecting) {
+        // Limpia activos previos
+        linksWrap.querySelectorAll("a.active").forEach(a => a.classList.remove("active"));
+        link.classList.add("active");
+      }
+    });
+  }, { rootMargin: "-80px 0px -60% 0px", threshold: 0 });
+  headings.forEach(h => _tocObserver.observe(h));
 }
 
 // ══════════════════════════════════════════════════════════════════
@@ -2609,7 +2679,9 @@ const I18N = {
     "contact.email.title": "Technical Email", "contact.email.note": "Response within 2 business hours",
     "footer.copy": "© 2025 BECA INDUSTRIAL. PRECISION ENGINEERED. ALL RIGHTS RESERVED.",
     "footer.safety": "Safety Compliance", "footer.support": "Technical Support", "footer.privacy": "Privacy Policy",
-    "toast.success": "Inquiry transmitted — a specialist will contact you within 2 hours."
+    "footer.demo": "Demo concept · fictional company by Mario Huarte for portfolio",
+    "toast.success": "Inquiry transmitted — a specialist will contact you within 2 hours.",
+    "search.empty": "No matches"
   },
   es: {
     "nav.home": "Inicio", "nav.products": "Productos", "nav.materials": "Materiales", "nav.map": "Cobertura", "nav.tools": "Herramientas", "nav.about": "Nosotros", "nav.contact": "Contacto", "nav.cta": "Solicitar cotización",
@@ -2725,7 +2797,9 @@ const I18N = {
     "contact.email.title": "Correo técnico", "contact.email.note": "Respuesta en 2 horas hábiles",
     "footer.copy": "© 2025 BECA INDUSTRIAL. INGENIERÍA DE PRECISIÓN. TODOS LOS DERECHOS RESERVADOS.",
     "footer.safety": "Cumplimiento de seguridad", "footer.support": "Soporte técnico", "footer.privacy": "Política de privacidad",
-    "toast.success": "Consulta transmitida — un especialista te contactará en 2 horas."
+    "footer.demo": "Concepto demo · empresa ficticia por Mario Huarte para portafolio",
+    "toast.success": "Consulta transmitida — un especialista te contactará en 2 horas.",
+    "search.empty": "Sin resultados"
   }
 };
 
@@ -2772,6 +2846,8 @@ function toggleLang() {
       setTimeout(initCoverageMap, 50);
     }
   }
+  // Forzar reconstrucción del index de búsqueda (cambia el texto buscable)
+  _searchIndexDynamic = null;
   refreshTOC();
 }
 
@@ -2789,6 +2865,10 @@ function toggleTheme() {
   const next = cur === 'dark' ? 'light' : 'dark';
   localStorage.setItem('beca.theme', next);
   applyTheme(next);
+  // Re-render contenido que lee CSS vars en JS (Chart.js no escucha el cambio).
+  if (typeof setupKPIs === "function" && document.getElementById("page-tools")?.classList.contains("active")) {
+    setupKPIs();
+  }
 }
 
 // ══════════════════════════════════════════════════════════════════

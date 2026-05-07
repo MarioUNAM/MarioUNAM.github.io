@@ -1191,6 +1191,46 @@ input[type=range]::-moz-range-thumb {
 }
 #toast .toast-action:hover { color: var(--text); background: var(--bg-elev-2); }
 #toast.error .toast-action { color: var(--red); }
+#toast .toast-close {
+  background: transparent; border: none; color: var(--text-muted);
+  font: 600 18px/1 var(--font-sans); padding: 0 14px; cursor: pointer;
+  align-self: stretch; transition: color .15s, background .15s;
+}
+#toast .toast-close:hover { color: var(--text); background: var(--bg-elev-2); }
+
+/* ── Confirm modal ──────────────────────────────────────── */
+#confirm-modal {
+  position: fixed; inset: 0; z-index: 200;
+  display: none; align-items: center; justify-content: center;
+}
+#confirm-modal.open { display: flex; }
+#confirm-modal .cm-overlay {
+  position: absolute; inset: 0; background: rgba(0,0,0,0.55);
+  backdrop-filter: blur(4px);
+}
+#confirm-modal .cm-box {
+  position: relative; background: var(--bg-elev);
+  border: 1px solid var(--border-strong);
+  border-radius: var(--r-md); padding: 24px; max-width: 420px;
+  width: 90%; box-shadow: 0 24px 60px rgba(0,0,0,0.5);
+}
+#confirm-modal .cm-title {
+  font: 700 16px/1.3 var(--font-sans); color: var(--text); margin-bottom: 8px;
+}
+#confirm-modal .cm-msg {
+  font: 400 14px/1.5 var(--font-sans); color: var(--text-muted); margin-bottom: 12px;
+}
+#confirm-modal .cm-warn {
+  font: 600 12px/1.3 var(--font-mono); color: var(--red); margin-bottom: 16px;
+  padding: 8px 12px; background: rgba(239,68,68,0.08); border-left: 3px solid var(--red);
+}
+#confirm-modal .cm-actions {
+  display: flex; gap: 8px; justify-content: flex-end; margin-top: 16px;
+}
+#confirm-modal .cm-ok.danger {
+  background: var(--red); color: #fff; border-color: var(--red);
+}
+#confirm-modal .cm-ok.danger:hover { background: #dc2626; border-color: #dc2626; }
 
 /* ============================================================
    13. FOOTER
@@ -2000,12 +2040,18 @@ function toast(msg, type = "ok", opts = {}) {
   if (type !== "ok") cls.push(type);
   if (opts.action) cls.push("with-action");
 
+  // Duración por defecto: errores duran más para dar tiempo a leer
+  const defaultDuration = type === "error" ? 4500 : (type === "warn" ? 3500 : 2200);
+  const duration = opts.duration || defaultDuration;
+
+  // Construye contenido con span msg + botón × siempre presente
+  el.innerHTML = "";
+  const span = document.createElement("span");
+  span.className = "toast-msg";
+  span.textContent = msg;
+  el.appendChild(span);
+
   if (opts.action) {
-    el.innerHTML = "";
-    const span = document.createElement("span");
-    span.className = "toast-msg";
-    span.textContent = msg;
-    el.appendChild(span);
     const btn = document.createElement("button");
     btn.type = "button";
     btn.className = "toast-action";
@@ -2016,13 +2062,85 @@ function toast(msg, type = "ok", opts = {}) {
       try { opts.action.fn(); } catch (err) { console.warn(err); }
     });
     el.appendChild(btn);
-  } else {
-    el.textContent = msg;
   }
-  el.className = cls.join(" ");
 
+  // Botón × manual: el usuario puede cerrar sin esperar el timeout
+  const closeBtn = document.createElement("button");
+  closeBtn.type = "button";
+  closeBtn.className = "toast-close";
+  closeBtn.setAttribute("aria-label", "Cerrar");
+  closeBtn.textContent = "×";
+  closeBtn.addEventListener("click", () => {
+    clearTimeout(toast._t);
+    el.className = "";
+  });
+  el.appendChild(closeBtn);
+
+  el.className = cls.join(" ");
   clearTimeout(toast._t);
-  toast._t = setTimeout(() => { el.className = type === "ok" ? "" : type; }, opts.duration || 2200);
+  toast._t = setTimeout(() => { el.className = type === "ok" ? "" : type; }, duration);
+}
+
+/* ============================================================
+   E2.  CONFIRM MODAL — reemplaza confirm() nativo
+   ------------------------------------------------------------
+   Devuelve una Promise<bool>. Modal accesible (focus trap básico,
+   Esc cancela, click overlay cancela). Para operaciones destructivas
+   marca `danger:true` y muestra leyenda "Acción irreversible".
+   ============================================================ */
+function confirmModal(message, opts = {}) {
+  return new Promise(resolve => {
+    let modal = document.getElementById("confirm-modal");
+    if (!modal) {
+      modal = document.createElement("div");
+      modal.id = "confirm-modal";
+      modal.innerHTML =
+        '<div class="cm-overlay"></div>' +
+        '<div class="cm-box" role="dialog" aria-modal="true" aria-labelledby="cm-title">' +
+          '<h3 id="cm-title" class="cm-title"></h3>' +
+          '<p class="cm-msg"></p>' +
+          '<p class="cm-warn" hidden>Acción irreversible. No hay deshacer.</p>' +
+          '<div class="cm-actions">' +
+            '<button type="button" class="btn-secondary cm-cancel">Cancelar</button>' +
+            '<button type="button" class="btn-primary cm-ok"></button>' +
+          '</div>' +
+        '</div>';
+      document.body.appendChild(modal);
+    }
+    const title = opts.title || "¿Confirmas la acción?";
+    const okLabel = opts.okLabel || "Aceptar";
+    const danger = !!opts.danger;
+    modal.querySelector(".cm-title").textContent = title;
+    modal.querySelector(".cm-msg").textContent = message;
+    modal.querySelector(".cm-warn").hidden = !danger;
+    const okBtn = modal.querySelector(".cm-ok");
+    okBtn.textContent = okLabel;
+    okBtn.classList.toggle("danger", danger);
+
+    const cancelBtn = modal.querySelector(".cm-cancel");
+    const overlay = modal.querySelector(".cm-overlay");
+    modal.classList.add("open");
+    setTimeout(() => okBtn.focus(), 0);
+
+    function cleanup(result) {
+      modal.classList.remove("open");
+      okBtn.removeEventListener("click", onOk);
+      cancelBtn.removeEventListener("click", onCancel);
+      overlay.removeEventListener("click", onCancel);
+      document.removeEventListener("keydown", onKey);
+      resolve(result);
+    }
+    function onOk() { cleanup(true); }
+    function onCancel() { cleanup(false); }
+    function onKey(e) {
+      if (e.key === "Escape") cleanup(false);
+      else if (e.key === "Enter") cleanup(true);
+    }
+    okBtn.addEventListener("click", onOk);
+    cancelBtn.addEventListener("click", onCancel);
+    overlay.addEventListener("click", onCancel);
+    document.addEventListener("keydown", onKey);
+  });
 }
 
 /* ============================================================
@@ -2083,6 +2201,49 @@ overlay.addEventListener("click", closeDrawer);
 document.getElementById("btn-close-menu")?.addEventListener("click", closeDrawer);
 document.addEventListener("keydown", e => {
   if (e.key === "Escape" && sidebar.classList.contains("open")) closeDrawer();
+});
+
+/* ============================================================
+   F2. ATAJOS DE TECLADO
+   ------------------------------------------------------------
+   Ctrl+S → exportar JSON      /     → focus en search bar visible
+   1-5    → cambiar tab        Esc   → cancelar edición activa
+   Los atajos no disparan si el foco está en input/textarea.
+   ============================================================ */
+const TAB_BY_NUM = { "1":"ejercicios", "2":"mediciones", "3":"comidas", "4":"dashboard", "5":"resumen" };
+document.addEventListener("keydown", e => {
+  const t = e.target;
+  const inField = t && (t.tagName === "INPUT" || t.tagName === "TEXTAREA" || t.tagName === "SELECT" || t.isContentEditable);
+
+  // Ctrl+S / Cmd+S → export JSON
+  if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === "s") {
+    e.preventDefault();
+    document.getElementById("btn-export")?.click();
+    return;
+  }
+  // Si está escribiendo, no atrapar otros atajos
+  if (inField) return;
+
+  // Esc → cancelar edición si hay
+  if (e.key === "Escape") {
+    if (typeof exitEdit === "function") {
+      ["ejercicios","mediciones","comidas"].forEach(k => {
+        if (editing && editing[k]) exitEdit(k);
+      });
+    }
+    return;
+  }
+  // / → focus en primera search bar visible
+  if (e.key === "/") {
+    const search = document.querySelector(".tab-panel.active input[type=search], .tab-panel.active input[name=q]");
+    if (search) { e.preventDefault(); search.focus(); }
+    return;
+  }
+  // 1-5 → cambiar tab
+  if (TAB_BY_NUM[e.key]) {
+    e.preventDefault();
+    activateTab(TAB_BY_NUM[e.key]);
+  }
 });
 
 function activateTab(name) {
@@ -3722,7 +3883,7 @@ document.getElementById("btn-ia-cancel")?.addEventListener("click", () => {
   document.getElementById("ia-paste-panel").hidden = true;
   document.getElementById("ia-paste-input").value = "";
 });
-document.getElementById("btn-ia-apply")?.addEventListener("click", () => {
+document.getElementById("btn-ia-apply")?.addEventListener("click", async () => {
   const raw = document.getElementById("ia-paste-input").value.trim();
   if (!raw) return toast("Pega el JSON antes de aplicar", "error");
   let parsed;
@@ -3730,7 +3891,10 @@ document.getElementById("btn-ia-apply")?.addEventListener("click", () => {
   catch (e) { return toast("JSON inválido: " + e.message, "error"); }
   const err = validateIAResponse(parsed);
   if (err) return toast("Schema inválido: " + err, "error");
-  if (!confirm("¿Aplicar este análisis? Se guardará en el historial y se ajustarán objetivos si corresponde.")) return;
+  const ok = await confirmModal("Se guardará en el historial y se ajustarán objetivos (kcal/proteína) si la IA los devolvió.", {
+    title: "Aplicar análisis IA", okLabel: "Sí, aplicar"
+  });
+  if (!ok) return;
   const aplicados = applyIAResponse(parsed);
   document.getElementById("ia-paste-panel").hidden = true;
   document.getElementById("ia-paste-input").value = "";
@@ -3751,11 +3915,14 @@ document.getElementById("file-import").addEventListener("change", e => {
   const file = e.target.files[0];
   if (!file) return;
   const reader = new FileReader();
-  reader.onload = () => {
+  reader.onload = async () => {
     try {
       const parsed = JSON.parse(reader.result);
       if (!parsed.ejercicios || !parsed.mediciones || !parsed.comidas) throw new Error("Formato inválido");
-      if (!confirm("¿Reemplazar todos los datos actuales con el archivo importado?")) return;
+      const ok = await confirmModal("Se reemplazarán todos los datos actuales con el contenido del archivo importado.", {
+        title: "Importar JSON", okLabel: "Sí, reemplazar todo", danger: true
+      });
+      if (!ok) return;
       // Detectar y regenerar IDs duplicados (entre colecciones o dentro de cada una)
       // para evitar corrupción de findIndex(x=>x.id===id) tras el import.
       const seen = new Set();
@@ -3794,17 +3961,23 @@ function downloadFile(name, content, mime) {
 /* ============================================================
    T.  LIMPIAR DATOS
    ============================================================ */
-document.getElementById("btn-clear-sample").addEventListener("click", () => {
-  if (!confirm("Borrar los datos de ejemplo precargados?")) return;
+document.getElementById("btn-clear-sample").addEventListener("click", async () => {
   if (!state.meta.sampleLoaded) { toast("No hay datos de ejemplo", "warn"); return; }
+  const ok = await confirmModal("Se eliminarán los datos de ejemplo precargados.", {
+    title: "Limpiar datos de ejemplo", okLabel: "Sí, limpiar", danger: true
+  });
+  if (!ok) return;
   state = defaultState();
   saveState();
   loadPerfilToForm();
   renderAll();
   toast("Datos de ejemplo limpiados");
 });
-document.getElementById("btn-clear-all").addEventListener("click", () => {
-  if (!confirm("ATENCIÓN: borrar TODOS tus datos. ¿Continuar?")) return;
+document.getElementById("btn-clear-all").addEventListener("click", async () => {
+  const ok = await confirmModal("Se eliminarán todos tus datos: ejercicios, mediciones, comidas, perfil y análisis IA.", {
+    title: "Borrar TODO", okLabel: "Sí, borrar todo", danger: true
+  });
+  if (!ok) return;
   state = defaultState();
   state.meta.sampleLoaded = false;
   saveState();

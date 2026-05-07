@@ -5,13 +5,21 @@
    network-first con fallback a cache para el resto.
    Sube CACHE_VERSION cuando publiques cambios para invalidar.
    ============================================================ */
-const CACHE_VERSION = "tracker-v5";
+const CACHE_VERSION = "tracker-v6";
 
 // Permite al cliente forzar la activación del SW nuevo cuando
 // el usuario aprueba el prompt "Recargar" del tracker.
 self.addEventListener("message", e => {
   if (e.data && e.data.type === "SKIP_WAITING") self.skipWaiting();
 });
+
+// Respuesta offline genérica para cuando ni la red ni el cache responden.
+// Para HTML devolvemos una página mínima; para otros recursos un 504.
+const OFFLINE_HTML = `<!DOCTYPE html><html lang="es"><head><meta charset="utf-8">
+<title>Sin conexión · Tracker</title>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<style>body{font-family:system-ui,sans-serif;background:#0b0c0f;color:#e8eaed;display:flex;align-items:center;justify-content:center;min-height:100vh;margin:0;padding:24px;text-align:center}h1{font-size:24px;margin:0 0 12px}p{color:#8b909a;line-height:1.5;max-width:400px}a{color:#10b981;text-decoration:none;border-bottom:1px solid #10b981;padding-bottom:2px}</style>
+</head><body><div><h1>Sin conexión</h1><p>No hay red ni copia en caché de esta página. Tus datos locales (localStorage) están seguros.</p><p><a href="./tracker.html">Reintentar</a></p></div></body></html>`;
 const CORE_ASSETS = [
   "./tracker.html",
   "./manifest.json",
@@ -41,15 +49,19 @@ self.addEventListener("fetch", e => {
   const req = e.request;
   if (req.method !== "GET") return;
 
-  // Para navegación: network-first → cache fallback
+  // Navegación: network-first → cache de tracker.html → página offline.
   if (req.mode === "navigate") {
     e.respondWith(
-      fetch(req).catch(() => caches.match("./tracker.html"))
+      fetch(req).catch(() =>
+        caches.match("./tracker.html").then(hit =>
+          hit || new Response(OFFLINE_HTML, { headers: { "Content-Type": "text/html; charset=utf-8" } })
+        )
+      )
     );
     return;
   }
 
-  // Para todo lo demás: cache-first → network → cachear
+  // Recursos: cache-first → network → cachear → fallback explícito.
   e.respondWith(
     caches.match(req).then(hit => {
       if (hit) return hit;
@@ -60,7 +72,20 @@ self.addEventListener("fetch", e => {
           caches.open(CACHE_VERSION).then(c => c.put(req, clone));
         }
         return res;
-      }).catch(() => hit);
+      }).catch(() => {
+        // Sin red Y sin cache: respuesta vacía controlada para no romper.
+        // Para imágenes devolvemos un SVG transparente 1x1; para otros, 504.
+        const accept = req.headers.get("accept") || "";
+        if (accept.includes("image")) {
+          return new Response(
+            '<svg xmlns="http://www.w3.org/2000/svg" width="1" height="1"/>',
+            { headers: { "Content-Type": "image/svg+xml" } }
+          );
+        }
+        return new Response("Offline · resource unavailable", {
+          status: 504, headers: { "Content-Type": "text/plain" }
+        });
+      });
     })
   );
 });

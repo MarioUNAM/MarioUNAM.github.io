@@ -1,42 +1,188 @@
 <!DOCTYPE html>
-<html lang="en">
+<html class="dark" lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title data-i18n="projects.analytics.pageTitle">Commercial analytics dashboard</title>
-    <link rel="stylesheet" href="../assets/css/bootstrap.min.css">
-    <link rel="stylesheet" href="../assets/css/project-detail.css">
-</head>
-<body>
-    <main class="container py-5">
-        <div class="text-right mb-4">
-            <label for="language-switcher" class="sr-only" data-i18n="projects.common.languageLabel">Language</label>
-            <select id="language-switcher" class="language-switcher" data-i18n-attrs="aria-label:projects.common.languageAria">
-                <option value="en" data-i18n="language.option.en">EN</option>
-                <option value="es" data-i18n="language.option.es">ES</option>
-            </select>
-        </div>
-        <h1 class="mb-4" data-i18n="projects.analytics.heading">Power BI commercial analytics dashboard</h1>
-        <p class="lead" data-i18n="projects.analytics.lead">End-to-end solution integrating POS sales, CRM, and quarterly targets to provide daily tracking of key indicators.</p>
-        <section class="mb-4">
-            <h2 data-i18n="projects.analytics.highlightsTitle">Dashboard highlights</h2>
-            <ul>
-                <li data-i18n="projects.analytics.highlight1">Tabular model with more than 120 DAX measures for margins, churn, and forecasts.</li>
-                <li data-i18n="projects.analytics.highlight2">Advanced segmentations by channel, region, and product family.</li>
-                <li data-i18n="projects.analytics.highlight3">Proactive alerts published through Power BI Service and Teams.</li>
-            </ul>
-        </section>
-        <section class="mb-4">
-            <h2 data-i18n="projects.analytics.datasetTitle">Dataset and processes</h2>
-            <p data-i18n="projects.analytics.datasetDescription">The data pipeline was built with Azure Data Factory and Synapse notebooks to clean transactional information, enrich with master data, and publish the certified dataset.</p>
-        </section>
-        <p><a class="btn btn-primary" href="https://app.powerbi.com/view?r=eyJrIjoiY2FzZS1zdHVkaW8tc2FsZXMiLCJuIjoiYXV0by1zaGFyZSJ9" target="_blank" rel="noopener" data-i18n="projects.analytics.button">View interactive demo</a></p>
-        <p><a href="../index.html" data-i18n="projects.common.back">← Back</a></p>
-    </main>
+  <!-- FOUC prevention -->
+  <script>
+    (function(){
+      var t=localStorage.getItem('theme');
+      var preferLight=window.matchMedia('(prefers-color-scheme:light)').matches;
+      var theme=(t==='dark'||t==='light')?t:(preferLight?'light':'dark');
+      document.documentElement.classList.remove('dark','light');
+      document.documentElement.classList.add(theme);
+      var l=localStorage.getItem('lang')||((navigator.language||'en').toLowerCase().startsWith('es')?'es':'en');
+      document.documentElement.setAttribute('lang',l);
+      document.documentElement.setAttribute('data-lang',l);
+    })();
+  </script>
 
-    <script src="../assets/js/jquery.min.js"></script>
-    <script src="../assets/js/bootstrap.min.js"></script>
-    <script src="../assets/js/i18n.js"></script>
-    <script src="../assets/js/script.js"></script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title data-i18n="meta.title">Power BI Commercial Analytics · Mario Huarte Nolasco</title>
+  <meta name="description" data-i18n="meta.desc" content="End-to-end Power BI commercial analytics solution integrating POS, CRM and quarterly targets.">
+
+  <link rel="icon" type="image/png" sizes="32x32" href="../assets/img/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="../assets/img/favicon-16x16.png">
+  <link rel="canonical" href="https://mariounam.github.io/projects/data-analytics-dashboard.html">
+
+  <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;700;800&family=Inter:wght@400;500;600&family=Space+Grotesk:wght@400;500;700&display=swap" rel="stylesheet">
+
+  <script src="https://cdn.tailwindcss.com?plugins=forms"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: { extend: {
+        colors: {
+          'surface': 'var(--surface)', 'surface-container': 'var(--surface-container)',
+          'surface-container-low': 'var(--surface-container-low)',
+          'surface-container-high': 'var(--surface-container-high)',
+          'on-surface': 'var(--on-surface)', 'on-surface-variant': 'var(--on-surface-variant)',
+          'primary': 'var(--primary)', 'on-primary': 'var(--on-primary)',
+          'outline-variant': 'var(--outline-variant)',
+        },
+        fontFamily: { headline: ['Manrope','sans-serif'], body: ['Inter','sans-serif'], label: ['Space Grotesk','sans-serif'] }
+      }}
+    };
+  </script>
+
+  <link rel="stylesheet" href="../assets/css/main.css">
+</head>
+<body class="font-body bg-surface text-on-surface min-h-screen">
+
+  <!-- Sticky header con back + lang/theme toggles -->
+  <nav class="sticky top-0 z-40 bg-surface/80 backdrop-blur-md border-b border-outline-variant/30">
+    <div class="max-w-4xl mx-auto px-6 py-3 flex items-center justify-between gap-4">
+      <a href="../index.html" class="text-xs font-label uppercase tracking-widest text-on-surface-variant hover:text-primary transition-colors flex items-center gap-1">
+        <svg class="w-3 h-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+        <span data-i18n="back">Back</span>
+      </a>
+      <div class="flex items-center gap-2">
+        <button onclick="toggleLang()" class="text-xs font-label font-bold uppercase tracking-wider text-on-surface-variant hover:text-primary transition-colors px-2 py-1 border border-outline-variant/40 rounded">
+          <span id="lang-label">ES</span>
+        </button>
+        <button onclick="toggleTheme()" class="text-on-surface-variant hover:text-primary transition-colors p-1.5 border border-outline-variant/40 rounded" aria-label="Toggle theme">
+          <svg id="theme-ic-moon" class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+          <svg id="theme-ic-sun" class="w-4 h-4 hidden" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/></svg>
+        </button>
+      </div>
+    </div>
+  </nav>
+
+  <main class="max-w-4xl mx-auto px-6 py-12">
+    <span class="inline-block text-[10px] font-label font-bold uppercase tracking-widest text-primary mb-4" data-i18n="tag">Project · Power BI</span>
+    <h1 class="font-headline text-4xl md:text-5xl font-extrabold tracking-tight mb-4" data-i18n="heading">
+      Power BI commercial analytics dashboard
+    </h1>
+    <p class="text-lg text-on-surface-variant leading-relaxed mb-12" data-i18n="lead">
+      End-to-end solution integrating POS sales, CRM, and quarterly targets to provide daily tracking of key indicators.
+    </p>
+
+    <section class="mb-10">
+      <h2 class="font-headline text-2xl font-bold mb-4" data-i18n="highlightsTitle">Dashboard highlights</h2>
+      <ul class="space-y-2 text-on-surface-variant">
+        <li class="flex gap-3"><span class="text-primary">▸</span><span data-i18n="highlight1">Tabular model with more than 120 DAX measures for margins, churn, and forecasts.</span></li>
+        <li class="flex gap-3"><span class="text-primary">▸</span><span data-i18n="highlight2">Advanced segmentations by channel, region, and product family.</span></li>
+        <li class="flex gap-3"><span class="text-primary">▸</span><span data-i18n="highlight3">Proactive alerts published through Power BI Service and Teams.</span></li>
+      </ul>
+    </section>
+
+    <section class="mb-10">
+      <h2 class="font-headline text-2xl font-bold mb-4" data-i18n="datasetTitle">Dataset and processes</h2>
+      <p class="text-on-surface-variant leading-relaxed" data-i18n="datasetDescription">
+        The data pipeline was built with Azure Data Factory and Synapse notebooks to clean transactional information, enrich with master data, and publish the certified dataset.
+      </p>
+    </section>
+
+    <section class="mb-10 p-6 border border-outline-variant/40 rounded bg-surface-container-low">
+      <p class="text-xs font-label uppercase tracking-widest text-on-surface-variant mb-2" data-i18n="demoNoteLabel">Demo availability</p>
+      <p class="text-on-surface-variant leading-relaxed" data-i18n="demoNote">
+        The interactive Power BI demo is no longer publicly available. For a live walkthrough or anonymized dataset, please reach out via the contact form.
+      </p>
+    </section>
+
+    <a href="../index.html#contact"
+       class="inline-flex items-center gap-2 px-6 py-3 bg-primary text-on-primary font-label font-bold uppercase tracking-wide text-sm rounded transition-all hover:shadow-[0_0_24px_rgba(76,214,251,0.25)]"
+       data-i18n="cta">
+      Request demo access
+    </a>
+  </main>
+
+  <footer class="border-t border-outline-variant/30 mt-16 py-6 text-center text-xs text-on-surface-variant">
+    © 2026 Mario Huarte Nolasco
+  </footer>
+
+<script>
+  const I18N = {
+    en: {
+      "meta.title":"Power BI Commercial Analytics · Mario Huarte Nolasco",
+      "meta.desc":"End-to-end Power BI commercial analytics solution integrating POS, CRM and quarterly targets.",
+      "back":"Back to portfolio",
+      "tag":"Project · Power BI",
+      "heading":"Power BI commercial analytics dashboard",
+      "lead":"End-to-end solution integrating POS sales, CRM, and quarterly targets to provide daily tracking of key indicators.",
+      "highlightsTitle":"Dashboard highlights",
+      "highlight1":"Tabular model with more than 120 DAX measures for margins, churn, and forecasts.",
+      "highlight2":"Advanced segmentations by channel, region, and product family.",
+      "highlight3":"Proactive alerts published through Power BI Service and Teams.",
+      "datasetTitle":"Dataset and processes",
+      "datasetDescription":"The data pipeline was built with Azure Data Factory and Synapse notebooks to clean transactional information, enrich with master data, and publish the certified dataset.",
+      "demoNoteLabel":"Demo availability",
+      "demoNote":"The interactive Power BI demo is no longer publicly available. For a live walkthrough or anonymized dataset, please reach out via the contact form.",
+      "cta":"Request demo access"
+    },
+    es: {
+      "meta.title":"Analítica comercial Power BI · Mario Huarte Nolasco",
+      "meta.desc":"Solución end-to-end de analítica comercial en Power BI integrando POS, CRM y metas trimestrales.",
+      "back":"Volver al portafolio",
+      "tag":"Proyecto · Power BI",
+      "heading":"Dashboard de analítica comercial en Power BI",
+      "lead":"Solución integral que integra ventas POS, CRM y metas trimestrales para dar seguimiento diario a los indicadores clave.",
+      "highlightsTitle":"Lo destacado del dashboard",
+      "highlight1":"Modelo tabular con más de 120 medidas DAX para márgenes, churn y forecasts.",
+      "highlight2":"Segmentaciones avanzadas por canal, región y familia de producto.",
+      "highlight3":"Alertas proactivas publicadas en Power BI Service y Teams.",
+      "datasetTitle":"Dataset y procesos",
+      "datasetDescription":"El pipeline se construyó con Azure Data Factory y notebooks de Synapse para limpiar información transaccional, enriquecer con datos maestros y publicar el dataset certificado.",
+      "demoNoteLabel":"Disponibilidad del demo",
+      "demoNote":"El demo interactivo de Power BI ya no está disponible públicamente. Para una sesión en vivo o un dataset anonimizado, contáctame por el formulario.",
+      "cta":"Solicitar acceso al demo"
+    }
+  };
+  function applyI18n(lang) {
+    const dict = I18N[lang] || I18N.en;
+    document.querySelectorAll('[data-i18n]').forEach(el => {
+      const key = el.getAttribute('data-i18n');
+      if (dict[key] != null) {
+        if (el.tagName === 'TITLE') document.title = dict[key];
+        else if (el.tagName === 'META') el.setAttribute('content', dict[key]);
+        else el.textContent = dict[key];
+      }
+    });
+    document.getElementById('lang-label').textContent = lang === 'es' ? 'EN' : 'ES';
+  }
+  function toggleLang() {
+    const cur = document.documentElement.getAttribute('data-lang') || 'en';
+    const next = cur === 'es' ? 'en' : 'es';
+    localStorage.setItem('lang', next);
+    document.documentElement.setAttribute('lang', next);
+    document.documentElement.setAttribute('data-lang', next);
+    applyI18n(next);
+  }
+  function toggleTheme() {
+    const cur = document.documentElement.classList.contains('dark') ? 'dark' : 'light';
+    const next = cur === 'dark' ? 'light' : 'dark';
+    document.documentElement.classList.remove('dark','light');
+    document.documentElement.classList.add(next);
+    localStorage.setItem('theme', next);
+    document.getElementById('theme-ic-moon').classList.toggle('hidden', next !== 'dark');
+    document.getElementById('theme-ic-sun').classList.toggle('hidden', next === 'dark');
+  }
+  applyI18n(document.documentElement.getAttribute('data-lang') || 'en');
+  // Sync icon con tema actual
+  (function(){ const dark = document.documentElement.classList.contains('dark');
+    document.getElementById('theme-ic-moon').classList.toggle('hidden', !dark);
+    document.getElementById('theme-ic-sun').classList.toggle('hidden', dark);
+  })();
+</script>
+
 </body>
 </html>

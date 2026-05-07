@@ -1,51 +1,149 @@
 <!DOCTYPE html>
-<html lang="en">
+<html class="dark" lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title data-i18n="projects.rpa.pageTitle">Invoice reconciliation automation</title>
-    <link rel="stylesheet" href="../assets/css/bootstrap.min.css">
-    <link rel="stylesheet" href="../assets/css/project-detail.css">
-</head>
-<body>
-    <main class="container py-5">
-        <div class="text-right mb-4">
-            <label for="language-switcher" class="sr-only" data-i18n="projects.common.languageLabel">Language</label>
-            <select id="language-switcher" class="language-switcher" data-i18n-attrs="aria-label:projects.common.languageAria">
-                <option value="en" data-i18n="language.option.en">EN</option>
-                <option value="es" data-i18n="language.option.es">ES</option>
-            </select>
-        </div>
-        <h1 class="mb-4" data-i18n="projects.rpa.heading">SAP invoice reconciliation RPA bot</h1>
-        <p class="lead" data-i18n="projects.rpa.lead">Automation script built with Python + Selenium that integrates the vendor portal with SAP FI to accelerate monthly reconciliation.</p>
-        <section class="mb-4">
-            <h2 data-i18n="projects.rpa.objectiveTitle">Objective</h2>
-            <p data-i18n="projects.rpa.objectiveDescription">Reduce reconciliation time for pending invoices by automating statement downloads, incident classification, and adjustment posting in SAP.</p>
-        </section>
-        <section class="mb-4">
-            <h2 data-i18n="projects.rpa.stackTitle">Stack</h2>
-            <ul>
-                <li data-i18n="projects.rpa.stack.item1">Python 3.10</li>
-                <li data-i18n="projects.rpa.stack.item2">Selenium with WebDriver Manager</li>
-                <li data-i18n="projects.rpa.stack.item3">Internal SAP REST APIs</li>
-                <li data-i18n="projects.rpa.stack.item4">Orchestration with Jenkins</li>
-            </ul>
-        </section>
-        <section class="mb-4">
-            <h2 data-i18n="projects.rpa.resultsTitle">Results</h2>
-            <ul>
-                <li data-i18n="projects.rpa.results.item1">80% reduction in monthly reconciliation time.</li>
-                <li data-i18n="projects.rpa.results.item2">Automatic email alerts for differences greater than MXN $5,000.</li>
-                <li data-i18n="projects.rpa.results.item3">Consolidated report available in Power BI in under 30 minutes.</li>
-            </ul>
-        </section>
-        <p><a class="btn btn-primary" href="../pythoncodes/seleniumprueba1.py" target="_blank" rel="noopener" data-i18n="projects.rpa.button">View Selenium script</a></p>
-        <p><a href="../index.html" data-i18n="projects.common.back">← Back</a></p>
-    </main>
+  <script>
+    (function(){
+      var t=localStorage.getItem('theme');
+      var preferLight=window.matchMedia('(prefers-color-scheme:light)').matches;
+      var theme=(t==='dark'||t==='light')?t:(preferLight?'light':'dark');
+      document.documentElement.classList.remove('dark','light');
+      document.documentElement.classList.add(theme);
+      var l=localStorage.getItem('lang')||((navigator.language||'en').toLowerCase().startsWith('es')?'es':'en');
+      document.documentElement.setAttribute('lang',l);
+      document.documentElement.setAttribute('data-lang',l);
+    })();
+  </script>
 
-    <script src="../assets/js/jquery.min.js"></script>
-    <script src="../assets/js/bootstrap.min.js"></script>
-    <script src="../assets/js/i18n.js"></script>
-    <script src="../assets/js/script.js"></script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title data-i18n="meta.title">SAP Invoice Reconciliation RPA · Mario Huarte Nolasco</title>
+  <meta name="description" data-i18n="meta.desc" content="Python + Selenium automation that integrates vendor portal with SAP FI for monthly reconciliation.">
+
+  <link rel="icon" type="image/png" sizes="32x32" href="../assets/img/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="../assets/img/favicon-16x16.png">
+  <link rel="canonical" href="https://mariounam.github.io/projects/rpa-invoice-automation.html">
+
+  <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;700;800&family=Inter:wght@400;500;600&family=Space+Grotesk:wght@400;500;700&display=swap" rel="stylesheet">
+
+  <script src="https://cdn.tailwindcss.com?plugins=forms"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: { extend: {
+        colors: {
+          'surface': 'var(--surface)', 'surface-container': 'var(--surface-container)',
+          'surface-container-low': 'var(--surface-container-low)',
+          'surface-container-high': 'var(--surface-container-high)',
+          'on-surface': 'var(--on-surface)', 'on-surface-variant': 'var(--on-surface-variant)',
+          'primary': 'var(--primary)', 'on-primary': 'var(--on-primary)',
+          'outline-variant': 'var(--outline-variant)',
+        },
+        fontFamily: { headline: ['Manrope','sans-serif'], body: ['Inter','sans-serif'], label: ['Space Grotesk','sans-serif'] }
+      }}
+    };
+  </script>
+
+  <link rel="stylesheet" href="../assets/css/main.css">
+</head>
+<body class="font-body bg-surface text-on-surface min-h-screen">
+
+  <nav class="sticky top-0 z-40 bg-surface/80 backdrop-blur-md border-b border-outline-variant/30">
+    <div class="max-w-4xl mx-auto px-6 py-3 flex items-center justify-between gap-4">
+      <a href="../index.html" class="text-xs font-label uppercase tracking-widest text-on-surface-variant hover:text-primary transition-colors flex items-center gap-1">
+        <svg class="w-3 h-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+        <span data-i18n="back">Back to portfolio</span>
+      </a>
+      <div class="flex items-center gap-2">
+        <button onclick="toggleLang()" class="text-xs font-label font-bold uppercase tracking-wider text-on-surface-variant hover:text-primary transition-colors px-2 py-1 border border-outline-variant/40 rounded">
+          <span id="lang-label">ES</span>
+        </button>
+        <button onclick="toggleTheme()" class="text-on-surface-variant hover:text-primary transition-colors p-1.5 border border-outline-variant/40 rounded" aria-label="Toggle theme">
+          <svg id="theme-ic-moon" class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+          <svg id="theme-ic-sun" class="w-4 h-4 hidden" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/></svg>
+        </button>
+      </div>
+    </div>
+  </nav>
+
+  <main class="max-w-4xl mx-auto px-6 py-12">
+    <span class="inline-block text-[10px] font-label font-bold uppercase tracking-widest text-primary mb-4" data-i18n="tag">Project · RPA / Python</span>
+    <h1 class="font-headline text-4xl md:text-5xl font-extrabold tracking-tight mb-4" data-i18n="heading">
+      SAP invoice reconciliation RPA bot
+    </h1>
+    <p class="text-lg text-on-surface-variant leading-relaxed mb-12" data-i18n="lead">
+      Automation script built with Python + Selenium that integrates the vendor portal with SAP FI to accelerate monthly reconciliation.
+    </p>
+
+    <section class="mb-10">
+      <h2 class="font-headline text-2xl font-bold mb-4" data-i18n="section1Title">Objective</h2>
+      <p class="text-on-surface-variant leading-relaxed" data-i18n="section1Body">Reduce reconciliation time for pending invoices by automating statement downloads, incident classification, and adjustment posting in SAP.</p>
+    </section>
+
+    <section class="mb-10">
+      <h2 class="font-headline text-2xl font-bold mb-4" data-i18n="section2Title">Stack</h2>
+      <ul class="space-y-2 text-on-surface-variant"><li class="flex gap-3"><span class="text-primary">▸</span><span data-i18n="item2.0">Python 3.10</span></li><li class="flex gap-3"><span class="text-primary">▸</span><span data-i18n="item2.1">Selenium with WebDriver Manager</span></li><li class="flex gap-3"><span class="text-primary">▸</span><span data-i18n="item2.2">Internal SAP REST APIs</span></li><li class="flex gap-3"><span class="text-primary">▸</span><span data-i18n="item2.3">Orchestration with Jenkins</span></li></ul>
+    </section>
+
+    <section class="mb-10">
+      <h2 class="font-headline text-2xl font-bold mb-4" data-i18n="section3Title">Results</h2>
+      <ul class="space-y-2 text-on-surface-variant"><li class="flex gap-3"><span class="text-primary">▸</span><span data-i18n="item3.0">80% reduction in monthly reconciliation time.</span></li><li class="flex gap-3"><span class="text-primary">▸</span><span data-i18n="item3.1">Automatic email alerts for differences greater than MXN $5,000.</span></li><li class="flex gap-3"><span class="text-primary">▸</span><span data-i18n="item3.2">Consolidated report available in Power BI in under 30 minutes.</span></li></ul>
+    </section>
+
+    <section class="mb-10 p-6 border border-outline-variant/40 rounded bg-surface-container-low">
+      <p class="text-xs font-label uppercase tracking-widest text-on-surface-variant mb-2" data-i18n="demoNoteLabel">Code availability</p>
+      <p class="text-on-surface-variant leading-relaxed" data-i18n="demoNote">
+        The Selenium proof-of-concept script is available on request — production code is private under client NDA. Reach out for a sanitized walkthrough.
+      </p>
+    </section>
+
+    <a href="../index.html#contact"
+       class="inline-flex items-center gap-2 px-6 py-3 bg-primary text-on-primary font-label font-bold uppercase tracking-wide text-sm rounded transition-all hover:shadow-[0_0_24px_rgba(76,214,251,0.25)]"
+       data-i18n="cta">
+      Request walkthrough
+    </a>
+  </main>
+
+  <footer class="border-t border-outline-variant/30 mt-16 py-6 text-center text-xs text-on-surface-variant">
+    © 2026 Mario Huarte Nolasco
+  </footer>
+
+<script>
+  const I18N = { en: {"meta.title":"SAP Invoice Reconciliation RPA · Mario Huarte Nolasco","meta.desc":"Python + Selenium automation that integrates vendor portal with SAP FI for monthly reconciliation.","tag":"Project · RPA / Python","heading":"SAP invoice reconciliation RPA bot","lead":"Automation script built with Python + Selenium that integrates the vendor portal with SAP FI to accelerate monthly reconciliation.","section1Title":"Objective","section1Body":"Reduce reconciliation time for pending invoices by automating statement downloads, incident classification, and adjustment posting in SAP.","section2Title":"Stack","section3Title":"Results","demoNoteLabel":"Code availability","demoNote":"The Selenium proof-of-concept script is available on request — production code is private under client NDA. Reach out for a sanitized walkthrough.","cta":"Request walkthrough","item2.0":"Python 3.10","item2.1":"Selenium with WebDriver Manager","item2.2":"Internal SAP REST APIs","item2.3":"Orchestration with Jenkins","item3.0":"80% reduction in monthly reconciliation time.","item3.1":"Automatic email alerts for differences greater than MXN $5,000.","item3.2":"Consolidated report available in Power BI in under 30 minutes."}, es: {"meta.title":"RPA conciliación facturas SAP · Mario Huarte Nolasco","meta.desc":"Automatización Python + Selenium que integra portal de proveedores con SAP FI para la conciliación mensual.","tag":"Proyecto · RPA / Python","heading":"Bot RPA de conciliación de facturas en SAP","lead":"Script de automatización construido con Python + Selenium que integra el portal de proveedores con SAP FI para acelerar la conciliación mensual.","section1Title":"Objetivo","section1Body":"Reducir el tiempo de conciliación de facturas pendientes automatizando descargas de estados de cuenta, clasificación de incidencias y captura de ajustes en SAP.","section2Title":"Stack","section3Title":"Resultados","demoNoteLabel":"Disponibilidad del código","demoNote":"El script Selenium proof-of-concept está disponible bajo petición — el código productivo es privado bajo NDA del cliente. Contáctame para un walkthrough sanitizado.","cta":"Solicitar walkthrough","item2.0":"Python 3.10","item2.1":"Selenium con WebDriver Manager","item2.2":"APIs REST internas de SAP","item2.3":"Orquestación con Jenkins","item3.0":"Reducción del 80% en el tiempo mensual de conciliación.","item3.1":"Alertas automáticas por correo para diferencias mayores a MXN $5,000.","item3.2":"Reporte consolidado disponible en Power BI en menos de 30 minutos."} };
+  function applyI18n(lang) {
+    const dict = I18N[lang] || I18N.en;
+    document.querySelectorAll('[data-i18n]').forEach(el => {
+      const key = el.getAttribute('data-i18n');
+      if (dict[key] != null) {
+        if (el.tagName === 'TITLE') document.title = dict[key];
+        else if (el.tagName === 'META') el.setAttribute('content', dict[key]);
+        else el.textContent = dict[key];
+      }
+    });
+    document.getElementById('lang-label').textContent = lang === 'es' ? 'EN' : 'ES';
+  }
+  function toggleLang() {
+    const cur = document.documentElement.getAttribute('data-lang') || 'en';
+    const next = cur === 'es' ? 'en' : 'es';
+    localStorage.setItem('lang', next);
+    document.documentElement.setAttribute('lang', next);
+    document.documentElement.setAttribute('data-lang', next);
+    applyI18n(next);
+  }
+  function toggleTheme() {
+    const cur = document.documentElement.classList.contains('dark') ? 'dark' : 'light';
+    const next = cur === 'dark' ? 'light' : 'dark';
+    document.documentElement.classList.remove('dark','light');
+    document.documentElement.classList.add(next);
+    localStorage.setItem('theme', next);
+    document.getElementById('theme-ic-moon').classList.toggle('hidden', next !== 'dark');
+    document.getElementById('theme-ic-sun').classList.toggle('hidden', next === 'dark');
+  }
+  applyI18n(document.documentElement.getAttribute('data-lang') || 'en');
+  (function(){ const dark = document.documentElement.classList.contains('dark');
+    document.getElementById('theme-ic-moon').classList.toggle('hidden', !dark);
+    document.getElementById('theme-ic-sun').classList.toggle('hidden', dark);
+  })();
+</script>
+
 </body>
 </html>

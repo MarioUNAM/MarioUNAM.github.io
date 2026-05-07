@@ -1,0 +1,13 @@
+User-agent: *
+Allow: /
+
+# No indexar páginas de redirección post-form
+Disallow: /contact-success.html
+Disallow: /contact-error.html
+
+# No indexar templates legacy
+Disallow: /WEB_examples/
+Disallow: /stitch/
+Disallow: /pythoncodes/
+
+Sitemap: https://mariounam.github.io/sitemap.xml

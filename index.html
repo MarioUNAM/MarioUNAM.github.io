@@ -22,6 +22,32 @@
   <meta name="author" content="Mario Huarte Nolasco" />
   <meta name="keywords" content="Mario Huarte Nolasco, MDM, TIBCO EBX, Java, Master Data Management, portfolio, UNAM" />
 
+  <!-- Canonical -->
+  <link rel="canonical" href="https://mariounam.github.io/" />
+
+  <!-- Open Graph -->
+  <meta property="og:type" content="profile" />
+  <meta property="og:site_name" content="MAHUNO — Mario Huarte Nolasco" />
+  <meta property="og:title" content="Mario Huarte Nolasco — MDM Specialist & Java Developer" />
+  <meta property="og:description" content="MDM consultant & Java developer from UNAM. TIBCO EBX specialist, SnapLogic integrations, AI data governance. 4+ yrs at Alldatum Business. Based in CDMX." />
+  <meta property="og:url" content="https://mariounam.github.io/" />
+  <meta property="og:image" content="https://mariounam.github.io/assets/img/me.jfif" />
+  <meta property="og:locale" content="en_US" />
+  <meta property="og:locale:alternate" content="es_MX" />
+  <meta property="profile:first_name" content="Mario" />
+  <meta property="profile:last_name" content="Huarte Nolasco" />
+
+  <!-- Twitter Card -->
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="Mario Huarte Nolasco — MDM Specialist & Java Developer" />
+  <meta name="twitter:description" content="MDM consultant & Java developer from UNAM. TIBCO EBX specialist, SnapLogic integrations, AI data governance." />
+  <meta name="twitter:image" content="https://mariounam.github.io/assets/img/me.jfif" />
+
+  <!-- JSON-LD: Person -->
+  <script type="application/ld+json">
+  {"@context":"https://schema.org","@type":"Person","name":"Mario Huarte Nolasco","jobTitle":"MDM Specialist & Java Developer","url":"https://mariounam.github.io/","image":"https://mariounam.github.io/assets/img/me.jfif","alumniOf":{"@type":"CollegeOrUniversity","name":"Universidad Nacional Autónoma de México","sameAs":"https://www.unam.mx/"},"worksFor":{"@type":"Organization","name":"Alldatum Business"},"address":{"@type":"PostalAddress","addressLocality":"Ciudad de México","addressCountry":"MX"},"sameAs":["https://www.linkedin.com/in/mario-huarte-nolasco-874436202/","https://github.com/MarioUNAM"]}
+  </script>
+
   <!-- Favicon -->
   <link rel="icon" type="image/png" sizes="32x32" href="assets/img/favicon-32x32.png" />
   <link rel="icon" type="image/png" sizes="16x16" href="assets/img/favicon-16x16.png" />
@@ -1356,10 +1382,11 @@
       });
     }
 
-    /* ── Typing effect ───────────────────────────────────── */
+    /* ── Typing effect (respeta prefers-reduced-motion) ──── */
     var phrases = ['MDM Consultant','TIBCO EBX Developer','Java Developer','Data Consultant'];
     var pi=0, ci=0, del=false;
     var tgt = document.getElementById('typing-target');
+    var prefersReducedMotion = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
     function type(){
       if(!tgt) return;
       var cur=phrases[pi];
@@ -1367,7 +1394,11 @@
       else { tgt.textContent=cur.slice(0,--ci); if(ci===0){del=false;pi=(pi+1)%phrases.length;} }
       setTimeout(type,del?50:80);
     }
-    type();
+    if (prefersReducedMotion) {
+      if (tgt) tgt.textContent = phrases[0];
+    } else {
+      type();
+    }
 
     /* ── Testimonials (render + hide if empty) ───────────── */
     var grid = document.getElementById('testimonials-grid');

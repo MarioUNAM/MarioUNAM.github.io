@@ -1706,6 +1706,41 @@ input[type=range]::-moz-range-thumb {
     </button>
     <button class="btn-secondary" id="btn-download-summary" style="flex:1">Descargar .json</button>
   </div>
+
+  <!-- ──────────────────────────────────────────────────────────
+       ASISTENTE IA — generar prompt y aplicar análisis
+       ────────────────────────────────────────────────────────── -->
+  <div class="section-title" style="margin-top:32px">
+    <h2>Asistente IA</h2>
+    <span class="section-tag">AI · COACH</span>
+  </div>
+  <p class="section-desc">Genera un prompt con tu contexto (perfil, objetivos, últimas semanas) y pégalo en tu LLM favorito. Luego pega aquí el JSON estructurado que te devuelva y se aplica al sistema.</p>
+
+  <div class="actions-row">
+    <button class="btn-primary" id="btn-ia-prompt" style="flex:2">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+      Copiar prompt para IA
+    </button>
+    <button class="btn-secondary" id="btn-ia-paste" style="flex:1">Pegar análisis</button>
+  </div>
+
+  <div id="ia-paste-panel" class="card" hidden style="margin-top:14px">
+    <label class="field">
+      <span class="field-label">Pega el JSON devuelto por la IA</span>
+      <textarea id="ia-paste-input" class="textarea mono" rows="10" placeholder='{ "version": 1, "fechaAnalisis": "...", "resumen": "...", "ajustesObjetivos": { ... }, ... }' style="font-size:12px"></textarea>
+    </label>
+    <div class="actions-row">
+      <button class="btn-primary" id="btn-ia-apply" style="flex:2">Validar y aplicar</button>
+      <button class="btn-secondary" id="btn-ia-cancel" style="flex:1">Cancelar</button>
+    </div>
+  </div>
+
+  <div id="ia-last-analysis" class="card" hidden style="margin-top:14px">
+    <h3 style="font:600 14px/1.2 var(--font-sans);color:var(--text);margin-bottom:8px">Último análisis IA</h3>
+    <p class="ia-meta mono" id="ia-last-meta" style="color:var(--text-muted);font-size:12px;margin-bottom:8px">—</p>
+    <p id="ia-last-resumen" style="color:var(--text)">—</p>
+    <div id="ia-last-detalle"></div>
+  </div>
 </section>
 
 </main>
@@ -2058,7 +2093,7 @@ function activateTab(name) {
   });
   panels.forEach(p => p.classList.toggle("active", p.id === "tab-" + name));
   if (name === "dashboard") renderDashboard();
-  if (name === "resumen")   renderSummary();
+  if (name === "resumen")   { renderSummary(); renderLastIAAnalysis(); }
   if (isMobileNav()) closeDrawer();
   // Reset scroll para que el panel nuevo arranque desde arriba
   if (typeof window !== "undefined" && window.scrollTo) window.scrollTo({ top: 0, behavior: "auto" });
@@ -2999,7 +3034,13 @@ function renderDashboard() {
   const imc = calcIMC(peso, state.perfil?.altura);
 
   // Calorías objetivo (TDEE Mifflin-St Jeor) — null si falta edad o peso
+  // Si el usuario o la IA puso un override en state.objetivos.kcalDiarias,
+  // se respeta como objetivoKcal (TDEE/BMR siguen calculados).
   const kcal = calcCaloriasFromState();
+  if (kcal && state.objetivos?.kcalDiarias != null) {
+    kcal.objetivoKcal = state.objetivos.kcalDiarias;
+    kcal.override = true;
+  }
   const cards = [
     { kind: "sesiones",    label: "Sesiones (semana)", value: last.sesionesTotales, unit: "", display: last.sesionesTotales },
     { kind: "cardio",      label: "Cardio (min)",      value: last.minutosCardio, unit: "min", display: last.minutosCardio, cls: "blue" },
@@ -3490,6 +3531,215 @@ document.getElementById("btn-download-summary").addEventListener("click", () => 
 });
 
 /* ============================================================
+   R2.  ASISTENTE IA — generar prompt, validar y aplicar análisis
+   ------------------------------------------------------------
+   Schema de respuesta esperado (estricto):
+   {
+     "version": 1,
+     "fechaAnalisis": "YYYY-MM-DD",
+     "resumen": "...",
+     "ajustesObjetivos": {
+       "kcalDiarias": number|null,
+       "proteinaG": number|null,
+       "razon": "..."
+     },
+     "recomendaciones": [
+       { "tipo": "ejercicio|nutricion|descanso|otros",
+         "texto": "...", "prioridad": "alta|media|baja" }
+     ],
+     "proximaMedicion": {
+       "fechaSugerida": "YYYY-MM-DD",
+       "focos": ["peso","cintura",...]
+     },
+     "alertas": [{ "nivel": "info|warn", "texto": "..." }]
+   }
+   ============================================================ */
+function buildIAContext() {
+  const ult4 = []; // últimas 4 semanas resumidas
+  for (let i = 3; i >= 0; i--) {
+    const wk = addDays(startOfWeek(new Date()), -7 * i);
+    const m = weekMetrics(wk);
+    ult4.push({
+      semana: formatWeekTitle(wk),
+      sesiones: m.sesionesTotales,
+      diasEntrenados: m.diasEntrenados,
+      consistenciaPct: m.consistencia,
+      minutosCardio: m.minutosCardio,
+      volumenFuerza: m.volumenFuerza,
+      intensidad: m.intensidadProm,
+      pesoFin: m.pesoFin,
+      grasaFin: m.grasaFin,
+      masaMagraFin: m.masaMagraFin
+    });
+  }
+  const ultMed = [...(state.mediciones || [])]
+    .sort((a,b) => a.fecha.localeCompare(b.fecha)).slice(-1)[0] || null;
+  return {
+    perfil: state.perfil,
+    objetivos: state.objetivos,
+    calorias: calcCaloriasFromState(),
+    ultimaMedicion: ultMed,
+    ultimas4Semanas: ult4,
+    analisisIAprevios: (state.analisisIA || []).slice(-3)
+  };
+}
+
+function buildIAPrompt() {
+  const ctx = buildIAContext();
+  return `Eres un coach de fitness y nutrición basado en evidencia (Mifflin-St Jeor para BMR, OMS para cardio, ACSM para fuerza). Analiza los datos del usuario y devuelve EXCLUSIVAMENTE un objeto JSON válido (sin markdown, sin texto fuera del JSON) con este schema estricto:
+
+{
+  "version": 1,
+  "fechaAnalisis": "YYYY-MM-DD",
+  "resumen": "string corto (2-3 oraciones)",
+  "ajustesObjetivos": {
+    "kcalDiarias": number|null,
+    "proteinaG": number|null,
+    "razon": "string explicando por qué ajustar (o null si no procede)"
+  },
+  "recomendaciones": [
+    {
+      "tipo": "ejercicio"|"nutricion"|"descanso"|"otros",
+      "texto": "acción concreta y medible",
+      "prioridad": "alta"|"media"|"baja"
+    }
+  ],
+  "proximaMedicion": {
+    "fechaSugerida": "YYYY-MM-DD",
+    "focos": ["peso"|"cintura"|"cuello"|"cadera"|"grasa"]
+  },
+  "alertas": [
+    { "nivel": "info"|"warn", "texto": "string" }
+  ]
+}
+
+REGLAS:
+1. Si los datos son insuficientes en algún campo, usa null pero mantén la estructura.
+2. fechaAnalisis = fecha de hoy en formato ISO (YYYY-MM-DD).
+3. Máximo 5 recomendaciones, ordenadas por prioridad descendente.
+4. Si recomiendas cambiar kcal/proteína, razón obligatoria.
+5. NO incluyas explicaciones fuera del JSON. La respuesta debe parsear con JSON.parse() sin modificación.
+
+DATOS DEL USUARIO:
+${JSON.stringify(ctx, null, 2)}
+
+Devuelve ahora el JSON.`;
+}
+
+function validateIAResponse(p) {
+  if (!p || typeof p !== "object") return "No es un objeto";
+  if (p.version !== 1) return "version debe ser 1";
+  if (typeof p.fechaAnalisis !== "string" || !/^\d{4}-\d{2}-\d{2}$/.test(p.fechaAnalisis)) return "fechaAnalisis inválida (YYYY-MM-DD)";
+  if (typeof p.resumen !== "string") return "resumen debe ser string";
+  if (!p.ajustesObjetivos || typeof p.ajustesObjetivos !== "object") return "ajustesObjetivos faltante";
+  const ao = p.ajustesObjetivos;
+  if (ao.kcalDiarias != null && typeof ao.kcalDiarias !== "number") return "ajustesObjetivos.kcalDiarias debe ser number|null";
+  if (ao.proteinaG  != null && typeof ao.proteinaG  !== "number") return "ajustesObjetivos.proteinaG debe ser number|null";
+  if (!Array.isArray(p.recomendaciones)) return "recomendaciones debe ser array";
+  for (const r of p.recomendaciones) {
+    if (!r || typeof r !== "object") return "recomendación inválida";
+    if (!["ejercicio","nutricion","descanso","otros"].includes(r.tipo)) return "tipo de recomendación inválido";
+    if (typeof r.texto !== "string") return "recomendación.texto debe ser string";
+    if (!["alta","media","baja"].includes(r.prioridad)) return "prioridad inválida";
+  }
+  if (!p.proximaMedicion || typeof p.proximaMedicion !== "object") return "proximaMedicion faltante";
+  if (!Array.isArray(p.alertas)) return "alertas debe ser array";
+  return null;
+}
+
+function applyIAResponse(parsed) {
+  // Aplicar ajustes a state.objetivos si vienen
+  const ao = parsed.ajustesObjetivos || {};
+  let aplicados = [];
+  if (ao.kcalDiarias != null) {
+    state.objetivos.kcalDiarias = Math.round(ao.kcalDiarias);
+    aplicados.push(`kcal: ${state.objetivos.kcalDiarias}`);
+  }
+  if (ao.proteinaG != null) {
+    state.objetivos.proteinaG = Math.round(ao.proteinaG);
+    aplicados.push(`proteína: ${state.objetivos.proteinaG} g`);
+  }
+  // Persistir el análisis con timestamp local
+  const entry = Object.assign({ aplicadoEn: new Date().toISOString() }, parsed);
+  state.analisisIA = state.analisisIA || [];
+  state.analisisIA.push(entry);
+  // Mantener solo últimos 20 para no saturar localStorage
+  if (state.analisisIA.length > 20) state.analisisIA = state.analisisIA.slice(-20);
+  saveState();
+  renderLastIAAnalysis();
+  if (typeof renderDashboard === "function" &&
+      document.getElementById("tab-dashboard")?.classList.contains("active")) {
+    renderDashboard();
+  }
+  return aplicados;
+}
+
+function renderLastIAAnalysis() {
+  const card = document.getElementById("ia-last-analysis");
+  if (!card) return;
+  const list = state.analisisIA || [];
+  if (!list.length) { card.hidden = true; return; }
+  const last = list[list.length - 1];
+  card.hidden = false;
+  document.getElementById("ia-last-meta").textContent =
+    `${last.fechaAnalisis} · aplicado ${new Date(last.aplicadoEn).toLocaleString("es-MX")}`;
+  document.getElementById("ia-last-resumen").textContent = last.resumen || "—";
+  const detalle = document.getElementById("ia-last-detalle");
+  const ao = last.ajustesObjetivos || {};
+  const recs = (last.recomendaciones || []).slice(0, 5);
+  const alerts = last.alertas || [];
+  // escapeHtml ya existe globalmente (definido más abajo en T2.refreshDatalists);
+  // function declarations son hoisted al scope del script.
+  detalle.innerHTML = `
+    ${ao.razon ? `<p style="color:var(--text-muted);font-size:13px;margin-top:8px"><strong>Ajustes:</strong> ${escapeHtml(ao.razon)}${ao.kcalDiarias!=null?` · kcal=${ao.kcalDiarias}`:""}${ao.proteinaG!=null?` · proteína=${ao.proteinaG}g`:""}</p>` : ""}
+    ${recs.length ? `<ul style="margin-top:8px;padding-left:20px">${recs.map(r => `<li style="margin-bottom:4px;color:var(--text)"><strong style="text-transform:uppercase;font-size:11px;letter-spacing:0.05em;color:var(--text-muted)">[${r.prioridad}·${r.tipo}]</strong> ${escapeHtml(r.texto)}</li>`).join("")}</ul>` : ""}
+    ${alerts.length ? `<div style="margin-top:8px">${alerts.map(a => `<div style="padding:6px 10px;border-left:3px solid ${a.nivel==="warn"?"var(--warn,#f59e0b)":"var(--text-muted)"};background:var(--bg-elev-2);margin-bottom:4px;font-size:13px">${escapeHtml(a.texto)}</div>`).join("")}</div>` : ""}
+    ${last.proximaMedicion?.fechaSugerida ? `<p style="margin-top:8px;color:var(--text-muted);font-size:12px">Próxima medición sugerida: <strong style="color:var(--text)">${last.proximaMedicion.fechaSugerida}</strong>${(last.proximaMedicion.focos||[]).length?` · focos: ${last.proximaMedicion.focos.join(", ")}`:""}</p>` : ""}
+  `;
+}
+
+document.getElementById("btn-ia-prompt")?.addEventListener("click", async () => {
+  const prompt = buildIAPrompt();
+  try {
+    await navigator.clipboard.writeText(prompt);
+    toast("Prompt copiado · pégalo en tu LLM");
+  } catch {
+    // Fallback: mostrar en textarea para copia manual
+    const panel = document.getElementById("ia-paste-panel");
+    const ta    = document.getElementById("ia-paste-input");
+    panel.hidden = false;
+    ta.value = prompt;
+    ta.select();
+    toast("No se pudo auto-copiar — selecciona y copia manualmente", "error");
+  }
+});
+document.getElementById("btn-ia-paste")?.addEventListener("click", () => {
+  const panel = document.getElementById("ia-paste-panel");
+  panel.hidden = !panel.hidden;
+  if (!panel.hidden) document.getElementById("ia-paste-input").focus();
+});
+document.getElementById("btn-ia-cancel")?.addEventListener("click", () => {
+  document.getElementById("ia-paste-panel").hidden = true;
+  document.getElementById("ia-paste-input").value = "";
+});
+document.getElementById("btn-ia-apply")?.addEventListener("click", () => {
+  const raw = document.getElementById("ia-paste-input").value.trim();
+  if (!raw) return toast("Pega el JSON antes de aplicar", "error");
+  let parsed;
+  try { parsed = JSON.parse(raw); }
+  catch (e) { return toast("JSON inválido: " + e.message, "error"); }
+  const err = validateIAResponse(parsed);
+  if (err) return toast("Schema inválido: " + err, "error");
+  if (!confirm("¿Aplicar este análisis? Se guardará en el historial y se ajustarán objetivos si corresponde.")) return;
+  const aplicados = applyIAResponse(parsed);
+  document.getElementById("ia-paste-panel").hidden = true;
+  document.getElementById("ia-paste-input").value = "";
+  toast(aplicados.length
+    ? "Análisis aplicado · " + aplicados.join(", ")
+    : "Análisis registrado (sin cambios de objetivos)");
+});
+
+/* ============================================================
    S.  EXPORTAR / IMPORTAR
    ============================================================ */
 document.getElementById("btn-export").addEventListener("click", () => {
@@ -3570,6 +3820,7 @@ function renderAll() {
   renderEjerciciosList();
   renderMedicionesList();
   renderComidasList();
+  renderLastIAAnalysis();
   const active = document.querySelector(".tab.active").dataset.tab;
   if (active === "dashboard") renderDashboard();
   if (active === "resumen")   renderSummary();

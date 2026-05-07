@@ -5,7 +5,13 @@
    network-first con fallback a cache para el resto.
    Sube CACHE_VERSION cuando publiques cambios para invalidar.
    ============================================================ */
-const CACHE_VERSION = "tracker-v4";
+const CACHE_VERSION = "tracker-v5";
+
+// Permite al cliente forzar la activación del SW nuevo cuando
+// el usuario aprueba el prompt "Recargar" del tracker.
+self.addEventListener("message", e => {
+  if (e.data && e.data.type === "SKIP_WAITING") self.skipWaiting();
+});
 const CORE_ASSETS = [
   "./tracker.html",
   "./manifest.json",

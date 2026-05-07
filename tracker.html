@@ -1265,11 +1265,11 @@ input[type=range]::-moz-range-thumb {
   </div>
 
   <nav class="tabs" role="tablist">
-    <button class="tab active" data-tab="ejercicios" role="tab"><span class="tab-num">01</span>Ejercicios</button>
-    <button class="tab"        data-tab="mediciones" role="tab"><span class="tab-num">02</span>Mediciones</button>
-    <button class="tab"        data-tab="comidas"    role="tab"><span class="tab-num">03</span>Comidas</button>
-    <button class="tab"        data-tab="dashboard"  role="tab"><span class="tab-num">04</span>Dashboard</button>
-    <button class="tab"        data-tab="resumen"    role="tab"><span class="tab-num">05</span>Resumen</button>
+    <button class="tab active" data-tab="ejercicios" role="tab" aria-selected="true"  aria-controls="tab-ejercicios"><span class="tab-num">01</span>Ejercicios</button>
+    <button class="tab"        data-tab="mediciones" role="tab" aria-selected="false" aria-controls="tab-mediciones"><span class="tab-num">02</span>Mediciones</button>
+    <button class="tab"        data-tab="comidas"    role="tab" aria-selected="false" aria-controls="tab-comidas"   ><span class="tab-num">03</span>Comidas</button>
+    <button class="tab"        data-tab="dashboard"  role="tab" aria-selected="false" aria-controls="tab-dashboard" ><span class="tab-num">04</span>Dashboard</button>
+    <button class="tab"        data-tab="resumen"    role="tab" aria-selected="false" aria-controls="tab-resumen"   ><span class="tab-num">05</span>Resumen</button>
   </nav>
 
   <div class="sidebar-actions">
@@ -1675,7 +1675,7 @@ input[type=range]::-moz-range-thumb {
 <datalist id="dl-alimentos"></datalist>
 <datalist id="dl-cantidades"></datalist>
 
-<div id="toast"></div>
+<div id="toast" role="status" aria-live="polite" aria-atomic="true"></div>
 
 <!-- ============================================================
      SCRIPT PRINCIPAL
@@ -1740,7 +1740,14 @@ function startOfWeek(d) {
 function endOfWeek(d) { return addDays(startOfWeek(d), 6); }
 function fmtDateShort(s) { return parseDate(s).toLocaleDateString("es-MX", { day:"2-digit", month:"short" }); }
 function fmtDateLong(s)  { return parseDate(s).toLocaleDateString("es-MX", { weekday:"short", day:"2-digit", month:"short" }); }
-function uid() { return Date.now().toString(36) + Math.random().toString(36).slice(2,7); }
+function uid() {
+  // crypto.randomUUID() es soportado en todos los navegadores modernos (2021+)
+  // Fallback al método casero para entornos antiguos / jsdom sin crypto.
+  if (typeof crypto !== "undefined" && typeof crypto.randomUUID === "function") {
+    return crypto.randomUUID();
+  }
+  return Date.now().toString(36) + Math.random().toString(36).slice(2,9);
+}
 
 /* ============================================================
    C.  CÁLCULO DE GRASA — fórmula US Navy
@@ -1871,6 +1878,12 @@ function applyTheme(theme) {
 document.getElementById("btn-theme")?.addEventListener("click", () => {
   const cur = document.documentElement.getAttribute("data-theme");
   applyTheme(cur === "dark" ? "light" : "dark");
+  // Re-renderizar gráficos si el dashboard está visible para que tomen
+  // los nuevos colores del tema (CHART_DEFAULTS lee CSS vars).
+  const dash = document.getElementById("tab-dashboard");
+  if (dash && dash.classList.contains("active") && typeof renderDashboard === "function") {
+    renderDashboard();
+  }
 });
 
 /* ============================================================
@@ -1905,11 +1918,17 @@ document.addEventListener("keydown", e => {
 });
 
 function activateTab(name) {
-  tabs.forEach(t => t.classList.toggle("active", t.dataset.tab === name));
+  tabs.forEach(t => {
+    const isActive = t.dataset.tab === name;
+    t.classList.toggle("active", isActive);
+    t.setAttribute("aria-selected", isActive ? "true" : "false");
+  });
   panels.forEach(p => p.classList.toggle("active", p.id === "tab-" + name));
   if (name === "dashboard") renderDashboard();
   if (name === "resumen")   renderSummary();
   if (isMobileNav()) closeDrawer();
+  // Reset scroll para que el panel nuevo arranque desde arriba
+  if (typeof window !== "undefined" && window.scrollTo) window.scrollTo({ top: 0, behavior: "auto" });
 }
 tabs.forEach(t => t.addEventListener("click", () => activateTab(t.dataset.tab)));
 
@@ -2682,24 +2701,39 @@ function lastNWeeks(n) {
    P.  DASHBOARD — gráficas
    ============================================================ */
 const charts = {};
-const CHART_DEFAULTS = () => ({
-  responsive: true,
-  maintainAspectRatio: false,
-  animation: { duration: 500 },
-  plugins: {
-    legend: { labels: { color: "#8b909a", font: { family: "Inter", size: 11 }, usePointStyle: true, boxWidth: 8 } },
-    tooltip: {
-      backgroundColor: "#1c1f25", titleColor: "#e8eaed", bodyColor: "#e8eaed",
-      borderColor: "#2e3138", borderWidth: 1, padding: 10, cornerRadius: 6,
-      titleFont: { family: "Inter", size: 12, weight: "600" },
-      bodyFont:  { family: "JetBrains Mono", size: 11 }
+// Lee tokens visuales del CSS para que los gráficos respeten el tema
+// activo (dark/light). Si por alguna razón el var está vacío, cae a un
+// valor neutro razonable.
+function readVar(name, fallback) {
+  if (typeof getComputedStyle !== "function" || typeof document === "undefined") return fallback;
+  const v = getComputedStyle(document.documentElement).getPropertyValue(name).trim();
+  return v || fallback;
+}
+const CHART_DEFAULTS = () => {
+  const text       = readVar("--text",        "#e8eaed");
+  const textMuted  = readVar("--text-muted",  "#8b909a");
+  const border     = readVar("--border",      "#23252b");
+  const borderStrong = readVar("--border-strong", "#2e3138");
+  const elev       = readVar("--bg-elev-2",   "#1c1f25");
+  return {
+    responsive: true,
+    maintainAspectRatio: false,
+    animation: { duration: 500 },
+    plugins: {
+      legend: { labels: { color: textMuted, font: { family: "Inter", size: 11 }, usePointStyle: true, boxWidth: 8 } },
+      tooltip: {
+        backgroundColor: elev, titleColor: text, bodyColor: text,
+        borderColor: borderStrong, borderWidth: 1, padding: 10, cornerRadius: 6,
+        titleFont: { family: "Inter", size: 12, weight: "600" },
+        bodyFont:  { family: "JetBrains Mono", size: 11 }
+      }
+    },
+    scales: {
+      x: { grid: { color: border, drawBorder: false }, ticks: { color: textMuted, font: { family: "JetBrains Mono", size: 10 } } },
+      y: { grid: { color: border, drawBorder: false }, ticks: { color: textMuted, font: { family: "JetBrains Mono", size: 10 } } }
     }
-  },
-  scales: {
-    x: { grid: { color: "#1c1f25", drawBorder: false }, ticks: { color: "#8b909a", font: { family: "JetBrains Mono", size: 10 } } },
-    y: { grid: { color: "#1c1f25", drawBorder: false }, ticks: { color: "#8b909a", font: { family: "JetBrains Mono", size: 10 } } }
-  }
-});
+  };
+};
 function killChart(key) { if (charts[key]) { charts[key].destroy(); delete charts[key]; } }
 
 /* Evalúa una métrica y devuelve {tag,level} para mostrar como categoría.
@@ -3263,11 +3297,27 @@ document.getElementById("file-import").addEventListener("change", e => {
       const parsed = JSON.parse(reader.result);
       if (!parsed.ejercicios || !parsed.mediciones || !parsed.comidas) throw new Error("Formato inválido");
       if (!confirm("¿Reemplazar todos los datos actuales con el archivo importado?")) return;
+      // Detectar y regenerar IDs duplicados (entre colecciones o dentro de cada una)
+      // para evitar corrupción de findIndex(x=>x.id===id) tras el import.
+      const seen = new Set();
+      let collisions = 0;
+      ["ejercicios","mediciones","comidas"].forEach(key => {
+        if (!Array.isArray(parsed[key])) return;
+        parsed[key].forEach(item => {
+          if (item && (item.id == null || seen.has(item.id))) {
+            item.id = uid();
+            collisions++;
+          }
+          if (item && item.id != null) seen.add(item.id);
+        });
+      });
       state = parsed;
       saveState();
       loadPerfilToForm();
       renderAll();
-      toast("Datos importados");
+      toast(collisions
+        ? `Datos importados (${collisions} ID${collisions===1?"":"s"} regenerado${collisions===1?"":"s"})`
+        : "Datos importados");
     } catch { toast("Archivo inválido", "error"); }
   };
   reader.readAsText(file);
@@ -3626,11 +3676,42 @@ renderAll();
 updateRepeatButtonVisibility();
 
 /* ============================================================
-   V.  SERVICE WORKER (PWA)
+   V.  SERVICE WORKER (PWA) — con prompt de actualización
+   ------------------------------------------------------------
+   Cuando el SW publica una nueva versión (CACHE_VERSION ↑) y
+   queda en estado "installed" mientras el viejo controla la
+   pestaña, mostramos un toast accionable para refrescar.
    ============================================================ */
 if ("serviceWorker" in navigator) {
+  let refreshing = false;
+  navigator.serviceWorker.addEventListener("controllerchange", () => {
+    if (refreshing) return;
+    refreshing = true;
+    window.location.reload();
+  });
+
   window.addEventListener("load", () => {
-    navigator.serviceWorker.register("./sw.js").catch(err => console.warn("SW no registrado:", err.message));
+    navigator.serviceWorker.register("./sw.js").then(reg => {
+      function notifyUpdate(worker) {
+        // Toast persistente con botón Recargar
+        const t = document.getElementById("toast");
+        if (!t) { worker.postMessage({ type: "SKIP_WAITING" }); return; }
+        t.innerHTML = 'Nueva versión disponible. <button type="button" id="sw-reload-btn" style="margin-left:8px;text-decoration:underline;background:none;border:none;color:inherit;cursor:pointer;font:inherit;">Recargar</button>';
+        t.classList.add("show");
+        const btn = document.getElementById("sw-reload-btn");
+        if (btn) btn.addEventListener("click", () => worker.postMessage({ type: "SKIP_WAITING" }));
+      }
+      if (reg.waiting) notifyUpdate(reg.waiting);
+      reg.addEventListener("updatefound", () => {
+        const installing = reg.installing;
+        if (!installing) return;
+        installing.addEventListener("statechange", () => {
+          if (installing.state === "installed" && navigator.serviceWorker.controller) {
+            notifyUpdate(installing);
+          }
+        });
+      });
+    }).catch(err => console.warn("SW no registrado:", err.message));
   });
 }
 </script>

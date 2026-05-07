@@ -26,31 +26,8 @@
   <!-- Fonts: self-hosted en main.css -->
   <link rel="preload" href="assets/fonts/manrope-latin-800.woff2" as="font" type="font/woff2" crossorigin>
 
-  <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
-  <script>
-    tailwind.config = {
-      darkMode: 'class',
-      theme: {
-        extend: {
-          colors: {
-            'surface':                   'var(--surface)',
-            'surface-container':         'var(--surface-container)',
-            'surface-container-high':    'var(--surface-container-high)',
-            'on-surface':                'var(--on-surface)',
-            'on-surface-variant':        'var(--on-surface-variant)',
-            'primary':                   'var(--primary)',
-            'on-primary':                'var(--on-primary)',
-            'outline-variant':           'var(--outline-variant)',
-          },
-          fontFamily: {
-            headline: ['Manrope', 'sans-serif'],
-            body:     ['Inter', 'sans-serif'],
-            label:    ['Space Grotesk', 'sans-serif'],
-          },
-        },
-      },
-    };
-  </script>
+  <!-- Tailwind compilado (build via 'npm run build:css') -->
+  <link rel="stylesheet" href="assets/css/tailwind.css">
 
   <link rel="stylesheet" href="assets/css/main.css" />
 </head>

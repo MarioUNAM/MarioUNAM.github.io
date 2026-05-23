@@ -7,7 +7,12 @@
 <meta name="description" content="Casos reales de rebranding de PyMEs mexicanas. Negocios que dejaron de competir por precio."/>
 <meta name="author" content="Mario Huarte Nolasco"/>
 <link rel="canonical" href="https://mariounam.github.io/studio/casos/"/>
-<link rel="icon" type="image/png" href="../../assets/img/favicon-32x32.png"/>
+
+<!-- Favicons Mahuno Studio -->
+<link rel="icon" type="image/x-icon"            href="../../assets/img/mahunostudiologo/favicon.ico"/>
+<link rel="icon" type="image/png" sizes="32x32" href="../../assets/img/mahunostudiologo/favicon-32x32.png"/>
+<link rel="icon" type="image/png" sizes="16x16" href="../../assets/img/mahunostudiologo/favicon-16x16.png"/>
+<link rel="apple-touch-icon"      sizes="180x180" href="../../assets/img/mahunostudiologo/apple-touch-icon.png"/>
 <meta property="og:title" content="Casos — Mahuno Studio"/>
 <meta property="og:description" content="Casos reales de rebranding de PyMEs mexicanas."/>
 <meta property="og:url" content="https://mariounam.github.io/studio/casos/"/>
@@ -57,6 +62,10 @@
   .btn-ghost:hover{ background:var(--c-surf2); }
   .card{ background:var(--c-surf); border:1px solid var(--c-line); border-radius:14px; transition:transform .2s, border-color .2s; }
   .card:hover{ transform:translateY(-3px); border-color:color-mix(in srgb, var(--c-accent) 40%, var(--c-line)); }
+
+  /* Studio logo (PNG con fondo blanco) — multiply en light, invert+hue-rotate en dark */
+  .studio-logo { display: block; mix-blend-mode: multiply; }
+  :root[data-theme="dark"] .studio-logo { mix-blend-mode: normal; filter: invert(1) hue-rotate(180deg); }
 </style>
 </head>
 <body class="font-body antialiased">
@@ -65,10 +74,9 @@
 
 <nav class="fixed top-0 inset-x-0 z-40 glass-nav">
   <div class="max-w-6xl mx-auto px-6 py-3.5 flex items-center justify-between">
-    <a href="../" class="flex items-center gap-2">
-      <span class="inline-block w-2 h-2 rounded-full bg-accent"></span>
-      <span class="font-display font-extrabold tracking-tight text-[15px]">Mahuno Studio</span>
-      <span class="text-muted text-[13px] font-medium ml-1">/ Casos</span>
+    <a href="../" class="flex items-center gap-3" aria-label="Mahuno Studio — Inicio">
+      <img src="../../assets/img/mahunostudiologo-512.png" alt="mahuno/studio" width="110" height="60" class="studio-logo h-7 w-auto"/>
+      <span class="text-muted text-[13px] font-medium">/ Casos</span>
     </a>
     <div class="hidden md:flex items-center gap-7 text-[13px] font-medium text-dim">
       <a href="../#metodo"   class="hover:text-ink transition-colors">Método</a>
@@ -168,9 +176,8 @@
 
 <footer class="border-t border-line bg-surf2">
   <div class="max-w-6xl mx-auto px-6 py-10 flex flex-col sm:flex-row justify-between items-center gap-4 text-[12px] text-muted">
-    <div class="flex items-center gap-2">
-      <span class="inline-block w-2 h-2 rounded-full bg-accent"></span>
-      <span class="font-display font-extrabold tracking-tight text-ink">Mahuno Studio</span>
+    <div class="flex items-center gap-3">
+      <img src="../../assets/img/mahunostudiologo-512.png" alt="mahuno/studio" width="100" height="54" loading="lazy" class="studio-logo h-6 w-auto"/>
       <span>· Casos</span>
     </div>
     <div class="flex items-center gap-5">

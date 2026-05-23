@@ -18,7 +18,12 @@
 </script>
 
 <link rel="canonical" href="https://mariounam.github.io/studio/"/>
-<link rel="icon" type="image/png" href="../assets/img/favicon-32x32.png"/>
+
+<!-- Favicons Mahuno Studio -->
+<link rel="icon" type="image/x-icon"            href="../assets/img/mahunostudiologo/favicon.ico"/>
+<link rel="icon" type="image/png" sizes="32x32" href="../assets/img/mahunostudiologo/favicon-32x32.png"/>
+<link rel="icon" type="image/png" sizes="16x16" href="../assets/img/mahunostudiologo/favicon-16x16.png"/>
+<link rel="apple-touch-icon"      sizes="180x180" href="../assets/img/mahunostudiologo/apple-touch-icon.png"/>
 
 <!-- OG -->
 <meta property="og:type" content="website"/>
@@ -120,6 +125,11 @@
   .card { background: var(--c-surf); border: 1px solid var(--c-line); border-radius: 12px; transition: transform .2s, border-color .2s; }
   .card:hover { transform: translateY(-3px); border-color: color-mix(in srgb, var(--c-accent) 40%, var(--c-line)); }
 
+  /* Studio logo (PNG con fondo blanco) — multiply funde el fondo con paper en light,
+     invert+hue-rotate preserva el cyan en dark */
+  .studio-logo { display: block; mix-blend-mode: multiply; }
+  :root[data-theme="dark"] .studio-logo { mix-blend-mode: normal; filter: invert(1) hue-rotate(180deg); }
+
   /* Step number ring — warm como "marca de proceso" (diferente del accent cyan) */
   .step-num {
     width: 44px; height: 44px; border-radius: 50%;
@@ -165,9 +175,8 @@
 <!-- ============ NAV ============ -->
 <nav class="fixed top-0 inset-x-0 z-40 glass-nav">
   <div class="max-w-6xl mx-auto px-6 py-3.5 flex items-center justify-between">
-    <a href="/studio/" class="flex items-center gap-2 group">
-      <span class="inline-block w-2 h-2 rounded-full bg-accent"></span>
-      <span class="font-display font-extrabold tracking-tight text-[15px]">Mahuno Studio</span>
+    <a href="/studio/" class="flex items-center group" aria-label="Mahuno Studio — Inicio">
+      <img src="../assets/img/mahunostudiologo-512.png" alt="mahuno/studio" width="110" height="60" class="studio-logo h-7 w-auto"/>
     </a>
 
     <div class="hidden md:flex items-center gap-7 text-[13px] font-medium text-dim">
@@ -510,11 +519,8 @@
 <footer class="border-t border-line bg-surf2">
   <div class="max-w-6xl mx-auto px-6 py-12 grid md:grid-cols-3 gap-8">
     <div>
-      <div class="flex items-center gap-2">
-        <span class="inline-block w-2 h-2 rounded-full bg-accent"></span>
-        <span class="font-display font-extrabold tracking-tight">Mahuno Studio</span>
-      </div>
-      <p class="text-[12px] text-muted mt-3 max-w-xs leading-relaxed">Una práctica de rebranding para PyMEs mexicanas. Operada por Mario Huarte Nolasco desde Ciudad de México.</p>
+      <img src="../assets/img/mahunostudiologo-512.png" alt="mahuno/studio" width="120" height="65" loading="lazy" class="studio-logo h-7 w-auto"/>
+      <p class="text-[12px] text-muted mt-4 max-w-xs leading-relaxed">Una práctica de rebranding para PyMEs mexicanas. Operada por Mario Huarte Nolasco desde Ciudad de México.</p>
     </div>
     <div>
       <p class="text-[11px] tracking-[0.18em] uppercase font-semibold text-muted">Navegar</p>

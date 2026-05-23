@@ -399,22 +399,24 @@
 
 <!-- FOOTER -->
 <footer class="border-t border-line bg-surf2">
-  <div class="max-w-6xl mx-auto px-6 py-10 flex flex-col sm:flex-row justify-between items-center gap-3 text-[12px] text-muted">
+  <div class="max-w-6xl mx-auto px-6 py-10 flex flex-col sm:flex-row justify-between items-center gap-4 text-[12px] text-muted">
     <div class="flex items-center gap-2">
       <span class="inline-block w-2 h-2 rounded-full bg-accent"></span>
       <span class="font-display font-extrabold tracking-tight text-ink">Mahuno Studio</span>
       <span>· Laboratorio</span>
     </div>
-    <div class="flex gap-5">
+    <div class="flex items-center gap-5">
       <a href="../" class="hover:text-ink">Inicio</a>
       <a href="../casos/" class="hover:text-ink">Casos</a>
-      <a href="/" class="hover:text-ink">Perfil MAHUNO ↗</a>
+      <a href="https://www.linkedin.com/in/mario-huarte-nolasco-874436202/" target="_blank" rel="noopener" class="hover:text-ink">LinkedIn ↗</a>
+      <span class="text-muted/70">© <span id="yr"></span></span>
     </div>
   </div>
 </footer>
 
 <script>
 (function(){
+  var yr = document.getElementById('yr'); if (yr) yr.textContent = new Date().getFullYear();
   // Hash scroll suave a anchors
   if (location.hash) {
     var el = document.querySelector(location.hash);

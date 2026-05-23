@@ -120,13 +120,13 @@
   .card { background: var(--c-surf); border: 1px solid var(--c-line); border-radius: 12px; transition: transform .2s, border-color .2s; }
   .card:hover { transform: translateY(-3px); border-color: color-mix(in srgb, var(--c-accent) 40%, var(--c-line)); }
 
-  /* Step number ring */
+  /* Step number ring — warm como "marca de proceso" (diferente del accent cyan) */
   .step-num {
     width: 44px; height: 44px; border-radius: 50%;
     display: inline-flex; align-items: center; justify-content: center;
-    border: 1px solid var(--c-line);
+    border: 1px solid color-mix(in srgb, var(--c-warm) 35%, var(--c-line));
     font-family: 'Manrope'; font-weight: 800; font-size: 1.05rem;
-    color: var(--c-accent);
+    color: var(--c-warm);
     background: var(--c-surf);
   }
 
@@ -200,7 +200,7 @@
   <div class="max-w-6xl mx-auto px-6 pt-16 md:pt-28 pb-20 md:pb-32 relative">
     <div class="inline-flex items-center gap-2 px-3 py-1 mb-7 border border-line rounded-full text-[11px] tracking-[0.18em] uppercase font-semibold text-dim reveal">
       <span class="w-1.5 h-1.5 rounded-full bg-accent animate-pulse"></span>
-      Mahuno Studio · v1 · CDMX
+      <span><span class="text-ink font-bold">Mahuno</span> <span class="text-muted">/</span> <span class="text-ink font-bold">Studio</span></span>
     </div>
 
     <h1 class="font-display text-5xl md:text-7xl lg:text-[5.5rem] font-extrabold leading-[0.98] tracking-tight max-w-4xl reveal">

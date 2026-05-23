@@ -1,0 +1,576 @@
+<!DOCTYPE html>
+<html lang="es" class="scroll-smooth">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>Mahuno Studio — Rebranding para PyMEs mexicanas</title>
+<meta name="description" content="Sistema de rebranding completo en 5 días para PyMEs mexicanas. Identidad visual, web y handoff. Hecho por Mario Huarte Nolasco, Ingeniero en Computación UNAM."/>
+<meta name="author" content="Mario Huarte Nolasco"/>
+
+<!-- FOUC: theme antes de pintar -->
+<script>
+  (function(){
+    var t = localStorage.getItem('studio.theme');
+    var preferDark = window.matchMedia && window.matchMedia('(prefers-color-scheme:dark)').matches;
+    var theme = (t === 'dark' || t === 'light') ? t : (preferDark ? 'dark' : 'light');
+    document.documentElement.setAttribute('data-theme', theme);
+  })();
+</script>
+
+<link rel="canonical" href="https://mariounam.github.io/studio/"/>
+<link rel="icon" type="image/png" href="../assets/img/favicon-32x32.png"/>
+
+<!-- OG -->
+<meta property="og:type" content="website"/>
+<meta property="og:title" content="Mahuno Studio — Rebranding para PyMEs"/>
+<meta property="og:description" content="Sistema de rebranding completo en 5 días. Identidad, web y handoff. Por Mario Huarte Nolasco."/>
+<meta property="og:url" content="https://mariounam.github.io/studio/"/>
+<meta property="og:image" content="https://mariounam.github.io/assets/img/og-card.png"/>
+<meta property="og:locale" content="es_MX"/>
+
+<!-- Fonts: self-hosted del portfolio principal -->
+<link rel="preload" href="../assets/fonts/manrope-latin-800.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="../assets/fonts/inter-latin-400.woff2"   as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="../assets/css/main.css">
+
+<script src="https://cdn.tailwindcss.com?plugins=forms"></script>
+<script>
+  tailwind.config = {
+    darkMode: ['class','[data-theme="dark"]'],
+    theme: {
+      extend: {
+        colors: {
+          ink:    'var(--c-ink)',
+          paper:  'var(--c-paper)',
+          dim:    'var(--c-dim)',
+          muted:  'var(--c-muted)',
+          line:   'var(--c-line)',
+          surf:   'var(--c-surf)',
+          surf2:  'var(--c-surf2)',
+          accent: 'var(--c-accent)',
+          warm:   'var(--c-warm)',
+        },
+        fontFamily: {
+          display: ['Manrope','Inter','sans-serif'],
+          body:    ['Inter','sans-serif'],
+        },
+        borderRadius: { DEFAULT:'4px', sm:'4px', md:'6px', lg:'10px', xl:'16px' },
+      }
+    }
+  }
+</script>
+
+<style>
+  /* ============ Design tokens — light (default, "papel cálido") ============ */
+  :root {
+    --c-paper:  #fafaf7;
+    --c-surf:   #ffffff;
+    --c-surf2:  #f3f2ed;
+    --c-ink:    #14140f;
+    --c-dim:    #4a4a44;
+    --c-muted:  #7a7a72;
+    --c-line:   #e6e5dd;
+    --c-accent: #0a7da3;   /* cyan profundo, sobrio sobre papel */
+    --c-warm:   #b8501a;   /* terracota cálida */
+  }
+  :root[data-theme="dark"] {
+    --c-paper:  #0a0a0b;
+    --c-surf:   #141416;
+    --c-surf2:  #1c1c1f;
+    --c-ink:    #fafaf7;
+    --c-dim:    #c8c8c2;
+    --c-muted:  #888880;
+    --c-line:   #2a2a2d;
+    --c-accent: #4cd6fb;   /* cyan vivo sobre fondo oscuro */
+    --c-warm:   #f5a04a;
+  }
+
+  html, body { background: var(--c-paper); color: var(--c-ink); }
+  body { font-family: 'Inter', sans-serif; font-feature-settings: 'ss01','cv02'; }
+  ::selection { background: var(--c-accent); color: var(--c-paper); }
+
+  .font-display { font-family: 'Manrope','Inter',sans-serif; letter-spacing: -0.02em; }
+
+  /* Nav glass */
+  .glass-nav {
+    background: color-mix(in srgb, var(--c-paper) 78%, transparent);
+    backdrop-filter: blur(14px) saturate(140%);
+    -webkit-backdrop-filter: blur(14px) saturate(140%);
+    border-bottom: 1px solid var(--c-line);
+  }
+
+  /* Botón primario */
+  .btn-primary {
+    display:inline-flex; align-items:center; gap:.5rem;
+    background: var(--c-ink); color: var(--c-paper);
+    padding: .8rem 1.25rem; font-weight: 600; font-size: .9rem;
+    border-radius: 6px; transition: transform .15s ease, opacity .2s;
+  }
+  .btn-primary:hover { transform: translateY(-1px); opacity: .92; }
+  .btn-ghost {
+    display:inline-flex; align-items:center; gap:.5rem;
+    border: 1px solid var(--c-line);
+    color: var(--c-ink);
+    padding: .8rem 1.25rem; font-weight: 600; font-size: .9rem;
+    border-radius: 6px; transition: background .15s;
+  }
+  .btn-ghost:hover { background: var(--c-surf2); }
+
+  /* Cards */
+  .card { background: var(--c-surf); border: 1px solid var(--c-line); border-radius: 12px; transition: transform .2s, border-color .2s; }
+  .card:hover { transform: translateY(-3px); border-color: color-mix(in srgb, var(--c-accent) 40%, var(--c-line)); }
+
+  /* Step number ring */
+  .step-num {
+    width: 44px; height: 44px; border-radius: 50%;
+    display: inline-flex; align-items: center; justify-content: center;
+    border: 1px solid var(--c-line);
+    font-family: 'Manrope'; font-weight: 800; font-size: 1.05rem;
+    color: var(--c-accent);
+    background: var(--c-surf);
+  }
+
+  /* Grain / paper texture */
+  .grain::before {
+    content: ''; position: absolute; inset: 0; pointer-events: none;
+    background-image: radial-gradient(rgba(0,0,0,0.04) 1px, transparent 1px);
+    background-size: 4px 4px;
+    opacity: .5;
+  }
+  :root[data-theme="dark"] .grain::before {
+    background-image: radial-gradient(rgba(255,255,255,0.025) 1px, transparent 1px);
+  }
+
+  /* Reveal */
+  .reveal { opacity: 0; transform: translateY(14px); transition: opacity .6s ease, transform .6s ease; }
+  .reveal.in { opacity: 1; transform: translateY(0); }
+
+  /* Hairline divider */
+  .hairline { border-top: 1px solid var(--c-line); }
+
+  /* Mockup tiles (Lab teaser previews) */
+  .mock-tile { aspect-ratio: 4/3; border-radius: 10px; overflow: hidden; position: relative; border: 1px solid var(--c-line); }
+  .mock-tile .label { position:absolute; bottom: 10px; left: 12px; font-size: 10px; letter-spacing: .2em; text-transform: uppercase; color: var(--c-muted); }
+
+  @media (prefers-reduced-motion: reduce) {
+    .reveal { opacity:1; transform:none; transition:none; }
+  }
+</style>
+</head>
+<body class="font-body antialiased">
+
+<!-- Skip link -->
+<a href="#main" class="sr-only focus:not-sr-only focus:fixed focus:top-3 focus:left-3 focus:z-50 focus:bg-ink focus:text-paper focus:px-4 focus:py-2 focus:rounded">Saltar al contenido</a>
+
+<!-- ============ NAV ============ -->
+<nav class="fixed top-0 inset-x-0 z-40 glass-nav">
+  <div class="max-w-6xl mx-auto px-6 py-3.5 flex items-center justify-between">
+    <a href="/studio/" class="flex items-center gap-2 group">
+      <span class="inline-block w-2 h-2 rounded-full bg-accent"></span>
+      <span class="font-display font-extrabold tracking-tight text-[15px]">Mahuno Studio</span>
+    </a>
+
+    <div class="hidden md:flex items-center gap-7 text-[13px] font-medium text-dim">
+      <a href="#metodo"     class="hover:text-ink transition-colors">Método</a>
+      <a href="lab/"        class="hover:text-ink transition-colors">Laboratorio</a>
+      <a href="casos/"      class="hover:text-ink transition-colors">Casos</a>
+      <a href="#contacto"   class="hover:text-ink transition-colors">Contacto</a>
+    </div>
+
+    <div class="flex items-center gap-3">
+      <button id="theme-toggle" class="w-9 h-9 grid place-items-center rounded-md hover:bg-surf2 transition-colors" aria-label="Cambiar tema">
+        <span class="material-symbols-outlined text-[18px]" id="theme-icon">light_mode</span>
+      </button>
+      <a href="/" class="hidden sm:inline-flex items-center gap-1.5 text-[12px] font-semibold text-muted hover:text-ink transition-colors">
+        <span class="material-symbols-outlined text-[16px]">arrow_back</span>
+        Perfil MAHUNO
+      </a>
+    </div>
+  </div>
+</nav>
+
+<!-- Symbols (subset desde CDN) -->
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0&display=swap"/>
+<style>.material-symbols-outlined{font-variation-settings:'FILL' 0,'wght' 400,'GRAD' 0,'opsz' 24;vertical-align:middle;}</style>
+
+<main id="main" class="pt-24">
+
+<!-- ============ HERO ============ -->
+<section class="relative grain overflow-hidden">
+  <div class="max-w-6xl mx-auto px-6 pt-16 md:pt-28 pb-20 md:pb-32 relative">
+    <div class="inline-flex items-center gap-2 px-3 py-1 mb-7 border border-line rounded-full text-[11px] tracking-[0.18em] uppercase font-semibold text-dim reveal">
+      <span class="w-1.5 h-1.5 rounded-full bg-accent animate-pulse"></span>
+      Mahuno Studio · v1 · CDMX
+    </div>
+
+    <h1 class="font-display text-5xl md:text-7xl lg:text-[5.5rem] font-extrabold leading-[0.98] tracking-tight max-w-4xl reveal">
+      Rebranding completo para
+      <span class="text-accent">PyMEs mexicanas</span>,
+      en <span class="underline decoration-warm decoration-[6px] underline-offset-[6px]">5 días</span>.
+    </h1>
+
+    <p class="mt-8 text-lg md:text-xl text-dim font-body max-w-2xl leading-relaxed reveal">
+      Sistema propio, no agencia. Combino arquitectura de datos con agentes IA
+      para producir identidad, web y handoff que <em>se parezcan a lo que tu negocio realmente vale</em>.
+    </p>
+
+    <div class="mt-10 flex flex-wrap gap-3 reveal">
+      <a href="lab/" class="btn-primary">
+        Ver el laboratorio
+        <span class="material-symbols-outlined text-[18px]">arrow_forward</span>
+      </a>
+      <a href="#contacto" class="btn-ghost">Hablar conmigo</a>
+    </div>
+
+    <!-- Autoría -->
+    <div class="mt-14 pt-8 hairline max-w-2xl reveal">
+      <p class="text-[13px] text-muted leading-relaxed">
+        Hecho por <a href="/" class="text-ink font-semibold underline decoration-line underline-offset-2 hover:decoration-accent">Mario Huarte Nolasco</a> ·
+        Ingeniero en Computación, UNAM ·
+        4+ años en Master Data Management (TIBCO EBX, SnapLogic). Aplico esa misma disciplina al
+        problema más caro de las PyMEs mexicanas: <span class="text-ink font-semibold">parecerse a lo que valen</span>.
+      </p>
+    </div>
+  </div>
+
+  <!-- Decoración inferior -->
+  <div class="absolute -bottom-px inset-x-0 h-px bg-gradient-to-r from-transparent via-line to-transparent"></div>
+</section>
+
+
+<!-- ============ QUÉ ES ============ -->
+<section class="bg-surf border-y border-line">
+  <div class="max-w-6xl mx-auto px-6 py-20 md:py-28 grid md:grid-cols-12 gap-10">
+    <div class="md:col-span-4">
+      <span class="text-[11px] tracking-[0.2em] uppercase font-bold text-accent">01 — Qué es</span>
+      <h2 class="font-display text-3xl md:text-4xl font-extrabold mt-3 leading-[1.05]">
+        Una práctica.<br/>No una agencia.
+      </h2>
+    </div>
+    <div class="md:col-span-8 space-y-6">
+      <p class="text-lg md:text-xl text-dim leading-relaxed">
+        Mahuno Studio es un <span class="text-ink font-semibold">sistema reproducible</span> de rebranding para negocios pequeños mexicanos: lavanderías, restaurantes, despachos, tiendas locales. No te entrego un logo bonito y desaparezco —
+        construyo identidad, sitio web y manual de operación en cinco días, con la misma rigurosidad con la que se diseñan modelos de datos maestros.
+      </p>
+      <div class="grid sm:grid-cols-3 gap-5 pt-4">
+        <div>
+          <span class="material-symbols-outlined text-accent text-[28px]">schema</span>
+          <h3 class="font-display font-bold mt-2">Sistema, no improvisación</h3>
+          <p class="text-sm text-muted mt-1.5 leading-relaxed">Plantillas vivas, slash-commands y un agente Claude Code que automatiza la parte aburrida.</p>
+        </div>
+        <div>
+          <span class="material-symbols-outlined text-accent text-[28px]">bolt</span>
+          <h3 class="font-display font-bold mt-2">5 días, no 5 semanas</h3>
+          <p class="text-sm text-muted mt-1.5 leading-relaxed">La velocidad nace de la arquitectura, no de cortar esquinas. Cada entregable está pre-pensado.</p>
+        </div>
+        <div>
+          <span class="material-symbols-outlined text-accent text-[28px]">verified</span>
+          <h3 class="font-display font-bold mt-2">Identidad MDM</h3>
+          <p class="text-sm text-muted mt-1.5 leading-relaxed">Aplico gobierno de datos al gobierno de marca: jerarquía, fuente única, taxonomía, versionado.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<!-- ============ MÉTODO ============ -->
+<section id="metodo" class="bg-paper">
+  <div class="max-w-6xl mx-auto px-6 py-20 md:py-28">
+    <div class="max-w-2xl mb-14">
+      <span class="text-[11px] tracking-[0.2em] uppercase font-bold text-accent">02 — Método</span>
+      <h2 class="font-display text-3xl md:text-5xl font-extrabold mt-3 leading-[1.05]">
+        Cinco pasos.<br/>Un viernes con tu marca nueva.
+      </h2>
+    </div>
+
+    <ol class="grid md:grid-cols-5 gap-6">
+      <li class="card p-6">
+        <span class="step-num">01</span>
+        <h3 class="font-display font-bold text-lg mt-5">Diagnóstico</h3>
+        <p class="text-sm text-muted mt-2 leading-relaxed">Una llamada de 60 min. Salimos con el problema real escrito: qué vendes, a quién, y por qué hoy te confunden con tu competencia.</p>
+      </li>
+      <li class="card p-6">
+        <span class="step-num">02</span>
+        <h3 class="font-display font-bold text-lg mt-5">Decisiones estratégicas</h3>
+        <p class="text-sm text-muted mt-2 leading-relaxed">Posicionamiento, tono y promesa. Lo que <em>sí</em> eres y lo que dejas de ser. Un documento de 1 página que decide todo lo demás.</p>
+      </li>
+      <li class="card p-6">
+        <span class="step-num">03</span>
+        <h3 class="font-display font-bold text-lg mt-5">Identidad visual</h3>
+        <p class="text-sm text-muted mt-2 leading-relaxed">Logo, paleta, tipografía y sistema. Diseñada para sobrevivir un volante impreso y una pantalla retina.</p>
+      </li>
+      <li class="card p-6">
+        <span class="step-num">04</span>
+        <h3 class="font-display font-bold text-lg mt-5">Web + presencia</h3>
+        <p class="text-sm text-muted mt-2 leading-relaxed">Sitio responsive, ficha de Google Business, plantillas de WhatsApp y redes. Todo bajo la misma identidad.</p>
+      </li>
+      <li class="card p-6">
+        <span class="step-num">05</span>
+        <h3 class="font-display font-bold text-lg mt-5">Entrega y handoff</h3>
+        <p class="text-sm text-muted mt-2 leading-relaxed">Manual de marca, archivos editables, capacitación de 1 hora. Te vas con todo lo que necesitas para no depender de mí.</p>
+      </li>
+    </ol>
+  </div>
+</section>
+
+
+<!-- ============ LABORATORIO TEASER ============ -->
+<section class="bg-surf border-y border-line">
+  <div class="max-w-6xl mx-auto px-6 py-20 md:py-28">
+    <div class="flex flex-col md:flex-row md:items-end justify-between mb-12 gap-6">
+      <div class="max-w-2xl">
+        <span class="text-[11px] tracking-[0.2em] uppercase font-bold text-accent">03 — Laboratorio</span>
+        <h2 class="font-display text-3xl md:text-5xl font-extrabold mt-3 leading-[1.05]">
+          Plantillas reales que personalizo para cada cliente.
+        </h2>
+        <p class="text-dim mt-5 max-w-xl">No mockups de Behance. Sitios web funcionales, editables, listos para producción. Cada plantilla resuelve un tipo de negocio.</p>
+      </div>
+      <a href="lab/" class="btn-ghost self-start md:self-end">
+        Ver el laboratorio completo
+        <span class="material-symbols-outlined text-[18px]">arrow_forward</span>
+      </a>
+    </div>
+
+    <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-5">
+      <!-- Servicio local -->
+      <a href="lab/#servicio-local" class="card overflow-hidden group">
+        <div class="mock-tile" style="background:linear-gradient(135deg,#1a3a52,#0a7da3);">
+          <div class="absolute inset-0 grid place-items-center">
+            <span class="material-symbols-outlined text-white/90 text-5xl">local_laundry_service</span>
+          </div>
+          <span class="label" style="color:#fff;">Servicio local</span>
+        </div>
+        <div class="p-5">
+          <h3 class="font-display font-bold">Servicio local</h3>
+          <p class="text-sm text-muted mt-1.5">Lavandería, taller, salón, gimnasio.</p>
+        </div>
+      </a>
+
+      <!-- Restaurante -->
+      <a href="lab/#restaurante" class="card overflow-hidden group">
+        <div class="mock-tile" style="background:linear-gradient(135deg,#2a1810,#b8501a);">
+          <div class="absolute inset-0 grid place-items-center">
+            <span class="material-symbols-outlined text-white/90 text-5xl">restaurant</span>
+          </div>
+          <span class="label" style="color:#fff;">Restaurante</span>
+        </div>
+        <div class="p-5">
+          <h3 class="font-display font-bold">Restaurante</h3>
+          <p class="text-sm text-muted mt-1.5">Taquería, cafetería, fonda, food truck.</p>
+        </div>
+      </a>
+
+      <!-- Retail -->
+      <a href="lab/#retail" class="card overflow-hidden group">
+        <div class="mock-tile" style="background:linear-gradient(135deg,#2d1f3d,#7a4a96);">
+          <div class="absolute inset-0 grid place-items-center">
+            <span class="material-symbols-outlined text-white/90 text-5xl">storefront</span>
+          </div>
+          <span class="label" style="color:#fff;">Retail</span>
+        </div>
+        <div class="p-5">
+          <h3 class="font-display font-bold">Retail</h3>
+          <p class="text-sm text-muted mt-1.5">Boutique, mercería, librería, joyería.</p>
+        </div>
+      </a>
+
+      <!-- Profesional -->
+      <a href="lab/#profesional" class="card overflow-hidden group">
+        <div class="mock-tile" style="background:linear-gradient(135deg,#0f2027,#203a43);">
+          <div class="absolute inset-0 grid place-items-center">
+            <span class="material-symbols-outlined text-white/90 text-5xl">medical_services</span>
+          </div>
+          <span class="label" style="color:#fff;">Profesional</span>
+        </div>
+        <div class="p-5">
+          <h3 class="font-display font-bold">Profesional</h3>
+          <p class="text-sm text-muted mt-1.5">Dentista, contador, abogado, consultor.</p>
+        </div>
+      </a>
+    </div>
+
+    <!-- Demo industrial real -->
+    <div class="mt-10 pt-10 border-t border-line">
+      <p class="text-[11px] tracking-[0.2em] uppercase font-bold text-warm mb-4">Plantilla extendida · Demo navegable</p>
+      <a href="lab/industrial/" class="card p-6 md:p-8 flex flex-col md:flex-row gap-6 md:items-center group">
+        <div class="md:w-72 mock-tile shrink-0" style="background:linear-gradient(135deg,#001e40,#003366);">
+          <div class="absolute inset-0 opacity-10" style="background-image:radial-gradient(#fff 1px,transparent 1px);background-size:20px 20px;"></div>
+          <div class="absolute inset-0 grid place-items-center">
+            <span class="material-symbols-outlined text-white text-6xl">precision_manufacturing</span>
+          </div>
+          <span class="label" style="color:#fff;">B2B Industrial · SPA</span>
+        </div>
+        <div class="flex-1">
+          <h3 class="font-display font-bold text-2xl">Industrial — BECA INDUSTRIAL</h3>
+          <p class="text-dim mt-2 max-w-2xl">SPA bilingüe (ES/EN), dark/light, mapa de cobertura Leaflet, comparador de materiales, herramientas técnicas (calculadora de costos, simulador ISO 286, KPIs Chart.js). El demo más completo del laboratorio — referencia para clientes industriales/B2B.</p>
+          <div class="flex flex-wrap gap-2 mt-4">
+            <span class="text-[11px] uppercase tracking-wider font-semibold px-2.5 py-1 rounded bg-surf2 text-dim border border-line">Tailwind</span>
+            <span class="text-[11px] uppercase tracking-wider font-semibold px-2.5 py-1 rounded bg-surf2 text-dim border border-line">Leaflet</span>
+            <span class="text-[11px] uppercase tracking-wider font-semibold px-2.5 py-1 rounded bg-surf2 text-dim border border-line">Chart.js</span>
+            <span class="text-[11px] uppercase tracking-wider font-semibold px-2.5 py-1 rounded bg-surf2 text-dim border border-line">i18n</span>
+          </div>
+          <span class="inline-flex items-center gap-1.5 mt-5 text-sm font-semibold text-accent group-hover:gap-2.5 transition-all">
+            Abrir demo
+            <span class="material-symbols-outlined text-[18px]">open_in_new</span>
+          </span>
+        </div>
+      </a>
+    </div>
+  </div>
+</section>
+
+
+<!-- ============ CASOS TEASER ============ -->
+<section class="bg-paper">
+  <div class="max-w-6xl mx-auto px-6 py-20 md:py-28">
+    <div class="max-w-2xl mb-12">
+      <span class="text-[11px] tracking-[0.2em] uppercase font-bold text-accent">04 — Casos</span>
+      <h2 class="font-display text-3xl md:text-5xl font-extrabold mt-3 leading-[1.05]">
+        Negocios reales.<br/>Resultados medibles.
+      </h2>
+    </div>
+
+    <a href="casos/don-peter/" class="card p-7 md:p-10 grid md:grid-cols-12 gap-8 items-center group">
+      <div class="md:col-span-4 mock-tile" style="background:linear-gradient(135deg,#1a1a1a,#2d2d2d);">
+        <div class="absolute inset-0 grid place-items-center text-center px-5">
+          <div>
+            <p class="font-display text-white text-3xl font-extrabold tracking-tight">DON PETER</p>
+            <p class="text-white/60 text-[10px] tracking-[0.3em] uppercase mt-2">Servicio local · CDMX</p>
+          </div>
+        </div>
+      </div>
+      <div class="md:col-span-8">
+        <p class="text-[11px] tracking-[0.2em] uppercase font-bold text-warm">Caso 01</p>
+        <h3 class="font-display text-2xl md:text-3xl font-extrabold mt-2">Don Peter — Del volante en blanco y negro a la marca local de referencia.</h3>
+        <p class="text-dim mt-4 max-w-2xl">Un negocio de servicio local con 8 años de operación pero sin identidad visible. En cinco días: nombre depurado, identidad cálida, sitio web, ficha Google Business y plantillas de WhatsApp. <span class="text-ink font-semibold">El cliente dejó de competir por precio.</span></p>
+        <span class="inline-flex items-center gap-1.5 mt-5 text-sm font-semibold text-accent group-hover:gap-2.5 transition-all">
+          Leer el caso completo
+          <span class="material-symbols-outlined text-[18px]">arrow_forward</span>
+        </span>
+      </div>
+    </a>
+
+    <p class="text-[12px] text-muted mt-8">Más casos pronto. Si quieres ser el siguiente, <a href="#contacto" class="underline decoration-line underline-offset-2 hover:decoration-accent text-ink font-semibold">hablemos</a>.</p>
+  </div>
+</section>
+
+
+<!-- ============ POR QUÉ MAHUNO ============ -->
+<section class="bg-surf border-y border-line">
+  <div class="max-w-4xl mx-auto px-6 py-20 md:py-28 text-center">
+    <span class="text-[11px] tracking-[0.2em] uppercase font-bold text-accent">05 — Por qué Mahuno</span>
+    <h2 class="font-display text-3xl md:text-5xl font-extrabold mt-3 leading-[1.05]">
+      No soy diseñador freelance.<br/>
+      Soy <span class="text-accent">ingeniero de datos</span> que aprendió diseño porque las PyMEs lo necesitan.
+    </h2>
+    <p class="text-lg text-dim mt-7 leading-relaxed max-w-2xl mx-auto">
+      Llevo cuatro años resolviendo el mismo problema en empresas grandes: cómo hacer que los datos —y la marca— se parezcan a lo que el negocio realmente es. Mahuno Studio aplica esa misma rigurosidad a negocios pequeños, donde el margen para errores es nulo y el precio de no destacar es la quiebra.
+    </p>
+  </div>
+</section>
+
+
+<!-- ============ CONTACTO ============ -->
+<section id="contacto" class="bg-paper">
+  <div class="max-w-4xl mx-auto px-6 py-20 md:py-28">
+    <div class="text-center mb-14">
+      <span class="text-[11px] tracking-[0.2em] uppercase font-bold text-accent">06 — Contacto</span>
+      <h2 class="font-display text-3xl md:text-5xl font-extrabold mt-3 leading-[1.05]">
+        Sin formularios.<br/>Directo conmigo.
+      </h2>
+      <p class="text-dim mt-5 max-w-xl mx-auto">Escríbeme por el canal que prefieras. Respondo en menos de 24h hábiles desde CDMX.</p>
+    </div>
+
+    <div class="grid sm:grid-cols-3 gap-5">
+      <a href="https://wa.me/525500000000" target="_blank" rel="noopener" class="card p-7 text-center group">
+        <span class="material-symbols-outlined text-accent text-[34px]">chat</span>
+        <h3 class="font-display font-bold mt-3">WhatsApp</h3>
+        <p class="text-[12px] text-muted mt-1.5 break-all">+52 55 0000 0000</p>
+        <p class="text-[10px] text-muted/70 mt-3 italic">[placeholder — sustituir número]</p>
+      </a>
+      <a href="mailto:mario_huarte@outlook.com" class="card p-7 text-center group">
+        <span class="material-symbols-outlined text-accent text-[34px]">alternate_email</span>
+        <h3 class="font-display font-bold mt-3">Email</h3>
+        <p class="text-[12px] text-muted mt-1.5 break-all">mario_huarte@outlook.com</p>
+      </a>
+      <a href="https://www.linkedin.com/in/mario-huarte-nolasco-874436202/" target="_blank" rel="noopener" class="card p-7 text-center group">
+        <span class="material-symbols-outlined text-accent text-[34px]">work</span>
+        <h3 class="font-display font-bold mt-3">LinkedIn</h3>
+        <p class="text-[12px] text-muted mt-1.5">mario-huarte-nolasco</p>
+      </a>
+    </div>
+  </div>
+</section>
+
+</main>
+
+
+<!-- ============ FOOTER ============ -->
+<footer class="border-t border-line bg-surf2">
+  <div class="max-w-6xl mx-auto px-6 py-12 grid md:grid-cols-3 gap-8">
+    <div>
+      <div class="flex items-center gap-2">
+        <span class="inline-block w-2 h-2 rounded-full bg-accent"></span>
+        <span class="font-display font-extrabold tracking-tight">Mahuno Studio</span>
+      </div>
+      <p class="text-[12px] text-muted mt-3 max-w-xs leading-relaxed">Una práctica de rebranding para PyMEs mexicanas. Operada por Mario Huarte Nolasco desde Ciudad de México.</p>
+    </div>
+    <div>
+      <p class="text-[11px] tracking-[0.18em] uppercase font-semibold text-muted">Navegar</p>
+      <ul class="mt-3 space-y-1.5 text-[13px]">
+        <li><a href="#metodo"  class="text-dim hover:text-ink">Método</a></li>
+        <li><a href="lab/"     class="text-dim hover:text-ink">Laboratorio</a></li>
+        <li><a href="casos/"   class="text-dim hover:text-ink">Casos</a></li>
+        <li><a href="#contacto" class="text-dim hover:text-ink">Contacto</a></li>
+      </ul>
+    </div>
+    <div>
+      <p class="text-[11px] tracking-[0.18em] uppercase font-semibold text-muted">Por Mario</p>
+      <ul class="mt-3 space-y-1.5 text-[13px]">
+        <li><a href="/" class="text-dim hover:text-ink">Perfil profesional ↗</a></li>
+        <li><a href="https://github.com/MarioUNAM" target="_blank" rel="noopener" class="text-dim hover:text-ink">GitHub ↗</a></li>
+        <li><a href="https://www.linkedin.com/in/mario-huarte-nolasco-874436202/" target="_blank" rel="noopener" class="text-dim hover:text-ink">LinkedIn ↗</a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="border-t border-line">
+    <div class="max-w-6xl mx-auto px-6 py-5 flex flex-col sm:flex-row items-center justify-between gap-2 text-[11px] text-muted">
+      <p>© <span id="yr"></span> Mahuno Studio · Mario Huarte Nolasco · CDMX</p>
+      <p>Hecho con Tailwind, Manrope y mucho café.</p>
+    </div>
+  </div>
+</footer>
+
+
+<script>
+(function(){
+  // Theme toggle
+  var icon = document.getElementById('theme-icon');
+  function sync(){ var t = document.documentElement.getAttribute('data-theme'); if (icon) icon.textContent = (t === 'dark') ? 'dark_mode' : 'light_mode'; }
+  sync();
+  var btn = document.getElementById('theme-toggle');
+  if (btn) btn.addEventListener('click', function(){
+    var cur = document.documentElement.getAttribute('data-theme');
+    var next = (cur === 'dark') ? 'light' : 'dark';
+    document.documentElement.setAttribute('data-theme', next);
+    try { localStorage.setItem('studio.theme', next); } catch(e){}
+    sync();
+  });
+
+  // Year
+  var yr = document.getElementById('yr'); if (yr) yr.textContent = new Date().getFullYear();
+
+  // Reveal on scroll
+  if ('IntersectionObserver' in window) {
+    var io = new IntersectionObserver(function(entries){
+      entries.forEach(function(e){ if (e.isIntersecting){ e.target.classList.add('in'); io.unobserve(e.target);} });
+    }, { threshold: 0.12 });
+    document.querySelectorAll('.reveal').forEach(function(el){ io.observe(el); });
+  } else {
+    document.querySelectorAll('.reveal').forEach(function(el){ el.classList.add('in'); });
+  }
+})();
+</script>
+</body>
+</html>

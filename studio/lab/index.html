@@ -1,0 +1,426 @@
+<!DOCTYPE html>
+<html lang="es" class="scroll-smooth">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>Laboratorio — Mahuno Studio</title>
+<meta name="description" content="Plantillas web reales que personalizo para PyMEs mexicanas: servicio local, restaurante, retail, profesional, industrial."/>
+<meta name="author" content="Mario Huarte Nolasco"/>
+<link rel="canonical" href="https://mariounam.github.io/studio/lab/"/>
+<link rel="icon" type="image/png" href="../../assets/img/favicon-32x32.png"/>
+<meta property="og:title" content="Laboratorio — Mahuno Studio"/>
+<meta property="og:description" content="Plantillas web reales que personalizo para PyMEs mexicanas."/>
+<meta property="og:url" content="https://mariounam.github.io/studio/lab/"/>
+<meta property="og:image" content="https://mariounam.github.io/assets/img/og-card.png"/>
+
+<script>
+  (function(){
+    var t = localStorage.getItem('studio.theme');
+    var preferDark = window.matchMedia && window.matchMedia('(prefers-color-scheme:dark)').matches;
+    var theme = (t === 'dark' || t === 'light') ? t : (preferDark ? 'dark' : 'light');
+    document.documentElement.setAttribute('data-theme', theme);
+  })();
+</script>
+
+<link rel="preload" href="../../assets/fonts/manrope-latin-800.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="../../assets/fonts/inter-latin-400.woff2"   as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="../../assets/css/main.css">
+
+<script src="https://cdn.tailwindcss.com?plugins=forms"></script>
+<script>
+  tailwind.config = {
+    darkMode: ['class','[data-theme="dark"]'],
+    theme: {
+      extend: {
+        colors: {
+          ink:'var(--c-ink)', paper:'var(--c-paper)', dim:'var(--c-dim)', muted:'var(--c-muted)',
+          line:'var(--c-line)', surf:'var(--c-surf)', surf2:'var(--c-surf2)',
+          accent:'var(--c-accent)', warm:'var(--c-warm)',
+        },
+        fontFamily: { display:['Manrope','Inter','sans-serif'], body:['Inter','sans-serif'] },
+        borderRadius: { DEFAULT:'4px', sm:'4px', md:'6px', lg:'10px', xl:'16px' },
+      }
+    }
+  }
+</script>
+
+<style>
+  :root { --c-paper:#fafaf7; --c-surf:#ffffff; --c-surf2:#f3f2ed; --c-ink:#14140f; --c-dim:#4a4a44;
+          --c-muted:#7a7a72; --c-line:#e6e5dd; --c-accent:#0a7da3; --c-warm:#b8501a; }
+  :root[data-theme="dark"] { --c-paper:#0a0a0b; --c-surf:#141416; --c-surf2:#1c1c1f; --c-ink:#fafaf7;
+          --c-dim:#c8c8c2; --c-muted:#888880; --c-line:#2a2a2d; --c-accent:#4cd6fb; --c-warm:#f5a04a; }
+
+  html,body{ background:var(--c-paper); color:var(--c-ink); }
+  body{ font-family:'Inter',sans-serif; }
+  ::selection{ background:var(--c-accent); color:var(--c-paper); }
+  .font-display{ font-family:'Manrope','Inter',sans-serif; letter-spacing:-0.02em; }
+
+  .glass-nav{ background:color-mix(in srgb, var(--c-paper) 78%, transparent); backdrop-filter:blur(14px) saturate(140%);
+              -webkit-backdrop-filter:blur(14px) saturate(140%); border-bottom:1px solid var(--c-line); }
+
+  .btn-primary{ display:inline-flex; align-items:center; gap:.5rem; background:var(--c-ink); color:var(--c-paper);
+                padding:.7rem 1.1rem; font-weight:600; font-size:.85rem; border-radius:6px;
+                transition:transform .15s ease, opacity .2s; }
+  .btn-primary:hover{ transform:translateY(-1px); opacity:.92; }
+  .btn-ghost{ display:inline-flex; align-items:center; gap:.5rem; border:1px solid var(--c-line); color:var(--c-ink);
+              padding:.7rem 1.1rem; font-weight:600; font-size:.85rem; border-radius:6px; transition:background .15s; }
+  .btn-ghost:hover{ background:var(--c-surf2); }
+
+  .card{ background:var(--c-surf); border:1px solid var(--c-line); border-radius:14px; transition:transform .2s, border-color .2s; }
+  .card:hover{ transform:translateY(-3px); border-color:color-mix(in srgb, var(--c-accent) 40%, var(--c-line)); }
+
+  /* ========= Mockups (más detallados que en home) ========= */
+  .mock { aspect-ratio:4/3; border-radius:10px; overflow:hidden; position:relative; }
+
+  /* Barra superior tipo browser */
+  .browser-bar{ height:22px; display:flex; align-items:center; gap:5px; padding:0 9px;
+                background:rgba(255,255,255,0.08); border-bottom:1px solid rgba(255,255,255,0.08); }
+  .browser-bar i{ width:7px; height:7px; border-radius:50%; background:rgba(255,255,255,0.25); display:inline-block; }
+  .mock-body{ position:absolute; inset:22px 0 0 0; padding:14px; }
+
+  /* tipo "etiqueta" inferior */
+  .mock-tag{ position:absolute; bottom:10px; right:12px; padding:3px 8px; font-size:9px; letter-spacing:.18em; text-transform:uppercase;
+             font-weight:700; background:rgba(0,0,0,0.45); color:#fff; border-radius:3px; }
+
+  @media (prefers-reduced-motion: reduce) { *{ animation:none !important; transition:none !important; } }
+</style>
+</head>
+<body class="font-body antialiased">
+
+<a href="#main" class="sr-only focus:not-sr-only focus:fixed focus:top-3 focus:left-3 focus:z-50 focus:bg-ink focus:text-paper focus:px-4 focus:py-2 focus:rounded">Saltar al contenido</a>
+
+<!-- NAV -->
+<nav class="fixed top-0 inset-x-0 z-40 glass-nav">
+  <div class="max-w-6xl mx-auto px-6 py-3.5 flex items-center justify-between">
+    <a href="../" class="flex items-center gap-2">
+      <span class="inline-block w-2 h-2 rounded-full bg-accent"></span>
+      <span class="font-display font-extrabold tracking-tight text-[15px]">Mahuno Studio</span>
+      <span class="text-muted text-[13px] font-medium ml-1">/ Laboratorio</span>
+    </a>
+    <div class="hidden md:flex items-center gap-7 text-[13px] font-medium text-dim">
+      <a href="../#metodo"   class="hover:text-ink transition-colors">Método</a>
+      <a href="../casos/"    class="hover:text-ink transition-colors">Casos</a>
+      <a href="../#contacto" class="hover:text-ink transition-colors">Contacto</a>
+    </div>
+    <a href="../" class="inline-flex items-center gap-1.5 text-[12px] font-semibold text-muted hover:text-ink">
+      <span class="material-symbols-outlined text-[16px]">arrow_back</span>
+      Volver
+    </a>
+  </div>
+</nav>
+
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0&display=swap"/>
+<style>.material-symbols-outlined{font-variation-settings:'FILL' 0,'wght' 400,'GRAD' 0,'opsz' 24;vertical-align:middle;}</style>
+
+<main id="main" class="pt-24">
+
+<!-- HEADER -->
+<section class="max-w-6xl mx-auto px-6 pt-12 pb-10">
+  <span class="text-[11px] tracking-[0.2em] uppercase font-bold text-accent">Laboratorio</span>
+  <h1 class="font-display text-4xl md:text-6xl font-extrabold mt-3 leading-[1.02] max-w-3xl">
+    Cinco arquetipos.<br/>
+    <span class="text-accent">Tu negocio es uno de ellos.</span>
+  </h1>
+  <p class="text-dim mt-6 max-w-2xl leading-relaxed">
+    Cada plantilla resuelve un tipo concreto de negocio mexicano. No las uso tal cual —
+    son el <em>esqueleto</em> sobre el que construyo tu identidad. Las muestro como mockups
+    para que veas el lenguaje visual; el demo industrial al final es navegable.
+  </p>
+</section>
+
+
+<!-- ===================== SERVICIO LOCAL ===================== -->
+<section id="servicio-local" class="bg-surf border-t border-line">
+  <div class="max-w-6xl mx-auto px-6 py-16 md:py-20 grid md:grid-cols-12 gap-10 items-center">
+    <div class="md:col-span-7">
+      <div class="mock" style="background:linear-gradient(135deg,#0e2a3b,#0a7da3);">
+        <div class="browser-bar"><i></i><i></i><i></i><span class="ml-2 text-[9px] tracking-[0.15em] text-white/40 uppercase">lavanderia-ejemplo.mx</span></div>
+        <div class="mock-body">
+          <div class="flex justify-between items-start">
+            <div>
+              <div class="text-[8px] tracking-[0.3em] text-white/50 uppercase">LAVANDERÍA</div>
+              <div class="font-display text-white text-2xl md:text-3xl font-extrabold leading-none mt-1">El Buen Lavado</div>
+            </div>
+            <div class="flex items-center gap-2">
+              <span class="w-1.5 h-1.5 rounded-full" style="background:#7af07a;"></span>
+              <span class="text-[9px] uppercase tracking-wider text-white/60">Abierto</span>
+            </div>
+          </div>
+          <div class="mt-6 max-w-[60%]">
+            <div class="text-white text-xs leading-tight font-semibold">Ropa limpia,<br/>recogida en casa,<br/>en 24 horas.</div>
+          </div>
+          <div class="mt-4 flex gap-2">
+            <div class="bg-white text-[#0e2a3b] text-[9px] font-bold px-2 py-1 rounded">PEDIR RECOLECCIÓN</div>
+            <div class="border border-white/30 text-white/80 text-[9px] font-bold px-2 py-1 rounded">PRECIOS</div>
+          </div>
+          <div class="mt-5 grid grid-cols-3 gap-1.5">
+            <div class="bg-white/10 h-7 rounded"></div>
+            <div class="bg-white/10 h-7 rounded"></div>
+            <div class="bg-white/10 h-7 rounded"></div>
+          </div>
+        </div>
+        <span class="mock-tag">Servicio local</span>
+      </div>
+    </div>
+    <div class="md:col-span-5">
+      <span class="text-[11px] tracking-[0.2em] uppercase font-bold text-warm">Arquetipo 01</span>
+      <h2 class="font-display text-2xl md:text-4xl font-extrabold mt-3">Servicio local</h2>
+      <p class="text-dim mt-4 leading-relaxed">Para negocios que viven del barrio: <strong>lavanderías, talleres mecánicos, salones de belleza, gimnasios, veterinarias</strong>. El sitio empuja una sola acción — pedir el servicio — y reduce las llamadas repetitivas con FAQs y precios visibles.</p>
+      <ul class="mt-5 space-y-2 text-sm">
+        <li class="flex gap-2"><span class="text-accent">✓</span> Hero con propuesta + CTA único (WhatsApp, llamada o reserva)</li>
+        <li class="flex gap-2"><span class="text-accent">✓</span> Mapa con horario y dirección clara</li>
+        <li class="flex gap-2"><span class="text-accent">✓</span> Lista de servicios con precios sin sorpresas</li>
+        <li class="flex gap-2"><span class="text-accent">✓</span> Reseñas Google integradas</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+
+<!-- ===================== RESTAURANTE ===================== -->
+<section id="restaurante" class="bg-paper border-t border-line">
+  <div class="max-w-6xl mx-auto px-6 py-16 md:py-20 grid md:grid-cols-12 gap-10 items-center">
+    <div class="md:col-span-5 md:order-1 order-2">
+      <span class="text-[11px] tracking-[0.2em] uppercase font-bold text-warm">Arquetipo 02</span>
+      <h2 class="font-display text-2xl md:text-4xl font-extrabold mt-3">Restaurante</h2>
+      <p class="text-dim mt-4 leading-relaxed">Para <strong>taquerías, cafeterías, fondas, food trucks</strong>. La comida vende sola si la foto está bien tomada; el sitio debe lograr que la gente decida ir <em>antes</em> de googlear "tacos cerca". Carta apetitosa, ubicación al toque, integración con apps de delivery.</p>
+      <ul class="mt-5 space-y-2 text-sm">
+        <li class="flex gap-2"><span class="text-accent">✓</span> Hero foto-driven, menú visual con precios</li>
+        <li class="flex gap-2"><span class="text-accent">✓</span> Botones Uber Eats / Rappi / DiDi en posición prominente</li>
+        <li class="flex gap-2"><span class="text-accent">✓</span> Carrusel de platillos estrella</li>
+        <li class="flex gap-2"><span class="text-accent">✓</span> Reservaciones por WhatsApp con plantillas</li>
+      </ul>
+    </div>
+    <div class="md:col-span-7 md:order-2 order-1">
+      <div class="mock" style="background:linear-gradient(135deg,#1a0a05,#b8501a);">
+        <div class="browser-bar"><i></i><i></i><i></i><span class="ml-2 text-[9px] tracking-[0.15em] text-white/40 uppercase">tacos-el-ejemplo.mx</span></div>
+        <div class="mock-body">
+          <div class="flex items-end justify-between">
+            <div>
+              <div class="text-[8px] tracking-[0.3em] text-white/60 uppercase">Taquería · CDMX</div>
+              <div class="font-display text-white text-3xl md:text-4xl font-extrabold leading-none mt-1" style="font-family:'Manrope';">El Ejemplo</div>
+              <div class="text-white/70 text-[10px] mt-1.5 italic">Desde 1994</div>
+            </div>
+            <div class="text-white/80 text-right">
+              <div class="text-[8px] uppercase tracking-wider">Abre</div>
+              <div class="text-[11px] font-bold">10:00 — 23:00</div>
+            </div>
+          </div>
+          <div class="mt-4 grid grid-cols-3 gap-1.5">
+            <div class="aspect-square rounded" style="background:linear-gradient(135deg,#d97a3a,#f5a04a);"></div>
+            <div class="aspect-square rounded" style="background:linear-gradient(135deg,#8a3a1a,#b8501a);"></div>
+            <div class="aspect-square rounded" style="background:linear-gradient(135deg,#f5a04a,#fcd06b);"></div>
+          </div>
+          <div class="mt-4 flex gap-2">
+            <div class="bg-[#fcd06b] text-[#1a0a05] text-[9px] font-bold px-2 py-1 rounded">VER MENÚ</div>
+            <div class="bg-white text-[#1a0a05] text-[9px] font-bold px-2 py-1 rounded">UBER EATS</div>
+          </div>
+        </div>
+        <span class="mock-tag">Restaurante</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<!-- ===================== RETAIL ===================== -->
+<section id="retail" class="bg-surf border-t border-line">
+  <div class="max-w-6xl mx-auto px-6 py-16 md:py-20 grid md:grid-cols-12 gap-10 items-center">
+    <div class="md:col-span-7">
+      <div class="mock" style="background:linear-gradient(135deg,#1f1230,#7a4a96);">
+        <div class="browser-bar"><i></i><i></i><i></i><span class="ml-2 text-[9px] tracking-[0.15em] text-white/40 uppercase">boutique-ejemplo.mx</span></div>
+        <div class="mock-body">
+          <div class="flex items-center justify-between mb-3">
+            <div class="font-display text-white font-extrabold tracking-tighter text-2xl">EJEMPLO</div>
+            <div class="flex gap-3 text-white/70 text-[9px] uppercase tracking-widest">
+              <span>Tienda</span><span>Lookbook</span><span>Contacto</span>
+            </div>
+          </div>
+          <div class="grid grid-cols-3 gap-2">
+            <div class="aspect-[3/4] rounded relative overflow-hidden" style="background:linear-gradient(135deg,#d4b8e8,#b88fd0);">
+              <span class="absolute bottom-1.5 left-1.5 text-[8px] font-bold text-white">$890</span>
+            </div>
+            <div class="aspect-[3/4] rounded relative overflow-hidden" style="background:linear-gradient(135deg,#8a5fa8,#5d3a78);">
+              <span class="absolute bottom-1.5 left-1.5 text-[8px] font-bold text-white">$1,290</span>
+            </div>
+            <div class="aspect-[3/4] rounded relative overflow-hidden" style="background:linear-gradient(135deg,#e8d4f0,#bf9fd0);">
+              <span class="absolute bottom-1.5 left-1.5 text-[8px] font-bold text-[#2a1535]">$650</span>
+            </div>
+          </div>
+          <div class="mt-3 flex justify-between items-center">
+            <span class="text-white/60 text-[9px] uppercase tracking-widest">Colección Otoño · 24 piezas</span>
+            <div class="bg-white text-[#1f1230] text-[9px] font-bold px-2 py-1 rounded">VER TODO</div>
+          </div>
+        </div>
+        <span class="mock-tag">Retail</span>
+      </div>
+    </div>
+    <div class="md:col-span-5">
+      <span class="text-[11px] tracking-[0.2em] uppercase font-bold text-warm">Arquetipo 03</span>
+      <h2 class="font-display text-2xl md:text-4xl font-extrabold mt-3">Retail</h2>
+      <p class="text-dim mt-4 leading-relaxed">Para <strong>boutiques, mercerías, librerías, joyerías, tiendas de barrio con personalidad</strong>. La diferencia entre vender o no es la foto y la curaduría. Catálogo navegable, lookbook editorial, checkout por WhatsApp o Mercado Pago.</p>
+      <ul class="mt-5 space-y-2 text-sm">
+        <li class="flex gap-2"><span class="text-accent">✓</span> Catálogo con grid editorial + filtros simples</li>
+        <li class="flex gap-2"><span class="text-accent">✓</span> Fichas de producto con storytelling, no specs</li>
+        <li class="flex gap-2"><span class="text-accent">✓</span> Lookbook estacional como vehículo de marca</li>
+        <li class="flex gap-2"><span class="text-accent">✓</span> Integración Mercado Pago / WhatsApp Business</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+
+<!-- ===================== PROFESIONAL ===================== -->
+<section id="profesional" class="bg-paper border-t border-line">
+  <div class="max-w-6xl mx-auto px-6 py-16 md:py-20 grid md:grid-cols-12 gap-10 items-center">
+    <div class="md:col-span-5 md:order-1 order-2">
+      <span class="text-[11px] tracking-[0.2em] uppercase font-bold text-warm">Arquetipo 04</span>
+      <h2 class="font-display text-2xl md:text-4xl font-extrabold mt-3">Profesional independiente</h2>
+      <p class="text-dim mt-4 leading-relaxed">Para <strong>dentistas, contadores, abogados, consultores, terapeutas</strong>. El cliente está buscando confianza, no precio. El sitio comunica autoridad — credenciales, casos, agenda — sin caer en plantillas de "consultorio dental genérico".</p>
+      <ul class="mt-5 space-y-2 text-sm">
+        <li class="flex gap-2"><span class="text-accent">✓</span> Hero sobrio con propuesta clara + agenda visible</li>
+        <li class="flex gap-2"><span class="text-accent">✓</span> Credenciales y certificaciones documentadas</li>
+        <li class="flex gap-2"><span class="text-accent">✓</span> Calendly / WhatsApp para citas en 1 click</li>
+        <li class="flex gap-2"><span class="text-accent">✓</span> Sección de casos o testimonios con foto real</li>
+      </ul>
+    </div>
+    <div class="md:col-span-7 md:order-2 order-1">
+      <div class="mock" style="background:linear-gradient(135deg,#0a1f28,#1c4357);">
+        <div class="browser-bar"><i></i><i></i><i></i><span class="ml-2 text-[9px] tracking-[0.15em] text-white/40 uppercase">dra-ejemplo.mx</span></div>
+        <div class="mock-body">
+          <div class="grid grid-cols-12 gap-3 h-full">
+            <div class="col-span-7">
+              <div class="text-[8px] tracking-[0.3em] text-white/50 uppercase">ODONTOLOGÍA INTEGRAL</div>
+              <div class="font-display text-white text-xl md:text-2xl font-extrabold leading-tight mt-2">Dra. Ana<br/>Ejemplo López</div>
+              <div class="text-white/60 text-[10px] mt-2">Cédula 12345678 · UNAM 2014</div>
+              <div class="mt-3 inline-flex items-center gap-1.5 bg-white text-[#0a1f28] text-[9px] font-bold px-2 py-1 rounded">
+                <span class="w-1.5 h-1.5 rounded-full bg-[#7af07a]"></span>
+                AGENDAR CITA
+              </div>
+            </div>
+            <div class="col-span-5 flex flex-col gap-2">
+              <div class="rounded bg-white/10 border border-white/15 p-2">
+                <div class="text-[8px] text-white/50 uppercase tracking-wider">Servicios</div>
+                <div class="text-[10px] text-white/90 mt-1 leading-tight">Limpieza<br/>Ortodoncia<br/>Endodoncia</div>
+              </div>
+              <div class="rounded bg-white/10 border border-white/15 p-2">
+                <div class="text-[8px] text-white/50 uppercase tracking-wider">Reseñas</div>
+                <div class="text-[10px] text-white/90 mt-1">★ 4.9 · 127</div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <span class="mock-tag">Profesional</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<!-- ===================== INDUSTRIAL (DEMO REAL) ===================== -->
+<section id="industrial" class="bg-surf border-t border-line">
+  <div class="max-w-6xl mx-auto px-6 py-20 md:py-28">
+    <div class="max-w-2xl mb-10">
+      <span class="text-[11px] tracking-[0.2em] uppercase font-bold text-warm">Plantilla extendida · Demo navegable</span>
+      <h2 class="font-display text-3xl md:text-5xl font-extrabold mt-3 leading-[1.02]">
+        Industrial / B2B.<br/>
+        <span class="text-accent">Cuando la PyME ya no es tan pequeña.</span>
+      </h2>
+      <p class="text-dim mt-5 leading-relaxed">
+        Para fabricantes, distribuidores y operaciones B2B con catálogo técnico. El único arquetipo con
+        <strong>demo completamente navegable</strong> — siete sub-páginas SPA, bilingüe ES/EN, dark/light, mapa de cobertura,
+        comparador de materiales, calculadora de costos, simulador ISO 286 y KPIs en vivo.
+      </p>
+    </div>
+
+    <a href="industrial/" class="card p-6 md:p-8 grid md:grid-cols-12 gap-8 items-center group">
+      <div class="md:col-span-5">
+        <div class="mock" style="background:linear-gradient(135deg,#001e40,#003366);">
+          <div class="browser-bar"><i></i><i></i><i></i><span class="ml-2 text-[9px] tracking-[0.15em] text-white/40 uppercase">beca-industrial.mx</span></div>
+          <div class="mock-body">
+            <div class="flex justify-between items-start">
+              <div>
+                <div class="text-[8px] tracking-[0.3em] text-white/50 uppercase">PRECISION ENGINEERED</div>
+                <div class="font-display text-white text-2xl md:text-3xl font-extrabold leading-none mt-1">BECA INDUSTRIAL</div>
+              </div>
+              <div class="text-[#f37a00] text-[8px] uppercase tracking-widest font-bold">ES · EN</div>
+            </div>
+            <div class="mt-4 grid grid-cols-3 gap-1.5">
+              <div class="bg-[#f37a00]/80 h-10 rounded"></div>
+              <div class="bg-white/10 border border-white/20 h-10 rounded"></div>
+              <div class="bg-white/10 border border-white/20 h-10 rounded"></div>
+            </div>
+            <div class="mt-3 flex justify-between items-center">
+              <span class="text-white/60 text-[9px] uppercase tracking-widest">SS304 · SS316 · DUPLEX</span>
+              <div class="bg-[#f37a00] text-white text-[9px] font-bold px-2 py-1 rounded">SOLICITAR COTIZACIÓN</div>
+            </div>
+          </div>
+          <span class="mock-tag" style="background:rgba(243,122,0,0.85);">DEMO NAVEGABLE</span>
+        </div>
+      </div>
+      <div class="md:col-span-7">
+        <h3 class="font-display text-2xl md:text-3xl font-extrabold">BECA INDUSTRIAL</h3>
+        <p class="text-muted text-[12px] uppercase tracking-widest font-semibold mt-1">SPA Tailwind · Leaflet · Chart.js · i18n</p>
+        <p class="text-dim mt-4 leading-relaxed">
+          Empresa ficticia de transferencia de fluidos industriales. Diseñada como referencia de cómo se vería un cliente B2B serio: catálogo filtrable, fichas técnicas, comparador de materiales (composición, tolerancias, resistencia química), mapa de cobertura nacional y una sección de herramientas con seis mini-apps que un cliente real usaría a diario.
+        </p>
+        <div class="flex flex-wrap gap-2 mt-5">
+          <span class="text-[11px] uppercase tracking-wider font-semibold px-2.5 py-1 rounded bg-surf2 text-dim border border-line">7 sub-páginas</span>
+          <span class="text-[11px] uppercase tracking-wider font-semibold px-2.5 py-1 rounded bg-surf2 text-dim border border-line">ES / EN</span>
+          <span class="text-[11px] uppercase tracking-wider font-semibold px-2.5 py-1 rounded bg-surf2 text-dim border border-line">Dark / Light</span>
+          <span class="text-[11px] uppercase tracking-wider font-semibold px-2.5 py-1 rounded bg-surf2 text-dim border border-line">Ctrl+K search</span>
+          <span class="text-[11px] uppercase tracking-wider font-semibold px-2.5 py-1 rounded bg-surf2 text-dim border border-line">6 mini-apps</span>
+        </div>
+        <span class="inline-flex items-center gap-1.5 mt-6 text-sm font-semibold text-accent group-hover:gap-2.5 transition-all">
+          Abrir demo navegable
+          <span class="material-symbols-outlined text-[18px]">open_in_new</span>
+        </span>
+      </div>
+    </a>
+  </div>
+</section>
+
+
+<!-- ===================== CTA FINAL ===================== -->
+<section class="bg-paper border-t border-line">
+  <div class="max-w-3xl mx-auto px-6 py-20 md:py-28 text-center">
+    <h2 class="font-display text-3xl md:text-5xl font-extrabold leading-[1.02]">
+      ¿Tu negocio entra en alguno<br/>de estos arquetipos?
+    </h2>
+    <p class="text-dim mt-5 max-w-xl mx-auto">Lo más probable es que sí. Y aun si no, el sistema se adapta — el método no cambia, solo el lenguaje visual.</p>
+    <div class="mt-9 flex flex-wrap gap-3 justify-center">
+      <a href="../#contacto" class="btn-primary">Empezar mi rebranding<span class="material-symbols-outlined text-[18px]">arrow_forward</span></a>
+      <a href="../casos/" class="btn-ghost">Ver casos reales</a>
+    </div>
+  </div>
+</section>
+
+</main>
+
+<!-- FOOTER -->
+<footer class="border-t border-line bg-surf2">
+  <div class="max-w-6xl mx-auto px-6 py-10 flex flex-col sm:flex-row justify-between items-center gap-3 text-[12px] text-muted">
+    <div class="flex items-center gap-2">
+      <span class="inline-block w-2 h-2 rounded-full bg-accent"></span>
+      <span class="font-display font-extrabold tracking-tight text-ink">Mahuno Studio</span>
+      <span>· Laboratorio</span>
+    </div>
+    <div class="flex gap-5">
+      <a href="../" class="hover:text-ink">Inicio</a>
+      <a href="../casos/" class="hover:text-ink">Casos</a>
+      <a href="/" class="hover:text-ink">Perfil MAHUNO ↗</a>
+    </div>
+  </div>
+</footer>
+
+<script>
+(function(){
+  // Hash scroll suave a anchors
+  if (location.hash) {
+    var el = document.querySelector(location.hash);
+    if (el) setTimeout(function(){ el.scrollIntoView({behavior:'smooth', block:'start'}); }, 80);
+  }
+})();
+</script>
+</body>
+</html>

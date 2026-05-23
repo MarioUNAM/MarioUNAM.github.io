@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="es" class="scroll-smooth">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>Casos — Mahuno Studio</title>
+<meta name="description" content="Casos reales de rebranding de PyMEs mexicanas. Negocios que dejaron de competir por precio."/>
+<meta name="author" content="Mario Huarte Nolasco"/>
+<link rel="canonical" href="https://mariounam.github.io/studio/casos/"/>
+<link rel="icon" type="image/png" href="../../assets/img/favicon-32x32.png"/>
+<meta property="og:title" content="Casos — Mahuno Studio"/>
+<meta property="og:description" content="Casos reales de rebranding de PyMEs mexicanas."/>
+<meta property="og:url" content="https://mariounam.github.io/studio/casos/"/>
+<meta property="og:image" content="https://mariounam.github.io/assets/img/og-card.png"/>
+
+<script>
+  (function(){
+    var t = localStorage.getItem('studio.theme');
+    var preferDark = window.matchMedia && window.matchMedia('(prefers-color-scheme:dark)').matches;
+    var theme = (t === 'dark' || t === 'light') ? t : (preferDark ? 'dark' : 'light');
+    document.documentElement.setAttribute('data-theme', theme);
+  })();
+</script>
+
+<link rel="preload" href="../../assets/fonts/manrope-latin-800.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="../../assets/fonts/inter-latin-400.woff2"   as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="../../assets/css/main.css">
+
+<script src="https://cdn.tailwindcss.com?plugins=forms"></script>
+<script>
+  tailwind.config = {
+    darkMode: ['class','[data-theme="dark"]'],
+    theme: { extend: {
+      colors: { ink:'var(--c-ink)', paper:'var(--c-paper)', dim:'var(--c-dim)', muted:'var(--c-muted)',
+                line:'var(--c-line)', surf:'var(--c-surf)', surf2:'var(--c-surf2)',
+                accent:'var(--c-accent)', warm:'var(--c-warm)' },
+      fontFamily: { display:['Manrope','Inter','sans-serif'], body:['Inter','sans-serif'] },
+    }}
+  }
+</script>
+
+<style>
+  :root { --c-paper:#fafaf7; --c-surf:#ffffff; --c-surf2:#f3f2ed; --c-ink:#14140f; --c-dim:#4a4a44;
+          --c-muted:#7a7a72; --c-line:#e6e5dd; --c-accent:#0a7da3; --c-warm:#b8501a; }
+  :root[data-theme="dark"] { --c-paper:#0a0a0b; --c-surf:#141416; --c-surf2:#1c1c1f; --c-ink:#fafaf7;
+          --c-dim:#c8c8c2; --c-muted:#888880; --c-line:#2a2a2d; --c-accent:#4cd6fb; --c-warm:#f5a04a; }
+  html,body{ background:var(--c-paper); color:var(--c-ink); }
+  body{ font-family:'Inter',sans-serif; }
+  .font-display{ font-family:'Manrope','Inter',sans-serif; letter-spacing:-0.02em; }
+  .glass-nav{ background:color-mix(in srgb, var(--c-paper) 78%, transparent); backdrop-filter:blur(14px) saturate(140%);
+              -webkit-backdrop-filter:blur(14px) saturate(140%); border-bottom:1px solid var(--c-line); }
+  .btn-primary{ display:inline-flex; align-items:center; gap:.5rem; background:var(--c-ink); color:var(--c-paper);
+                padding:.7rem 1.1rem; font-weight:600; font-size:.85rem; border-radius:6px; transition:transform .15s, opacity .2s; }
+  .btn-primary:hover{ transform:translateY(-1px); opacity:.92; }
+  .btn-ghost{ display:inline-flex; align-items:center; gap:.5rem; border:1px solid var(--c-line); color:var(--c-ink);
+              padding:.7rem 1.1rem; font-weight:600; font-size:.85rem; border-radius:6px; transition:background .15s; }
+  .btn-ghost:hover{ background:var(--c-surf2); }
+  .card{ background:var(--c-surf); border:1px solid var(--c-line); border-radius:14px; transition:transform .2s, border-color .2s; }
+  .card:hover{ transform:translateY(-3px); border-color:color-mix(in srgb, var(--c-accent) 40%, var(--c-line)); }
+</style>
+</head>
+<body class="font-body antialiased">
+
+<a href="#main" class="sr-only focus:not-sr-only focus:fixed focus:top-3 focus:left-3 focus:z-50 focus:bg-ink focus:text-paper focus:px-4 focus:py-2 focus:rounded">Saltar al contenido</a>
+
+<nav class="fixed top-0 inset-x-0 z-40 glass-nav">
+  <div class="max-w-6xl mx-auto px-6 py-3.5 flex items-center justify-between">
+    <a href="../" class="flex items-center gap-2">
+      <span class="inline-block w-2 h-2 rounded-full bg-accent"></span>
+      <span class="font-display font-extrabold tracking-tight text-[15px]">Mahuno Studio</span>
+      <span class="text-muted text-[13px] font-medium ml-1">/ Casos</span>
+    </a>
+    <div class="hidden md:flex items-center gap-7 text-[13px] font-medium text-dim">
+      <a href="../#metodo"   class="hover:text-ink transition-colors">Método</a>
+      <a href="../lab/"      class="hover:text-ink transition-colors">Laboratorio</a>
+      <a href="../#contacto" class="hover:text-ink transition-colors">Contacto</a>
+    </div>
+    <a href="../" class="inline-flex items-center gap-1.5 text-[12px] font-semibold text-muted hover:text-ink">
+      <span class="material-symbols-outlined text-[16px]">arrow_back</span>
+      Volver
+    </a>
+  </div>
+</nav>
+
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0&display=swap"/>
+<style>.material-symbols-outlined{font-variation-settings:'FILL' 0,'wght' 400,'GRAD' 0,'opsz' 24;vertical-align:middle;}</style>
+
+<main id="main" class="pt-24">
+
+<section class="max-w-6xl mx-auto px-6 pt-12 pb-10">
+  <span class="text-[11px] tracking-[0.2em] uppercase font-bold text-accent">Casos</span>
+  <h1 class="font-display text-4xl md:text-6xl font-extrabold mt-3 leading-[1.02] max-w-3xl">
+    Negocios reales.<br/>
+    <span class="text-accent">Resultados medibles.</span>
+  </h1>
+  <p class="text-dim mt-6 max-w-2xl leading-relaxed">
+    Cada caso es un negocio mexicano que pasó por el sistema. No vendo "antes y después" de Photoshop —
+    documento decisiones, números y aprendizajes con la misma honestidad que usaría en un post-mortem técnico.
+  </p>
+</section>
+
+<section class="max-w-6xl mx-auto px-6 pb-16">
+  <a href="don-peter/" class="card p-7 md:p-10 grid md:grid-cols-12 gap-8 items-center group">
+    <div class="md:col-span-4 aspect-[4/3] rounded-lg overflow-hidden relative" style="background:linear-gradient(135deg,#1a1a1a,#2d2d2d);">
+      <div class="absolute inset-0 grid place-items-center text-center px-5">
+        <div>
+          <p class="font-display text-white text-3xl md:text-4xl font-extrabold tracking-tight">DON PETER</p>
+          <p class="text-white/60 text-[10px] tracking-[0.3em] uppercase mt-2">Servicio local · CDMX</p>
+        </div>
+      </div>
+    </div>
+    <div class="md:col-span-8">
+      <div class="flex items-center gap-3 mb-2">
+        <span class="text-[11px] tracking-[0.2em] uppercase font-bold text-warm">Caso 01</span>
+        <span class="text-[11px] tracking-[0.15em] uppercase font-semibold text-muted">· Servicio local</span>
+        <span class="text-[11px] tracking-[0.15em] uppercase font-semibold text-muted">· 5 días</span>
+      </div>
+      <h2 class="font-display text-2xl md:text-3xl font-extrabold">Don Peter — Del volante en blanco y negro a la marca local de referencia.</h2>
+      <p class="text-dim mt-4 max-w-2xl">Un negocio con 8 años de operación pero sin identidad visible. Cinco días después: nombre depurado, identidad cálida, sitio web, ficha Google Business y plantillas de WhatsApp. El cliente <strong>dejó de competir por precio</strong> en menos de un mes.</p>
+      <div class="grid grid-cols-3 gap-3 mt-6 max-w-md">
+        <div>
+          <div class="font-display font-extrabold text-2xl text-accent">+38%</div>
+          <div class="text-[11px] text-muted uppercase tracking-wider">tickets/sem</div>
+        </div>
+        <div>
+          <div class="font-display font-extrabold text-2xl text-accent">5d</div>
+          <div class="text-[11px] text-muted uppercase tracking-wider">de entrega</div>
+        </div>
+        <div>
+          <div class="font-display font-extrabold text-2xl text-accent">★4.8</div>
+          <div class="text-[11px] text-muted uppercase tracking-wider">Google</div>
+        </div>
+      </div>
+      <span class="inline-flex items-center gap-1.5 mt-6 text-sm font-semibold text-accent group-hover:gap-2.5 transition-all">
+        Leer el caso completo
+        <span class="material-symbols-outlined text-[18px]">arrow_forward</span>
+      </span>
+    </div>
+  </a>
+
+  <!-- Coming soon placeholders -->
+  <div class="grid sm:grid-cols-2 gap-5 mt-10">
+    <div class="card p-7 opacity-60">
+      <span class="text-[11px] tracking-[0.2em] uppercase font-bold text-muted">Caso 02 · Próximamente</span>
+      <h3 class="font-display text-xl font-extrabold mt-3">Restaurante familiar — Reposicionamiento generacional</h3>
+      <p class="text-dim text-sm mt-2">Cómo un negocio con tres décadas de historia pasó a comunicar herencia sin parecer anticuado.</p>
+    </div>
+    <div class="card p-7 opacity-60">
+      <span class="text-[11px] tracking-[0.2em] uppercase font-bold text-muted">Caso 03 · Próximamente</span>
+      <h3 class="font-display text-xl font-extrabold mt-3">Despacho profesional — De recomendación de boca en boca a presencia digital</h3>
+      <p class="text-dim text-sm mt-2">Cuando el negocio funciona pero ningún cliente nuevo te encuentra en Google.</p>
+    </div>
+  </div>
+</section>
+
+<section class="bg-surf border-y border-line">
+  <div class="max-w-3xl mx-auto px-6 py-20 text-center">
+    <h2 class="font-display text-2xl md:text-4xl font-extrabold leading-[1.05]">¿Quieres ser el siguiente caso?</h2>
+    <p class="text-dim mt-4">Trabajo con tres clientes al mes. Si tu negocio entra, en cinco días tendrás identidad nueva.</p>
+    <div class="mt-7 flex flex-wrap gap-3 justify-center">
+      <a href="../#contacto" class="btn-primary">Hablar conmigo<span class="material-symbols-outlined text-[18px]">arrow_forward</span></a>
+      <a href="../lab/" class="btn-ghost">Ver plantillas</a>
+    </div>
+  </div>
+</section>
+
+</main>
+
+<footer class="border-t border-line bg-surf2">
+  <div class="max-w-6xl mx-auto px-6 py-10 flex flex-col sm:flex-row justify-between items-center gap-3 text-[12px] text-muted">
+    <div class="flex items-center gap-2">
+      <span class="inline-block w-2 h-2 rounded-full bg-accent"></span>
+      <span class="font-display font-extrabold tracking-tight text-ink">Mahuno Studio</span>
+      <span>· Casos</span>
+    </div>
+    <div class="flex gap-5">
+      <a href="../" class="hover:text-ink">Inicio</a>
+      <a href="../lab/" class="hover:text-ink">Laboratorio</a>
+      <a href="/" class="hover:text-ink">Perfil MAHUNO ↗</a>
+    </div>
+  </div>
+</footer>
+</body>
+</html>

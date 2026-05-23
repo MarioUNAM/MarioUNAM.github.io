@@ -147,13 +147,33 @@ projects/
 ├── rpa-invoice-automation.html
 ├── data-analytics-dashboard.html
 ├── ebx-mdm-hub.html
-├── data-quality-observability.html
-└── beca_industrial.html       # SPA bilingüe con mapa, materiales y herramientas
+└── data-quality-observability.html
 ```
 
 Cada página usa **Tailwind (CDN)** + `assets/css/main.css` con i18n inline ES/EN, dark/light toggle y FOUC prevention.
 
-`beca_industrial.html` es un demo conceptual extendido: 7 sub-páginas SPA, Leaflet (mapa de cobertura), Chart.js (KPIs), tabla comparativa de materiales, calculadora de costos, simulador de tolerancias ISO 286, glosario, búsqueda Ctrl+K, modo presentación e impresión.
+> **Nota:** `projects/beca_industrial.html` se movió a `studio/lab/industrial/index.html` como demo navegable del **Mahuno Studio Laboratorio**.
+
+---
+
+## Mahuno Studio — `studio/`
+
+Sub-dominio dentro del repo para la práctica comercial de rebranding para PyMEs mexicanas. Identidad visual propia (papel cálido + cyan profundo) inspirada en Linear/Vercel/Posthog, separada del portfolio principal pero enlazada desde el nav y un banner destacado en `index.html`.
+
+```
+studio/
+├── index.html              # Landing — hero, qué es, método 5 pasos, lab teaser, casos teaser, contacto
+├── lab/
+│   ├── index.html          # Catálogo con 4 mockups visuales (servicio local · restaurante · retail · profesional)
+│   └── industrial/
+│       └── index.html      # Demo navegable industrial (antes projects/beca_industrial.html)
+└── casos/
+    ├── index.html          # Listado de casos
+    └── don-peter/
+        └── index.html      # Caso 01 — placeholder realista de rebranding completo
+```
+
+El demo industrial (`studio/lab/industrial/`) es un demo conceptual extendido: 7 sub-páginas SPA, Leaflet (mapa de cobertura), Chart.js (KPIs), tabla comparativa de materiales, calculadora de costos, simulador de tolerancias ISO 286, glosario, búsqueda Ctrl+K, modo presentación e impresión.
 
 ---
 

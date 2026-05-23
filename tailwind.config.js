@@ -6,8 +6,9 @@
  * y projects/{data-analytics-dashboard, rpa-invoice-automation,
  *              ebx-mdm-hub, data-quality-observability}.html.
  *
- * NO cubre: projects/beca_industrial.html (usa tokens --c-* propios;
- * sigue con tailwindcdn por ahora).
+ * NO cubre: studio/** (todo el Mahuno Studio usa tokens --c-* propios
+ * con Tailwind CDN, incluyendo el demo industrial movido a
+ * studio/lab/industrial/index.html, antes projects/beca_industrial.html).
  *
  * Build: npm run build:css
  */

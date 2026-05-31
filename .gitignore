@@ -57,3 +57,7 @@ stitch/
 
 # Scripts sueltos personales (no parte del sitio)
 pythoncodes/
+
+# Demos antiguos del laboratorio web (Boda, CartaMama, carte, sanvalentin, webejemplo)
+# Se conservan en local como referencia pero ya no se publican.
+WEB_examples/

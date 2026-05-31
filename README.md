@@ -100,7 +100,7 @@ Componentes específicos que puedes tocar:
 | Principios | `.principle-card` | ~862 |
 | Disponibilidad | `.availability-badge` | ~908 |
 
-### Foto de perfil — `assets/img/me.jpeg`
+### Foto de perfil — `assets/img/me.jpg`
 
 Reemplaza el archivo manteniendo el mismo nombre. Dimensión recomendada: **800×1000 px**, relación 4:5.
 

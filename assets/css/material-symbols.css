@@ -1,0 +1,16 @@
+/*
+ * Material Symbols Outlined — subset self-hosted
+ * Solo los iconos efectivamente usados en el sitio (56 glyphs, ~8 KB).
+ * Para regenerar el subset: ver scripts/build-material-symbols-subset (si existe)
+ * o reconstruir manualmente con la API de Google Fonts y el parametro icon_names.
+ *
+ * La regla .material-symbols-outlined (font-size, liga, etc.) sigue en
+ * assets/css/main.css y en los <style> inline de cada archivo del Studio.
+ */
+@font-face {
+  font-family: 'Material Symbols Outlined';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url('../fonts/material-symbols-outlined.woff2') format('woff2');
+}

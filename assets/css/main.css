@@ -1,77 +1,30 @@
 /* ============================================================
-   SELF-HOSTED FONTS · subset: latin
-   Generado por scripts/fetch-fonts.js — no editar a mano.
+   SELF-HOSTED FONTS · subset: latin · variable
+   Una declaracion por familia con rango font-weight: 100 900.
+   Los WOFF2 son fuentes variable de Google Fonts (mismo archivo
+   sirve todos los pesos del rango).
    ============================================================ */
 
 @font-face {
   font-family: 'Manrope';
   font-style: normal;
-  font-weight: 400;
+  font-weight: 100 900;
   font-display: swap;
-  src: url('../fonts/manrope-latin-400.woff2') format('woff2');
-}
-@font-face {
-  font-family: 'Manrope';
-  font-style: normal;
-  font-weight: 600;
-  font-display: swap;
-  src: url('../fonts/manrope-latin-600.woff2') format('woff2');
-}
-@font-face {
-  font-family: 'Manrope';
-  font-style: normal;
-  font-weight: 700;
-  font-display: swap;
-  src: url('../fonts/manrope-latin-700.woff2') format('woff2');
-}
-@font-face {
-  font-family: 'Manrope';
-  font-style: normal;
-  font-weight: 800;
-  font-display: swap;
-  src: url('../fonts/manrope-latin-800.woff2') format('woff2');
+  src: url('../fonts/manrope-variable.woff2') format('woff2');
 }
 @font-face {
   font-family: 'Inter';
   font-style: normal;
-  font-weight: 400;
+  font-weight: 100 900;
   font-display: swap;
-  src: url('../fonts/inter-latin-400.woff2') format('woff2');
-}
-@font-face {
-  font-family: 'Inter';
-  font-style: normal;
-  font-weight: 500;
-  font-display: swap;
-  src: url('../fonts/inter-latin-500.woff2') format('woff2');
-}
-@font-face {
-  font-family: 'Inter';
-  font-style: normal;
-  font-weight: 600;
-  font-display: swap;
-  src: url('../fonts/inter-latin-600.woff2') format('woff2');
+  src: url('../fonts/inter-variable.woff2') format('woff2');
 }
 @font-face {
   font-family: 'Space Grotesk';
   font-style: normal;
-  font-weight: 400;
+  font-weight: 300 700;
   font-display: swap;
-  src: url('../fonts/space-grotesk-latin-400.woff2') format('woff2');
-}
-@font-face {
-  font-family: 'Space Grotesk';
-  font-style: normal;
-  font-weight: 500;
-  font-display: swap;
-  src: url('../fonts/space-grotesk-latin-500.woff2') format('woff2');
-}
-@font-face {
-  font-family: 'Space Grotesk';
-  font-style: normal;
-  font-weight: 700;
-  font-display: swap;
-  src: url('../fonts/space-grotesk-latin-700.woff2') format('woff2');
+  src: url('../fonts/space-grotesk-variable.woff2') format('woff2');
 }
 
 /* ─── Original main.css below ─── */

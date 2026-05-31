@@ -5,9 +5,7 @@ Allow: /
 Disallow: /contact-success.html
 Disallow: /contact-error.html
 
-# No indexar templates legacy
+# No indexar demos antiguos del laboratorio web
 Disallow: /WEB_examples/
-Disallow: /stitch/
-Disallow: /pythoncodes/
 
 Sitemap: https://mariounam.github.io/sitemap.xml

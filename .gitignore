@@ -1,26 +1,59 @@
-# Claude Code internal files
+# ───────────────────────────────────────────────
+# MarioUNAM.github.io — gitignore
+# Mantener el repo público limpio: solo lo que se sirve en GitHub Pages.
+# ───────────────────────────────────────────────
+
+# Claude Code (memoria, worktrees, settings locales)
 .claude/
 
-# OS
+# Sistema operativo
 .DS_Store
 Thumbs.db
 desktop.ini
+ehthumbs.db
+$RECYCLE.BIN/
 
-# Editor
+# Editores
 .vscode/
 .idea/
 *.swp
 *.swo
+*~
 
-# Node (if ever needed)
+# Node / build (Tailwind CLI usa esto si se ejecuta local)
 node_modules/
 npm-debug.log*
-
-# Build output
+yarn-debug.log*
+yarn-error.log*
+.npm/
+.cache/
 dist/
 build/
 
-# Notas internas — no publicables
+# Variables de entorno (nunca subir secretos)
+.env
+.env.*
+!.env.example
+
+# Archivos temporales y backups
+*.log
+*.tmp
+*.bak
+*.old
+*.orig
+
+# Notas internas — no publicables en GitHub Pages
 IMPROVEMENTS.md
 NOTES.md
 TODO.md
+
+# Espacios de trabajo locales (scratch, drafts, exploratorios)
+_local/
+_scratch/
+_drafts/
+
+# Referencias de diseño y prototipos (no producción)
+stitch/
+
+# Scripts sueltos personales (no parte del sitio)
+pythoncodes/

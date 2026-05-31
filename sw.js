@@ -5,7 +5,7 @@
    network-first con fallback a cache para el resto.
    Sube CACHE_VERSION cuando publiques cambios para invalidar.
    ============================================================ */
-const CACHE_VERSION = "tracker-v6";
+const CACHE_VERSION = "tracker-v7";
 
 // Permite al cliente forzar la activación del SW nuevo cuando
 // el usuario aprueba el prompt "Recargar" del tracker.
@@ -24,8 +24,9 @@ const CORE_ASSETS = [
   "./tracker.html",
   "./manifest.json",
   "./assets/img/tracker-icon.svg",
-  "https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js",
-  "https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Inter:wght@400;500;600;700;800&display=swap"
+  "./assets/fonts/inter-variable.woff2",
+  "./assets/fonts/jetbrains-mono-variable.woff2",
+  "https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"
 ];
 
 self.addEventListener("install", e => {

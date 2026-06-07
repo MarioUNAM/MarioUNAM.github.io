@@ -1410,13 +1410,42 @@ input[type=range]::-moz-range-thumb {
 
     <!-- FUERZA -->
     <div class="block-tipo" data-tipo="fuerza">
-      <span class="field-label">Series</span>
-      <div class="dyn-list" id="series-list"></div>
-      <button type="button" class="btn-add" id="add-serie">+ Agregar serie</button>
+      <div id="bloque-series">
+        <span class="field-label">Series</span>
+        <div class="dyn-list" id="series-list"></div>
+        <button type="button" class="btn-add" id="add-serie">+ Agregar serie</button>
+      </div>
+      <div id="bloque-isometrico" hidden>
+        <div class="field-row cols-2">
+          <label class="field">
+            <span class="field-label">Segundos por serie</span>
+            <input type="number" name="isometricoSegs" class="input mono" min="1" step="1" placeholder="60">
+          </label>
+          <label class="field">
+            <span class="field-label">Series</span>
+            <input type="number" name="isometricoSeries" class="input mono" min="1" step="1" value="1">
+          </label>
+        </div>
+        <div style="display:flex;gap:10px;align-items:center;margin-bottom:12px">
+          <button type="button" id="btn-timer" class="btn-secondary" style="flex:1">▶ Iniciar cronómetro</button>
+          <span id="timer-display" style="font:700 22px/1 var(--font-mono);color:var(--green);min-width:60px;text-align:right">0s</span>
+        </div>
+      </div>
     </div>
 
     <!-- CARDIO -->
     <div class="block-tipo" data-tipo="cardio" hidden>
+      <div id="cardio-hr-banner" class="calc-preview" style="margin-bottom:12px" hidden>
+        <div class="calc-cell">
+          <span class="calc-label">FC máx estimada</span>
+          <span class="calc-value muted" id="cardio-hr-max">—</span>
+        </div>
+        <div class="calc-cell">
+          <span class="calc-label">Zona quema grasa (60–70%)</span>
+          <span class="calc-value" id="cardio-hr-zone" style="color:var(--amber)">— bpm</span>
+        </div>
+        <p class="calc-hint" id="cardio-hr-hint">Guarda tu edad en el Perfil para ver la zona cardíaca recomendada.</p>
+      </div>
       <div class="field-row cols-2">
         <label class="field">
           <span class="field-label">Minutos totales</span>
@@ -1646,10 +1675,6 @@ input[type=range]::-moz-range-thumb {
       <span class="field-label">Alimento</span>
       <input type="text" name="alimento" class="input" placeholder="Avena con plátano y nueces..." list="dl-alimentos" required>
     </label>
-    <label class="field">
-      <span class="field-label">Cantidad aproximada</span>
-      <input type="text" name="cantidad" class="input" placeholder="1 plato, 200g, 1 puñado..." list="dl-cantidades">
-    </label>
     <button type="submit" class="btn-primary">
       <span id="submit-label-comida">Registrar comida</span>
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
@@ -1810,7 +1835,6 @@ input[type=range]::-moz-range-thumb {
 
 <datalist id="dl-ejercicios"></datalist>
 <datalist id="dl-alimentos"></datalist>
-<datalist id="dl-cantidades"></datalist>
 
 <div id="toast" role="status" aria-live="polite" aria-atomic="true"></div>
 
@@ -2065,9 +2089,9 @@ function seedSample(s) {
 
   // 3 comidas — un día de muestra
   s.comidas = [
-    { id: uid(), fecha: day(0), momento:"desayuno", alimento:"Avena con plátano y nueces", cantidad:"1 tazón" },
-    { id: uid(), fecha: day(0), momento:"almuerzo", alimento:"Pollo con arroz y verduras", cantidad:"1 plato" },
-    { id: uid(), fecha: day(0), momento:"cena",     alimento:"Salmón con ensalada",        cantidad:"200 g" }
+    { id: uid(), fecha: day(0), momento:"desayuno", alimento:"Avena con plátano y nueces" },
+    { id: uid(), fecha: day(0), momento:"almuerzo", alimento:"Pollo con arroz y verduras" },
+    { id: uid(), fecha: day(0), momento:"cena",     alimento:"Salmón con ensalada" }
   ];
 
   s.meta.sampleLoaded = true;
@@ -2329,6 +2353,13 @@ document.querySelectorAll(".toggle-group").forEach(group => {
 });
 function syncTipoBlocks(tipo) {
   document.querySelectorAll(".block-tipo").forEach(b => b.hidden = (b.dataset.tipo !== tipo));
+  updateCardioHR();
+  if (tipo === "fuerza") {
+    const nom = document.querySelector("#form-ejercicio input[name=nombre]");
+    syncIsometricUI(nom ? nom.value : "");
+  } else {
+    stopTimer();
+  }
 }
 function onSexoChange(sexo) {
   // Sólo afecta visibilidad del campo "cadera" cuando el perfil cambia
@@ -2463,6 +2494,7 @@ formPerfil.addEventListener("submit", e => {
   // Recalcular previews dependientes del perfil
   updateCalcPreview();
   updateKcalPreview();
+  updateCardioHR();
   if (typeof renderDashboard === "function" &&
       document.getElementById("tab-dashboard")?.classList.contains("active")) {
     renderDashboard();
@@ -2497,11 +2529,21 @@ formEjercicio.addEventListener("submit", e => {
     notas: (fd.get("notas")||"").trim()
   };
   if (tipo === "fuerza") {
-    base.series = [...seriesList.querySelectorAll(".dyn-row")].map(r => ({
-      reps: Number(r.querySelector("input[name=reps]").value)||0,
-      kg:   Number(r.querySelector("input[name=kg]").value)||0
-    })).filter(s => s.reps>0 || s.kg>0);
-    if (!base.series.length) return toast("Agrega al menos una serie", "error");
+    const bIso = document.getElementById("bloque-isometrico");
+    if (bIso && !bIso.hidden) {
+      const segsInputEl = formEjercicio.querySelector("input[name=isometricoSegs]");
+      if (timerInterval) stopTimer();
+      base.isIsometrico = true;
+      base.isometricoSegs = Number(segsInputEl?.value) || (timerSecs > 0 ? timerSecs : 0);
+      base.isometricoSeries = Number(fd.get("isometricoSeries"))||1;
+      if (!base.isometricoSegs) return toast("Indica los segundos de la plancha", "error");
+    } else {
+      base.series = [...seriesList.querySelectorAll(".dyn-row")].map(r => ({
+        reps: Number(r.querySelector("input[name=reps]").value)||0,
+        kg:   Number(r.querySelector("input[name=kg]").value)||0
+      })).filter(s => s.reps>0 || s.kg>0);
+      if (!base.series.length) return toast("Agrega al menos una serie", "error");
+    }
   } else if (tipo === "cardio") {
     base.minutos = Number(fd.get("minutos"))||0;
     base.pendiente = Number(fd.get("pendiente"))||0;
@@ -2519,11 +2561,14 @@ formEjercicio.addEventListener("submit", e => {
   state.ejercicios.unshift(base);
   saveState();
   renderEjerciciosList();
+  refreshDatalists();
   toast("Sesión registrada");
   formEjercicio.querySelector("input[name=nombre]").value = "";
   formEjercicio.querySelector("textarea[name=notas]").value = "";
   seriesList.innerHTML = ""; addSerieRow();
   velocidadesList.innerHTML = ""; addVelocidadRow();
+  stopTimer();
+  syncIsometricUI("");
 });
 
 /* ============================================================
@@ -2579,7 +2624,7 @@ const LIST_CONFIG = {
     emptyAll: "Sin mediciones"
   },
   comidas: {
-    placeholder: "Buscar alimento, cantidad...",
+    placeholder: "Buscar alimento...",
     typeField: "momento",
     chips: [
       { value: "all",          label: "Todos" },
@@ -2590,7 +2635,7 @@ const LIST_CONFIG = {
       { value: "cena",         label: "Cena" },
       { value: "post-entreno", label: "Post-entreno" }
     ],
-    searchOf: c => `${c.alimento || ""} ${c.cantidad || ""}`,
+    searchOf: c => c.alimento || "",
     dateOf: c => c.fecha,
     emptyAll: "Sin comidas"
   }
@@ -2819,14 +2864,19 @@ function renderEjerciciosList() {
 
   cont.innerHTML = visible.map(e => {
     let detail = "";
-    if (e.tipo === "fuerza" && e.series) {
+    if (e.tipo === "fuerza" && e.isIsometrico) {
+      const total = (e.isometricoSegs||0) * (e.isometricoSeries||1);
+      detail = `${e.isometricoSeries||1} × <strong>${e.isometricoSegs||0}s</strong> · Total <strong>${total}s</strong>`;
+    } else if (e.tipo === "fuerza" && e.series) {
       const vol = e.series.reduce((a,s) => a + s.reps*s.kg, 0);
       detail = e.series.map((s,i) => `S${i+1}: <strong>${s.reps}×${s.kg}kg</strong>`).join(" · ")
              + ` · Vol <strong>${vol}kg</strong>`;
     } else if (e.tipo === "cardio") {
       const totalMins = e.minutos || (e.velocidades||[]).reduce((a,v)=>a+v.mins,0);
       const vels = (e.velocidades||[]).map(v => `${v.kmh}km/h ${v.mins}'`).join(" · ");
-      detail = `<strong>${totalMins}min</strong>${e.pendiente?` · ${e.pendiente}%`:""}${vels?` · ${vels}`:""}`;
+      const edadP = state.perfil?.edad;
+      const hrNote = edadP ? (()=>{ const m=220-Number(edadP); return ` · <span style="color:var(--amber)">♥ ${Math.round(m*.6)}–${Math.round(m*.7)} bpm</span>`; })() : "";
+      detail = `<strong>${totalMins}min</strong>${e.pendiente?` · ${e.pendiente}%`:""}${vels?` · ${vels}`:""}${hrNote}`;
     } else {
       detail = `<strong>${e.flexMinutos||0}min</strong> · ${e.flexSeries||1} serie(s)`;
     }
@@ -2992,8 +3042,7 @@ formComida.addEventListener("submit", e => {
     id: uid(),
     fecha: fd.get("fecha"),
     momento: fd.get("momento"),
-    alimento: fd.get("alimento").trim(),
-    cantidad: (fd.get("cantidad")||"").trim()
+    alimento: fd.get("alimento").trim()
   };
   if (!c.alimento) return toast("Alimento requerido", "error");
   state.comidas.unshift(c);
@@ -3001,7 +3050,6 @@ formComida.addEventListener("submit", e => {
   renderComidasList();
   toast("Comida registrada");
   formComida.querySelector("input[name=alimento]").value = "";
-  formComida.querySelector("input[name=cantidad]").value = "";
 });
 
 function renderComidasList() {
@@ -4104,21 +4152,21 @@ function renderAll() {
    ============================================================ */
 const editing = { ejercicios: null, mediciones: null, comidas: null };
 
+const EJERCICIOS_SUGERIDOS = [
+  "Plancha abdominal","Plancha lateral","Plancha con toque de hombro",
+  "Sentadilla con barra","Press banca","Peso muerto","Dominadas","Fondos","Remo con barra"
+];
 function refreshDatalists() {
   const dlEj = document.getElementById("dl-ejercicios");
   const dlAl = document.getElementById("dl-alimentos");
-  const dlCa = document.getElementById("dl-cantidades");
   if (dlEj) {
-    const names = [...new Set(state.ejercicios.map(e => (e.nombre||"").trim()).filter(Boolean))].sort();
+    const userNames = state.ejercicios.map(e => (e.nombre||"").trim()).filter(Boolean);
+    const names = [...new Set([...EJERCICIOS_SUGERIDOS, ...userNames])].sort();
     dlEj.innerHTML = names.map(n => `<option value="${escapeHtml(n)}"></option>`).join("");
   }
   if (dlAl) {
     const ali = [...new Set(state.comidas.map(c => (c.alimento||"").trim()).filter(Boolean))].sort();
     dlAl.innerHTML = ali.map(a => `<option value="${escapeHtml(a)}"></option>`).join("");
-  }
-  if (dlCa) {
-    const can = [...new Set(state.comidas.map(c => (c.cantidad||"").trim()).filter(Boolean))].sort();
-    dlCa.innerHTML = can.map(c => `<option value="${escapeHtml(c)}"></option>`).join("");
   }
 }
 
@@ -4159,13 +4207,22 @@ function loadEjercicioToForm(e) {
   seriesList.innerHTML = "";
   velocidadesList.innerHTML = "";
   if (e.tipo === "fuerza") {
-    (e.series || []).forEach((s, i) => {
-      const row = buildDynRow(i+1, ["reps","kg"]);
-      row.querySelector("input[name=reps]").value = s.reps;
-      row.querySelector("input[name=kg]").value   = s.kg;
-      seriesList.appendChild(row);
-    });
-    if (!seriesList.children.length) addSerieRow();
+    if (e.isIsometrico) {
+      const segsEl = formEjercicio.querySelector("input[name=isometricoSegs]");
+      const seriesEl = formEjercicio.querySelector("input[name=isometricoSeries]");
+      if (segsEl) segsEl.value = e.isometricoSegs || "";
+      if (seriesEl) seriesEl.value = e.isometricoSeries || 1;
+      syncIsometricUI(e.nombre);
+    } else {
+      syncIsometricUI("");
+      (e.series || []).forEach((s, i) => {
+        const row = buildDynRow(i+1, ["reps","kg"]);
+        row.querySelector("input[name=reps]").value = s.reps;
+        row.querySelector("input[name=kg]").value   = s.kg;
+        seriesList.appendChild(row);
+      });
+      if (!seriesList.children.length) addSerieRow();
+    }
     addVelocidadRow();
   } else if (e.tipo === "cardio") {
     formEjercicio.querySelector("input[name=minutos]").value   = e.minutos || "";
@@ -4203,7 +4260,6 @@ function loadComidaToForm(c) {
   formComida.querySelector("input[name=fecha]").value     = c.fecha;
   formComida.querySelector("select[name=momento]").value  = c.momento;
   formComida.querySelector("input[name=alimento]").value  = c.alimento || "";
-  formComida.querySelector("input[name=cantidad]").value  = c.cantidad || "";
 }
 
 function enterEdit(kind, id) {
@@ -4227,12 +4283,14 @@ function exitEdit(kind) {
   editing[kind] = null;
   hideEditBanner(kind);
   if (kind === "ejercicios") {
+    stopTimer();
     formEjercicio.reset();
     formEjercicio.querySelector("input[name=fecha]").value = todayISO();
     formEjercicio.querySelectorAll("[data-toggle=tipo] .toggle-btn").forEach(b =>
       b.classList.toggle("active", b.dataset.value === "fuerza"));
     formEjercicio.querySelector("input[name=tipo]").value = "fuerza";
     syncTipoBlocks("fuerza");
+    syncIsometricUI("");
     intensidadInput.value = 5; syncIntensidad();
     seriesList.innerHTML = ""; addSerieRow();
     velocidadesList.innerHTML = ""; addVelocidadRow();
@@ -4289,6 +4347,7 @@ function updateRepeatButtonVisibility() {
   }
 }
 nombreInput.addEventListener("input", updateRepeatButtonVisibility);
+nombreInput.addEventListener("input", () => syncIsometricUI(nombreInput.value));
 btnRepeat?.addEventListener("click", () => {
   const cand = findLastEjercicioByName(nombreInput.value);
   if (!cand) { toast("Sin sesiones previas", "warn"); return; }
@@ -4318,12 +4377,23 @@ formEjercicio.addEventListener("submit", e => {
   // Limpiar campos del tipo anterior y poblar del actual
   delete updated.series; delete updated.minutos; delete updated.pendiente;
   delete updated.velocidades; delete updated.flexMinutos; delete updated.flexSeries;
+  delete updated.isIsometrico; delete updated.isometricoSegs; delete updated.isometricoSeries;
   if (tipo === "fuerza") {
-    updated.series = [...seriesList.querySelectorAll(".dyn-row")].map(r => ({
-      reps: Number(r.querySelector("input[name=reps]").value)||0,
-      kg:   Number(r.querySelector("input[name=kg]").value)||0
-    })).filter(s => s.reps>0 || s.kg>0);
-    if (!updated.series.length) return toast("Agrega al menos una serie", "error");
+    const bIso = document.getElementById("bloque-isometrico");
+    if (bIso && !bIso.hidden) {
+      const segsInputEl = formEjercicio.querySelector("input[name=isometricoSegs]");
+      if (timerInterval) stopTimer();
+      updated.isIsometrico = true;
+      updated.isometricoSegs = Number(segsInputEl?.value) || (timerSecs > 0 ? timerSecs : 0);
+      updated.isometricoSeries = Number(fd.get("isometricoSeries"))||1;
+      if (!updated.isometricoSegs) return toast("Indica los segundos de la plancha", "error");
+    } else {
+      updated.series = [...seriesList.querySelectorAll(".dyn-row")].map(r => ({
+        reps: Number(r.querySelector("input[name=reps]").value)||0,
+        kg:   Number(r.querySelector("input[name=kg]").value)||0
+      })).filter(s => s.reps>0 || s.kg>0);
+      if (!updated.series.length) return toast("Agrega al menos una serie", "error");
+    }
   } else if (tipo === "cardio") {
     updated.minutos   = Number(fd.get("minutos"))||0;
     updated.pendiente = Number(fd.get("pendiente"))||0;
@@ -4387,8 +4457,7 @@ formComida.addEventListener("submit", e => {
     ...state.comidas[idx],
     fecha: fd.get("fecha"),
     momento: fd.get("momento"),
-    alimento,
-    cantidad: (fd.get("cantidad")||"").trim()
+    alimento
   };
   saveState();
   exitEdit("comidas");
@@ -4396,6 +4465,87 @@ formComida.addEventListener("submit", e => {
   renderComidasList();
   toast("Comida actualizada");
 }, true);
+
+/* ============================================================
+   T3. ISOMÉTRICO (PLANCHA) + CRONÓMETRO + CARDIO HR
+   ============================================================ */
+
+/* ── Detección de ejercicio isométrico ───────────────────────────────── */
+function isIsometricName(name) {
+  return /plancha/i.test((name || "").trim());
+}
+
+function syncIsometricUI(nombre) {
+  const tipo = document.querySelector("#form-ejercicio input[name=tipo]")?.value;
+  const isIso = isIsometricName(nombre) && tipo === "fuerza";
+  const bSeries = document.getElementById("bloque-series");
+  const bIso    = document.getElementById("bloque-isometrico");
+  if (bSeries) bSeries.hidden = isIso;
+  if (bIso)    bIso.hidden    = !isIso;
+  if (!isIso)  stopTimer();
+}
+
+/* ── Cronómetro de plancha ────────────────────────────────────────────── */
+let timerInterval = null;
+let timerSecs = 0;
+
+function stopTimer() {
+  if (!timerInterval) return;
+  clearInterval(timerInterval);
+  timerInterval = null;
+  const btn = document.getElementById("btn-timer");
+  const disp = document.getElementById("timer-display");
+  if (btn) btn.textContent = "▶ Iniciar cronómetro";
+  if (disp) disp.style.color = "var(--green)";
+}
+
+document.getElementById("btn-timer")?.addEventListener("click", () => {
+  const btn  = document.getElementById("btn-timer");
+  const disp = document.getElementById("timer-display");
+  const segsEl = formEjercicio.querySelector("input[name=isometricoSegs]");
+  if (timerInterval) {
+    stopTimer();
+    if (segsEl && timerSecs > 0) segsEl.value = timerSecs;
+    toast(`Cronómetro: ${timerSecs}s registrado`);
+  } else {
+    timerSecs = 0;
+    if (disp) { disp.textContent = "0s"; disp.style.color = "var(--green)"; }
+    if (btn)  btn.textContent = "⏹ Detener y guardar";
+    timerInterval = setInterval(() => {
+      timerSecs++;
+      if (disp) {
+        disp.textContent = timerSecs + "s";
+        disp.style.color = timerSecs > 60 ? "var(--red)" : timerSecs > 30 ? "var(--amber)" : "var(--green)";
+      }
+    }, 1000);
+  }
+});
+
+/* ── Zona cardíaca para quema de grasa ───────────────────────────────── */
+function updateCardioHR() {
+  const banner = document.getElementById("cardio-hr-banner");
+  if (!banner) return;
+  const tipo = document.querySelector("#form-ejercicio input[name=tipo]")?.value;
+  if (tipo !== "cardio") { banner.hidden = true; return; }
+  banner.hidden = false;
+  const edad  = state.perfil?.edad;
+  const maxEl = document.getElementById("cardio-hr-max");
+  const zoneEl= document.getElementById("cardio-hr-zone");
+  const hintEl= document.getElementById("cardio-hr-hint");
+  if (!edad) {
+    if (maxEl)  { maxEl.textContent  = "— bpm"; maxEl.classList.add("muted"); }
+    if (zoneEl) { zoneEl.textContent = "— bpm"; zoneEl.classList.add("muted"); }
+    if (hintEl) hintEl.textContent = "Guarda tu edad en el Perfil para calcular la zona cardíaca.";
+    return;
+  }
+  const maxHR = 220 - Number(edad);
+  const low   = Math.round(maxHR * 0.60);
+  const high  = Math.round(maxHR * 0.70);
+  if (maxEl)  { maxEl.textContent  = maxHR + " bpm"; maxEl.classList.remove("muted"); }
+  if (zoneEl) { zoneEl.textContent = low + "–" + high + " bpm"; zoneEl.classList.remove("muted"); }
+  if (hintEl) hintEl.textContent =
+    `Fórmula 220 − ${edad} años · Zona 2 (60–70% FC máx) · óptima para oxidación de grasa`;
+}
 
 // Inicialización diferida: llamamos loadPerfilToForm() aquí, NO arriba
 // donde se declara, para que `formMedicion` ya esté inicializado y

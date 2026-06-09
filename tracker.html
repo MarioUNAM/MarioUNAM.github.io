@@ -1216,6 +1216,56 @@ input[type=range]::-moz-range-thumb {
 }
 #toast .toast-close:hover { color: var(--text); background: var(--bg-elev-2); }
 
+/* ============================================================
+   13. TAG PILLS (etiquetas en ejercicios)
+   ============================================================ */
+.tag-pills { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 6px; }
+.tag-pill {
+  display: inline-flex; align-items: center;
+  font: 500 10px/1 var(--font-mono);
+  color: var(--green-bright);
+  background: var(--green-bg);
+  border: 1px solid var(--green-bright);
+  border-radius: 99px;
+  padding: 2px 7px;
+  letter-spacing: 0.03em;
+  text-transform: lowercase;
+}
+
+/* ============================================================
+   14. STREAK HEATMAP (racha tipo GitHub)
+   ============================================================ */
+.streak-section { margin: 24px 0 0; }
+.streak-header { display: flex; align-items: baseline; justify-content: space-between; margin-bottom: 10px; }
+.streak-header h3 { font: 600 15px/1 var(--font-sans); color: var(--text); }
+.streak-meta { font: 400 12px/1 var(--font-sans); color: var(--text-muted); }
+.heatmap-grid {
+  display: grid;
+  grid-template-columns: repeat(13, 1fr);
+  gap: 3px;
+  width: 100%;
+}
+.heatmap-week { display: flex; flex-direction: column; gap: 3px; }
+.heatmap-cell {
+  width: 100%; aspect-ratio: 1;
+  border-radius: 2px;
+  background: var(--bg-elev-2);
+  cursor: default;
+  transition: opacity .15s;
+}
+.heatmap-cell[title]:hover { opacity: .7; }
+.heatmap-cell.lvl1 { background: #064e3b; }
+.heatmap-cell.lvl2 { background: #065f46; }
+.heatmap-cell.lvl3 { background: #059669; }
+.heatmap-cell.lvl4 { background: #10b981; }
+[data-theme="light"] .heatmap-cell { background: #e5e7eb; }
+[data-theme="light"] .heatmap-cell.lvl1 { background: #bbf7d0; }
+[data-theme="light"] .heatmap-cell.lvl2 { background: #6ee7b7; }
+[data-theme="light"] .heatmap-cell.lvl3 { background: #34d399; }
+[data-theme="light"] .heatmap-cell.lvl4 { background: #10b981; }
+.heatmap-legend { display: flex; align-items: center; gap: 4px; margin-top: 6px; font: 400 11px/1 var(--font-sans); color: var(--text-muted); }
+.heatmap-legend .heatmap-cell { width: 12px; height: 12px; aspect-ratio: auto; flex-shrink: 0; }
+
 /* Banner de actualización SW — se muestra encima del contenido, separado del toast */
 #sw-update-banner {
   position: fixed; top: 0; left: 0; right: 0; z-index: 200;
@@ -1510,6 +1560,11 @@ input[type=range]::-moz-range-thumb {
       <textarea name="notas" class="textarea" placeholder="Sensaciones, técnica, RPE..."></textarea>
     </label>
 
+    <label class="field" style="margin-top:10px">
+      <span class="field-label">Etiquetas <span style="font-weight:400;color:var(--text-muted)">(opcional · separadas por coma)</span></span>
+      <input name="tags" class="input" type="text" placeholder="#cuello, #deload, #personal record…" autocomplete="off">
+    </label>
+
     <button type="submit" class="btn-primary">
       <span id="submit-label-ejercicio">Registrar sesión</span>
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
@@ -1775,6 +1830,24 @@ input[type=range]::-moz-range-thumb {
     <div class="chart-card">
       <div class="chart-head"><span class="chart-title">Días con registro completo (≥3)</span></div>
       <div class="chart-wrap"><canvas id="chart-completos"></canvas></div>
+    </div>
+  </div>
+
+  <!-- Heatmap de racha -->
+  <div class="streak-section" id="streak-section">
+    <div class="streak-header">
+      <h3>Racha · últimas 13 semanas</h3>
+      <span class="streak-meta" id="streak-meta">—</span>
+    </div>
+    <div class="heatmap-grid" id="heatmap-grid"></div>
+    <div class="heatmap-legend">
+      Sin actividad
+      <div class="heatmap-cell"></div>
+      <div class="heatmap-cell lvl1"></div>
+      <div class="heatmap-cell lvl2"></div>
+      <div class="heatmap-cell lvl3"></div>
+      <div class="heatmap-cell lvl4"></div>
+      4+ sesiones
     </div>
   </div>
 
@@ -2560,7 +2633,8 @@ formEjercicio.addEventListener("submit", e => {
     tipo,
     nombre: fd.get("nombre").trim(),
     intensidad: Number(fd.get("intensidad")),
-    notas: (fd.get("notas")||"").trim()
+    notas: (fd.get("notas")||"").trim(),
+    tags: (fd.get("tags")||"").split(",").map(t=>t.trim().replace(/^#+/,"")).filter(Boolean)
   };
   if (tipo === "fuerza") {
     const bIso = document.getElementById("bloque-isometrico");
@@ -2599,6 +2673,7 @@ formEjercicio.addEventListener("submit", e => {
   toast("Sesión registrada");
   formEjercicio.querySelector("input[name=nombre]").value = "";
   formEjercicio.querySelector("textarea[name=notas]").value = "";
+  formEjercicio.querySelector("input[name=tags]").value = "";
   seriesList.innerHTML = ""; addSerieRow();
   velocidadesList.innerHTML = ""; addVelocidadRow();
   stopTimer();
@@ -2922,6 +2997,7 @@ function renderEjerciciosList() {
           <div class="record-title">${escapeHtml(e.nombre)}</div>
           <div class="record-detail">${detail}</div>
           ${e.notas ? `<div class="record-detail" style="margin-top:6px;font-style:italic">${escapeHtml(e.notas)}</div>`:""}
+          ${(e.tags||[]).length ? `<div class="tag-pills">${e.tags.map(t=>`<span class="tag-pill">#${escapeHtml(t)}</span>`).join("")}</div>` : ""}
           ${badges}
         </div>
         <div class="record-actions">
@@ -3496,6 +3572,69 @@ function renderDashboard() {
         y: { ...CHART_DEFAULTS().scales.y, stacked: true } }
     }
   });
+
+  renderStreak();
+}
+
+/* ============================================================
+   STREAK HEATMAP — 13 semanas × 7 días
+   ============================================================ */
+function renderStreak() {
+  const grid = document.getElementById("heatmap-grid");
+  const meta = document.getElementById("streak-meta");
+  if (!grid) return;
+
+  // Construir mapa fecha → nº sesiones
+  const countByDay = {};
+  (state.ejercicios || []).forEach(e => {
+    if (e.fecha) countByDay[e.fecha] = (countByDay[e.fecha] || 0) + 1;
+  });
+
+  // 91 días = 13 semanas. Anclar al domingo más reciente.
+  const today = new Date(); today.setHours(0,0,0,0);
+  const dayOfWeek = today.getDay(); // 0=dom
+  const endSun = new Date(today); endSun.setDate(today.getDate() - dayOfWeek);
+  const startDate = new Date(endSun); startDate.setDate(endSun.getDate() - 13*7 + 1);
+
+  // Calcular racha actual (días consecutivos con actividad hasta hoy)
+  let streakDays = 0;
+  let cur = new Date(today);
+  while (true) {
+    const k = cur.toISOString().slice(0,10);
+    if (!countByDay[k]) { if (streakDays === 0 && k === today.toISOString().slice(0,10)) { cur.setDate(cur.getDate()-1); continue; } break; }
+    streakDays++;
+    cur.setDate(cur.getDate()-1);
+  }
+
+  // Total de días activos en ventana
+  let totalActive = 0;
+  const cells = [];
+  const d = new Date(startDate);
+  while (d <= endSun) {
+    const k = d.toISOString().slice(0,10);
+    const cnt = countByDay[k] || 0;
+    if (cnt) totalActive++;
+    cells.push({ date: k, cnt });
+    d.setDate(d.getDate()+1);
+  }
+  // Pad a múltiplo de 7
+  while (cells.length % 7 !== 0) cells.unshift({ date: "", cnt: 0 });
+
+  // Render en semanas (columnas)
+  const weeks = [];
+  for (let i = 0; i < cells.length; i += 7) weeks.push(cells.slice(i, i+7));
+  const lvl = n => n === 0 ? "" : n === 1 ? "lvl1" : n === 2 ? "lvl2" : n === 3 ? "lvl3" : "lvl4";
+  grid.innerHTML = weeks.map(week =>
+    `<div class="heatmap-week">${week.map(c =>
+      `<div class="heatmap-cell ${lvl(c.cnt)}" title="${c.date ? c.date + (c.cnt ? ` · ${c.cnt} sesión${c.cnt>1?"es":""}` : "") : ""}"></div>`
+    ).join("")}</div>`
+  ).join("");
+
+  if (meta) {
+    meta.textContent = streakDays
+      ? `${streakDays} día${streakDays>1?"s":""} de racha · ${totalActive} activos`
+      : `${totalActive} días activos (sin racha actual)`;
+  }
 }
 
 function renderRangesHelp() {
@@ -4300,6 +4439,7 @@ function loadEjercicioToForm(e) {
   intensidadInput.value = e.intensidad || 5;
   syncIntensidad();
   formEjercicio.querySelector("textarea[name=notas]").value = e.notas || "";
+  formEjercicio.querySelector("input[name=tags]").value = (e.tags||[]).map(t=>"#"+t).join(", ");
   seriesList.innerHTML = "";
   velocidadesList.innerHTML = "";
   if (e.tipo === "fuerza") {
@@ -4468,7 +4608,8 @@ formEjercicio.addEventListener("submit", e => {
     tipo,
     nombre: fd.get("nombre").trim(),
     intensidad: Number(fd.get("intensidad")),
-    notas: (fd.get("notas")||"").trim()
+    notas: (fd.get("notas")||"").trim(),
+    tags: (fd.get("tags")||"").split(",").map(t=>t.trim().replace(/^#+/,"")).filter(Boolean)
   };
   // Limpiar campos del tipo anterior y poblar del actual
   delete updated.series; delete updated.minutos; delete updated.pendiente;

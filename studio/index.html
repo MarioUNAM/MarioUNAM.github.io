@@ -42,7 +42,7 @@
 <link rel="stylesheet" href="./assets/css/tailwind.css">
 
 <style>
-  /* ============ Design tokens — light (default, "papel cálido") ============ */
+  /* Design tokens — light ("papel cálido") */
   :root {
     --c-paper:  #fafaf7;
     --c-surf:   #ffffff;
@@ -51,8 +51,8 @@
     --c-dim:    #4a4a44;
     --c-muted:  #7a7a72;
     --c-line:   #e6e5dd;
-    --c-accent: #0a7da3;   /* cyan profundo, sobrio sobre papel */
-    --c-warm:   #b8501a;   /* terracota cálida */
+    --c-accent: #0a7da3;
+    --c-warm:   #b8501a;
   }
   :root[data-theme="dark"] {
     --c-paper:  #0a0a0b;
@@ -62,13 +62,20 @@
     --c-dim:    #c8c8c2;
     --c-muted:  #888880;
     --c-line:   #2a2a2d;
-    --c-accent: #4cd6fb;   /* cyan vivo sobre fondo oscuro */
+    --c-accent: #4cd6fb;
     --c-warm:   #f5a04a;
   }
 
   html, body { background: var(--c-paper); color: var(--c-ink); }
-  body { font-family: 'Inter', sans-serif; font-feature-settings: 'ss01','cv02'; }
+  body {
+    font-family: 'Inter', sans-serif;
+    font-feature-settings: 'ss01','cv02';
+    font-size: 15px;
+    line-height: 1.7;
+    text-rendering: optimizeLegibility;
+  }
   ::selection { background: var(--c-accent); color: var(--c-paper); }
+  *:focus-visible { outline: 2px solid var(--c-accent); outline-offset: 3px; border-radius: 3px; }
 
   .font-display { font-family: 'Manrope','Inter',sans-serif; letter-spacing: -0.02em; }
 
@@ -79,67 +86,138 @@
     -webkit-backdrop-filter: blur(14px) saturate(140%);
     border-bottom: 1px solid var(--c-line);
   }
+  .nav-desktop a.active { color: var(--c-ink); font-weight: 700; }
 
-  /* Botón primario */
+  /* Mobile menu */
+  #mobile-menu {
+    position: fixed; top: 0; inset-x: 0; z-index: 39;
+    background: var(--c-paper);
+    border-bottom: 1px solid var(--c-line);
+    padding: 5rem 1.5rem 2rem;
+    transform: translateY(-105%);
+    transition: transform .3s cubic-bezier(.2,.8,.2,1);
+    pointer-events: none;
+  }
+  #mobile-menu.open { transform: translateY(0); pointer-events: auto; }
+  .mobile-nav-link {
+    display: block; padding: .875rem 0;
+    font-size: 1.125rem; font-weight: 600;
+    color: var(--c-dim); border-bottom: 1px solid var(--c-line);
+    transition: color .15s;
+  }
+  .mobile-nav-link:hover { color: var(--c-ink); }
+  /* Hamburger */
+  .hamburger {
+    width: 36px; height: 36px;
+    display: flex; flex-direction: column; justify-content: center; align-items: center; gap: 5.5px;
+    cursor: pointer; border-radius: 6px; background: transparent; border: none;
+    transition: background .15s;
+  }
+  .hamburger:hover { background: var(--c-surf2); }
+  .hamburger span {
+    display: block; width: 22px; height: 2px;
+    background: var(--c-ink); border-radius: 2px;
+    transition: transform .25s, opacity .2s;
+  }
+  .hamburger.open span:nth-child(1) { transform: translateY(7.5px) rotate(45deg); }
+  .hamburger.open span:nth-child(2) { opacity: 0; }
+  .hamburger.open span:nth-child(3) { transform: translateY(-7.5px) rotate(-45deg); }
+
+  /* Buttons */
   .btn-primary {
     display:inline-flex; align-items:center; gap:.5rem;
     background: var(--c-ink); color: var(--c-paper);
-    padding: .8rem 1.25rem; font-weight: 600; font-size: .9rem;
-    border-radius: 6px; transition: transform .15s ease, opacity .2s;
+    padding: .75rem 1.25rem; font-weight: 600; font-size: .875rem;
+    border-radius: 8px; transition: opacity .18s;
+    box-shadow: 0 1px 4px rgba(0,0,0,.1);
   }
-  .btn-primary:hover { transform: translateY(-1px); opacity: .92; }
+  .btn-primary:hover { opacity: .86; }
   .btn-ghost {
     display:inline-flex; align-items:center; gap:.5rem;
-    border: 1px solid var(--c-line);
-    color: var(--c-ink);
-    padding: .8rem 1.25rem; font-weight: 600; font-size: .9rem;
-    border-radius: 6px; transition: background .15s;
+    border: 1px solid var(--c-line); color: var(--c-ink);
+    padding: .75rem 1.25rem; font-weight: 600; font-size: .875rem;
+    border-radius: 8px; transition: background .15s, border-color .15s;
   }
-  .btn-ghost:hover { background: var(--c-surf2); }
+  .btn-ghost:hover { background: var(--c-surf2); border-color: color-mix(in srgb, var(--c-ink) 20%, var(--c-line)); }
 
   /* Cards */
-  .card { background: var(--c-surf); border: 1px solid var(--c-line); border-radius: 12px; transition: transform .2s, border-color .2s; }
-  .card:hover { transform: translateY(-3px); border-color: color-mix(in srgb, var(--c-accent) 40%, var(--c-line)); }
+  .card {
+    background: var(--c-surf); border: 1px solid var(--c-line); border-radius: 12px;
+    transition: box-shadow .25s, border-color .25s;
+  }
+  .card:hover {
+    box-shadow: 0 6px 28px color-mix(in srgb, var(--c-ink) 8%, transparent);
+    border-color: color-mix(in srgb, var(--c-accent) 35%, var(--c-line));
+  }
 
-  /* Studio logo (PNG con fondo blanco) — multiply funde el fondo con paper en light,
-     invert+hue-rotate preserva el cyan en dark */
+  /* Feature items (Qué es) */
+  .feature-item {
+    padding: 1.25rem 1.125rem;
+    border: 1px solid var(--c-line);
+    border-radius: 10px;
+    background: var(--c-paper);
+    transition: border-color .2s, background .2s;
+  }
+  .feature-item:hover {
+    background: var(--c-surf);
+    border-color: color-mix(in srgb, var(--c-accent) 28%, var(--c-line));
+  }
+
+  /* Studio logo */
   .studio-logo { display: block; mix-blend-mode: multiply; }
   :root[data-theme="dark"] .studio-logo { mix-blend-mode: normal; filter: invert(1) hue-rotate(180deg); }
 
-  /* Step number ring — warm como "marca de proceso" (diferente del accent cyan) */
+  /* Step numbers */
   .step-num {
-    width: 44px; height: 44px; border-radius: 50%;
+    width: 50px; height: 50px; border-radius: 50%;
     display: inline-flex; align-items: center; justify-content: center;
-    border: 1px solid color-mix(in srgb, var(--c-warm) 35%, var(--c-line));
-    font-family: 'Manrope'; font-weight: 800; font-size: 1.05rem;
+    border: 1.5px solid color-mix(in srgb, var(--c-warm) 30%, var(--c-line));
+    font-family: 'Manrope'; font-weight: 800; font-size: 1rem;
     color: var(--c-warm);
-    background: var(--c-surf);
+    background: color-mix(in srgb, var(--c-warm) 7%, var(--c-surf));
   }
 
-  /* Grain / paper texture */
+  /* Primary contact card (Email) */
+  .contact-primary {
+    background: color-mix(in srgb, var(--c-accent) 5%, var(--c-surf)) !important;
+    border-color: color-mix(in srgb, var(--c-accent) 22%, var(--c-line)) !important;
+  }
+  .contact-primary:hover {
+    box-shadow: 0 6px 28px color-mix(in srgb, var(--c-accent) 12%, transparent) !important;
+    border-color: color-mix(in srgb, var(--c-accent) 48%, var(--c-line)) !important;
+  }
+
+  /* Scroll indicator */
+  .scroll-indicator {
+    display: inline-flex; flex-direction: column; align-items: center; gap: 2px;
+    color: var(--c-muted); text-decoration: none;
+    animation: bob 2.4s ease-in-out infinite;
+  }
+  .scroll-indicator:hover { color: var(--c-dim); animation: none; }
+  @keyframes bob { 0%,100% { transform:translateY(0); } 55% { transform:translateY(7px); } }
+
+  /* Grain */
   .grain::before {
     content: ''; position: absolute; inset: 0; pointer-events: none;
     background-image: radial-gradient(rgba(0,0,0,0.04) 1px, transparent 1px);
-    background-size: 4px 4px;
-    opacity: .5;
+    background-size: 4px 4px; opacity: .5;
   }
   :root[data-theme="dark"] .grain::before {
     background-image: radial-gradient(rgba(255,255,255,0.025) 1px, transparent 1px);
   }
 
   /* Reveal */
-  .reveal { opacity: 0; transform: translateY(14px); transition: opacity .6s ease, transform .6s ease; }
+  .reveal { opacity: 0; transform: translateY(12px); transition: opacity .55s ease, transform .55s ease; }
   .reveal.in { opacity: 1; transform: translateY(0); }
 
-  /* Hairline divider */
   .hairline { border-top: 1px solid var(--c-line); }
 
-  /* Mockup tiles (Lab teaser previews) */
   .mock-tile { aspect-ratio: 4/3; border-radius: 10px; overflow: hidden; position: relative; border: 1px solid var(--c-line); }
-  .mock-tile .label { position:absolute; bottom: 10px; left: 12px; font-size: 10px; letter-spacing: .2em; text-transform: uppercase; color: var(--c-muted); }
+  .mock-tile .label { position:absolute; bottom: 10px; left: 12px; font-size: 10px; letter-spacing: .12em; text-transform: uppercase; color: var(--c-muted); }
 
   @media (prefers-reduced-motion: reduce) {
     .reveal { opacity:1; transform:none; transition:none; }
+    .scroll-indicator { animation: none; }
   }
 </style>
 </head>
@@ -155,14 +233,14 @@
       <img src="../assets/img/mahunostudiologo-512.png" alt="mahuno/studio" width="110" height="60" class="studio-logo h-7 w-auto"/>
     </a>
 
-    <div class="hidden md:flex items-center gap-7 text-[13px] font-medium text-dim">
+    <div class="hidden md:flex items-center gap-7 text-[13px] font-medium text-dim nav-desktop">
       <a href="#metodo"     class="hover:text-ink transition-colors">Método</a>
       <a href="lab/"        class="hover:text-ink transition-colors">Laboratorio</a>
       <a href="casos/"      class="hover:text-ink transition-colors">Casos</a>
       <a href="#contacto"   class="hover:text-ink transition-colors">Contacto</a>
     </div>
 
-    <div class="flex items-center gap-3">
+    <div class="flex items-center gap-2">
       <button id="theme-toggle" class="w-9 h-9 grid place-items-center rounded-md hover:bg-surf2 transition-colors" aria-label="Cambiar tema">
         <span class="material-symbols-outlined text-[18px]" id="theme-icon">light_mode</span>
       </button>
@@ -170,9 +248,26 @@
         <span class="material-symbols-outlined text-[16px]">arrow_back</span>
         Perfil MAHUNO
       </a>
+      <button id="hamburger" class="hamburger md:hidden" aria-label="Abrir menú" aria-expanded="false" aria-controls="mobile-menu">
+        <span></span><span></span><span></span>
+      </button>
     </div>
   </div>
 </nav>
+
+<!-- Mobile navigation panel -->
+<div id="mobile-menu" aria-label="Menú de navegación">
+  <a href="#metodo"   class="mobile-nav-link">Método</a>
+  <a href="lab/"      class="mobile-nav-link">Laboratorio</a>
+  <a href="casos/"    class="mobile-nav-link">Casos</a>
+  <a href="#contacto" class="mobile-nav-link">Contacto</a>
+  <div class="mt-6 pt-4">
+    <a href="/" class="inline-flex items-center gap-1.5 text-[13px] font-semibold text-muted hover:text-ink transition-colors">
+      <span class="material-symbols-outlined text-[15px]">arrow_back</span>
+      Perfil MAHUNO
+    </a>
+  </div>
+</div>
 
 <!-- Symbols (subset desde CDN) -->
 <link rel="stylesheet" href="../assets/css/material-symbols.css"/>
@@ -216,6 +311,14 @@
         problema más caro de las PyMEs mexicanas: <span class="text-ink font-semibold">parecerse a lo que valen</span>.
       </p>
     </div>
+
+    <!-- Scroll indicator -->
+    <div class="mt-10 flex justify-start" aria-hidden="true">
+      <a href="#quees" class="scroll-indicator">
+        <span class="text-[11px] tracking-[0.12em] uppercase font-semibold">Explorar</span>
+        <span class="material-symbols-outlined text-[22px]">keyboard_arrow_down</span>
+      </a>
+    </div>
   </div>
 
   <!-- Decoración inferior -->
@@ -224,10 +327,10 @@
 
 
 <!-- ============ QUÉ ES ============ -->
-<section class="bg-surf border-y border-line">
+<section id="quees" class="bg-surf border-y border-line">
   <div class="max-w-6xl mx-auto px-6 py-20 md:py-28 grid md:grid-cols-12 gap-10">
     <div class="md:col-span-4">
-      <span class="text-[11px] tracking-[0.2em] uppercase font-bold text-accent">01 — Qué es</span>
+      <span class="text-[11px] tracking-[0.12em] uppercase font-bold text-accent">01 — Qué es</span>
       <h2 class="font-display text-3xl md:text-4xl font-extrabold mt-3 leading-[1.05]">
         Una práctica.<br/>No una agencia.
       </h2>
@@ -238,19 +341,19 @@
         construyo identidad, sitio web y manual de operación en cinco días, con la misma rigurosidad con la que se diseñan modelos de datos maestros.
       </p>
       <div class="grid sm:grid-cols-3 gap-5 pt-4">
-        <div>
+        <div class="feature-item">
           <span class="material-symbols-outlined text-accent text-[28px]">schema</span>
-          <h3 class="font-display font-bold mt-2">Sistema, no improvisación</h3>
+          <h3 class="font-display font-bold mt-3">Sistema, no improvisación</h3>
           <p class="text-sm text-muted mt-1.5 leading-relaxed">Plantillas vivas, slash-commands y un agente Claude Code que automatiza la parte aburrida.</p>
         </div>
-        <div>
+        <div class="feature-item">
           <span class="material-symbols-outlined text-accent text-[28px]">bolt</span>
-          <h3 class="font-display font-bold mt-2">5 días, no 5 semanas</h3>
+          <h3 class="font-display font-bold mt-3">5 días, no 5 semanas</h3>
           <p class="text-sm text-muted mt-1.5 leading-relaxed">La velocidad nace de la arquitectura, no de cortar esquinas. Cada entregable está pre-pensado.</p>
         </div>
-        <div>
+        <div class="feature-item">
           <span class="material-symbols-outlined text-accent text-[28px]">verified</span>
-          <h3 class="font-display font-bold mt-2">Identidad MDM</h3>
+          <h3 class="font-display font-bold mt-3">Identidad MDM</h3>
           <p class="text-sm text-muted mt-1.5 leading-relaxed">Aplico gobierno de datos al gobierno de marca: jerarquía, fuente única, taxonomía, versionado.</p>
         </div>
       </div>
@@ -263,7 +366,7 @@
 <section id="metodo" class="bg-paper">
   <div class="max-w-6xl mx-auto px-6 py-20 md:py-28">
     <div class="max-w-2xl mb-14">
-      <span class="text-[11px] tracking-[0.2em] uppercase font-bold text-accent">02 — Método</span>
+      <span class="text-[11px] tracking-[0.12em] uppercase font-bold text-accent">02 — Método</span>
       <h2 class="font-display text-3xl md:text-5xl font-extrabold mt-3 leading-[1.05]">
         Cinco pasos.<br/>Un viernes con tu marca nueva.
       </h2>
@@ -305,7 +408,7 @@
   <div class="max-w-6xl mx-auto px-6 py-20 md:py-28">
     <div class="flex flex-col md:flex-row md:items-end justify-between mb-12 gap-6">
       <div class="max-w-2xl">
-        <span class="text-[11px] tracking-[0.2em] uppercase font-bold text-accent">03 — Laboratorio</span>
+        <span class="text-[11px] tracking-[0.12em] uppercase font-bold text-accent">03 — Laboratorio</span>
         <h2 class="font-display text-3xl md:text-5xl font-extrabold mt-3 leading-[1.05]">
           Plantillas reales que personalizo para cada cliente.
         </h2>
@@ -377,7 +480,7 @@
 
     <!-- Demo industrial real -->
     <div class="mt-10 pt-10 border-t border-line">
-      <p class="text-[11px] tracking-[0.2em] uppercase font-bold text-warm mb-4">Plantilla extendida · Demo navegable</p>
+      <p class="text-[11px] tracking-[0.12em] uppercase font-bold text-warm mb-4">Plantilla extendida · Demo navegable</p>
       <a href="lab/industrial/" class="card p-6 md:p-8 flex flex-col md:flex-row gap-6 md:items-center group">
         <div class="md:w-72 mock-tile shrink-0" style="background:linear-gradient(135deg,#001e40,#003366);">
           <div class="absolute inset-0 opacity-10" style="background-image:radial-gradient(#fff 1px,transparent 1px);background-size:20px 20px;"></div>
@@ -410,7 +513,7 @@
 <section class="bg-paper">
   <div class="max-w-6xl mx-auto px-6 py-20 md:py-28">
     <div class="max-w-2xl mb-12">
-      <span class="text-[11px] tracking-[0.2em] uppercase font-bold text-accent">04 — Casos</span>
+      <span class="text-[11px] tracking-[0.12em] uppercase font-bold text-accent">04 — Casos</span>
       <h2 class="font-display text-3xl md:text-5xl font-extrabold mt-3 leading-[1.05]">
         Negocios reales.<br/>Resultados medibles.
       </h2>
@@ -426,7 +529,7 @@
         </div>
       </div>
       <div class="md:col-span-8">
-        <p class="text-[11px] tracking-[0.2em] uppercase font-bold text-warm">Caso 01</p>
+        <p class="text-[11px] tracking-[0.12em] uppercase font-bold text-warm">Caso 01</p>
         <h3 class="font-display text-2xl md:text-3xl font-extrabold mt-2">Don Peter — Del volante en blanco y negro a la marca local de referencia.</h3>
         <p class="text-dim mt-4 max-w-2xl">Un negocio de servicio local con 8 años de operación pero sin identidad visible. En cinco días: nombre depurado, identidad cálida, sitio web, ficha Google Business y plantillas de WhatsApp. <span class="text-ink font-semibold">El cliente dejó de competir por precio.</span></p>
         <span class="inline-flex items-center gap-1.5 mt-5 text-sm font-semibold text-accent group-hover:gap-2.5 transition-all">
@@ -444,7 +547,7 @@
 <!-- ============ POR QUÉ MAHUNO ============ -->
 <section class="bg-surf border-y border-line">
   <div class="max-w-4xl mx-auto px-6 py-20 md:py-28 text-center">
-    <span class="text-[11px] tracking-[0.2em] uppercase font-bold text-accent">05 — Por qué Mahuno</span>
+    <span class="text-[11px] tracking-[0.12em] uppercase font-bold text-accent">05 — Por qué Mahuno</span>
     <h2 class="font-display text-3xl md:text-5xl font-extrabold mt-3 leading-[1.05]">
       No soy diseñador freelance.<br/>
       Soy <span class="text-accent">ingeniero de datos</span> que aprendió diseño porque las PyMEs lo necesitan.
@@ -452,6 +555,21 @@
     <p class="text-lg text-dim mt-7 leading-relaxed max-w-2xl mx-auto">
       Llevo cuatro años resolviendo el mismo problema en empresas grandes: cómo hacer que los datos —y la marca— se parezcan a lo que el negocio realmente es. Mahuno Studio aplica esa misma rigurosidad a negocios pequeños, donde el margen para errores es nulo y el precio de no destacar es la quiebra.
     </p>
+    <!-- Stats bar -->
+    <div class="mt-12 grid grid-cols-3 gap-4 max-w-lg mx-auto">
+      <div class="border border-line rounded-xl py-5">
+        <p class="font-display text-3xl font-extrabold text-ink">4+</p>
+        <p class="text-[12px] text-muted mt-1">años en MDM</p>
+      </div>
+      <div class="border border-line rounded-xl py-5">
+        <p class="font-display text-3xl font-extrabold text-warm">5</p>
+        <p class="text-[12px] text-muted mt-1">días de entrega</p>
+      </div>
+      <div class="border border-line rounded-xl py-5">
+        <p class="font-display text-3xl font-extrabold text-accent">PyME</p>
+        <p class="text-[12px] text-muted mt-1">foco exclusivo</p>
+      </div>
+    </div>
   </div>
 </section>
 
@@ -460,7 +578,7 @@
 <section id="contacto" class="bg-paper">
   <div class="max-w-4xl mx-auto px-6 py-20 md:py-28">
     <div class="text-center mb-14">
-      <span class="text-[11px] tracking-[0.2em] uppercase font-bold text-accent">06 — Contacto</span>
+      <span class="text-[11px] tracking-[0.12em] uppercase font-bold text-accent">06 — Contacto</span>
       <h2 class="font-display text-3xl md:text-5xl font-extrabold mt-3 leading-[1.05]">
         Sin formularios.<br/>Directo conmigo.
       </h2>
@@ -468,16 +586,16 @@
     </div>
 
     <div class="grid sm:grid-cols-3 gap-5">
-      <a href="https://wa.me/525500000000" target="_blank" rel="noopener" class="card p-7 text-center group">
-        <span class="material-symbols-outlined text-accent text-[34px]">chat</span>
-        <h3 class="font-display font-bold mt-3">WhatsApp</h3>
-        <p class="text-[12px] text-muted mt-1.5 break-all">+52 55 0000 0000</p>
-        <p class="text-[10px] text-muted/70 mt-3 italic">[placeholder — sustituir número]</p>
-      </a>
-      <a href="mailto:mario_huarte@outlook.com" class="card p-7 text-center group">
-        <span class="material-symbols-outlined text-accent text-[34px]">alternate_email</span>
+      <a href="mailto:mario_huarte@outlook.com" class="card p-7 text-center group contact-primary">
+        <span class="material-symbols-outlined text-[34px]" style="color:var(--c-accent)">alternate_email</span>
         <h3 class="font-display font-bold mt-3">Email</h3>
         <p class="text-[12px] text-muted mt-1.5 break-all">mario_huarte@outlook.com</p>
+        <span class="text-[11px] font-semibold mt-3 inline-block" style="color:var(--c-accent)">Respuesta &lt; 24h</span>
+      </a>
+      <a href="https://wa.me/525562293691" target="_blank" rel="noopener" class="card p-7 text-center group">
+        <span class="material-symbols-outlined text-accent text-[34px]">chat</span>
+        <h3 class="font-display font-bold mt-3">WhatsApp</h3>
+        <p class="text-[12px] text-muted mt-1.5">+52 55 6229 3691</p>
       </a>
       <a href="https://www.linkedin.com/in/mario-huarte-nolasco-874436202/" target="_blank" rel="noopener" class="card p-7 text-center group">
         <span class="material-symbols-outlined text-accent text-[34px]">work</span>
@@ -551,6 +669,47 @@
     document.querySelectorAll('.reveal').forEach(function(el){ io.observe(el); });
   } else {
     document.querySelectorAll('.reveal').forEach(function(el){ el.classList.add('in'); });
+  }
+
+  // Mobile menu
+  var hamburger = document.getElementById('hamburger');
+  var mobileMenu = document.getElementById('mobile-menu');
+  function closeMobileMenu() {
+    if (!mobileMenu) return;
+    mobileMenu.classList.remove('open');
+    hamburger && hamburger.classList.remove('open');
+    hamburger && hamburger.setAttribute('aria-expanded', 'false');
+    document.body.style.overflow = '';
+  }
+  if (hamburger && mobileMenu) {
+    hamburger.addEventListener('click', function() {
+      var open = mobileMenu.classList.toggle('open');
+      hamburger.classList.toggle('open', open);
+      hamburger.setAttribute('aria-expanded', String(open));
+      document.body.style.overflow = open ? 'hidden' : '';
+    });
+    mobileMenu.querySelectorAll('a').forEach(function(a) {
+      a.addEventListener('click', closeMobileMenu);
+    });
+  }
+
+  // Active nav section highlight
+  if ('IntersectionObserver' in window) {
+    var navLinks = document.querySelectorAll('.nav-desktop a[href^="#"]');
+    var secObs = new IntersectionObserver(function(entries) {
+      entries.forEach(function(e) {
+        if (e.isIntersecting) {
+          var id = '#' + e.target.id;
+          navLinks.forEach(function(a) {
+            a.classList.toggle('active', a.getAttribute('href') === id);
+          });
+        }
+      });
+    }, { rootMargin: '-45% 0px -45% 0px', threshold: 0 });
+    ['quees','metodo','contacto'].forEach(function(id) {
+      var el = document.getElementById(id);
+      if (el) secObs.observe(el);
+    });
   }
 })();
 </script>

@@ -39,43 +39,44 @@
           --c-muted:#7a7a72; --c-line:#e6e5dd; --c-accent:#0a7da3; --c-warm:#b8501a; }
   :root[data-theme="dark"] { --c-paper:#0a0a0b; --c-surf:#141416; --c-surf2:#1c1c1f; --c-ink:#fafaf7;
           --c-dim:#c8c8c2; --c-muted:#888880; --c-line:#2a2a2d; --c-accent:#4cd6fb; --c-warm:#f5a04a; }
-
   html,body{ background:var(--c-paper); color:var(--c-ink); }
-  body{ font-family:'Inter',sans-serif; }
+  body{ font-family:'Inter',sans-serif; font-size:15px; line-height:1.7; text-rendering:optimizeLegibility; }
   ::selection{ background:var(--c-accent); color:var(--c-paper); }
+  *:focus-visible { outline:2px solid var(--c-accent); outline-offset:3px; border-radius:3px; }
   .font-display{ font-family:'Manrope','Inter',sans-serif; letter-spacing:-0.02em; }
-
   .glass-nav{ background:color-mix(in srgb, var(--c-paper) 78%, transparent); backdrop-filter:blur(14px) saturate(140%);
               -webkit-backdrop-filter:blur(14px) saturate(140%); border-bottom:1px solid var(--c-line); }
-
   .btn-primary{ display:inline-flex; align-items:center; gap:.5rem; background:var(--c-ink); color:var(--c-paper);
-                padding:.7rem 1.1rem; font-weight:600; font-size:.85rem; border-radius:6px;
-                transition:transform .15s ease, opacity .2s; }
-  .btn-primary:hover{ transform:translateY(-1px); opacity:.92; }
+                padding:.75rem 1.25rem; font-weight:600; font-size:.875rem; border-radius:8px; transition:opacity .18s; box-shadow:0 1px 4px rgba(0,0,0,.1); }
+  .btn-primary:hover{ opacity:.86; }
   .btn-ghost{ display:inline-flex; align-items:center; gap:.5rem; border:1px solid var(--c-line); color:var(--c-ink);
-              padding:.7rem 1.1rem; font-weight:600; font-size:.85rem; border-radius:6px; transition:background .15s; }
-  .btn-ghost:hover{ background:var(--c-surf2); }
-
-  .card{ background:var(--c-surf); border:1px solid var(--c-line); border-radius:14px; transition:transform .2s, border-color .2s; }
-  .card:hover{ transform:translateY(-3px); border-color:color-mix(in srgb, var(--c-accent) 40%, var(--c-line)); }
-
-  /* Studio logo (PNG con fondo blanco) — multiply en light, invert+hue-rotate en dark */
-  .studio-logo { display: block; mix-blend-mode: multiply; }
-  :root[data-theme="dark"] .studio-logo { mix-blend-mode: normal; filter: invert(1) hue-rotate(180deg); }
-
-  /* ========= Mockups (más detallados que en home) ========= */
+              padding:.75rem 1.25rem; font-weight:600; font-size:.875rem; border-radius:8px; transition:background .15s, border-color .15s; }
+  .btn-ghost:hover{ background:var(--c-surf2); border-color:color-mix(in srgb, var(--c-ink) 20%, var(--c-line)); }
+  .card{ background:var(--c-surf); border:1px solid var(--c-line); border-radius:12px; transition:box-shadow .25s, border-color .25s; }
+  .card:hover{ box-shadow:0 6px 28px color-mix(in srgb, var(--c-ink) 8%, transparent); border-color:color-mix(in srgb, var(--c-accent) 35%, var(--c-line)); }
+  .studio-logo { display:block; mix-blend-mode:multiply; }
+  :root[data-theme="dark"] .studio-logo { mix-blend-mode:normal; filter:invert(1) hue-rotate(180deg); }
+  /* Mobile menu */
+  #mobile-menu { position:fixed; top:0; inset-x:0; z-index:39; background:var(--c-paper); border-bottom:1px solid var(--c-line);
+                 padding:5rem 1.5rem 2rem; transform:translateY(-105%); transition:transform .3s cubic-bezier(.2,.8,.2,1); pointer-events:none; }
+  #mobile-menu.open { transform:translateY(0); pointer-events:auto; }
+  .mobile-nav-link { display:block; padding:.875rem 0; font-size:1.125rem; font-weight:600; color:var(--c-dim); border-bottom:1px solid var(--c-line); transition:color .15s; }
+  .mobile-nav-link:hover { color:var(--c-ink); }
+  .hamburger { width:36px; height:36px; display:flex; flex-direction:column; justify-content:center; align-items:center; gap:5.5px;
+               cursor:pointer; border-radius:6px; background:transparent; border:none; transition:background .15s; }
+  .hamburger:hover { background:var(--c-surf2); }
+  .hamburger span { display:block; width:22px; height:2px; background:var(--c-ink); border-radius:2px; transition:transform .25s, opacity .2s; }
+  .hamburger.open span:nth-child(1) { transform:translateY(7.5px) rotate(45deg); }
+  .hamburger.open span:nth-child(2) { opacity:0; }
+  .hamburger.open span:nth-child(3) { transform:translateY(-7.5px) rotate(-45deg); }
+  /* Mockups */
   .mock { aspect-ratio:4/3; border-radius:10px; overflow:hidden; position:relative; }
-
-  /* Barra superior tipo browser */
   .browser-bar{ height:22px; display:flex; align-items:center; gap:5px; padding:0 9px;
                 background:rgba(255,255,255,0.08); border-bottom:1px solid rgba(255,255,255,0.08); }
   .browser-bar i{ width:7px; height:7px; border-radius:50%; background:rgba(255,255,255,0.25); display:inline-block; }
   .mock-body{ position:absolute; inset:22px 0 0 0; padding:14px; }
-
-  /* tipo "etiqueta" inferior */
-  .mock-tag{ position:absolute; bottom:10px; right:12px; padding:3px 8px; font-size:9px; letter-spacing:.18em; text-transform:uppercase;
+  .mock-tag{ position:absolute; bottom:10px; right:12px; padding:3px 8px; font-size:9px; letter-spacing:.12em; text-transform:uppercase;
              font-weight:700; background:rgba(0,0,0,0.45); color:#fff; border-radius:3px; }
-
   @media (prefers-reduced-motion: reduce) { *{ animation:none !important; transition:none !important; } }
 </style>
 </head>
@@ -95,12 +96,30 @@
       <a href="../casos/"    class="hover:text-ink transition-colors">Casos</a>
       <a href="../#contacto" class="hover:text-ink transition-colors">Contacto</a>
     </div>
-    <a href="../" class="inline-flex items-center gap-1.5 text-[12px] font-semibold text-muted hover:text-ink">
-      <span class="material-symbols-outlined text-[16px]">arrow_back</span>
-      Volver
-    </a>
+    <div class="flex items-center gap-2">
+      <a href="../" class="hidden sm:inline-flex items-center gap-1.5 text-[12px] font-semibold text-muted hover:text-ink">
+        <span class="material-symbols-outlined text-[16px]">arrow_back</span>
+        Volver
+      </a>
+      <button id="hamburger" class="hamburger md:hidden" aria-label="Abrir menú" aria-expanded="false" aria-controls="mobile-menu">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
   </div>
 </nav>
+
+<!-- Mobile navigation panel -->
+<div id="mobile-menu" aria-label="Menú de navegación">
+  <a href="../#metodo"   class="mobile-nav-link">Método</a>
+  <a href="../casos/"    class="mobile-nav-link">Casos</a>
+  <a href="../#contacto" class="mobile-nav-link">Contacto</a>
+  <div class="mt-6 pt-4">
+    <a href="../" class="inline-flex items-center gap-1.5 text-[13px] font-semibold text-muted hover:text-ink transition-colors">
+      <span class="material-symbols-outlined text-[15px]">arrow_back</span>
+      Volver al Studio
+    </a>
+  </div>
+</div>
 
 <link rel="stylesheet" href="../../assets/css/material-symbols.css"/>
 <style>.material-symbols-outlined{font-variation-settings:'FILL' 0,'wght' 400,'GRAD' 0,'opsz' 24;vertical-align:middle;}</style>
@@ -109,7 +128,7 @@
 
 <!-- HEADER -->
 <section class="max-w-6xl mx-auto px-6 pt-12 pb-10">
-  <span class="text-[11px] tracking-[0.2em] uppercase font-bold text-accent">Laboratorio</span>
+  <span class="text-[11px] tracking-[0.12em] uppercase font-bold text-accent">Laboratorio</span>
   <h1 class="font-display text-4xl md:text-6xl font-extrabold mt-3 leading-[1.02] max-w-3xl">
     Cinco arquetipos.<br/>
     <span class="text-accent">Tu negocio es uno de ellos.</span>
@@ -156,7 +175,7 @@
       </div>
     </div>
     <div class="md:col-span-5">
-      <span class="text-[11px] tracking-[0.2em] uppercase font-bold text-warm">Arquetipo 01</span>
+      <span class="text-[11px] tracking-[0.12em] uppercase font-bold text-warm">Arquetipo 01</span>
       <h2 class="font-display text-2xl md:text-4xl font-extrabold mt-3">Servicio local</h2>
       <p class="text-dim mt-4 leading-relaxed">Para negocios que viven del barrio: <strong>lavanderías, talleres mecánicos, salones de belleza, gimnasios, veterinarias</strong>. El sitio empuja una sola acción — pedir el servicio — y reduce las llamadas repetitivas con FAQs y precios visibles.</p>
       <ul class="mt-5 space-y-2 text-sm">
@@ -174,7 +193,7 @@
 <section id="restaurante" class="bg-paper border-t border-line">
   <div class="max-w-6xl mx-auto px-6 py-16 md:py-20 grid md:grid-cols-12 gap-10 items-center">
     <div class="md:col-span-5 md:order-1 order-2">
-      <span class="text-[11px] tracking-[0.2em] uppercase font-bold text-warm">Arquetipo 02</span>
+      <span class="text-[11px] tracking-[0.12em] uppercase font-bold text-warm">Arquetipo 02</span>
       <h2 class="font-display text-2xl md:text-4xl font-extrabold mt-3">Restaurante</h2>
       <p class="text-dim mt-4 leading-relaxed">Para <strong>taquerías, cafeterías, fondas, food trucks</strong>. La comida vende sola si la foto está bien tomada; el sitio debe lograr que la gente decida ir <em>antes</em> de googlear "tacos cerca". Carta apetitosa, ubicación al toque, integración con apps de delivery.</p>
       <ul class="mt-5 space-y-2 text-sm">
@@ -249,7 +268,7 @@
       </div>
     </div>
     <div class="md:col-span-5">
-      <span class="text-[11px] tracking-[0.2em] uppercase font-bold text-warm">Arquetipo 03</span>
+      <span class="text-[11px] tracking-[0.12em] uppercase font-bold text-warm">Arquetipo 03</span>
       <h2 class="font-display text-2xl md:text-4xl font-extrabold mt-3">Retail</h2>
       <p class="text-dim mt-4 leading-relaxed">Para <strong>boutiques, mercerías, librerías, joyerías, tiendas de barrio con personalidad</strong>. La diferencia entre vender o no es la foto y la curaduría. Catálogo navegable, lookbook editorial, checkout por WhatsApp o Mercado Pago.</p>
       <ul class="mt-5 space-y-2 text-sm">
@@ -267,7 +286,7 @@
 <section id="profesional" class="bg-paper border-t border-line">
   <div class="max-w-6xl mx-auto px-6 py-16 md:py-20 grid md:grid-cols-12 gap-10 items-center">
     <div class="md:col-span-5 md:order-1 order-2">
-      <span class="text-[11px] tracking-[0.2em] uppercase font-bold text-warm">Arquetipo 04</span>
+      <span class="text-[11px] tracking-[0.12em] uppercase font-bold text-warm">Arquetipo 04</span>
       <h2 class="font-display text-2xl md:text-4xl font-extrabold mt-3">Profesional independiente</h2>
       <p class="text-dim mt-4 leading-relaxed">Para <strong>dentistas, contadores, abogados, consultores, terapeutas</strong>. El cliente está buscando confianza, no precio. El sitio comunica autoridad — credenciales, casos, agenda — sin caer en plantillas de "consultorio dental genérico".</p>
       <ul class="mt-5 space-y-2 text-sm">
@@ -314,7 +333,7 @@
 <section id="industrial" class="bg-surf border-t border-line">
   <div class="max-w-6xl mx-auto px-6 py-20 md:py-28">
     <div class="max-w-2xl mb-10">
-      <span class="text-[11px] tracking-[0.2em] uppercase font-bold text-warm">Plantilla extendida · Demo navegable</span>
+      <span class="text-[11px] tracking-[0.12em] uppercase font-bold text-warm">Plantilla extendida · Demo navegable</span>
       <h2 class="font-display text-3xl md:text-5xl font-extrabold mt-3 leading-[1.02]">
         Industrial / B2B.<br/>
         <span class="text-accent">Cuando la PyME ya no es tan pequeña.</span>
@@ -409,10 +428,27 @@
 <script>
 (function(){
   var yr = document.getElementById('yr'); if (yr) yr.textContent = new Date().getFullYear();
-  // Hash scroll suave a anchors
   if (location.hash) {
     var el = document.querySelector(location.hash);
     if (el) setTimeout(function(){ el.scrollIntoView({behavior:'smooth', block:'start'}); }, 80);
+  }
+  var hamburger = document.getElementById('hamburger');
+  var mobileMenu = document.getElementById('mobile-menu');
+  if (hamburger && mobileMenu) {
+    hamburger.addEventListener('click', function() {
+      var open = mobileMenu.classList.toggle('open');
+      hamburger.classList.toggle('open', open);
+      hamburger.setAttribute('aria-expanded', String(open));
+      document.body.style.overflow = open ? 'hidden' : '';
+    });
+    mobileMenu.querySelectorAll('a').forEach(function(a) {
+      a.addEventListener('click', function() {
+        mobileMenu.classList.remove('open');
+        hamburger.classList.remove('open');
+        hamburger.setAttribute('aria-expanded', 'false');
+        document.body.style.overflow = '';
+      });
+    });
   }
 })();
 </script>

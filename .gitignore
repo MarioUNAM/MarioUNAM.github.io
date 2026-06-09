@@ -46,6 +46,10 @@ build/
 IMPROVEMENTS.md
 NOTES.md
 TODO.md
+CLAUDE.md
+
+# Bóveda de memoria agéntica (Obsidian-compatible)
+.obsidian_base/
 
 # Espacios de trabajo locales (scratch, drafts, exploratorios)
 _local/

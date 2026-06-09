@@ -9,11 +9,43 @@
   "background_color": "#0b0c0f",
   "theme_color": "#10b981",
   "lang": "es",
+  "shortcuts": [
+    {
+      "name": "Ejercicios",
+      "short_name": "Gym",
+      "url": "./tracker.html#ejercicios",
+      "description": "Registrar sesión de ejercicio"
+    },
+    {
+      "name": "Mediciones",
+      "short_name": "Peso",
+      "url": "./tracker.html#mediciones",
+      "description": "Registrar medición corporal"
+    },
+    {
+      "name": "Dashboard",
+      "short_name": "Stats",
+      "url": "./tracker.html#dashboard",
+      "description": "Ver métricas y gráficas"
+    },
+    {
+      "name": "Resumen semanal",
+      "short_name": "Semana",
+      "url": "./tracker.html#resumen",
+      "description": "Resumen semanal y asistente IA"
+    }
+  ],
   "icons": [
     {
-      "src": "assets/img/tracker-icon.svg",
-      "sizes": "any",
-      "type": "image/svg+xml",
+      "src": "assets/img/tracker-icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "assets/img/tracker-icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
       "purpose": "any"
     },
     {
@@ -21,6 +53,12 @@
       "sizes": "any",
       "type": "image/svg+xml",
       "purpose": "maskable"
+    },
+    {
+      "src": "assets/img/tracker-icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
     }
   ]
 }

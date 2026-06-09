@@ -2394,7 +2394,12 @@ function runSearchNow(q) {
   }
   // Resaltar la query en el snippet
   const qre = new RegExp(q.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"), "ig");
-  results.innerHTML = matches.map((m, i) => {
+  const countLabel = lang === "es"
+    ? `${matches.length} resultado${matches.length !== 1 ? "s" : ""}`
+    : `${matches.length} result${matches.length !== 1 ? "s" : ""}`;
+  results.innerHTML =
+    `<div style="font:500 10px/1 var(--c-on-surface-variant,#888);letter-spacing:0.07em;text-transform:uppercase;padding:6px 12px 2px;opacity:.7">${countLabel}</div>` +
+    matches.map((m, i) => {
     const navLabel = dict["nav." + m.page] || m.page;
     const snippet = m.snippet.replace(qre, s => "<mark>" + s + "</mark>");
     return `<a class="sr-item${i===0?' active':''}" data-page="${m.page}" href="#${m.page}">

@@ -231,13 +231,47 @@
      PRINT — limpia chrome, deja contenido legible en blanco/negro
   ══════════════════════════════════════════════════════════════ */
   @media print {
-    nav, footer, #mobile-menu, #toast, #presenting-exit, #toc-sticky, #search-overlay { display: none !important; }
-    .page { display: block !important; opacity: 1 !important; transform: none !important; page-break-after: always; }
+    nav, footer, #mobile-menu, #toast, #presenting-exit, #toc-sticky, #search-overlay,
+    #gallery-lightbox { display: none !important; }
+    .page { display: block !important; opacity: 1 !important; transform: none !important; }
+    .page + .page { page-break-before: always; }
+    /* Evitar cortes dentro de tarjetas */
+    .bg-surface-container-lowest, .tl-step, .gloss-item { page-break-inside: avoid; }
+    h2, h3, h4 { page-break-after: avoid; }
     body { background: #fff; color: #000; }
     .bg-primary, .bg-primary-container { background: #001e40 !important; }
     a { color: #001e40; text-decoration: underline; }
-    .btn-ripple, button { display: none !important; }
+    .btn-ripple, button, .filter-btn, .gal-filter { display: none !important; }
   }
+
+  /* ══════════════════════════════════════════════════════════════
+     GALLERY LIGHTBOX
+  ══════════════════════════════════════════════════════════════ */
+  #gallery-lightbox { display: none; position: fixed; inset: 0; z-index: 200; align-items: center; justify-content: center; padding: 1rem; }
+  #gallery-lightbox.open { display: flex; }
+  #gallery-lightbox .glb-overlay { position: absolute; inset: 0; background: rgba(0,0,0,.65); backdrop-filter: blur(4px); }
+  #gallery-lightbox .glb-box {
+    position: relative; z-index: 1;
+    background: var(--c-surface-container, #1e2128);
+    border: 1px solid var(--c-outline-variant, #43474f);
+    padding: 2rem 2.5rem 2.5rem; max-width: 420px; width: 100%;
+    text-align: center; animation: glb-in .18s ease;
+  }
+  @keyframes glb-in { from { opacity:0; transform: scale(.95); } to { opacity:1; transform: scale(1); } }
+  #gallery-lightbox .glb-icon { font-size: 4rem; color: var(--c-accent, #f37a00); display: block; }
+  #gallery-lightbox .glb-cat { font: 700 10px/1 sans-serif; letter-spacing: .1em; text-transform: uppercase; color: var(--c-accent, #f37a00); margin-top: 1rem; }
+  #gallery-lightbox .glb-title { font: 800 1.2rem/1.3 sans-serif; color: var(--c-primary, #4299e1); margin-top: .5rem; }
+  #gallery-lightbox .glb-year { font-size: .8rem; color: var(--c-on-surface-variant, #888); margin-top: .25rem; }
+  #gallery-lightbox .glb-desc { font-size: .85rem; color: var(--c-on-surface-variant, #888); margin-top: 1rem; line-height: 1.5; }
+  #gallery-lightbox .glb-close {
+    position: absolute; top: .6rem; right: .6rem;
+    background: none; border: none; cursor: pointer;
+    color: var(--c-on-surface-variant, #888); transition: color .15s;
+    display: flex; align-items: center; padding: .25rem;
+  }
+  #gallery-lightbox .glb-close:hover { color: var(--c-on-surface, #e8eaed); }
+  .gallery-item { cursor: pointer; }
+  .gallery-item:hover { outline: 1px solid var(--c-accent, #f37a00); }
 
   /* ══════════════════════════════════════════════════════════════
      SEARCH OVERLAY (Ctrl+K)
@@ -1666,6 +1700,21 @@
               <option value="1.9" data-i18n="tools.cost.complex">Complex (3+ fittings, custom angle)</option>
             </select>
           </label>
+          <div class="flex flex-wrap gap-x-6 gap-y-2 items-end mt-1">
+            <label class="flex items-center gap-2 text-xs font-semibold text-on-surface-variant select-none">
+              <input type="checkbox" id="cc-iva" class="accent-primary w-4 h-4">
+              <span data-i18n="tools.cost.iva">Include IVA (16%)</span>
+            </label>
+            <label class="block flex-1 min-w-[120px]">
+              <span class="text-xs font-bold text-primary uppercase" data-i18n="tools.cost.discount">Volume discount</span>
+              <select id="cc-discount" class="field-input bg-surface-container-highest border border-outline-variant/15 text-on-surface p-2 w-full mt-1">
+                <option value="0" data-i18n="tools.cost.disc0">No discount</option>
+                <option value="0.05">5%</option>
+                <option value="0.10">10%</option>
+                <option value="0.15">15%</option>
+              </select>
+            </label>
+          </div>
           <div class="bg-surface-container p-4 mt-2">
             <div class="text-xs font-bold text-on-surface-variant uppercase tracking-wider" data-i18n="tools.cost.estimate">Estimated cost</div>
             <div class="text-3xl font-black text-[var(--c-accent)]" id="cc-result">$ 0</div>
@@ -1702,6 +1751,7 @@
               <div class="text-xs font-bold text-on-surface-variant uppercase" data-i18n="tools.tol.method">Recommended</div>
               <div class="text-sm font-bold text-[var(--c-accent)]" id="tol-method">—</div>
             </div>
+            <p class="col-span-2 text-[10px] text-on-surface-variant opacity-60 mt-1" data-i18n="tools.tol.formula">Formula: IT = k × D⁰·⁴⁵ / 1000 mm · ISO 286-1:2010 approximation · for reference only</p>
           </div>
         </div>
       </div>
@@ -2173,16 +2223,18 @@ function setupCostCalc() {
     `<option value="${m.id}">${m.name} — $${COST_BASE[m.id] || 30}/m</option>`
   ).join("");
   function recalc() {
-    const len = parseFloat(document.getElementById("cc-length").value) || 0;
-    const mat = matSel.value;
-    const cmplx = parseFloat(document.getElementById("cc-complex").value) || 1;
-    const baseCost = (COST_BASE[mat] || 30) * len * cmplx;
-    const fittings = 45 * cmplx;
-    const total = Math.round(baseCost + fittings);
+    const len    = parseFloat(document.getElementById("cc-length").value) || 0;
+    const mat    = matSel.value;
+    const cmplx  = parseFloat(document.getElementById("cc-complex").value) || 1;
+    const disc   = parseFloat(document.getElementById("cc-discount")?.value) || 0;
+    const iva    = document.getElementById("cc-iva")?.checked ? 1.16 : 1;
+    const base   = (COST_BASE[mat] || 30) * len * cmplx + 45 * cmplx;
+    const total  = Math.round(base * (1 - disc) * iva);
     document.getElementById("cc-result").textContent = "$ " + total.toLocaleString();
   }
-  ["cc-length","cc-material","cc-complex"].forEach(id =>
-    document.getElementById(id).addEventListener("input", recalc));
+  ["cc-length","cc-material","cc-complex","cc-discount"].forEach(id =>
+    document.getElementById(id)?.addEventListener("input", recalc));
+  document.getElementById("cc-iva")?.addEventListener("change", recalc);
   recalc();
 }
 
@@ -2264,26 +2316,81 @@ function setupKPIs() {
 // TOOLS · GALLERY
 // ══════════════════════════════════════════════════════════════════
 const GALLERY = [
-  { cat:"oilgas", title:"PEMEX refinery hose retrofit", icon:"local_gas_station", year:2024 },
-  { cat:"oilgas", title:"Offshore platform fluid lines", icon:"oil_barrel", year:2023 },
-  { cat:"mining", title:"Sonora copper mine slurry", icon:"construction", year:2024 },
-  { cat:"mining", title:"Underground dewatering loop", icon:"water_drop", year:2023 },
-  { cat:"auto",   title:"Tier-1 OEM hydraulic kit", icon:"directions_car", year:2025 },
-  { cat:"auto",   title:"Robotic press feeders", icon:"precision_manufacturing", year:2024 },
-  { cat:"food",   title:"Beverage CIP food-grade", icon:"local_drink", year:2024 },
-  { cat:"food",   title:"Steam line dairy plant", icon:"thermostat", year:2023 },
+  { cat:"oilgas", title:"PEMEX refinery hose retrofit",       icon:"local_gas_station",     year:2024,
+    desc:{ en:"High-pressure hydraulic hose replacement across 8 process lines. SAE 100R17 with BSPT fittings, 350-bar rating.", es:"Reemplazo de mangueras hidráulicas en 8 líneas de proceso. SAE 100R17 con conexiones BSPT, 350 bar." } },
+  { cat:"oilgas", title:"Offshore platform fluid lines",       icon:"oil_barrel",            year:2023,
+    desc:{ en:"SS-braided PTFE lines for corrosive media in a 120-bar offshore environment. Full hydrostatic tested.", es:"Líneas PTFE con malla SS para medios corrosivos en entorno offshore de 120 bar. Prueba hidrostática completa." } },
+  { cat:"oilgas", title:"Coker unit steam tracing",           icon:"local_fire_department",  year:2024,
+    desc:{ en:"Steam-jacketed hose network for viscous crude tracing at 175 °C. Custom ferrule crimping on-site.", es:"Red de mangueras con camisa de vapor para rastreo de crudo viscoso a 175 °C. Crimpado en campo." } },
+  { cat:"mining", title:"Sonora copper mine slurry",           icon:"construction",          year:2024,
+    desc:{ en:"UHMW-PE lined hose for abrasive slurry transport. 3-inch bore, 30-meter runs, 450-cycle fatigue test.", es:"Manguera con revestimiento UHMW-PE para lodos abrasivos. Diámetro 3\", tramos 30 m, 450 ciclos de fatiga." } },
+  { cat:"mining", title:"Underground dewatering loop",         icon:"water_drop",            year:2023,
+    desc:{ en:"PVC layflat hose network for mine drainage. 500 PSI rated, UV-protected cover, quick-connect fittings.", es:"Red de mangueras planas PVC para drenaje de mina. 500 PSI, cubierta UV, conexiones rápidas." } },
+  { cat:"mining", title:"Iron ore conveyor hydraulics",        icon:"settings",              year:2025,
+    desc:{ en:"Six-spiral wire hose assemblies for 315-bar conveyor drive systems in an iron ore processing plant.", es:"Ensambles de manguera de seis espirales para sistemas de accionamiento de transportadora a 315 bar." } },
+  { cat:"auto",   title:"Tier-1 OEM hydraulic kit",            icon:"directions_car",        year:2025,
+    desc:{ en:"100-unit hydraulic kit for automated press lines. DIN 2353 fittings, 250-bar rating, 5-day lead time.", es:"Kit hidráulico de 100 piezas para líneas de prensa automatizada. DIN 2353, 250 bar, entrega en 5 días." } },
+  { cat:"auto",   title:"Robotic press feeders",               icon:"precision_manufacturing",year:2024,
+    desc:{ en:"Flexible conduit and hydraulic whips for 6-axis robotic arms on a Tier-2 stamping floor.", es:"Conductos flexibles y whips hidráulicos para brazos robóticos de 6 ejes en planta de estampado." } },
+  { cat:"auto",   title:"EV battery coolant lines",            icon:"electric_car",          year:2025,
+    desc:{ en:"Glycol-resistant EPDM hose assemblies for battery thermal management in electric vehicle assembly lines.", es:"Ensambles EPDM resistentes a glicol para gestión térmica de baterías en líneas de ensamble de VE." } },
+  { cat:"food",   title:"Beverage CIP food-grade",             icon:"local_drink",           year:2024,
+    desc:{ en:"FDA-compliant EPDM hose for CIP (Clean-In-Place) circuits in a carbonated beverage plant.", es:"Manguera EPDM conforme a FDA para circuitos CIP en planta de bebidas carbonatadas." } },
+  { cat:"food",   title:"Steam line dairy plant",               icon:"thermostat",            year:2023,
+    desc:{ en:"Steam-jacketed PTFE hose at 6 bar / 160 °C for pasteurization and CIP in a dairy plant.", es:"Manguera PTFE con camisa de vapor a 6 bar / 160 °C para pasteurización y CIP en planta láctea." } },
+  { cat:"food",   title:"Brewery CO₂ transfer",                icon:"bubble_chart",          year:2024,
+    desc:{ en:"Stainless-braided PTFE hose for CO₂ and pressurized wort transfer in a large-scale craft brewery.", es:"Manguera PTFE con malla inox para transferencia de CO₂ y mosto a presión en cervecería artesanal." } },
 ];
 function renderGallery(filter = "all") {
   const grid = document.getElementById("gallery-grid");
   if (!grid) return;
   const items = GALLERY.filter(g => filter === "all" || g.cat === filter);
-  grid.innerHTML = items.map(g => `
-    <div class="bg-surface-container border border-outline-variant/15 p-4 hover:shadow-lg transition-shadow">
-      <span class="material-symbols-outlined text-[var(--c-accent)] text-3xl">${g.icon}</span>
+  grid.innerHTML = items.map(g => {
+    const idx = GALLERY.indexOf(g);
+    return `
+    <button type="button" class="gallery-item bg-surface-container border border-outline-variant/15 p-4 hover:shadow-lg transition-shadow text-left w-full" data-gal-idx="${idx}" aria-label="${g.title}">
+      <span class="material-symbols-outlined text-[var(--c-accent)] text-3xl pointer-events-none">${g.icon}</span>
       <p class="text-sm font-bold text-primary mt-2">${g.title}</p>
       <p class="text-xs text-on-surface-variant mt-1">${g.year}</p>
-    </div>
-  `).join("");
+      <p class="text-[9px] text-[var(--c-accent)] mt-1 uppercase tracking-widest opacity-60">&#x2197; details</p>
+    </button>`;
+  }).join("");
+  grid.querySelectorAll(".gallery-item").forEach(btn =>
+    btn.addEventListener("click", () => openGalleryLightbox(GALLERY[parseInt(btn.dataset.galIdx, 10)]))
+  );
+}
+function openGalleryLightbox(item) {
+  let modal = document.getElementById("gallery-lightbox");
+  if (!modal) {
+    modal = document.createElement("div");
+    modal.id = "gallery-lightbox";
+    modal.innerHTML =
+      '<div class="glb-overlay"></div>' +
+      '<div class="glb-box" role="dialog" aria-modal="true">' +
+        '<button class="glb-close" aria-label="Close"><span class="material-symbols-outlined" style="font-size:1.25rem">close</span></button>' +
+        '<span class="material-symbols-outlined glb-icon"></span>' +
+        '<div class="glb-cat"></div>' +
+        '<h3 class="glb-title"></h3>' +
+        '<p class="glb-year"></p>' +
+        '<p class="glb-desc"></p>' +
+      '</div>';
+    document.body.appendChild(modal);
+    const close = () => modal.classList.remove("open");
+    modal.querySelector(".glb-overlay").addEventListener("click", close);
+    modal.querySelector(".glb-close").addEventListener("click", close);
+    document.addEventListener("keydown", e => {
+      if (e.key === "Escape" && modal.classList.contains("open")) close();
+    });
+  }
+  const lang = document.documentElement.getAttribute("data-lang") || "en";
+  const catEN = { oilgas:"Oil & Gas", mining:"Mining", auto:"Automotive", food:"Food & Bev" };
+  const catES = { oilgas:"Petróleo y gas", mining:"Minería", auto:"Automotriz", food:"Alimentos y bebidas" };
+  modal.querySelector(".glb-icon").textContent = item.icon;
+  modal.querySelector(".glb-cat").textContent  = (lang === "es" ? catES : catEN)[item.cat] || item.cat;
+  modal.querySelector(".glb-title").textContent = item.title;
+  modal.querySelector(".glb-year").textContent  = item.year;
+  modal.querySelector(".glb-desc").textContent  = (item.desc?.[lang] || item.desc?.en || "");
+  modal.classList.add("open");
 }
 function setupGallery() {
   document.querySelectorAll(".gal-filter").forEach(btn => {
@@ -2303,7 +2410,10 @@ function setupGallery() {
 // ══════════════════════════════════════════════════════════════════
 // TOOLS · GLOSARIO
 // ══════════════════════════════════════════════════════════════════
-const GLOSSARY_KEYS = ["psi","bsp","sae","ptfe","epdm","crimping","oem","oee","iso286","hydrostatic"];
+const GLOSSARY_KEYS = [
+  "psi","bsp","sae","ptfe","epdm","crimping","oem","oee","iso286","hydrostatic",
+  "nbr","dn","wp","bp","br","npt","impulse","ferrule","sf","iso9001","lot","viscosity"
+];
 function renderGlossary() {
   const list = document.getElementById("glossary-list");
   if (!list) return;
@@ -2622,6 +2732,22 @@ const I18N = {
     "gloss.oee.t":"OEE",  "gloss.oee.d":"Overall Equipment Effectiveness — availability x performance x quality.",
     "gloss.iso286.t":"ISO 286","gloss.iso286.d":"Standard for limits and fits in machined parts; defines IT grades.",
     "gloss.hydrostatic.t":"Hydrostatic Test","gloss.hydrostatic.d":"Pressure test using water at 1.5x working pressure to verify integrity.",
+    "gloss.nbr.t":"NBR","gloss.nbr.d":"Nitrile Butadiene Rubber — the most widely used elastomer for petroleum-based hydraulic fluids. Temp range −40 °C to +100 °C.",
+    "gloss.dn.t":"DN (Diameter Nominal)","gloss.dn.d":"ISO metric bore size notation. DN25 = 25 mm nominal inside diameter. Not identical to actual ID — use DN as a reference code.",
+    "gloss.wp.t":"Working Pressure","gloss.wp.d":"Maximum continuous operating pressure the hose is rated for. Exceeding this shortens service life and risks failure.",
+    "gloss.bp.t":"Burst Pressure","gloss.bp.d":"Pressure at which the hose catastrophically fails. Hydraulic standards (SAE, EN 853) require burst ≥ 4× working pressure.",
+    "gloss.br.t":"Minimum Bend Radius","gloss.br.d":"Tightest curve a hose can follow without kinking or reducing flow. Bending tighter causes wire fatigue and inner tube damage.",
+    "gloss.npt.t":"NPT","gloss.npt.d":"National Pipe Taper — US thread standard for pipe fittings. Taper of 1:16. Not interchangeable with BSP/BSPT without adapters.",
+    "gloss.impulse.t":"Impulse Test","gloss.impulse.d":"Cyclic pressure fatigue test (SAE J343). Hose is pressurized from 0 to rated WP and back, repeated 200,000–500,000 cycles.",
+    "gloss.ferrule.t":"Ferrule","gloss.ferrule.d":"The metal sleeve swaged or crimped over the hose end to lock the fitting in place. Ferrule material must match fluid compatibility.",
+    "gloss.sf.t":"Safety Factor","gloss.sf.d":"Ratio of burst pressure to working pressure. Hydraulic hose standards require a minimum SF of 4:1 for general service.",
+    "gloss.iso9001.t":"ISO 9001","gloss.iso9001.d":"International quality management system standard. ISO 9001 certification means the manufacturer follows documented processes and continuous improvement.",
+    "gloss.lot.t":"Lot Traceability","gloss.lot.d":"Ability to trace a hose assembly back to its raw material batch. Required for safety-critical applications in oil & gas and food processing.",
+    "gloss.viscosity.t":"Viscosity","gloss.viscosity.d":"Resistance of a fluid to flow, measured in cP (centipoise) or mPa·s. High-viscosity fluids require larger bore hoses to avoid excessive pressure drop.",
+    "tools.cost.iva":"Include IVA (16%)",
+    "tools.cost.discount":"Volume discount",
+    "tools.cost.disc0":"No discount",
+    "tools.tol.formula":"Formula: IT = k × D⁰·⁴⁵ / 1000 mm · ISO 286-1:2010 approximation · for reference only",
     "materials.tag": "Materials Database",
     "materials.title": "Material Comparator",
     "materials.subtitle": "Side-by-side properties for the elastomers, thermoplastics and metals used across our hose families. Filter by application to find the right fit.",
@@ -2740,6 +2866,22 @@ const I18N = {
     "gloss.oee.t":"OEE",  "gloss.oee.d":"Overall Equipment Effectiveness — disponibilidad x desempeño x calidad.",
     "gloss.iso286.t":"ISO 286","gloss.iso286.d":"Estándar de límites y ajustes en partes maquinadas; define los grados IT.",
     "gloss.hydrostatic.t":"Prueba hidrostática","gloss.hydrostatic.d":"Prueba a 1.5x presión de trabajo con agua para verificar la integridad.",
+    "gloss.nbr.t":"NBR","gloss.nbr.d":"Caucho nitrilo butadieno — elastómero más usado para fluidos hidráulicos a base de petróleo. Rango térmico −40 °C a +100 °C.",
+    "gloss.dn.t":"DN (Diámetro Nominal)","gloss.dn.d":"Notación ISO para el diámetro interior de referencia. DN25 = 25 mm nominal. No es igual al diámetro real — se usa como código de referencia.",
+    "gloss.wp.t":"Presión de trabajo","gloss.wp.d":"Presión máxima continua para la que está clasificada la manguera. Superarla acorta la vida útil y aumenta el riesgo de falla.",
+    "gloss.bp.t":"Presión de estallido","gloss.bp.d":"Presión a la que la manguera falla catastróficamente. Los estándares SAE/EN 853 exigen estallido ≥ 4× la presión de trabajo.",
+    "gloss.br.t":"Radio mínimo de curvatura","gloss.br.d":"Curva más cerrada que puede hacer la manguera sin kink ni reducción de flujo. Curvatura mayor causa fatiga en el refuerzo y daña el tubo interior.",
+    "gloss.npt.t":"NPT","gloss.npt.d":"National Pipe Taper — estándar de rosca cónica estadounidense para conexiones de tubería. Cónica 1:16. No intercambiable con BSP/BSPT sin adaptadores.",
+    "gloss.impulse.t":"Prueba de impulso","gloss.impulse.d":"Prueba de fatiga cíclica de presión (SAE J343). La manguera se presuriza de 0 a la presión de trabajo y regresa, repetido 200,000–500,000 ciclos.",
+    "gloss.ferrule.t":"Ferrule (casquillo)","gloss.ferrule.d":"Manga metálica swageada o crimpada sobre el extremo de la manguera para fijar la conexión. El material debe ser compatible con el fluido.",
+    "gloss.sf.t":"Factor de seguridad","gloss.sf.d":"Relación entre presión de estallido y presión de trabajo. Los estándares de mangueras hidráulicas exigen un mínimo de 4:1 en servicio general.",
+    "gloss.iso9001.t":"ISO 9001","gloss.iso9001.d":"Estándar internacional de sistemas de gestión de calidad. La certificación garantiza que el fabricante sigue procesos documentados y mejora continua.",
+    "gloss.lot.t":"Trazabilidad de lote","gloss.lot.d":"Capacidad de rastrear un ensamble hasta el lote de materia prima. Requerida en aplicaciones críticas de petróleo y gas y procesamiento de alimentos.",
+    "gloss.viscosity.t":"Viscosidad","gloss.viscosity.d":"Resistencia del fluido al flujo, en cP (centipoise) o mPa·s. Fluidos de alta viscosidad requieren mangueras de mayor diámetro para evitar pérdida de presión excesiva.",
+    "tools.cost.iva":"Incluir IVA (16%)",
+    "tools.cost.discount":"Descuento por volumen",
+    "tools.cost.disc0":"Sin descuento",
+    "tools.tol.formula":"Fórmula: IT = k × D⁰·⁴⁵ / 1000 mm · Aproximación ISO 286-1:2010 · solo referencia",
     "materials.tag": "Base de datos de materiales",
     "materials.title": "Comparador de materiales",
     "materials.subtitle": "Propiedades lado a lado de los elastómeros, termoplásticos y metales usados en nuestras familias de mangueras. Filtra por aplicación.",

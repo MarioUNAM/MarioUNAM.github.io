@@ -44,8 +44,8 @@
   ::selection{ background:var(--c-accent); color:var(--c-paper); }
   *:focus-visible { outline:2px solid var(--c-accent); outline-offset:3px; border-radius:3px; }
   .font-display{ font-family:'Manrope','Inter',sans-serif; letter-spacing:-0.02em; }
-  .glass-nav{ background:color-mix(in srgb, var(--c-paper) 78%, transparent); backdrop-filter:blur(14px) saturate(140%);
-              -webkit-backdrop-filter:blur(14px) saturate(140%); border-bottom:1px solid var(--c-line); }
+  .glass-nav{ background:color-mix(in srgb, var(--c-paper) 78%, transparent) !important; backdrop-filter:blur(14px) saturate(140%);
+              -webkit-backdrop-filter:blur(14px) saturate(140%); border-bottom:1px solid var(--c-line) !important; }
   .btn-primary{ display:inline-flex; align-items:center; gap:.5rem; background:var(--c-ink); color:var(--c-paper);
                 padding:.75rem 1.25rem; font-weight:600; font-size:.875rem; border-radius:8px; transition:opacity .18s; box-shadow:0 1px 4px rgba(0,0,0,.1); }
   .btn-primary:hover{ opacity:.86; }

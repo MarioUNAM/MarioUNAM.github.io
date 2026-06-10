@@ -66,7 +66,7 @@
     --c-warm:   #f5a04a;
   }
 
-  html, body { background: var(--c-paper); color: var(--c-ink); }
+  html, body { background: var(--c-paper) !important; color: var(--c-ink) !important; }
   body {
     font-family: 'Inter', sans-serif;
     font-feature-settings: 'ss01','cv02';
@@ -278,23 +278,23 @@
 <!-- ============ HERO ============ -->
 <section class="relative grain overflow-hidden">
   <div class="max-w-6xl mx-auto px-6 pt-16 md:pt-28 pb-20 md:pb-32 relative">
-    <div class="inline-flex items-center gap-2 px-3 py-1 mb-7 border border-line rounded-full text-[11px] tracking-[0.18em] uppercase font-semibold text-dim reveal">
+    <div class="inline-flex items-center gap-2 px-3 py-1 mb-7 border border-line rounded-full text-[11px] tracking-[0.18em] uppercase font-semibold text-dim">
       <span class="w-1.5 h-1.5 rounded-full bg-accent animate-pulse"></span>
       <span><span class="text-ink font-bold">Mahuno</span> <span class="text-muted">/</span> <span class="text-ink font-bold">Studio</span></span>
     </div>
 
-    <h1 class="font-display text-5xl md:text-7xl lg:text-[5.5rem] font-extrabold leading-[0.98] tracking-tight max-w-4xl reveal">
+    <h1 class="font-display text-5xl md:text-7xl lg:text-[5.5rem] font-extrabold leading-[0.98] tracking-tight max-w-4xl">
       Rebranding completo para
       <span class="text-accent">PyMEs mexicanas</span>,
       en <span class="underline decoration-warm decoration-[6px] underline-offset-[6px]">5 días</span>.
     </h1>
 
-    <p class="mt-8 text-lg md:text-xl text-dim font-body max-w-2xl leading-relaxed reveal">
+    <p class="mt-8 text-lg md:text-xl text-dim font-body max-w-2xl leading-relaxed">
       Sistema propio, no agencia. Combino arquitectura de datos con agentes IA
       para producir identidad, web y handoff que <em>se parezcan a lo que tu negocio realmente vale</em>.
     </p>
 
-    <div class="mt-10 flex flex-wrap gap-3 reveal">
+    <div class="mt-10 flex flex-wrap gap-3">
       <a href="lab/" class="btn-primary">
         Ver el laboratorio
         <span class="material-symbols-outlined text-[18px]">arrow_forward</span>
@@ -303,7 +303,7 @@
     </div>
 
     <!-- Autoría -->
-    <div class="mt-14 pt-8 hairline max-w-2xl reveal">
+    <div class="mt-14 pt-8 hairline max-w-2xl">
       <p class="text-[13px] text-muted leading-relaxed">
         Hecho por <a href="/" class="text-ink font-semibold underline decoration-line underline-offset-2 hover:decoration-accent">Mario Huarte Nolasco</a> ·
         Ingeniero en Computación, UNAM ·
@@ -665,7 +665,7 @@
   if ('IntersectionObserver' in window) {
     var io = new IntersectionObserver(function(entries){
       entries.forEach(function(e){ if (e.isIntersecting){ e.target.classList.add('in'); io.unobserve(e.target);} });
-    }, { threshold: 0.12 });
+    }, { threshold: 0, rootMargin: '0px 0px -40px 0px' });
     document.querySelectorAll('.reveal').forEach(function(el){ io.observe(el); });
   } else {
     document.querySelectorAll('.reveal').forEach(function(el){ el.classList.add('in'); });

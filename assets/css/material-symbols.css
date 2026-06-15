@@ -1,11 +1,18 @@
 /*
- * Material Symbols Outlined — subset self-hosted
- * Solo los iconos efectivamente usados en el sitio (56 glyphs, ~8 KB).
- * Para regenerar el subset: ver scripts/build-material-symbols-subset (si existe)
- * o reconstruir manualmente con la API de Google Fonts y el parametro icon_names.
+ * Material Symbols Outlined — subset self-hosted (variable font, FILL/wght/GRAD/opsz)
+ * 58 iconos usados en todo el sitio, ~79 KB.
+ * Regenerado: 2026-06-14 via Google Fonts API con icon_names=
+ *   alternate_email,analytics,arrow_back,arrow_forward,bolt,cable,call,chat,
+ *   check_circle,check_small,close,cloud,dark_mode,deployed_code,description,
+ *   domain,eco,emergency,engineering,fitness_center,flag,groups,handshake,
+ *   headset_mic,hub,keyboard_arrow_down,light_mode,link,local_gas_station,
+ *   local_laundry_service,mail,manufacturing,medical_services,menu,monitoring,
+ *   open_in_new,palette,precision_manufacturing,print,restaurant,schema,school,
+ *   science,search,send,settings,shield,slideshow,smart_toy,sports_esports,
+ *   sports_soccer,storefront,terminal,thermostat,verified,visibility,water,work
  *
- * La regla .material-symbols-outlined (font-size, liga, etc.) sigue en
- * assets/css/main.css y en los <style> inline de cada archivo del Studio.
+ * Para regenerar: node --use-system-ca -e "..." (ver NOTES.md)
+ * La regla .material-symbols-outlined está en assets/css/main.css
  */
 @font-face {
   font-family: 'Material Symbols Outlined';

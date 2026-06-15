@@ -1,11 +1,12 @@
 /*
  * Material Symbols Outlined — cargado desde Google Fonts CDN
- * La fuente se incluye via <link> en cada HTML:
- *   https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined&display=block&icon_names=...
+ *
+ * URL en cada HTML:
+ *   https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200&display=swap
+ *
+ * Esta URL carga la fuente variable completa con todos los ejes (opsz, wght, FILL, GRAD).
+ * Google Fonts sirve el WOFF2 correcto según el User-Agent del browser (desktop/mobile).
  *
  * La clase .material-symbols-outlined está definida en assets/css/main.css
- * y también la provee Google Fonts CSS automáticamente.
- *
- * El WOFF2 self-hosted (assets/fonts/material-symbols-outlined.woff2) se conserva
- * como fallback local pero ya no se usa como fuente primaria.
+ * El WOFF2 self-hosted (assets/fonts/material-symbols-outlined.woff2) se conserva como backup.
  */

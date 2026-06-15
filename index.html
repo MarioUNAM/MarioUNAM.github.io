@@ -1045,15 +1045,39 @@
 <!-- Animations -->
 <script src="assets/js/animations.js"></script>
 
+<!-- Mobile nav toggle — script independiente, cero dependencias externas -->
+<script>
+(function(){
+  var btn = document.getElementById('nav-toggle');
+  var nav = document.getElementById('mobile-nav');
+  var cls = document.getElementById('nav-close');
+  if(!btn || !nav) return;
+  function openNav(){
+    nav.style.display = 'flex';
+    document.body.style.overflow = 'hidden';
+    btn.setAttribute('aria-expanded','true');
+  }
+  function closeNav(){
+    nav.style.display = 'none';
+    document.body.style.overflow = '';
+    btn.setAttribute('aria-expanded','false');
+  }
+  btn.addEventListener('click', function(){ nav.style.display === 'flex' ? closeNav() : openNav(); });
+  if(cls) cls.addEventListener('click', closeNav);
+  document.querySelectorAll('.mobile-nav-link').forEach(function(l){ l.addEventListener('click', closeNav); });
+  document.addEventListener('keydown', function(e){ if(e.key === 'Escape') closeNav(); });
+})();
+</script>
+
 <script>
   /* ════════════════════════════════════════════
-     INIT: i18n, nav, theme, testimonials, form
+     INIT: i18n, theme, scroll, animations
   ════════════════════════════════════════════ */
   document.addEventListener('DOMContentLoaded', function () {
 
     /* ── i18n ────────────────────────────────────────────── */
     var currentLang = localStorage.getItem('lang') || 'en';
-    var T = window.TRANSLATIONS;
+    var T = window.TRANSLATIONS || {};
 
     function t(key) {
       return (T[currentLang] && T[currentLang][key]) || (T['en'] && T['en'][key]) || key;
@@ -1114,29 +1138,6 @@
     document.addEventListener('theme:change', function(e){
       var announceEl = document.getElementById('theme-announce');
       if(announceEl) announceEl.textContent = t(e.detail.theme === 'dark' ? 'nav.theme.announce.dark' : 'nav.theme.announce.light');
-    });
-
-    /* ── Mobile nav ──────────────────────────────────────── */
-    var toggle   = document.getElementById('nav-toggle');
-    var closeBtn = document.getElementById('nav-close');
-    var mobileNav = document.getElementById('mobile-nav');
-    function openNav(){
-      if(!mobileNav) return;
-      mobileNav.style.display = 'flex';
-      if(toggle) toggle.setAttribute('aria-expanded','true');
-      document.body.style.overflow = 'hidden';
-    }
-    function closeNav(){
-      if(!mobileNav) return;
-      mobileNav.style.display = 'none';
-      if(toggle) toggle.setAttribute('aria-expanded','false');
-      document.body.style.overflow = '';
-    }
-    if(toggle)   toggle.addEventListener('click', function(){ mobileNav && mobileNav.style.display === 'flex' ? closeNav() : openNav(); });
-    if(closeBtn) closeBtn.addEventListener('click', closeNav);
-    document.querySelectorAll('.mobile-nav-link').forEach(function(l){ l.addEventListener('click', closeNav); });
-    document.addEventListener('keydown', function(e){
-      if(e.key === 'Escape' && mobileNav && mobileNav.style.display === 'flex') closeNav();
     });
 
     /* ── Sticky nav scroll ───────────────────────────────── */

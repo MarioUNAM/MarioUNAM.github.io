@@ -92,7 +92,8 @@
 html {
   scroll-behavior: smooth;
   scroll-padding-top: 5rem;
-  overflow-x: hidden;
+  overflow-x: hidden !important;
+  overscroll-behavior-x: none;
 }
 
 body {

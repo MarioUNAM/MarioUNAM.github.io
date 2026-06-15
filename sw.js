@@ -5,7 +5,7 @@
    network-first con fallback a cache para el resto.
    Sube CACHE_VERSION cuando publiques cambios para invalidar.
    ============================================================ */
-const CACHE_VERSION = "tracker-v7";
+const CACHE_VERSION = "tracker-v8";
 
 // Permite al cliente forzar la activación del SW nuevo cuando
 // el usuario aprueba el prompt "Recargar" del tracker.

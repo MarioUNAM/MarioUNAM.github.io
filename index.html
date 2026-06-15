@@ -1123,13 +1123,13 @@
     function openNav(){
       if(!mobileNav) return;
       mobileNav.style.display = 'flex';
-      toggle?.setAttribute('aria-expanded','true');
+      if(toggle) toggle.setAttribute('aria-expanded','true');
       document.body.style.overflow = 'hidden';
     }
     function closeNav(){
       if(!mobileNav) return;
       mobileNav.style.display = 'none';
-      toggle?.setAttribute('aria-expanded','false');
+      if(toggle) toggle.setAttribute('aria-expanded','false');
       document.body.style.overflow = '';
     }
     if(toggle)   toggle.addEventListener('click', function(){ mobileNav && mobileNav.style.display === 'flex' ? closeNav() : openNav(); });

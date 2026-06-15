@@ -1,0 +1,16 @@
+# Text files — normalize line endings to LF in repo
+* text=auto
+
+# Explicitly binary — never touch line endings
+*.woff2  binary
+*.woff   binary
+*.ttf    binary
+*.otf    binary
+*.eot    binary
+*.png    binary
+*.jpg    binary
+*.jpeg   binary
+*.gif    binary
+*.ico    binary
+*.svg    text
+*.pdf    binary

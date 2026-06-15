@@ -1,23 +1,11 @@
 /*
- * Material Symbols Outlined — subset self-hosted (variable font, FILL/wght/GRAD/opsz)
- * 58 iconos usados en todo el sitio, ~79 KB.
- * Regenerado: 2026-06-14 via Google Fonts API con icon_names=
- *   alternate_email,analytics,arrow_back,arrow_forward,bolt,cable,call,chat,
- *   check_circle,check_small,close,cloud,dark_mode,deployed_code,description,
- *   domain,eco,emergency,engineering,fitness_center,flag,groups,handshake,
- *   headset_mic,hub,keyboard_arrow_down,light_mode,link,local_gas_station,
- *   local_laundry_service,mail,manufacturing,medical_services,menu,monitoring,
- *   open_in_new,palette,precision_manufacturing,print,restaurant,schema,school,
- *   science,search,send,settings,shield,slideshow,smart_toy,sports_esports,
- *   sports_soccer,storefront,terminal,thermostat,verified,visibility,water,work
+ * Material Symbols Outlined — cargado desde Google Fonts CDN
+ * La fuente se incluye via <link> en cada HTML:
+ *   https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined&display=block&icon_names=...
  *
- * Para regenerar: node --use-system-ca -e "..." (ver NOTES.md)
- * La regla .material-symbols-outlined está en assets/css/main.css
+ * La clase .material-symbols-outlined está definida en assets/css/main.css
+ * y también la provee Google Fonts CSS automáticamente.
+ *
+ * El WOFF2 self-hosted (assets/fonts/material-symbols-outlined.woff2) se conserva
+ * como fallback local pero ya no se usa como fuente primaria.
  */
-@font-face {
-  font-family: 'Material Symbols Outlined';
-  font-style: normal;
-  font-weight: 100 700;
-  font-display: block;
-  src: url('../fonts/material-symbols-outlined.woff2?v=20260614') format('woff2');
-}

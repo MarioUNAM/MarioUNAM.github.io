@@ -60,9 +60,10 @@
   <!-- Fonts: self-hosted (definidas en main.css). Preload del peso crítico del hero -->
   <link rel="preload" href="assets/fonts/manrope-variable.woff2" as="font" type="font/woff2" crossorigin>
   <link rel="preload" href="assets/fonts/inter-variable.woff2"          as="font" type="font/woff2" crossorigin>
-  <link rel="preload" href="assets/fonts/material-symbols-outlined.woff2?v=20260614" as="font" type="font/woff2" crossorigin>
-  <!-- Material Symbols self-hosted (subset WOFF2) -->
-  <link rel="stylesheet" href="assets/css/material-symbols.css?v=20260614" />
+  <!-- Material Symbols — Google Fonts CDN (subset 58 iconos, sirve WOFF2 por device) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined&display=block&icon_names=alternate_email,analytics,arrow_back,arrow_forward,bolt,cable,call,chat,check_circle,check_small,close,cloud,dark_mode,deployed_code,description,domain,eco,emergency,engineering,fitness_center,flag,groups,handshake,headset_mic,hub,keyboard_arrow_down,light_mode,link,local_gas_station,local_laundry_service,mail,manufacturing,medical_services,menu,monitoring,open_in_new,palette,precision_manufacturing,print,restaurant,schema,school,science,search,send,settings,shield,slideshow,smart_toy,sports_esports,sports_soccer,storefront,terminal,thermostat,verified,visibility,water,work">
 
   <!-- Tailwind compilado (build via 'npm run build:css') -->
   <link rel="stylesheet" href="assets/css/tailwind.css">
@@ -71,11 +72,6 @@
   <link rel="stylesheet" href="assets/css/main.css" />
 
   <style>
-    /* font-family y liga ya definidos en main.css — solo override de variación */
-    .material-symbols-outlined {
-      font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
-    }
-  </style>
 </head>
 <body class="font-body selection:bg-primary/30 selection:text-primary">
 

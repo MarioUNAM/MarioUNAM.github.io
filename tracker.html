@@ -1451,7 +1451,7 @@ input[type=range]::-moz-range-thumb {
     <h2>Sesión de entrenamiento</h2>
     <span class="section-tag">01 · LOG</span>
   </div>
-  <p class="section-desc">Registra cada sesión con el detalle suficiente para que el dashboard pueda calcular volumen, intensidad y consistencia.</p>
+  <p class="section-desc">Registra cada sesión con el detalle suficiente para que el dashboard pueda calcular volumen, dificultad y consistencia.</p>
 
   <form class="card" id="form-ejercicio" autocomplete="off">
     <div class="edit-banner" id="edit-banner-ejercicio" hidden>
@@ -1484,8 +1484,8 @@ input[type=range]::-moz-range-thumb {
     </label>
 
     <label class="field">
-      <span class="field-label">Intensidad <span class="value-out" id="intensidad-out">5/10</span></span>
-      <input type="range" min="1" max="10" value="5" name="intensidad" id="intensidad-input">
+      <span class="field-label">Dificultad <span class="value-out" id="intensidad-out">3/5</span></span>
+      <input type="range" min="1" max="5" step="1" value="3" name="intensidad" id="intensidad-input">
     </label>
 
     <!-- FUERZA -->
@@ -1812,7 +1812,7 @@ input[type=range]::-moz-range-thumb {
       <div class="chart-wrap"><canvas id="chart-cardio"></canvas></div>
     </div>
     <div class="chart-card">
-      <div class="chart-head"><span class="chart-title">Intensidad promedio por sesión</span></div>
+      <div class="chart-head"><span class="chart-title">Dificultad promedio por sesión</span></div>
       <div class="chart-wrap"><canvas id="chart-intensidad"></canvas></div>
     </div>
     <div class="chart-card">
@@ -2173,11 +2173,11 @@ function seedSample(s) {
 
   // 3 ejercicios — uno de cada tipo, distribuidos en la última semana
   s.ejercicios = [
-    { id: uid(), fecha: day(-6), tipo:"flexibilidad", nombre:"Yoga vinyasa", intensidad:4, notas:"Movilidad cadera",
+    { id: uid(), fecha: day(-6), tipo:"flexibilidad", nombre:"Yoga vinyasa", intensidad:2, notas:"Movilidad cadera",
       flexMinutos:30, flexSeries:1 },
-    { id: uid(), fecha: day(-3), tipo:"cardio", nombre:"Cinta intervalos", intensidad:7, notas:"Buen ritmo, sostuve 13km/h",
+    { id: uid(), fecha: day(-3), tipo:"cardio", nombre:"Cinta intervalos", intensidad:4, notas:"Buen ritmo, sostuve 13km/h",
       minutos:30, pendiente:2, velocidades:[{kmh:8,mins:5},{kmh:13,mins:20},{kmh:7,mins:5}] },
-    { id: uid(), fecha: day(0), tipo:"fuerza", nombre:"Sentadilla con barra", intensidad:8, notas:"Técnica sólida, +5kg sobre la semana pasada.",
+    { id: uid(), fecha: day(0), tipo:"fuerza", nombre:"Sentadilla con barra", intensidad:4, notas:"Técnica sólida, +5kg sobre la semana pasada.",
       series:[{reps:10,kg:65},{reps:10,kg:65},{reps:8,kg:70}] }
   ];
 
@@ -2475,14 +2475,15 @@ function onSexoChange(sexo) {
 }
 
 /* ============================================================
-   H.  SLIDER DE INTENSIDAD
+   H.  SLIDER DE DIFICULTAD (escala 1–5)
    ============================================================ */
+const DIFICULTAD_LABELS = ["Muy fácil", "Fácil", "Moderado", "Difícil", "Muy difícil"];
 const intensidadInput = document.getElementById("intensidad-input");
 const intensidadOut   = document.getElementById("intensidad-out");
 function syncIntensidad() {
-  const v = intensidadInput.value;
-  intensidadOut.textContent = `${v}/10`;
-  intensidadInput.style.setProperty("--val", `${(v-1)/9*100}%`);
+  const v = Number(intensidadInput.value);
+  intensidadOut.textContent = `${v}/5 · ${DIFICULTAD_LABELS[v - 1]}`;
+  intensidadInput.style.setProperty("--val", `${(v - 1) / 4 * 100}%`);
 }
 intensidadInput.addEventListener("input", syncIntensidad);
 syncIntensidad();
@@ -2919,8 +2920,8 @@ function ejBadges(e) {
       }
     }
   }
-  if (e.intensidad >= 9) {
-    out.push({ cls: "warn", text: `Intensidad ${e.intensidad}/10` });
+  if (e.intensidad >= 5) {
+    out.push({ cls: "warn", text: `Dificultad máx ${e.intensidad}/5` });
   }
   if (e.tipo === "cardio") {
     const totalMins = e.minutos || (e.velocidades||[]).reduce((a,v)=>a+v.mins,0);
@@ -2993,7 +2994,7 @@ function renderEjerciciosList() {
     return `
       <div class="record-item ${e.tipo}">
         <div class="record-body">
-          <div class="record-meta">${fmtDateLong(e.fecha)} · ${e.tipo} · int ${e.intensidad}/10</div>
+          <div class="record-meta">${fmtDateLong(e.fecha)} · ${e.tipo} · dif ${e.intensidad}/5</div>
           <div class="record-title">${escapeHtml(e.nombre)}</div>
           <div class="record-detail">${detail}</div>
           ${e.notas ? `<div class="record-detail" style="margin-top:6px;font-style:italic">${escapeHtml(e.notas)}</div>`:""}
@@ -3522,13 +3523,13 @@ function renderDashboard() {
   charts.intensidad = new Chart(document.getElementById("chart-intensidad"), {
     type: "line",
     data: { labels: ejOrdenados.map(e=>fmtDateShort(e.fecha)), datasets: [{
-      label: "Intensidad", data: ejOrdenados.map(e=>e.intensidad),
+      label: "Dificultad", data: ejOrdenados.map(e=>e.intensidad),
       borderColor: "#f59e0b", backgroundColor: "rgba(245,158,11,0.08)",
       borderWidth: 2, tension: 0.3, pointRadius: 3, fill: true
     }]},
     options: { ...CHART_DEFAULTS(),
       plugins: { ...CHART_DEFAULTS().plugins, legend: { display:false } },
-      scales: { ...CHART_DEFAULTS().scales, y: { ...CHART_DEFAULTS().scales.y, min:0, max:10 } }
+      scales: { ...CHART_DEFAULTS().scales, y: { ...CHART_DEFAULTS().scales.y, min:0, max:5 } }
     }
   });
 
@@ -3773,7 +3774,7 @@ function renderInsights(curr, prev) {
     <div class="insight-row">
       <div class="insight-icon green"><span class="icon-arrow-up">↑</span></div>
       <div class="insight-body">
-        <div class="insight-text">Intensidad promedio <strong>+${(curr.intensidadProm-prev.intensidadProm).toFixed(1)}</strong>. Sigue progresando con cuidado en la técnica.</div>
+        <div class="insight-text">Dificultad promedio <strong>+${(curr.intensidadProm-prev.intensidadProm).toFixed(1)}</strong>. Sigue progresando con cuidado en la técnica.</div>
       </div>
     </div>`);
 
@@ -3940,7 +3941,7 @@ function buildHumanSummary(s) {
     `  Días:         ${m.diasEntrenados}/7  (${m.consistenciaPct}%)`,
     `  Volumen:      ${m.volumenFuerza.toLocaleString()} kg  ${arrow(t.volumenFuerzaDelta)} ${fmtDelta(t.volumenFuerzaDelta," kg")}`,
     `  Cardio:       ${m.minutosCardio} min  ${arrow(t.minutosCardioDelta)} ${fmtDelta(t.minutosCardioDelta," min")}`,
-    `  Intensidad:   ${m.intensidadPromedio}/10  ${arrow(t.intensidadDelta)} ${fmtDelta(t.intensidadDelta)}`,
+    `  Dificultad:   ${m.intensidadPromedio}/5  ${arrow(t.intensidadDelta)} ${fmtDelta(t.intensidadDelta)}`,
     `  Distribución: F${m.distribucionTipos.fuerza} · C${m.distribucionTipos.cardio} · X${m.distribucionTipos.flexibilidad}`,
     ``,
     `CUERPO`,
@@ -4212,7 +4213,7 @@ document.getElementById("btn-export-csv").addEventListener("click", () => {
   const d = todayISO();
 
   // Ejercicios
-  const ejH = csvRow(["fecha","tipo","nombre","intensidad","detalle","notas"]);
+  const ejH = csvRow(["fecha","tipo","nombre","dificultad","detalle","notas"]);
   const ejBody = state.ejercicios.map(e => {
     let det = "";
     if (e.tipo === "fuerza") {
@@ -4436,7 +4437,7 @@ function loadEjercicioToForm(e) {
   formEjercicio.querySelector("input[name=tipo]").value = e.tipo;
   syncTipoBlocks(e.tipo);
   formEjercicio.querySelector("input[name=nombre]").value = e.nombre || "";
-  intensidadInput.value = e.intensidad || 5;
+  intensidadInput.value = e.intensidad || 3;
   syncIntensidad();
   formEjercicio.querySelector("textarea[name=notas]").value = e.notas || "";
   formEjercicio.querySelector("input[name=tags]").value = (e.tags||[]).map(t=>"#"+t).join(", ");
@@ -4527,7 +4528,7 @@ function exitEdit(kind) {
     formEjercicio.querySelector("input[name=tipo]").value = "fuerza";
     syncTipoBlocks("fuerza");
     syncIsometricUI("");
-    intensidadInput.value = 5; syncIntensidad();
+    intensidadInput.value = 3; syncIntensidad();
     seriesList.innerHTML = ""; addSerieRow();
     velocidadesList.innerHTML = ""; addVelocidadRow();
   }

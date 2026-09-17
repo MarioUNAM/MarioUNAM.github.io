@@ -339,46 +339,6 @@ input:focus-visible, textarea:focus-visible, select:focus-visible {
   border: none;
 }
 
-/* ── Light Section Utilities ──────────────────────────────── */
-.light-section {
-  background-color: #f8fafc;
-  color: #0f172a;
-}
-.light-section-alt {
-  background-color: #f1f5f9;
-  color: #0f172a;
-}
-.light-card {
-  background: #ffffff;
-  border: 1px solid #e2e8f0;
-  transition: border-color 0.25s ease, box-shadow 0.25s ease, transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
-}
-.light-card:hover {
-  border-color: rgba(76, 214, 251, 0.4);
-  box-shadow: 0 8px 30px rgba(76, 214, 251, 0.08);
-  transform: translateY(-4px);
-}
-.light-badge {
-  background: rgba(76, 214, 251, 0.08);
-  color: #0891b2;
-  border: 1px solid rgba(76, 214, 251, 0.25);
-  border-radius: 999px;
-  padding: 0.35rem 0.9rem;
-  font-size: 0.8125rem;
-  font-family: 'Space Grotesk', sans-serif;
-  font-weight: 600;
-  transition: background 0.2s, color 0.2s;
-}
-.light-badge:hover {
-  background: rgba(76, 214, 251, 0.18);
-  color: #0e7490;
-}
-
-/* ── Counter Numbers ──────────────────────────────────────── */
-.counter-number {
-  transition: all 0.1s ease;
-}
-
 /* ── CTA Buttons ──────────────────────────────────────────── */
 .btn-primary {
   background: #4cd6fb;
@@ -452,39 +412,6 @@ input:focus-visible, textarea:focus-visible, select:focus-visible {
   border-color: #58d6f1;
 }
 
-/* ── Project Cards ────────────────────────────────────────── */
-.project-card {
-  background: #ffffff;
-  border: 1px solid #e2e8f0;
-  border-radius: 0.75rem;
-  overflow: hidden;
-  transition: box-shadow 0.3s ease, transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.3s ease;
-  display: flex;
-  flex-direction: column;
-}
-.project-card:hover {
-  box-shadow: 0 16px 40px rgba(76, 214, 251, 0.1);
-  transform: translateY(-5px);
-  border-color: rgba(76, 214, 251, 0.35);
-}
-.project-card .project-thumb {
-  height: 180px;
-  background: linear-gradient(135deg, #f1f5f9 0%, #e2e8f0 100%);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  overflow: hidden;
-}
-.project-card .project-thumb img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  transition: transform 0.5s ease;
-}
-.project-card:hover .project-thumb img {
-  transform: scale(1.05);
-}
-
 /* ── Certification Cards ──────────────────────────────────── */
 .cert-card {
   background: #1f2a3d;
@@ -520,35 +447,6 @@ input:focus-visible, textarea:focus-visible, select:focus-visible {
   opacity: 1;
 }
 
-/* ── Hobbies Cards ────────────────────────────────────────── */
-.hobby-card {
-  background: #ffffff;
-  border-radius: 0.75rem;
-  padding: 2rem;
-  text-align: center;
-  border: 1px solid #e2e8f0;
-  transition: border-color 0.3s ease, box-shadow 0.3s ease, transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
-}
-.hobby-card:hover {
-  border-color: rgba(76, 214, 251, 0.4);
-  box-shadow: 0 8px 24px rgba(76, 214, 251, 0.08);
-  transform: translateY(-4px);
-}
-.hobby-card .hobby-icon {
-  width: 4rem;
-  height: 4rem;
-  background: rgba(76, 214, 251, 0.08);
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  margin: 0 auto 1rem;
-  transition: background 0.3s ease;
-}
-.hobby-card:hover .hobby-icon {
-  background: rgba(76, 214, 251, 0.16);
-}
-
 /* ── Status Indicator ─────────────────────────────────────── */
 @keyframes status-pulse {
   0%, 100% { opacity: 1; transform: scale(1); box-shadow: 0 0 0 0 rgba(76, 214, 251, 0.4); }
@@ -568,8 +466,7 @@ input:focus-visible, textarea:focus-visible, select:focus-visible {
 @media (prefers-reduced-motion: reduce) {
   .reveal, .reveal-left, .reveal-right,
   .reveal-stagger > *,
-  .card-lift, .light-card, .project-card,
-  .cert-card, .hobby-card {
+  .card-lift, .cert-card, .hobby-card-v2 {
     transition: none !important;
     transform: none !important;
     opacity: 1 !important;

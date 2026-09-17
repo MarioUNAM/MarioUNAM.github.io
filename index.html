@@ -1035,7 +1035,7 @@
     </div>
     <div class="flex flex-col sm:flex-row justify-between items-center gap-4 border-t border-outline-variant/10 pt-6">
       <p class="font-label text-xs tracking-widest text-outline uppercase text-center">
-        &copy; 2026 Mario Huarte Nolasco | MDM Consultant
+        &copy; <span id="footer-year">2026</span> Mario Huarte Nolasco | MDM Consultant
       </p>
       <!-- Footer: lang + theme mirror -->
       <div class="flex items-center gap-3">
@@ -1105,6 +1105,10 @@
      INIT: i18n, theme, scroll, animations
   ════════════════════════════════════════════ */
   document.addEventListener('DOMContentLoaded', function () {
+
+    /* ── Footer year (siempre vigente) ──────────────────── */
+    var footerYear = document.getElementById('footer-year');
+    if (footerYear) footerYear.textContent = new Date().getFullYear();
 
     /* ── i18n ────────────────────────────────────────────── */
     // El idioma ya lo resolvió el script del head (URL > storage > navegador)

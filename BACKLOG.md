@@ -50,9 +50,9 @@ Esfuerzo: S (< 1 h) · M (1–4 h) · L (> 4 h).
 | ~~3.6~~ ✅ | Sin CSP. GitHub Pages no permite headers, pero sí `<meta http-equiv="Content-Security-Policy">`. | Todos los HTML | P1 | M **HECHO** (CSP por meta en todas las páginas de raíz/projects/404) |
 | ~~3.7~~ ✂️ | SW hace `skipWaiting()` en `install`: anula el prompt "Nueva versión" y fuerza recarga. Cache-first ilimitado para cualquier GET incluidos terceros. | `tracker/sw.js:37, 66-75` | P1 | S |
 | ~~3.8~~ ✂️ | CSV export sin protección contra inyección de fórmulas (`=`, `+`, `-`, `@`). | `tracker/index.html:4206-4209` | P2 | S |
-| 3.9 | Teléfono personal y WhatsApp en claro (`wa.me/525562293691`) — recolectable por bots. El correo ya está en el CV, el teléfono no está en el portafolio principal. | `studio/index.html:596-599` | P1 | **Decisión**: mantener, ofuscar (JS), o solo correo. |
+| ~~3.9~~ ⏸ | Teléfono personal y WhatsApp en claro (`wa.me/525562293691`) — recolectable por bots. El correo ya está en el CV, el teléfono no está en el portafolio principal. | `studio/index.html:596-599` | P1 | **Decisión**: mantener, ofuscar (JS), o solo correo. **DECIDIDO** (Mario mantiene el teléfono público) |
 | ~~3.10~~ ✅ | `localStorage.getItem/setItem` sin `try/catch` en todos los scripts de tema: `SecurityError` si el storage está bloqueado (Safari privado, iframes). | `index.html:7`, `studio/*:12`, `industrial:2992` | P2 | S **HECHO** (helpers lsGet/lsSet con try/catch en raíz, theme-toggle.js y subpage.js) |
-| 3.11 | Formspree sin CAPTCHA (solo honeypot). 50 envíos/mes: el spam puede agotar la cuota. | `index.html:863` | P2 | S |
+| ~~3.11~~ ⏸ | Formspree sin CAPTCHA (solo honeypot). 50 envíos/mes: el spam puede agotar la cuota. | `index.html:863` | P2 | S **DESCARTADO** (decisión de Mario 2026-09-30: se queda solo con honeypot) |
 | 3.12 | Formulario de contacto de la demo industrial simula envío exitoso sin enviar nada; teléfonos/correos inventados pueden pertenecer a terceros reales. | `studio/lab/industrial/index.html:1544-1570, 2038-2066` | P2 | S |
 
 ---
@@ -85,7 +85,7 @@ Esfuerzo: S (< 1 h) · M (1–4 h) · L (> 4 h).
 | ~~5.3~~ ✅ | JSON-LD Person sin `hasCredential`, `knowsAbout`, `hasOccupation`. Studio sin JSON-LD (Organization/Service) ni `twitter:card`; industrial sin OG ni favicon. | `index.html:52`, `studio/*` | P2 | S **HECHO** (hasOccupation en JSON-LD (Studio: ver agente)) |
 | ~~5.4~~ ✅ | Sin `404.html` personalizado. | raíz | P2 | S **HECHO** (404.html bilingüe) |
 | ~~5.5~~ ✅ | `sitemap.xml` sin `lastmod`. | `sitemap.xml` | P2 | S **HECHO** (lastmod 2026-09-30) |
-| 5.6 ⏸ | Material Symbols desde Google Fonts (se mantiene: el subset local no cubre los iconos nuevos y self-hostear la fuente completa pesa ~3 MB; decisión: seguir con Google Fonts) en 6 páginas (tercero, sin SRI) aunque existe `assets/fonts/material-symbols-outlined.woff2`. | `index.html:74`, `studio/*` | P2 | M |
+| ~~5.6~~ ⏸ | Material Symbols desde Google Fonts (se mantiene: el subset local no cubre los iconos nuevos y self-hostear la fuente completa pesa ~3 MB; decisión: seguir con Google Fonts) en 6 páginas (tercero, sin SRI) aunque existe `assets/fonts/material-symbols-outlined.woff2`. | `index.html:74`, `studio/*` | P2 | M |
 | ~~5.7~~ ✅ | `assets/audio/senora.mp3` (712 KB, 5 % del repo) sin ninguna referencia. | `assets/audio/` | P2 | S **HECHO** (senora.mp3 eliminado) |
 | 5.8 | Contraste límite en Studio: `--c-muted #7a7a72` sobre `#fafaf7` ≈ 4.1:1 en texto de 10–12 px. | `studio/index.html:52-60` | P2 | S |
 | 5.9 | Industrial: `<label>` sin `for`, modal sin `role="dialog"`, sin `<main>`, 55 `onclick` inline. | `studio/lab/industrial/index.html:1232, 1453-1498` | P2 | M |
@@ -97,14 +97,14 @@ Esfuerzo: S (< 1 h) · M (1–4 h) · L (> 4 h).
 
 | # | Propuesta | Por qué encaja con el CV | Esf. |
 |---|---|---|---|
-| 6.1 | **Caso de estudio "Extensiones Java sobre EBX"**: reglas de negocio, validaciones custom, servicio REST, automatización de stewardship. Con fragmentos de código genéricos (sin datos de cliente). | Es el bullet 3 del CV y hoy no hay ningún caso que lo muestre. | M |
+| ~~6.1~~ ⏸ | **Caso de estudio "Extensiones Java sobre EBX"**: reglas de negocio, validaciones custom, servicio REST, automatización de stewardship. Con fragmentos de código genéricos (sin datos de cliente). | Es el bullet 3 del CV y hoy no hay ningún caso que lo muestre. | M **DESCARTADO** (decisión de Mario: no se preparan páginas de contenido adicionales) |
 | ~~6.2~~ ✅ | **Caso "Data Quality en EBX: Match & Merge + Cleansing"** (hecho con el caso real de telecom): reglas de validación, constraints, correcciones, KPIs en Power BI/SQL. | Bullets 2 y 5 del CV. Puede sustituir al caso de Airflow (2.8). | M |
-| 6.3 | **Sección "Cómo trabajo un proyecto MDM"** (discovery → modelo → Data Spaces/Datasets → workflows → integración SnapLogic → KPIs). Diagrama SVG inline. | Convierte competencias del CV en narrativa verificable. | M |
-| 6.4 | **Demo interactiva "EBX Data Model Explorer"** en JS puro: un modelo multi-dominio de ejemplo (cliente/producto/proveedor) navegable, con reglas de validación en vivo. | Muestra dominio técnico sin exponer NDA. Sustituye al "UI Lab" roto (4.1). | L |
+| ~~6.3~~ ⏸ | **Sección "Cómo trabajo un proyecto MDM"** (discovery → modelo → Data Spaces/Datasets → workflows → integración SnapLogic → KPIs). Diagrama SVG inline. | Convierte competencias del CV en narrativa verificable. | M **DESCARTADO** (decisión de Mario) |
+| ~~6.4~~ ⏸ | **Demo interactiva "EBX Data Model Explorer"** en JS puro: un modelo multi-dominio de ejemplo (cliente/producto/proveedor) navegable, con reglas de validación en vivo. | Muestra dominio técnico sin exponer NDA. Sustituye al "UI Lab" roto (4.1). | L **DESCARTADO** (decisión de Mario) |
 | ~~6.5~~ ✅ | `hasCredential` en JSON-LD + enlaces de verificación en las 4 tarjetas. | Único certificado explícito en el CV. | S |
 | ~~6.6~~ ✅ | Sección sectores (ya listados en bio y bullets; falta bloque visual): Retail · Manufactura · Servicios financieros, con 1 línea de qué tipo de dominio maestro se gobernó en cada uno. | Bullet 6 del CV. | S **HECHO** (bloque "Sectores atendidos" en Skills) |
 | ~~6.7~~ ✅ | Descarga de CV con versión ES y EN, y `lastUpdated` visible. PDF actualizado 2026-09-30 (solo EN). | Coherencia con el sitio bilingüe. | S **HECHO** (CV ES (PDF+DOCX); el botón del hero elige según idioma) |
-| 6.8 | Blog técnico mínimo (Markdown → HTML con GitHub Actions o Jekyll nativo de Pages): notas sobre EBX, SnapLogic, MDM. | Sustituye a los "insights" ficticios con contenido real. **Decisión**: ¿tienes tiempo de escribir? | L |
+| ~~6.8~~ ⏸ | Blog técnico mínimo (Markdown → HTML con GitHub Actions o Jekyll nativo de Pages): notas sobre EBX, SnapLogic, MDM. | Sustituye a los "insights" ficticios con contenido real. **Decisión**: ¿tienes tiempo de escribir? | L **DESCARTADO** (decisión de Mario: no habrá blog) |
 | ~~6.9~~ ✂️ | Tracker: mostrar aviso "el prompt envía datos de salud a un LLM externo" y permitir excluir la nota libre. | Higiene de privacidad. | S |
 
 ---
@@ -133,7 +133,7 @@ Esfuerzo: S (< 1 h) · M (1–4 h) · L (> 4 h).
 5. ~~Caso Observability (2.8)~~ Reemplazado por caso real de telecom (6.2 cubierto).
 6. ~~Studio (2.9, 3.9)~~ Se mantiene enlazado, casos etiquetados como ilustrativos, teléfono público se conserva (decisión de Mario).
 7. ~~Tracker~~ Eliminado del repo el 2026-09-30 por decisión de Mario (lo mantiene mejor construido en otro lugar). Los ítems ✂️ dejan de aplicar.
-8. **Blog** (6.8): ¿te comprometes a escribir contenido? Si no, no vale la pena la infraestructura.
+8. ~~Blog (6.8)~~ Descartado.
 9. ~~CV PDF~~ ✅ Regenerado el 2026-09-30 (PDF + DOCX en `assets/docs/`, fuentes en `scripts/`). Detalle histórico: Actualizar: años de experiencia (dice 4, sitio 5), educación 2017–2024 (título y cédula 2024), sección Certifications (4), sectores (agregar farmacéutico y telecomunicaciones), dominios (cliente, empleado, ubicaciones), integraciones (Oracle, PostgreSQL, SQL Server, AWS), volumen 200M. Subir PDF nuevo a `assets/docs/`.
 
 ---

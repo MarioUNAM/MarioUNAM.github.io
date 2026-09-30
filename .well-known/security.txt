@@ -1,0 +1,5 @@
+# Contacto para reportar problemas de seguridad de este sitio (RFC 9116)
+Contact: mailto:mario_huarte@outlook.com
+Preferred-Languages: es, en
+Canonical: https://mariounam.github.io/.well-known/security.txt
+Expires: 2027-09-30T00:00:00.000Z

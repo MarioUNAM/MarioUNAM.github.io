@@ -15,7 +15,7 @@ Esfuerzo: S (< 1 h) · M (1–4 h) · L (> 4 h).
 | `/` (`index.html`, `assets/`) | Portafolio principal ES/EN, dark/light | HTML + Tailwind compilado + vanilla JS (`i18n.js`, `theme-toggle.js`, `animations.js`) | Producción |
 | `/projects/*.html` (4) | Casos de estudio marcados SYNTHETIC | Mismo stack, i18n inline por página | Producción |
 | `/studio/` (5 páginas) | Mahuno Studio: rebranding para PyMEs (negocio paralelo) | Tailwind compilado propio + `main.css` raíz; `lab/industrial` usa Tailwind CDN + Leaflet + Chart.js | Placeholder (casos ficticios) |
-| `/tracker/` | PWA personal de fitness, offline, localStorage | 1 archivo de 4 845 líneas + `sw.js` + Chart.js CDN | Uso personal |
+| ~~`/tracker/`~~ | Eliminado 2026-09-30 (vive en otro repo) | — | — |
 | `contact-*.html` | Páginas post-formulario (Formspree) | Tailwind compilado | Producción |
 | Infra | GitHub Pages desde `main`, sin CI, sin 404, sin CSP | `package.json` solo compila Tailwind | — |
 
@@ -42,16 +42,16 @@ Esfuerzo: S (< 1 h) · M (1–4 h) · L (> 4 h).
 
 | # | Hallazgo | Dónde | Prio | Esf. |
 |---|---|---|---|---|
-| 3.1 | **XSS almacenado en tracker vía import JSON**: `doImport` no valida esquema; campos (`tipo`, `intensidad`, `reps`, `kg`, `id`, `momento`, `peso`…) van a `innerHTML` sin escapar. | `tracker/index.html:4250-4316`, sinks `2982-3190` | P0 | M |
-| 3.2 | **XSS almacenado vía análisis IA pegado**: `focos` y `proximaMedicion.fechaSugerida` se insertan sin escapar y `validateIAResponse` no los revisa. | `tracker/index.html:4097, 4149` | P0 | S |
-| 3.3 | **Pérdida de datos**: import sin `version` correcta → en la siguiente carga `loadState` reseedea y borra todo. `replace` no rellena `meta/perfil/objetivos`. | `tracker/index.html:1990, 4344` | P0 | S |
-| 3.4 | Chart.js desde CDN **sin SRI** ni `crossorigin`, y el SW lo precachea (un CDN comprometido queda persistido). | `tracker/index.html:24`, `tracker/sw.js:29`, `studio/lab/industrial/index.html:48` | P1 | S |
+| ~~3.1~~ ✂️ | **XSS almacenado en tracker vía import JSON**: `doImport` no valida esquema; campos (`tipo`, `intensidad`, `reps`, `kg`, `id`, `momento`, `peso`…) van a `innerHTML` sin escapar. | `tracker/index.html:4250-4316`, sinks `2982-3190` | P0 | M |
+| ~~3.2~~ ✂️ | **XSS almacenado vía análisis IA pegado**: `focos` y `proximaMedicion.fechaSugerida` se insertan sin escapar y `validateIAResponse` no los revisa. | `tracker/index.html:4097, 4149` | P0 | S |
+| ~~3.3~~ ✂️ | **Pérdida de datos**: import sin `version` correcta → en la siguiente carga `loadState` reseedea y borra todo. `replace` no rellena `meta/perfil/objetivos`. | `tracker/index.html:1990, 4344` | P0 | S |
+| ~~3.4~~ ✅ | Chart.js desde CDN **sin SRI** ni `crossorigin`, y el SW lo precachea (un CDN comprometido queda persistido). | `tracker/index.html:24`, `tracker/sw.js:29`, `studio/lab/industrial/index.html:48` | P1 | S **HECHO** (Chart.js y Leaflet self-hosted en assets/vendor (sin CDN)) |
 | 3.5 | Tailwind CDN en producción (no admite SRI, desaconsejado por Tailwind). | `studio/lab/industrial/index.html:25` | P1 | M |
-| 3.6 | Sin CSP. GitHub Pages no permite headers, pero sí `<meta http-equiv="Content-Security-Policy">`. | Todos los HTML | P1 | M |
-| 3.7 | SW hace `skipWaiting()` en `install`: anula el prompt "Nueva versión" y fuerza recarga. Cache-first ilimitado para cualquier GET incluidos terceros. | `tracker/sw.js:37, 66-75` | P1 | S |
-| 3.8 | CSV export sin protección contra inyección de fórmulas (`=`, `+`, `-`, `@`). | `tracker/index.html:4206-4209` | P2 | S |
+| ~~3.6~~ ✅ | Sin CSP. GitHub Pages no permite headers, pero sí `<meta http-equiv="Content-Security-Policy">`. | Todos los HTML | P1 | M **HECHO** (CSP por meta en todas las páginas de raíz/projects/404) |
+| ~~3.7~~ ✂️ | SW hace `skipWaiting()` en `install`: anula el prompt "Nueva versión" y fuerza recarga. Cache-first ilimitado para cualquier GET incluidos terceros. | `tracker/sw.js:37, 66-75` | P1 | S |
+| ~~3.8~~ ✂️ | CSV export sin protección contra inyección de fórmulas (`=`, `+`, `-`, `@`). | `tracker/index.html:4206-4209` | P2 | S |
 | 3.9 | Teléfono personal y WhatsApp en claro (`wa.me/525562293691`) — recolectable por bots. El correo ya está en el CV, el teléfono no está en el portafolio principal. | `studio/index.html:596-599` | P1 | **Decisión**: mantener, ofuscar (JS), o solo correo. |
-| 3.10 | `localStorage.getItem/setItem` sin `try/catch` en todos los scripts de tema: `SecurityError` si el storage está bloqueado (Safari privado, iframes). | `index.html:7`, `studio/*:12`, `industrial:2992` | P2 | S |
+| ~~3.10~~ ✅ | `localStorage.getItem/setItem` sin `try/catch` en todos los scripts de tema: `SecurityError` si el storage está bloqueado (Safari privado, iframes). | `index.html:7`, `studio/*:12`, `industrial:2992` | P2 | S **HECHO** (helpers lsGet/lsSet con try/catch en raíz, theme-toggle.js y subpage.js) |
 | 3.11 | Formspree sin CAPTCHA (solo honeypot). 50 envíos/mes: el spam puede agotar la cuota. | `index.html:863` | P2 | S |
 | 3.12 | Formulario de contacto de la demo industrial simula envío exitoso sin enviar nada; teléfonos/correos inventados pueden pertenecer a terceros reales. | `studio/lab/industrial/index.html:1544-1570, 2038-2066` | P2 | S |
 
@@ -64,15 +64,15 @@ Esfuerzo: S (< 1 h) · M (1–4 h) · L (> 4 h).
 | ~~4.1~~ ✅ | Nav "UI Lab" apunta a `#ui-showcases`, sección que no existe (desktop y móvil). | `index.html:102, 147` | S **HECHO** (enlace UI Lab retirado) |
 | ~~4.2~~ ✅ | `<title data-i18n="meta.title">` se sobreescribe a "MAHUNO" al cargar JS; se pierde el título SEO "MAHUNO — Mario Huarte Nolasco". `<meta name="description" data-i18n>` recibe `textContent`, no `content` (sin efecto). | `index.html:19-21`, `i18n.js:4`, `applyI18n` en `index.html:1009` | S **HECHO** (title fijo, meta content) |
 | ~~4.3~~ ✅ | Colisiones de claves legacy que cambian el texto visible: `nav.history` → "History" (debería ser "Experience"), `contact.networks.heading` → "Professional networks" (encima de la card LinkedIn), `contact.form.description` reemplaza el copy de contacto, `skills.technical.title` → "Technical Skills" (HTML dice "Core Engineering"). | `index.html:432, 815, 785, 378` | S **HECHO** (claves legacy purgadas) |
-| 4.4 | `index.html` no autodetecta idioma del navegador (default `en`); las páginas de proyecto sí. Un reclutador mexicano ve inglés. | `index.html:12` vs `projects/*:11` | S |
-| 4.5 | Textos sin i18n: "Hire Me", "Skip to main content", frases del typing, "CDMX / Remote", "System Status". | `index.html:124, 76, 1063` | S |
+| ~~4.4~~ ✅ | `index.html` no autodetecta idioma del navegador (default `en`); las páginas de proyecto sí. Un reclutador mexicano ve inglés. | `index.html:12` vs `projects/*:11` | S **HECHO** (autodetección navigator.language + ?lang= en index) |
+| ~~4.5~~ ✅ | Textos sin i18n: "Hire Me", "Skip to main content", frases del typing, "CDMX / Remote", "System Status". | `index.html:124, 76, 1063` | S **HECHO** (hero.status, about.location, hero.typing por idioma) |
 | ~~4.6~~ ✅ | Footer "© 2024" en index vs "© 2026" en proyectos. | `index.html:930`, `projects/*` | S **HECHO** (© 2026) |
 | ~~4.7~~ ✅ | `<style></style>` vacío en head. | `index.html:83` | S |
 | 4.8 | Studio: `inset-x: 0` no es CSS válido (es clase Tailwind); el menú móvil no se estira. | `studio/index.html:98`, `lab:65`, `casos:65` | S |
 | 4.9 | Studio lab: `querySelector(location.hash)` sin try/catch; un hash inválido rompe el script del menú. | `studio/lab/index.html:434-436` | S |
 | 4.10 | Industrial: calculadora dice USD pero aplica IVA 16 %; no valida longitud negativa; fórmula ISO 286 aproximada sin aclararlo en UI; tiles OSM con `{s}.` desaconsejado. | `industrial:1730, 2235, 2253, 2663` | M |
-| 4.11 | Tracker: sin guarda `typeof Chart` si falla el CDN → Dashboard roto. `apple-touch-icon` en SVG (iOS no lo soporta, existe el PNG 180). | `tracker/index.html:17, 3460` | S |
-| 4.12 | `TRACKER_RECORDS.md` desactualizado (clave, versión, campos, líneas). | `tracker/TRACKER_RECORDS.md` | S |
+| ~~4.11~~ ✂️ | Tracker: sin guarda `typeof Chart` si falla el CDN → Dashboard roto. `apple-touch-icon` en SVG (iOS no lo soporta, existe el PNG 180). | `tracker/index.html:17, 3460` | S |
+| ~~4.12~~ ✂️ | `TRACKER_RECORDS.md` desactualizado (clave, versión, campos, líneas). | `tracker/TRACKER_RECORDS.md` | S |
 
 ---
 
@@ -81,12 +81,12 @@ Esfuerzo: S (< 1 h) · M (1–4 h) · L (> 4 h).
 | # | Hallazgo | Dónde | Prio | Esf. |
 |---|---|---|---|---|
 | ~~5.1~~ ✅ | `maximum-scale=1, user-scalable=no` bloquea zoom (WCAG 1.4.4). | `index.html:18`, todas las de `studio/` | P1 | S **HECHO** (zoom permitido) |
-| 5.2 | Sin `hreflang` ni URL por idioma: Google indexa solo el inglés. Opciones: `?lang=es` + hreflang, o `/es/` estático generado. | `index.html` | P2 | M |
-| 5.3 | JSON-LD Person sin `hasCredential`, `knowsAbout`, `hasOccupation`. Studio sin JSON-LD (Organization/Service) ni `twitter:card`; industrial sin OG ni favicon. | `index.html:52`, `studio/*` | P2 | S |
-| 5.4 | Sin `404.html` personalizado. | raíz | P2 | S |
-| 5.5 | `sitemap.xml` sin `lastmod`. | `sitemap.xml` | P2 | S |
-| 5.6 | Material Symbols desde Google Fonts en 6 páginas (tercero, sin SRI) aunque existe `assets/fonts/material-symbols-outlined.woff2`. | `index.html:74`, `studio/*` | P2 | M |
-| 5.7 | `assets/audio/senora.mp3` (712 KB, 5 % del repo) sin ninguna referencia. | `assets/audio/` | P2 | S |
+| ~~5.2~~ ✅ | Sin `hreflang` ni URL por idioma: Google indexa solo el inglés. Opciones: `?lang=es` + hreflang, o `/es/` estático generado. | `index.html` | P2 | M **HECHO** (hreflang en/es/x-default con ?lang=es) |
+| ~~5.3~~ ✅ | JSON-LD Person sin `hasCredential`, `knowsAbout`, `hasOccupation`. Studio sin JSON-LD (Organization/Service) ni `twitter:card`; industrial sin OG ni favicon. | `index.html:52`, `studio/*` | P2 | S **HECHO** (hasOccupation en JSON-LD (Studio: ver agente)) |
+| ~~5.4~~ ✅ | Sin `404.html` personalizado. | raíz | P2 | S **HECHO** (404.html bilingüe) |
+| ~~5.5~~ ✅ | `sitemap.xml` sin `lastmod`. | `sitemap.xml` | P2 | S **HECHO** (lastmod 2026-09-30) |
+| 5.6 ⏸ | Material Symbols desde Google Fonts (se mantiene: el subset local no cubre los iconos nuevos y self-hostear la fuente completa pesa ~3 MB; decisión: seguir con Google Fonts) en 6 páginas (tercero, sin SRI) aunque existe `assets/fonts/material-symbols-outlined.woff2`. | `index.html:74`, `studio/*` | P2 | M |
+| ~~5.7~~ ✅ | `assets/audio/senora.mp3` (712 KB, 5 % del repo) sin ninguna referencia. | `assets/audio/` | P2 | S **HECHO** (senora.mp3 eliminado) |
 | 5.8 | Contraste límite en Studio: `--c-muted #7a7a72` sobre `#fafaf7` ≈ 4.1:1 en texto de 10–12 px. | `studio/index.html:52-60` | P2 | S |
 | 5.9 | Industrial: `<label>` sin `for`, modal sin `role="dialog"`, sin `<main>`, 55 `onclick` inline. | `studio/lab/industrial/index.html:1232, 1453-1498` | P2 | M |
 | 5.10 | Subpáginas de Studio sin botón de tema; don-peter sin menú móvil. | `studio/lab`, `casos`, `don-peter` | P3 | S |
@@ -102,10 +102,10 @@ Esfuerzo: S (< 1 h) · M (1–4 h) · L (> 4 h).
 | 6.3 | **Sección "Cómo trabajo un proyecto MDM"** (discovery → modelo → Data Spaces/Datasets → workflows → integración SnapLogic → KPIs). Diagrama SVG inline. | Convierte competencias del CV en narrativa verificable. | M |
 | 6.4 | **Demo interactiva "EBX Data Model Explorer"** en JS puro: un modelo multi-dominio de ejemplo (cliente/producto/proveedor) navegable, con reglas de validación en vivo. | Muestra dominio técnico sin exponer NDA. Sustituye al "UI Lab" roto (4.1). | L |
 | ~~6.5~~ ✅ | `hasCredential` en JSON-LD + enlaces de verificación en las 4 tarjetas. | Único certificado explícito en el CV. | S |
-| 6.6 | Sección sectores (ya listados en bio y bullets; falta bloque visual): Retail · Manufactura · Servicios financieros, con 1 línea de qué tipo de dominio maestro se gobernó en cada uno. | Bullet 6 del CV. | S |
-| 6.7 | Descarga de CV con versión ES y EN, y `lastUpdated` visible. PDF actualizado 2026-09-30 (solo EN). | Coherencia con el sitio bilingüe. | S |
+| ~~6.6~~ ✅ | Sección sectores (ya listados en bio y bullets; falta bloque visual): Retail · Manufactura · Servicios financieros, con 1 línea de qué tipo de dominio maestro se gobernó en cada uno. | Bullet 6 del CV. | S **HECHO** (bloque "Sectores atendidos" en Skills) |
+| ~~6.7~~ ✅ | Descarga de CV con versión ES y EN, y `lastUpdated` visible. PDF actualizado 2026-09-30 (solo EN). | Coherencia con el sitio bilingüe. | S **HECHO** (CV ES (PDF+DOCX); el botón del hero elige según idioma) |
 | 6.8 | Blog técnico mínimo (Markdown → HTML con GitHub Actions o Jekyll nativo de Pages): notas sobre EBX, SnapLogic, MDM. | Sustituye a los "insights" ficticios con contenido real. **Decisión**: ¿tienes tiempo de escribir? | L |
-| 6.9 | Tracker: mostrar aviso "el prompt envía datos de salud a un LLM externo" y permitir excluir la nota libre. | Higiene de privacidad. | S |
+| ~~6.9~~ ✂️ | Tracker: mostrar aviso "el prompt envía datos de salud a un LLM externo" y permitir excluir la nota libre. | Higiene de privacidad. | S |
 
 ---
 
@@ -113,14 +113,14 @@ Esfuerzo: S (< 1 h) · M (1–4 h) · L (> 4 h).
 
 | # | Propuesta | Esf. |
 |---|---|---|
-| 7.1 | **CI en GitHub Actions**: `html-validate`, `lychee` (enlaces rotos), Lighthouse CI (a11y ≥ 90), `npm run build:css:all` y fallo si `tailwind.css` compilado difiere del commit. | M |
-| 7.2 | Purgar `i18n.js`: dejar solo claves usadas; script `node scripts/i18n-check.js` que falle en CI si hay claves usadas sin definir o definidas sin usar. | M |
-| 7.3 | Tracker: separar `index.html` en `app.css` + módulos JS (`storage`, `render`, `ia`, `import`); tests con Vitest + jsdom para `calcBodyFat`, `calcCalorias`, `validateIAResponse`, `doImport`, migraciones. | L |
+| ~~7.1~~ ✅ | **CI en GitHub Actions**: `html-validate`, `lychee` (enlaces rotos), Lighthouse CI (a11y ≥ 90), `npm run build:css:all` y fallo si `tailwind.css` compilado difiere del commit. | M **HECHO** (ci.yml: i18n-check, check-links, html-validate, build CSS sin diff) |
+| ~~7.2~~ ✅ | Purgar `i18n.js`: dejar solo claves usadas; script `node scripts/i18n-check.js` que falle en CI si hay claves usadas sin definir o definidas sin usar. | M **HECHO** (scripts/i18n-check.js en CI) |
+| ~~7.3~~ ✂️ | Tracker: separar `index.html` en `app.css` + módulos JS (`storage`, `render`, `ia`, `import`); tests con Vitest + jsdom para `calcBodyFat`, `calcCalorias`, `validateIAResponse`, `doImport`, migraciones. | L |
 | 7.4 | Studio: mover tokens `--c-*`, botones, cards y nav a `tailwind-input.css` con `@layer components`; un solo `menu.js` compartido. Migrar industrial al CSS compilado. | M |
-| 7.5 | Unificar el motor i18n de `projects/*.html` (4 copias inline) con `assets/js/i18n.js`. | M |
-| 7.6 | README: quitar referencias a números de línea (se desactualizan en cada commit) y documentar `BACKLOG.md`. | S |
-| 7.7 | `security.txt` (`/.well-known/security.txt`) con contacto. | S |
-| 7.8 | Dependabot para `tailwindcss` en `package.json`. | S |
+| ~~7.5~~ ✅ | Unificar el motor i18n de `projects/*.html` (4 copias inline) con `assets/js/i18n.js`. | M **HECHO** (assets/js/subpage.js compartido por projects/*, contact-* ) |
+| ~~7.6~~ ✅ | README: quitar referencias a números de línea (se desactualizan en cada commit) y documentar `BACKLOG.md`. | S **HECHO** (README sin números de línea; documenta CI, vendor y subpage.js) |
+| ~~7.7~~ ✅ | `security.txt` (`/.well-known/security.txt`) con contacto. | S **HECHO** (.well-known/security.txt) |
+| ~~7.8~~ ✅ | Dependabot para `tailwindcss` en `package.json`. | S **HECHO** (.github/dependabot.yml) |
 
 ---
 
@@ -132,7 +132,7 @@ Esfuerzo: S (< 1 h) · M (1–4 h) · L (> 4 h).
 4. ~~Skills (2.7)~~ Databricks y Spring Boot retirados; skills = Key Competencies del CV.
 5. ~~Caso Observability (2.8)~~ Reemplazado por caso real de telecom (6.2 cubierto).
 6. ~~Studio (2.9, 3.9)~~ Se mantiene enlazado, casos etiquetados como ilustrativos, teléfono público se conserva (decisión de Mario).
-7. **Tracker** (sitemap, robots): es una app personal de salud indexada públicamente y enlazada en el sitemap. ¿Quitar del sitemap + `noindex`, o moverla a otro repo?
+7. ~~Tracker~~ Eliminado del repo el 2026-09-30 por decisión de Mario (lo mantiene mejor construido en otro lugar). Los ítems ✂️ dejan de aplicar.
 8. **Blog** (6.8): ¿te comprometes a escribir contenido? Si no, no vale la pena la infraestructura.
 9. ~~CV PDF~~ ✅ Regenerado el 2026-09-30 (PDF + DOCX en `assets/docs/`, fuentes en `scripts/`). Detalle histórico: Actualizar: años de experiencia (dice 4, sitio 5), educación 2017–2024 (título y cédula 2024), sección Certifications (4), sectores (agregar farmacéutico y telecomunicaciones), dominios (cliente, empleado, ubicaciones), integraciones (Oracle, PostgreSQL, SQL Server, AWS), volumen 200M. Subir PDF nuevo a `assets/docs/`.
 

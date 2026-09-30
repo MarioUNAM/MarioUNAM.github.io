@@ -45,6 +45,8 @@
       'hero.name.last': 'NOLASCO',
       'hero.cta.work': 'View My Work',
       'hero.resume': 'Download CV',
+      'hero.status': 'System Status: Active',
+      'hero.typing': 'MDM Consultant|TIBCO EBX Developer|Java Developer|Data Governance & Quality|SnapLogic Integrator|Match & Merge Specialist',
 
       /* ── About ────────────────────────────────────────────── */
       'about.label': 'The Precision Architect',
@@ -59,6 +61,7 @@
       'about.stat.sectors': 'Industry Sectors',
       'about.stat.degree': 'Computer Engineer',
       'about.stat.university': 'UNAM · Degree & license 2024',
+      'about.location': '· CDMX / Remote',
 
       /* ── Filosofía ────────────────────────────────────────── */
       'philosophy.headline': 'Precision Over Noise.',
@@ -95,6 +98,12 @@
       'skills.gov.cleansing': 'Data Cleansing',
       'skills.gov.reference': 'Reference Data Management',
       'skills.gov.edm': 'Enterprise Data Management',
+      'skills.sectors.title': 'Sectors delivered',
+      'skills.sector.retail': 'Retail',
+      'skills.sector.manufacturing': 'Manufacturing',
+      'skills.sector.finance': 'Financial Services',
+      'skills.sector.pharma': 'Pharma',
+      'skills.sector.telecom': 'Telecom',
 
       /* ── Experiencia (orden cronológico inverso, igual al CV) ── */
       'exp.heading': 'Professional',
@@ -226,6 +235,8 @@
       'hero.name.last': 'NOLASCO',
       'hero.cta.work': 'Ver mi trabajo',
       'hero.resume': 'Descargar CV',
+      'hero.status': 'Estado del sistema: Activo',
+      'hero.typing': 'Consultor MDM|Desarrollador TIBCO EBX|Desarrollador Java|Gobierno y Calidad de Datos|Integrador SnapLogic|Especialista en Match & Merge',
 
       /* ── About ────────────────────────────────────────────── */
       'about.label': 'El Arquitecto de Precisión',
@@ -240,6 +251,7 @@
       'about.stat.sectors': 'Sectores industriales',
       'about.stat.degree': 'Ingeniero en computación',
       'about.stat.university': 'UNAM · Título y cédula 2024',
+      'about.location': '· CDMX / Remoto',
 
       /* ── Filosofía ────────────────────────────────────────── */
       'philosophy.headline': 'Precisión sobre el ruido.',
@@ -276,6 +288,12 @@
       'skills.gov.cleansing': 'Limpieza de datos',
       'skills.gov.reference': 'Gestión de datos de referencia',
       'skills.gov.edm': 'Enterprise Data Management',
+      'skills.sectors.title': 'Sectores atendidos',
+      'skills.sector.retail': 'Retail',
+      'skills.sector.manufacturing': 'Manufactura',
+      'skills.sector.finance': 'Servicios financieros',
+      'skills.sector.pharma': 'Farmacéutico',
+      'skills.sector.telecom': 'Telecomunicaciones',
 
       /* ── Experiencia ──────────────────────────────────────── */
       'exp.heading': 'Trayectoria',

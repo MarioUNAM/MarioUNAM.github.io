@@ -17,12 +17,15 @@
   'use strict';
 
   const STORAGE_KEY = 'theme';
+  // Acceso a storage tolerante a fallos (Safari privado / storage bloqueado)
+  const lsGet = k => { try { return localStorage.getItem(k); } catch (e) { return null; } };
+  const lsSet = (k, v) => { try { localStorage.setItem(k, v); } catch (e) {} };
   const DARK        = 'dark';
   const LIGHT       = 'light';
 
   /* ── 1. Resolve initial theme (runs at parse time via inline boot) ── */
   function resolveTheme() {
-    const stored = localStorage.getItem(STORAGE_KEY);
+    const stored = lsGet(STORAGE_KEY);
     if (stored === DARK || stored === LIGHT) return stored;
     return window.matchMedia('(prefers-color-scheme: light)').matches ? LIGHT : DARK;
   }
@@ -33,7 +36,7 @@
     root.classList.remove(DARK, LIGHT);
     root.classList.add(theme);
     root.setAttribute('data-theme', theme);
-    localStorage.setItem(STORAGE_KEY, theme);
+    lsSet(STORAGE_KEY, theme);
   }
 
   /* ── 3. Update all toggle buttons' state ──────────────────────── */
@@ -73,7 +76,7 @@
 
     /* React to OS preference changes if user never set a manual pref */
     window.matchMedia('(prefers-color-scheme: light)').addEventListener('change', e => {
-      if (!localStorage.getItem(STORAGE_KEY)) {
+      if (!lsGet(STORAGE_KEY)) {
         applyTheme(e.matches ? LIGHT : DARK);
         syncButtons(e.matches ? LIGHT : DARK);
       }

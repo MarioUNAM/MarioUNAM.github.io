@@ -38,7 +38,7 @@ Busca la clave correspondiente y cambia el valor en **ambos idiomas**.
 | Experiencia — fechas y bullets (3 roles, igual al CV) | `exp.r1.*` (MDM Consultant), `exp.r2.*` (Intern), `exp.r3.*` (PROTECO) |
 | Casos de estudio — disclaimer y badge | `caseStudies.disclaimer`, `caseStudies.badge`, `caseStudies.cta` |
 | Casos de estudio — títulos y descripciones | `works.modal.rpa/analytics/mdm/cleansing.*` |
-| Certificaciones | hardcodeadas en `index.html` (líneas ~601–636) |
+| Certificaciones | tarjetas en `index.html`, bloque `<!-- CERTIFICATIONS -->` (nombre, emisor, año y enlace de verificación); etiquetas `cert.*` en i18n.js |
 | Journey (timeline de vida) | `journey.m1` … `journey.m5.*` |
 | Hobbies | `hobbies.h1/h2/h3.*` |
 | Testimonios | `testimonials.items.N.*` — **hoy no existen** (se retiraron los ficticios); mientras no haya `testimonials.items.0.quote` la sección se oculta sola |
@@ -47,22 +47,7 @@ Busca la clave correspondiente y cambia el valor en **ambos idiomas**.
 
 ### Estructura HTML — `index.html`
 
-Cada sección tiene un comentario de bloque:
-
-```
-<!-- ══════ HERO ══════ -->        línea ~175
-<!-- ══════ ABOUT ══════ -->       línea ~234
-<!-- ══════ PHILOSOPHY ══════ -->  línea ~326
-<!-- ══════ SKILLS ══════ -->      línea ~361
-<!-- ══════ EXPERIENCE ══════ --> línea ~425
-<!-- ══════ CASE STUDIES ══════ -->línea ~489
-<!-- ══════ CERTIFICATIONS ══════ -->línea ~591
-<!-- ══════ JOURNEY ══════ -->     línea ~647
-<!-- ══════ HOBBIES ══════ -->     línea ~714
-<!-- ══════ TESTIMONIALS ══════ -->línea ~755
-<!-- ══════ CONTACT ══════ -->     línea ~774
-<!-- ══════ FOOTER ══════ -->      línea ~895
-```
+Cada sección empieza con un comentario de bloque `<!-- ══════ NOMBRE ══════ -->` (HERO, ABOUT, PHILOSOPHY, SKILLS, EXPERIENCE, CASE STUDIES, CERTIFICATIONS, JOURNEY, HOBBIES, TESTIMONIALS, CONTACT, FOOTER). Búscalo con Ctrl+F; no se documentan números de línea porque cambian en cada commit.
 
 ### Estilos / colores — `assets/css/main.css`
 
@@ -86,19 +71,7 @@ Los tokens de color están al inicio del archivo como variables CSS:
 }
 ```
 
-Componentes específicos que puedes tocar:
-
-| Componente | Clase CSS | Línea aprox. |
-|-----------|-----------|-------------|
-| Botón primario | `.btn-primary` | ~301 |
-| Botón outline | `.btn-outline` | ~323 |
-| Skill pills | `.skill-pill`, `.skill-pill-secondary` | ~345 |
-| Cert cards | `.cert-card` | ~407 |
-| Hobby cards | `.hobby-card-v2` | ~808 |
-| Testimonial card | `.testimonial-card` | ~610 |
-| Journey timeline | `.journey-track`, `.journey-item` | ~677 |
-| Principios | `.principle-card` | ~862 |
-| Disponibilidad | `.availability-badge` | ~908 |
+Componentes específicos que puedes tocar (busca la clase en `main.css`): `.btn-primary`, `.btn-outline`, `.skill-pill`, `.skill-pill-secondary`, `.cert-card`, `.hobby-card-v2`, `.testimonial-card`, `.journey-track` / `.journey-item`, `.principle-card`, `.availability-badge`, `.badge-synthetic` / `.badge-real`.
 
 ### Foto de perfil — `assets/img/me.jpg`
 
@@ -158,7 +131,7 @@ projects/
 └── telecom-customer-cleansing.html   # caso REAL anonimizado (telecom, Match & Merge)
 ```
 
-Cada página usa **Tailwind (CDN)** + `assets/css/main.css` con i18n inline ES/EN, dark/light toggle y FOUC prevention.
+Cada página usa el **Tailwind compilado** + `assets/css/main.css`. El diccionario ES/EN va inline en `window.I18N`; la lógica (idioma, tema, storage seguro) es compartida en `assets/js/subpage.js`. Las páginas de contacto y `404.html` usan el mismo script.
 
 > **Nota:** `projects/beca_industrial.html` se movió a `studio/lab/industrial/index.html` como demo navegable del **Mahuno Studio Laboratorio**.
 
@@ -182,19 +155,6 @@ studio/
 ```
 
 El demo industrial (`studio/lab/industrial/`) es un demo conceptual extendido: 7 sub-páginas SPA, Leaflet (mapa de cobertura), Chart.js (KPIs), tabla comparativa de materiales, calculadora de costos, simulador de tolerancias ISO 286, glosario, búsqueda Ctrl+K, modo presentación e impresión.
-
----
-
-## Tracker personal — `tracker/index.html`
-
-PWA standalone sin tracking ni servidor. Datos solo en `localStorage`.
-
-- Schema v3 con migración suave desde v2.
-- Cálculo de calorías diarias (Mifflin-St Jeor 1990) con perfil ampliado (sexo, altura, edad, actividad, objetivo).
-- Asistente IA: genera prompt con contexto + valida/aplica análisis JSON devuelto por LLM externo.
-- Charts theme-aware (Chart.js) que reaccionan al toggle dark/light.
-- SW (`sw.js`) con update prompt y offline fallback explícito.
-- Atajos teclado: `Ctrl+S` export, `1-5` cambiar tab, `Esc` cancelar edit, `/` focus search.
 
 ---
 
@@ -232,7 +192,6 @@ git commit -m "descripción del cambio"
 git push origin main
 ```
 
-Después de subir cambios a `tracker/index.html` o `tracker/sw.js`, sube `CACHE_VERSION` en `tracker/sw.js` para que el prompt de "Nueva versión" aparezca en sesiones abiertas.
 
 ---
 
@@ -243,20 +202,35 @@ python -m http.server 8080
 # Abrir http://localhost:8080
 ```
 
-> El tracker usa `crypto.randomUUID()` que requiere HTTPS o localhost. Servir con `python -m http.server` funciona; abrir `tracker/index.html` directo desde el filesystem (`file://`) usará el fallback casero de `uid()`.
 
 ---
 
 ## Pruebas
 
 ```bash
-# Smoke test de sintaxis JS inline (no rompe nada)
-node -e "const fs=require('fs');const html=fs.readFileSync('tracker/index.html','utf8');const re=/<script(?![^>]*\bsrc=)[^>]*>([\s\S]*?)<\/script>/g;let m,ok=0;while((m=re.exec(html))){new Function(m[1]);ok++;}console.log('inline scripts ok:',ok);"
+node scripts/i18n-check.js     # claves i18n coherentes
+node scripts/check-links.js    # enlaces internos
+npx html-validate@11 index.html 404.html contact-*.html projects/*.html "studio/**/*.html"
 ```
 
 Para Lighthouse local: Chrome DevTools → Lighthouse → run en mobile + desktop.
 
----
+## Librerías de terceros
+
+Chart.js 4.4.1 y Leaflet 1.9.4 se sirven desde `assets/vendor/` (copiadas del paquete npm), sin CDN. Cada página lleva una `Content-Security-Policy` por `<meta>` que solo permite su propio origen (y Google Fonts / Formspree donde aplica).
+
+## CI
+
+`.github/workflows/ci.yml` corre en cada push y PR:
+
+| Paso | Script |
+|------|--------|
+| Claves i18n coherentes (usadas vs definidas, EN vs ES) | `node scripts/i18n-check.js` |
+| Enlaces internos válidos (href/src apuntan a archivos existentes) | `node scripts/check-links.js` |
+| HTML válido | `npx html-validate@11` con `.htmlvalidate.json` |
+| CSS de Tailwind compilado sin cambios pendientes | `npm run build:css:all` + `git diff --exit-code` |
+
+Corre los tres primeros en local antes de subir; si cambias clases de Tailwind, recompila y sube el CSS.
 
 ## Backlog
 

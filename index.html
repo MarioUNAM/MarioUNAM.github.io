@@ -4,17 +4,24 @@
   <!-- ── FOUC prevention: read theme/lang before paint ── -->
   <script>
     (function(){
-      var t=localStorage.getItem('theme');
+      // Tema e idioma antes del primer paint. Storage con try/catch (Safari privado).
+      var t=null,l=null;
+      try{t=localStorage.getItem('theme');l=localStorage.getItem('lang');}catch(e){}
       var preferLight=window.matchMedia('(prefers-color-scheme:light)').matches;
       var theme=(t==='dark'||t==='light')?t:(preferLight?'light':'dark');
       document.documentElement.classList.remove('dark','light');
       document.documentElement.classList.add(theme);
-      var l=localStorage.getItem('lang')||'en';
+      // Prioridad: ?lang= en la URL (hreflang) > preferencia guardada > idioma del navegador
+      var q=/[?&]lang=(es|en)\b/.exec(location.search);
+      if(q){l=q[1];try{localStorage.setItem('lang',l);}catch(e){}}
+      l=(l==='es'||l==='en')?l:((navigator.language||'en').toLowerCase().startsWith('es')?'es':'en');
       document.documentElement.setAttribute('lang',l);
     })();
   </script>
 
   <meta charset="utf-8" />
+  <!-- CSP por meta (GitHub Pages no permite headers). 'unsafe-inline' es necesario por los scripts inline; bloquea orígenes externos no listados. -->
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data:; connect-src 'self' https://formspree.io; form-action 'self' https://formspree.io; base-uri 'self'; object-src 'none'" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title data-i18n="meta.title">MAHUNO — Mario Huarte Nolasco</title>
   <meta name="description" data-i18n="meta.description"
@@ -24,6 +31,10 @@
 
   <!-- Canonical -->
   <link rel="canonical" href="https://mariounam.github.io/" />
+  <!-- hreflang: mismo documento, idioma por parámetro ?lang= (lo lee el script de arriba) -->
+  <link rel="alternate" hreflang="en" href="https://mariounam.github.io/" />
+  <link rel="alternate" hreflang="es" href="https://mariounam.github.io/?lang=es" />
+  <link rel="alternate" hreflang="x-default" href="https://mariounam.github.io/" />
 
   <!-- Open Graph -->
   <meta property="og:type" content="profile" />
@@ -49,7 +60,7 @@
 
   <!-- JSON-LD: Person -->
   <script type="application/ld+json">
-  {"@context":"https://schema.org","@type":"Person","name":"Mario Huarte Nolasco","jobTitle":"MDM Consultant | TIBCO EBX Developer","url":"https://mariounam.github.io/","image":"https://mariounam.github.io/assets/img/me.jpg","alumniOf":{"@type":"CollegeOrUniversity","name":"Universidad Nacional Autónoma de México","sameAs":"https://www.unam.mx/"},"worksFor":{"@type":"Organization","name":"Alldatum Business"},"address":{"@type":"PostalAddress","addressLocality":"Ciudad de México","addressCountry":"MX"},"hasCredential":[{"@type":"EducationalOccupationalCredential","name":"Microsoft Azure Fundamentals (AZ-900)","credentialCategory":"certification","dateCreated":"2020-06"},{"@type":"EducationalOccupationalCredential","name":"Google Data Analytics Professional Certificate","credentialCategory":"certification","dateCreated":"2023-03","url":"https://coursera.org/share/ef3d02dd5eafc5509d940ecdb1be61b2"},{"@type":"EducationalOccupationalCredential","name":"SnapLogic Integrator Certification","credentialCategory":"certification","dateCreated":"2023-08-30","url":"https://verify.skilljar.com/c/ewn4n2hoqxh5"},{"@type":"EducationalOccupationalCredential","name":"Diplomado Desarrollo de Habilidades Directivas (240 h)","credentialCategory":"diploma","dateCreated":"2024-03-22","recognizedBy":{"@type":"Organization","name":"Facultad de Ingeniería, UNAM"}},{"@type":"EducationalOccupationalCredential","name":"Google AI","credentialCategory":"certification","dateCreated":"2026-08","recognizedBy":{"@type":"Organization","name":"Google"}}],"knowsAbout":["Master Data Management","TIBCO EBX","Java","Data Governance","Data Quality","Match and Merge","SnapLogic","SQL"],"sameAs":["https://www.linkedin.com/in/mario-huarte-nolasco-874436202/","https://github.com/MarioUNAM"]}
+  {"@context":"https://schema.org","@type":"Person","name":"Mario Huarte Nolasco","jobTitle":"MDM Consultant | TIBCO EBX Developer","url":"https://mariounam.github.io/","image":"https://mariounam.github.io/assets/img/me.jpg","alumniOf":{"@type":"CollegeOrUniversity","name":"Universidad Nacional Autónoma de México","sameAs":"https://www.unam.mx/"},"worksFor":{"@type":"Organization","name":"Alldatum Business"},"address":{"@type":"PostalAddress","addressLocality":"Ciudad de México","addressCountry":"MX"},"hasCredential":[{"@type":"EducationalOccupationalCredential","name":"Microsoft Azure Fundamentals (AZ-900)","credentialCategory":"certification","dateCreated":"2020-06"},{"@type":"EducationalOccupationalCredential","name":"Google Data Analytics Professional Certificate","credentialCategory":"certification","dateCreated":"2023-03","url":"https://coursera.org/share/ef3d02dd5eafc5509d940ecdb1be61b2"},{"@type":"EducationalOccupationalCredential","name":"SnapLogic Integrator Certification","credentialCategory":"certification","dateCreated":"2023-08-30","url":"https://verify.skilljar.com/c/ewn4n2hoqxh5"},{"@type":"EducationalOccupationalCredential","name":"Diplomado Desarrollo de Habilidades Directivas (240 h)","credentialCategory":"diploma","dateCreated":"2024-03-22","recognizedBy":{"@type":"Organization","name":"Facultad de Ingeniería, UNAM"}},{"@type":"EducationalOccupationalCredential","name":"Google AI","credentialCategory":"certification","dateCreated":"2026-08","recognizedBy":{"@type":"Organization","name":"Google"}}],"hasOccupation":{"@type":"Occupation","name":"MDM Consultant | TIBCO EBX Developer","occupationLocation":{"@type":"City","name":"Mexico City"},"skills":"TIBCO EBX, Java, SQL, SnapLogic, Data Governance, Data Quality, Match & Merge"},"knowsAbout":["Master Data Management","TIBCO EBX","Java","Data Governance","Data Quality","Match and Merge","SnapLogic","SQL"],"sameAs":["https://www.linkedin.com/in/mario-huarte-nolasco-874436202/","https://github.com/MarioUNAM"]}
   </script>
 
   <!-- Favicon -->
@@ -134,7 +145,7 @@
 </nav>
 
 <!-- Mobile nav overlay -->
-<div id="mobile-nav" class="fixed inset-0 z-[60] bg-surface-container-low backdrop-blur-xl flex-col items-center justify-center gap-8 font-headline text-2xl uppercase font-bold tracking-widest" style="display:none" aria-label="Mobile navigation">
+<div id="mobile-nav" role="navigation" class="fixed inset-0 z-[60] bg-surface-container-low backdrop-blur-xl flex-col items-center justify-center gap-8 font-headline text-2xl uppercase font-bold tracking-widest" style="display:none" aria-label="Mobile navigation">
   <button id="nav-close" class="absolute top-6 right-6 text-on-surface-variant hover:text-primary transition-colors" aria-label="Close menu">
     <span class="material-symbols-outlined text-3xl">close</span>
   </button>
@@ -195,7 +206,7 @@
         <span data-i18n="hero.cta.work">View My Work</span>
         <span class="material-symbols-outlined text-base">arrow_forward</span>
       </a>
-      <a href="assets/docs/Mario_Huarte_CV.pdf" target="_blank" rel="noopener noreferrer" class="btn-outline w-full sm:w-auto justify-center">
+      <a href="assets/docs/Mario_Huarte_CV.pdf" data-cv-en="assets/docs/Mario_Huarte_CV.pdf" data-cv-es="assets/docs/Mario_Huarte_CV_ES.pdf" target="_blank" rel="noopener noreferrer" class="btn-outline w-full sm:w-auto justify-center">
         <span data-i18n="hero.resume">Download CV</span>
         <span class="material-symbols-outlined text-base">description</span>
       </a>
@@ -206,7 +217,7 @@
   <div class="absolute bottom-10 left-10 hidden xl:flex flex-col gap-2 opacity-40">
     <div class="flex items-center gap-2">
       <span class="w-1 h-1 rounded-full bg-primary status-dot"></span>
-      <span class="font-label text-[10px] tracking-widest uppercase">System Status: Active</span>
+      <span class="font-label text-[10px] tracking-widest uppercase" data-i18n="hero.status">System Status: Active</span>
     </div>
     <div class="flex items-center gap-2">
       <span class="w-1 h-1 rounded-full bg-primary/60"></span>
@@ -265,7 +276,7 @@
           <span class="availability-dot"></span>
           <span data-i18n="contact.availability">Open to full-time, freelance &amp; consulting</span>
         </span>
-        <span class="font-label text-xs text-outline">· CDMX / Remote</span>
+        <span class="font-label text-xs text-outline" data-i18n="about.location">· CDMX / Remote</span>
       </div>
 
       <!-- Stats (datos confirmados por Mario, 2026-09) -->
@@ -426,6 +437,21 @@
         </ul>
       </div>
     </div>
+
+    <!-- Sectores atendidos (5 implementaciones MDM) -->
+    <div class="bg-surface-container-low p-8 mt-8 reveal">
+      <h3 class="font-label text-xs font-bold tracking-[0.2em] uppercase text-on-surface-variant mb-6 flex items-center gap-2">
+        <span class="w-2 h-[2px] bg-tertiary inline-block"></span>
+        <span data-i18n="skills.sectors.title">Sectors delivered</span>
+      </h3>
+      <ul role="list" aria-label="Industry sectors" class="flex flex-wrap gap-3">
+        <li><span class="skill-pill" data-i18n="skills.sector.retail">Retail</span></li>
+        <li><span class="skill-pill" data-i18n="skills.sector.manufacturing">Manufacturing</span></li>
+        <li><span class="skill-pill" data-i18n="skills.sector.finance">Financial Services</span></li>
+        <li><span class="skill-pill" data-i18n="skills.sector.pharma">Pharma</span></li>
+        <li><span class="skill-pill" data-i18n="skills.sector.telecom">Telecom</span></li>
+      </ul>
+    </div>
   </div>
 </section>
 
@@ -447,8 +473,9 @@
       </h2>
     </div>
 
-    <ol aria-label="Professional experience" class="relative pl-8 space-y-10">
-      <div class="absolute left-0 top-0 h-full w-[2px] bg-outline-variant/30"></div>
+    <div class="relative">
+    <div class="absolute left-0 top-0 h-full w-[2px] bg-outline-variant/30" aria-hidden="true"></div>
+    <ol aria-label="Professional experience" class="pl-8 space-y-10">
 
       <!-- Rol 1 -->
       <li class="relative group reveal">
@@ -530,6 +557,7 @@
         </div>
       </li>
     </ol>
+    </div>
   </div>
 </section>
 
@@ -1069,7 +1097,8 @@
   document.addEventListener('DOMContentLoaded', function () {
 
     /* ── i18n ────────────────────────────────────────────── */
-    var currentLang = localStorage.getItem('lang') || 'en';
+    // El idioma ya lo resolvió el script del head (URL > storage > navegador)
+    var currentLang = document.documentElement.getAttribute('lang') || 'en';
     var T = window.TRANSLATIONS || {};
 
     function t(key) {
@@ -1078,7 +1107,7 @@
 
     function applyI18n(lang) {
       currentLang = lang;
-      localStorage.setItem('lang', lang);
+      try { localStorage.setItem('lang', lang); } catch (e) {}
       document.documentElement.setAttribute('lang', lang);
 
       document.querySelectorAll('[data-i18n]').forEach(function (el) {
@@ -1100,6 +1129,10 @@
       });
       document.querySelectorAll('[data-tooltip-i18n]').forEach(function (el) {
         el.setAttribute('data-tooltip', t(el.dataset.tooltipI18n));
+      });
+      // Enlace al CV en el idioma activo
+      document.querySelectorAll('[data-cv-en]').forEach(function (a) {
+        a.setAttribute('href', lang === 'es' ? a.dataset.cvEs : a.dataset.cvEn);
       });
       syncLangButtons(lang);
     }
@@ -1172,7 +1205,8 @@
     }
 
     /* ── Typing effect (respeta prefers-reduced-motion) ──── */
-    var phrases = ['MDM Consultant','TIBCO EBX Developer','Java Developer','Data Governance & Quality','SnapLogic Integrator','Match & Merge Specialist'];
+    // Frases del efecto de escritura, por idioma (clave hero.typing, separadas por |)
+    var phrases = t('hero.typing').split('|');
     var pi=0, ci=0, del=false;
     var tgt = document.getElementById('typing-target');
     var prefersReducedMotion = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;

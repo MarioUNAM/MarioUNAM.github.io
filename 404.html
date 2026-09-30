@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html class="dark" lang="es">
+<head>
+  <!-- FOUC prevention: tema e idioma antes del primer paint (con try/catch: Safari privado bloquea storage) -->
+  <script>
+    (function(){
+      var t=null,l=null;
+      try{t=localStorage.getItem('theme');l=localStorage.getItem('lang');}catch(e){}
+      var preferLight=window.matchMedia('(prefers-color-scheme:light)').matches;
+      var theme=(t==='dark'||t==='light')?t:(preferLight?'light':'dark');
+      document.documentElement.classList.remove('dark','light');
+      document.documentElement.classList.add(theme);
+      l=l||((navigator.language||'en').toLowerCase().startsWith('es')?'es':'en');
+      document.documentElement.setAttribute('lang',l);
+      document.documentElement.setAttribute('data-lang',l);
+    })();
+  </script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; font-src 'self'; img-src 'self' data:; base-uri 'self'; object-src 'none'; form-action 'self'">
+  <title data-i18n="title">Page not found · Mario Huarte Nolasco</title>
+  <meta name="robots" content="noindex">
+  <link rel="icon" type="image/png" sizes="32x32" href="/assets/img/favicon-32x32.png">
+  <link rel="stylesheet" href="/assets/css/tailwind.css">
+  <link rel="stylesheet" href="/assets/css/main.css">
+</head>
+<body class="font-body bg-surface text-on-surface min-h-screen flex items-center justify-center px-6">
+  <main class="max-w-xl w-full text-center">
+    <p class="font-label text-primary text-sm tracking-[0.3em] uppercase mb-4">404</p>
+    <h1 class="font-headline text-3xl md:text-4xl font-extrabold tracking-tight mb-4" data-i18n="heading">This page doesn't exist.</h1>
+    <p class="text-on-surface-variant text-base mb-10 leading-relaxed" data-i18n="body">The link may be outdated. Everything worth seeing is on the home page.</p>
+    <a href="/" class="inline-flex items-center justify-center gap-2 px-6 py-3 bg-primary text-on-primary font-label font-bold uppercase tracking-wide text-sm rounded transition-all hover:bg-primary/90" data-i18n="cta">Go to home</a>
+  </main>
+  <script>
+    // Diccionario mínimo EN/ES; el idioma viene de <html data-lang>
+    var I18N={en:{title:'Page not found · Mario Huarte Nolasco',heading:"This page doesn't exist.",body:'The link may be outdated. Everything worth seeing is on the home page.',cta:'Go to home'},
+              es:{title:'Página no encontrada · Mario Huarte Nolasco',heading:'Esta página no existe.',body:'El enlace puede estar desactualizado. Todo lo importante está en la página principal.',cta:'Ir al inicio'}};
+    var d=I18N[document.documentElement.getAttribute('data-lang')]||I18N.en;
+    document.querySelectorAll('[data-i18n]').forEach(function(el){var k=el.getAttribute('data-i18n');if(d[k])el.textContent=d[k];});
+  </script>
+</body>
+</html>

@@ -897,23 +897,25 @@ body, body * {
     width: 2px;
     background: var(--outline-variant);
   }
+  /* Grid 2 columnas: nodo a la izquierda (sobre la línea), año y card a la derecha.
+     Antes era una fila flex y el nodo (margin-left -24px) tapaba el último dígito del año. */
   .journey-item {
-    flex-direction: row;
-    align-items: flex-start;
+    display: grid;
+    grid-template-columns: 14px 1fr;
+    column-gap: 16px;
+    row-gap: 6px;
+    align-items: start;
     flex: none;
-    gap: 16px;
     margin-bottom: 24px;
     width: 100%;
   }
   .journey-item + .journey-item::before { display: none; }
   .journey-node {
-    margin-bottom: 0;
-    flex-shrink: 0;
-    margin-top: 2px;
-    margin-left: -24px;
+    order: -1;            /* primera celda: columna 1, fila 1 */
+    margin: 2px 0 0 -24px; /* centrado sobre la línea vertical (left: 6px) */
   }
-  .journey-card { max-width: 100%; flex: 1; }
-  .journey-year { text-align: left; margin-bottom: 2px; }
+  .journey-year { grid-column: 2; text-align: left; margin-bottom: 0; align-self: center; }
+  .journey-card { grid-column: 2; max-width: 100%; }
 }
 
 /* ══════════════════════════════════════════════════════════

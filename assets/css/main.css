@@ -511,8 +511,9 @@ input:focus-visible, textarea:focus-visible, select:focus-visible {
 .cert-card:hover .cert-icon {
   border-color: rgba(76, 214, 251, 0.4);
 }
+/* Enlace "Verificar credencial": visible siempre (también en touch), resalta en hover */
 .cert-card .cert-arrow {
-  opacity: 0;
+  opacity: 0.7;
   transition: opacity 0.3s ease;
 }
 .cert-card:hover .cert-arrow {
@@ -646,6 +647,12 @@ body, body * {
   color: #f5c542;
 }
 /* Badge tooltip via CSS */
+/* Variante para casos reales anonimizados (verde) */
+.badge-synthetic.badge-real {
+  background: #d9f5e3;
+  color: #0f5a32;
+  border-color: #3fbf7f;
+}
 .badge-synthetic[data-tooltip] {
   position: absolute;
 }

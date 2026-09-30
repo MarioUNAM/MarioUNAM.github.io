@@ -4,7 +4,7 @@
  *
  * Cubre: index.html, contact-success.html, contact-error.html,
  * y projects/{data-analytics-dashboard, rpa-invoice-automation,
- *              ebx-mdm-hub, data-quality-observability}.html.
+ *              ebx-mdm-hub, telecom-customer-cleansing}.html.
  *
  * NO cubre: studio/** (todo el Mahuno Studio usa tokens --c-* propios
  * con Tailwind CDN, incluyendo el demo industrial movido a
@@ -20,7 +20,7 @@ module.exports = {
     './projects/data-analytics-dashboard.html',
     './projects/rpa-invoice-automation.html',
     './projects/ebx-mdm-hub.html',
-    './projects/data-quality-observability.html',
+    './projects/telecom-customer-cleansing.html',
   ],
   darkMode: 'class',
   theme: {

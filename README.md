@@ -35,13 +35,13 @@ Busca la clave correspondiente y cambia el valor en **ambos idiomas**.
 | About — bio y estadísticas | `about.bio`, `about.stat.years/projects/sectors/degree/university` |
 | Filosofía — título y principios | `philosophy.headline`, `philosophy.paragraph`, `philosophy.p1/p2/p3.*` |
 | Skills — títulos de columnas | `skills.heading`, `skills.ecosystem.title`, `skills.governance.title` |
-| Experiencia — fechas y bullets | `exp.r1.*`, `exp.r2.*` |
+| Experiencia — fechas y bullets (3 roles, igual al CV) | `exp.r1.*` (MDM Consultant), `exp.r2.*` (Intern), `exp.r3.*` (PROTECO) |
 | Casos de estudio — disclaimer y badge | `caseStudies.disclaimer`, `caseStudies.badge`, `caseStudies.cta` |
-| Casos de estudio — títulos y descripciones | `works.modal.rpa/analytics/mdm/observability.*` |
+| Casos de estudio — títulos y descripciones | `works.modal.rpa/analytics/mdm/cleansing.*` |
 | Certificaciones | hardcodeadas en `index.html` (líneas ~601–636) |
 | Journey (timeline de vida) | `journey.m1` … `journey.m5.*` |
 | Hobbies | `hobbies.h1/h2/h3.*` |
-| Testimonios | `testimonials.items.0/1/2.*` — si el array está vacío, la sección se oculta sola |
+| Testimonios | `testimonials.items.N.*` — **hoy no existen** (se retiraron los ficticios); mientras no haya `testimonials.items.0.quote` la sección se oculta sola |
 | Contacto | `contact.heading`, `contact.cta.email/linkedin/intro` |
 | Nav y footer | `nav.*` |
 
@@ -104,9 +104,15 @@ Componentes específicos que puedes tocar:
 
 Reemplaza el archivo manteniendo el mismo nombre. Dimensión recomendada: **800×1000 px**, relación 4:5.
 
-### CV descargable — `assets/docs/Mario_Huarte_CV.pdf`
+### CV descargable — `assets/docs/Mario_Huarte_CV.pdf` (+ `.docx`)
 
-Reemplaza el archivo. El enlace en el hero ya apunta a `assets/docs/Mario_Huarte_CV.pdf`.
+Fuentes del CV en `scripts/`: `cv.html` (→ PDF con Chromium/Playwright, tamaño carta) y `build_cv.py` (→ DOCX con python-docx). Edita ambos con el mismo contenido y regenera:
+
+```bash
+cd scripts && python3 build_cv.py            # genera Mario_Huarte_CV.docx
+node -e "require('playwright').chromium.launch().then(async b=>{const p=await b.newPage();await p.goto('file://'+process.cwd()+'/cv.html');await p.pdf({path:'Mario_Huarte_CV.pdf',format:'Letter',printBackground:true,preferCSSPageSize:true});await b.close();})"
+mv Mario_Huarte_CV.* ../assets/docs/
+```
 
 ### Animaciones — `assets/js/animations.js`
 
@@ -136,6 +142,8 @@ Para agregar testimonios reales, edita las claves `testimonials.items.N.*` en `i
 
 Si no hay ninguna clave `testimonials.items.0.quote`, la sección se oculta automáticamente.
 
+> Solo agregar testimonios **reales** con consentimiento escrito de la persona para mostrar su nombre y rol actual. Las tarjetas se construyen con `textContent` (sin `innerHTML`), así que las comillas o `<` del texto no rompen el HTML.
+
 ---
 
 ## Casos de estudio (proyectos)
@@ -147,7 +155,7 @@ projects/
 ├── rpa-invoice-automation.html
 ├── data-analytics-dashboard.html
 ├── ebx-mdm-hub.html
-└── data-quality-observability.html
+└── telecom-customer-cleansing.html   # caso REAL anonimizado (telecom, Match & Merge)
 ```
 
 Cada página usa **Tailwind (CDN)** + `assets/css/main.css` con i18n inline ES/EN, dark/light toggle y FOUC prevention.
@@ -249,6 +257,10 @@ node -e "const fs=require('fs');const html=fs.readFileSync('tracker/index.html',
 Para Lighthouse local: Chrome DevTools → Lighthouse → run en mobile + desktop.
 
 ---
+
+## Backlog
+
+`BACKLOG.md` contiene la auditoría (seguridad, bugs, SEO/a11y, features) priorizada y las decisiones pendientes.
 
 ## Archivos no rastreados
 

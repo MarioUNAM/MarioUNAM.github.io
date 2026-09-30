@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html class="dark" lang="es">
+<head>
+  <!-- FOUC prevention: tema e idioma antes del primer paint -->
+  <script>
+    (function(){
+      var t=localStorage.getItem('theme');
+      var preferLight=window.matchMedia('(prefers-color-scheme:light)').matches;
+      var theme=(t==='dark'||t==='light')?t:(preferLight?'light':'dark');
+      document.documentElement.classList.remove('dark','light');
+      document.documentElement.classList.add(theme);
+      var l=localStorage.getItem('lang')||((navigator.language||'en').toLowerCase().startsWith('es')?'es':'en');
+      document.documentElement.setAttribute('lang',l);
+      document.documentElement.setAttribute('data-lang',l);
+    })();
+  </script>
+
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title data-i18n="meta.title">Customer Data Cleansing &amp; Match/Merge in TIBCO EBX · Mario Huarte Nolasco</title>
+  <meta name="description" data-i18n="meta.desc" content="Real, anonymized MDM case: cleansing rules and Match & Merge for telecom customer data across two Central American countries in TIBCO EBX.">
+
+  <link rel="icon" type="image/png" sizes="32x32" href="../assets/img/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="../assets/img/favicon-16x16.png">
+  <link rel="canonical" href="https://mariounam.github.io/projects/telecom-customer-cleansing.html">
+
+  <!-- Fuentes: self-hosted en main.css -->
+  <link rel="preload" href="../assets/fonts/manrope-variable.woff2" as="font" type="font/woff2" crossorigin>
+
+  <!-- Tailwind compilado (build via 'npm run build:css') -->
+  <link rel="stylesheet" href="../assets/css/tailwind.css">
+
+  <link rel="stylesheet" href="../assets/css/main.css">
+</head>
+<body class="font-body bg-surface text-on-surface min-h-screen">
+
+  <nav class="sticky top-0 z-40 bg-surface/80 backdrop-blur-md border-b border-outline-variant/30">
+    <div class="max-w-4xl mx-auto px-6 py-3 flex items-center justify-between gap-4">
+      <a href="../index.html" class="text-xs font-label uppercase tracking-widest text-on-surface-variant hover:text-primary transition-colors flex items-center gap-1">
+        <svg class="w-3 h-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+        <span data-i18n="back">Back to portfolio</span>
+      </a>
+      <div class="flex items-center gap-2">
+        <button onclick="toggleLang()" class="text-xs font-label font-bold uppercase tracking-wider text-on-surface-variant hover:text-primary transition-colors px-2 py-1 border border-outline-variant/40 rounded">
+          <span id="lang-label">ES</span>
+        </button>
+        <button onclick="toggleTheme()" class="text-on-surface-variant hover:text-primary transition-colors p-1.5 border border-outline-variant/40 rounded" aria-label="Toggle theme">
+          <svg id="theme-ic-moon" class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+          <svg id="theme-ic-sun" class="w-4 h-4 hidden" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/></svg>
+        </button>
+      </div>
+    </div>
+  </nav>
+
+  <main class="max-w-4xl mx-auto px-6 py-12">
+    <span class="inline-block text-[10px] font-label font-bold uppercase tracking-widest text-primary mb-4" data-i18n="tag">Real project · Anonymized · Data Quality / TIBCO EBX</span>
+    <h1 class="font-headline text-4xl md:text-5xl font-extrabold tracking-tight mb-4" data-i18n="heading">
+      Customer data cleansing &amp; Match/Merge for a telecom operator
+    </h1>
+    <p class="text-lg text-on-surface-variant leading-relaxed mb-12" data-i18n="lead">
+      Real MDM engagement (client anonymized under NDA): design of cleansing rules and Match &amp; Merge in TIBCO EBX for customer master data from two Central American countries.
+    </p>
+
+    <section class="mb-10">
+      <h2 class="font-headline text-2xl font-bold mb-4" data-i18n="s1Title">Context</h2>
+      <p class="text-on-surface-variant leading-relaxed" data-i18n="s1Body">Customer records from two countries arrived with inconsistent phone numbers and addresses, duplicates across sources and no shared standard. The goal: return clean, deduplicated customer data to the operator from a single governed hub.</p>
+    </section>
+
+    <section class="mb-10">
+      <h2 class="font-headline text-2xl font-bold mb-4" data-i18n="s2Title">What I did</h2>
+      <ul class="space-y-2 text-on-surface-variant">
+        <li class="flex gap-3"><span class="text-primary">▸</span><span data-i18n="s2.0">Researched the phone numbering plans and postal address structures of both countries to define which standardization rules could be applied to each one.</span></li>
+        <li class="flex gap-3"><span class="text-primary">▸</span><span data-i18n="s2.1">Implemented cleansing rules in TIBCO EBX: validations, constraints and automatic corrections on phone and address fields, with rejection handling for unrecoverable records.</span></li>
+        <li class="flex gap-3"><span class="text-primary">▸</span><span data-i18n="s2.2">Configured Match &amp; Merge: matching policies, similarity thresholds and survivorship rules to consolidate duplicate customers into a golden record.</span></li>
+        <li class="flex gap-3"><span class="text-primary">▸</span><span data-i18n="s2.3">Delivered the cleaned dataset back to the client with quality metrics per country, ready for downstream consumption.</span></li>
+      </ul>
+    </section>
+
+    <section class="mb-10">
+      <h2 class="font-headline text-2xl font-bold mb-4" data-i18n="s3Title">Stack</h2>
+      <ul class="space-y-2 text-on-surface-variant">
+        <li class="flex gap-3"><span class="text-primary">▸</span><span data-i18n="s3.0">TIBCO EBX: data model, Data Spaces, validation rules, Match &amp; Merge add-on</span></li>
+        <li class="flex gap-3"><span class="text-primary">▸</span><span data-i18n="s3.1">SQL for profiling and quality checks</span></li>
+        <li class="flex gap-3"><span class="text-primary">▸</span><span data-i18n="s3.2">Java extensions for country-specific validations</span></li>
+      </ul>
+    </section>
+
+    <section class="mb-10 p-6 border border-outline-variant/40 rounded bg-surface-container-low">
+      <p class="text-xs font-label uppercase tracking-widest text-on-surface-variant mb-2" data-i18n="noteLabel">Confidentiality</p>
+      <p class="text-on-surface-variant leading-relaxed" data-i18n="note">
+        Client name, volumes and specific rules are under NDA with Alldatum Business. The approach described is real; for technical depth request a private session.
+      </p>
+    </section>
+
+    <a href="../index.html#contact"
+       class="inline-flex items-center gap-2 px-6 py-3 bg-primary text-on-primary font-label font-bold uppercase tracking-wide text-sm rounded transition-all hover:shadow-[0_0_24px_rgba(76,214,251,0.25)]"
+       data-i18n="cta">
+      Request technical session
+    </a>
+  </main>
+
+  <footer class="border-t border-outline-variant/30 mt-16 py-6 text-center text-xs text-on-surface-variant">
+    © 2026 Mario Huarte Nolasco
+  </footer>
+
+<script>
+  // Diccionario inline EN/ES de esta página (mismo patrón que el resto de projects/)
+  const I18N = {
+    en: {
+      "meta.title":"Customer Data Cleansing & Match/Merge in TIBCO EBX · Mario Huarte Nolasco",
+      "meta.desc":"Real, anonymized MDM case: cleansing rules and Match & Merge for telecom customer data across two Central American countries in TIBCO EBX.",
+      "tag":"Real project · Anonymized · Data Quality / TIBCO EBX",
+      "heading":"Customer data cleansing & Match/Merge for a telecom operator",
+      "lead":"Real MDM engagement (client anonymized under NDA): design of cleansing rules and Match & Merge in TIBCO EBX for customer master data from two Central American countries.",
+      "s1Title":"Context",
+      "s1Body":"Customer records from two countries arrived with inconsistent phone numbers and addresses, duplicates across sources and no shared standard. The goal: return clean, deduplicated customer data to the operator from a single governed hub.",
+      "s2Title":"What I did",
+      "s2.0":"Researched the phone numbering plans and postal address structures of both countries to define which standardization rules could be applied to each one.",
+      "s2.1":"Implemented cleansing rules in TIBCO EBX: validations, constraints and automatic corrections on phone and address fields, with rejection handling for unrecoverable records.",
+      "s2.2":"Configured Match & Merge: matching policies, similarity thresholds and survivorship rules to consolidate duplicate customers into a golden record.",
+      "s2.3":"Delivered the cleaned dataset back to the client with quality metrics per country, ready for downstream consumption.",
+      "s3Title":"Stack",
+      "s3.0":"TIBCO EBX: data model, Data Spaces, validation rules, Match & Merge add-on",
+      "s3.1":"SQL for profiling and quality checks",
+      "s3.2":"Java extensions for country-specific validations",
+      "noteLabel":"Confidentiality",
+      "note":"Client name, volumes and specific rules are under NDA with Alldatum Business. The approach described is real; for technical depth request a private session.",
+      "cta":"Request technical session",
+      "back":"Back to portfolio"
+    },
+    es: {
+      "meta.title":"Limpieza de datos de clientes y Match/Merge en TIBCO EBX · Mario Huarte Nolasco",
+      "meta.desc":"Caso MDM real y anonimizado: reglas de limpieza y Match & Merge para datos de clientes de telecomunicaciones en dos países centroamericanos con TIBCO EBX.",
+      "tag":"Proyecto real · Anonimizado · Calidad de datos / TIBCO EBX",
+      "heading":"Limpieza de datos de clientes y Match/Merge para una operadora de telecomunicaciones",
+      "lead":"Proyecto MDM real (cliente anonimizado bajo NDA): diseño de reglas de limpieza y Match & Merge en TIBCO EBX para datos maestros de clientes de dos países centroamericanos.",
+      "s1Title":"Contexto",
+      "s1Body":"Los registros de clientes de dos países llegaban con teléfonos y direcciones inconsistentes, duplicados entre fuentes y sin un estándar común. El objetivo: devolver a la operadora datos de clientes limpios y deduplicados desde un hub gobernado.",
+      "s2Title":"Qué hice",
+      "s2.0":"Investigué a fondo los planes de numeración telefónica y la estructura de direcciones postales de ambos países para definir qué reglas de estandarización aplicaban a cada uno.",
+      "s2.1":"Implementé reglas de limpieza en TIBCO EBX: validaciones, restricciones y correcciones automáticas en campos de teléfono y dirección, con manejo de rechazos para registros no recuperables.",
+      "s2.2":"Configuré Match & Merge: políticas de coincidencia, umbrales de similitud y reglas de supervivencia para consolidar clientes duplicados en un golden record.",
+      "s2.3":"Entregué al cliente el dataset limpio con métricas de calidad por país, listo para consumo por sistemas destino.",
+      "s3Title":"Stack",
+      "s3.0":"TIBCO EBX: modelo de datos, Data Spaces, reglas de validación, add-on Match & Merge",
+      "s3.1":"SQL para perfilado y verificaciones de calidad",
+      "s3.2":"Extensiones Java para validaciones específicas por país",
+      "noteLabel":"Confidencialidad",
+      "note":"Nombre del cliente, volúmenes y reglas específicas están bajo NDA con Alldatum Business. El enfoque descrito es real; para profundidad técnica solicita una sesión privada.",
+      "cta":"Solicitar sesión técnica",
+      "back":"Volver al portafolio"
+    }
+  };
+  function applyI18n(lang) {
+    const dict = I18N[lang] || I18N.en;
+    document.querySelectorAll('[data-i18n]').forEach(el => {
+      const key = el.getAttribute('data-i18n');
+      if (dict[key] != null) {
+        if (el.tagName === 'TITLE') document.title = dict[key];
+        else if (el.tagName === 'META') el.setAttribute('content', dict[key]);
+        else el.textContent = dict[key];
+      }
+    });
+    document.getElementById('lang-label').textContent = lang === 'es' ? 'EN' : 'ES';
+  }
+  function toggleLang() {
+    const cur = document.documentElement.getAttribute('data-lang') || 'en';
+    const next = cur === 'es' ? 'en' : 'es';
+    localStorage.setItem('lang', next);
+    document.documentElement.setAttribute('lang', next);
+    document.documentElement.setAttribute('data-lang', next);
+    applyI18n(next);
+  }
+  function toggleTheme() {
+    const cur = document.documentElement.classList.contains('dark') ? 'dark' : 'light';
+    const next = cur === 'dark' ? 'light' : 'dark';
+    document.documentElement.classList.remove('dark','light');
+    document.documentElement.classList.add(next);
+    localStorage.setItem('theme', next);
+    document.getElementById('theme-ic-moon').classList.toggle('hidden', next !== 'dark');
+    document.getElementById('theme-ic-sun').classList.toggle('hidden', next === 'dark');
+  }
+  applyI18n(document.documentElement.getAttribute('data-lang') || 'en');
+  (function(){ const dark = document.documentElement.classList.contains('dark');
+    document.getElementById('theme-ic-moon').classList.toggle('hidden', !dark);
+    document.getElementById('theme-ic-sun').classList.toggle('hidden', dark);
+  })();
+</script>
+
+</body>
+</html>

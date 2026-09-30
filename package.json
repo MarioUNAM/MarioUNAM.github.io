@@ -4,13 +4,15 @@
   "private": true,
   "description": "Static portfolio for Mario Huarte Nolasco. Build pipeline solo necesario para compilar Tailwind a CSS estatico (en lugar del CDN). El sitio funciona sin esto.",
   "scripts": {
-    "build:css":         "tailwindcss -c tailwind.config.js -i assets/css/tailwind-input.css -o assets/css/tailwind.css --minify",
-    "build:css:studio":  "tailwindcss -c studio/tailwind.config.js -i studio/assets/css/tailwind-input.css -o studio/assets/css/tailwind.css --minify",
-    "build:css:all":     "npm run build:css && npm run build:css:studio",
-    "watch:css":         "tailwindcss -c tailwind.config.js -i assets/css/tailwind-input.css -o assets/css/tailwind.css --watch",
-    "watch:css:studio":  "tailwindcss -c studio/tailwind.config.js -i studio/assets/css/tailwind-input.css -o studio/assets/css/tailwind.css --watch"
+    "build:css": "tailwindcss -c tailwind.config.js -i assets/css/tailwind-input.css -o assets/css/tailwind.css --minify",
+    "build:css:studio": "tailwindcss -c studio/tailwind.config.js -i studio/assets/css/tailwind-input.css -o studio/assets/css/tailwind.css --minify",
+    "build:css:industrial": "tailwindcss -c studio/lab/industrial/tailwind.config.js -i studio/assets/css/industrial-input.css -o studio/assets/css/industrial.css --minify",
+    "build:css:all": "npm run build:css && npm run build:css:studio && npm run build:css:industrial",
+    "watch:css": "tailwindcss -c tailwind.config.js -i assets/css/tailwind-input.css -o assets/css/tailwind.css --watch",
+    "watch:css:studio": "tailwindcss -c studio/tailwind.config.js -i studio/assets/css/tailwind-input.css -o studio/assets/css/tailwind.css --watch"
   },
   "devDependencies": {
+    "@tailwindcss/forms": "^0.5.11",
     "tailwindcss": "^3.4.17"
   }
 }

@@ -3,6 +3,7 @@
 <head>
 <meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no"/>
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data:; connect-src 'self'; base-uri 'self'; object-src 'none'; form-action 'self'"/>
 <title>Casos — Mahuno Studio</title>
 <meta name="description" content="Casos reales de rebranding de PyMEs mexicanas. Negocios que dejaron de competir por precio."/>
 <meta name="author" content="Mario Huarte Nolasco"/>
@@ -13,14 +14,22 @@
 <link rel="icon" type="image/png" sizes="32x32" href="../../assets/img/mahunostudiologo/favicon-32x32.png"/>
 <link rel="icon" type="image/png" sizes="16x16" href="../../assets/img/mahunostudiologo/favicon-16x16.png"/>
 <link rel="apple-touch-icon"      sizes="180x180" href="../../assets/img/mahunostudiologo/apple-touch-icon.png"/>
+<link rel="manifest" href="../../assets/img/mahunostudiologo/site.webmanifest"/>
 <meta property="og:title" content="Casos — Mahuno Studio"/>
 <meta property="og:description" content="Casos reales de rebranding de PyMEs mexicanas."/>
 <meta property="og:url" content="https://mariounam.github.io/studio/casos/"/>
 <meta property="og:image" content="https://mariounam.github.io/assets/img/og-card.png"/>
+<meta name="twitter:card" content="summary_large_image"/>
+<meta name="twitter:title" content="Casos — Mahuno Studio"/>
+<meta name="twitter:description" content="Casos reales de rebranding de PyMEs mexicanas."/>
+<meta name="twitter:image" content="https://mariounam.github.io/assets/img/og-card.png"/>
 
 <script>
+  // Helpers de localStorage tolerantes (modo privado / storage bloqueado); los reutiliza studio.js
+  window.lsGet = function(k){ try { return localStorage.getItem(k); } catch(e){ return null; } };
+  window.lsSet = function(k, v){ try { localStorage.setItem(k, v); } catch(e){} };
   (function(){
-    var t = localStorage.getItem('studio.theme');
+    var t = lsGet('studio.theme');
     var preferDark = window.matchMedia && window.matchMedia('(prefers-color-scheme:dark)').matches;
     var theme = (t === 'dark' || t === 'light') ? t : (preferDark ? 'dark' : 'light');
     document.documentElement.setAttribute('data-theme', theme);
@@ -29,7 +38,6 @@
 
 <link rel="preload" href="../../assets/fonts/manrope-variable.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="../../assets/fonts/inter-variable.woff2"   as="font" type="font/woff2" crossorigin>
-<link rel="stylesheet" href="../../assets/css/main.css">
 
 <!-- Tailwind compilado para Mahuno Studio (build via 'npm run build:css:studio') -->
 <link rel="stylesheet" href="../assets/css/tailwind.css">
@@ -40,40 +48,8 @@
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200&display=swap">
 
 <style>
-  :root { --c-paper:#fafaf7; --c-surf:#ffffff; --c-surf2:#f3f2ed; --c-ink:#14140f; --c-dim:#4a4a44;
-          --c-muted:#7a7a72; --c-line:#e6e5dd; --c-accent:#0a7da3; --c-warm:#b8501a; }
-  :root[data-theme="dark"] { --c-paper:#0a0a0b; --c-surf:#141416; --c-surf2:#1c1c1f; --c-ink:#fafaf7;
-          --c-dim:#c8c8c2; --c-muted:#888880; --c-line:#2a2a2d; --c-accent:#4cd6fb; --c-warm:#f5a04a; }
-  html,body{ background:var(--c-paper) !important; color:var(--c-ink) !important; }
-  body{ font-family:'Inter',sans-serif; font-size:15px; line-height:1.7; text-rendering:optimizeLegibility; }
-  ::selection { background:var(--c-accent); color:var(--c-paper); }
-  *:focus-visible { outline:2px solid var(--c-accent); outline-offset:3px; border-radius:3px; }
-  .font-display{ font-family:'Manrope','Inter',sans-serif; letter-spacing:-0.02em; }
-  .glass-nav{ background:color-mix(in srgb, var(--c-paper) 78%, transparent) !important; backdrop-filter:blur(14px) saturate(140%);
-              -webkit-backdrop-filter:blur(14px) saturate(140%); border-bottom:1px solid var(--c-line) !important; }
-  .btn-primary{ display:inline-flex; align-items:center; gap:.5rem; background:var(--c-ink); color:var(--c-paper);
-                padding:.75rem 1.25rem; font-weight:600; font-size:.875rem; border-radius:8px; transition:opacity .18s; box-shadow:0 1px 4px rgba(0,0,0,.1); }
-  .btn-primary:hover{ opacity:.86; }
-  .btn-ghost{ display:inline-flex; align-items:center; gap:.5rem; border:1px solid var(--c-line); color:var(--c-ink);
-              padding:.75rem 1.25rem; font-weight:600; font-size:.875rem; border-radius:8px; transition:background .15s, border-color .15s; }
-  .btn-ghost:hover{ background:var(--c-surf2); border-color:color-mix(in srgb, var(--c-ink) 20%, var(--c-line)); }
-  .card{ background:var(--c-surf); border:1px solid var(--c-line); border-radius:12px; transition:box-shadow .25s, border-color .25s; }
-  .card:hover{ box-shadow:0 6px 28px color-mix(in srgb, var(--c-ink) 8%, transparent); border-color:color-mix(in srgb, var(--c-accent) 35%, var(--c-line)); }
-  .studio-logo { display:block; mix-blend-mode:multiply; }
-  :root[data-theme="dark"] .studio-logo { mix-blend-mode:normal; filter:invert(1) hue-rotate(180deg); }
-  /* Mobile menu */
-  #mobile-menu { position:fixed; top:0; inset-x:0; z-index:39; background:var(--c-paper); border-bottom:1px solid var(--c-line);
-                 padding:5rem 1.5rem 2rem; transform:translateY(-105%); transition:transform .3s cubic-bezier(.2,.8,.2,1); pointer-events:none; }
-  #mobile-menu.open { transform:translateY(0); pointer-events:auto; }
-  .mobile-nav-link { display:block; padding:.875rem 0; font-size:1.125rem; font-weight:600; color:var(--c-dim); border-bottom:1px solid var(--c-line); transition:color .15s; }
-  .mobile-nav-link:hover { color:var(--c-ink); }
-  .hamburger { width:36px; height:36px; display:flex; flex-direction:column; justify-content:center; align-items:center; gap:5.5px;
-               cursor:pointer; border-radius:6px; background:transparent; border:none; transition:background .15s; }
-  .hamburger:hover { background:var(--c-surf2); }
-  .hamburger span { display:block; width:22px; height:2px; background:var(--c-ink); border-radius:2px; transition:transform .25s, opacity .2s; }
-  .hamburger.open span:nth-child(1) { transform:translateY(7.5px) rotate(45deg); }
-  .hamburger.open span:nth-child(2) { opacity:0; }
-  .hamburger.open span:nth-child(3) { transform:translateY(-7.5px) rotate(-45deg); }
+  /* Tokens --c-*, base, botones, cards, nav, menú móvil: en ../assets/css/tailwind-input.css (compartido) */
+  body{ font-size:15px; line-height:1.7; text-rendering:optimizeLegibility; }
 </style>
 </head>
 <body class="font-body antialiased">
@@ -92,6 +68,9 @@
       <a href="../#contacto" class="hover:text-ink transition-colors">Contacto</a>
     </div>
     <div class="flex items-center gap-2">
+      <button id="theme-toggle" class="w-9 h-9 grid place-items-center rounded-md hover:bg-surf2 transition-colors" aria-label="Cambiar tema">
+        <span class="material-symbols-outlined text-[18px]" id="theme-icon">light_mode</span>
+      </button>
       <a href="../" class="hidden sm:inline-flex items-center gap-1.5 text-[12px] font-semibold text-muted hover:text-ink">
         <span class="material-symbols-outlined text-[16px]">arrow_back</span>
         Volver
@@ -104,7 +83,7 @@
 </nav>
 
 <!-- Mobile navigation panel -->
-<div id="mobile-menu" aria-label="Menú de navegación">
+<div id="mobile-menu" role="navigation" aria-label="Menú de navegación">
   <a href="../#metodo"   class="mobile-nav-link">Método</a>
   <a href="../lab/"      class="mobile-nav-link">Laboratorio</a>
   <a href="../#contacto" class="mobile-nav-link">Contacto</a>
@@ -188,28 +167,7 @@
     </div>
   </div>
 </footer>
-<script>
-(function(){
-  var y=document.getElementById('yr'); if(y) y.textContent=new Date().getFullYear();
-  var hamburger = document.getElementById('hamburger');
-  var mobileMenu = document.getElementById('mobile-menu');
-  if (hamburger && mobileMenu) {
-    hamburger.addEventListener('click', function() {
-      var open = mobileMenu.classList.toggle('open');
-      hamburger.classList.toggle('open', open);
-      hamburger.setAttribute('aria-expanded', String(open));
-      document.body.style.overflow = open ? 'hidden' : '';
-    });
-    mobileMenu.querySelectorAll('a').forEach(function(a) {
-      a.addEventListener('click', function() {
-        mobileMenu.classList.remove('open');
-        hamburger.classList.remove('open');
-        hamburger.setAttribute('aria-expanded', 'false');
-        document.body.style.overflow = '';
-      });
-    });
-  }
-})();
-</script>
+<!-- Tema, año y menú móvil (compartido) -->
+<script src="../assets/js/studio.js"></script>
 </body>
 </html>

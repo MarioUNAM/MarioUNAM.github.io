@@ -1,3 +1,124 @@
 @tailwind base;
+
+/* ══════════════════════════════════════════════════════════════
+   Mahuno Studio — tokens y base compartidos por las 4 páginas
+   "papel cálido": studio/, studio/lab/, studio/casos/,
+   studio/casos/don-peter/. (Industrial mantiene sus propios tokens.)
+   Compila con: npm run build:css:studio
+══════════════════════════════════════════════════════════════ */
+@layer base {
+  /* Fuentes self-hosted (antes se heredaban de ../assets/css/main.css de la raíz) */
+  @font-face { font-family: 'Manrope'; font-style: normal; font-weight: 100 900; font-display: swap; src: url('../../../assets/fonts/manrope-variable.woff2') format('woff2'); }
+  @font-face { font-family: 'Inter';   font-style: normal; font-weight: 100 900; font-display: swap; src: url('../../../assets/fonts/inter-variable.woff2') format('woff2'); }
+  /* Design tokens — light ("papel cálido") */
+  :root {
+    --c-paper:  #fafaf7;
+    --c-surf:   #ffffff;
+    --c-surf2:  #f3f2ed;
+    --c-ink:    #14140f;
+    --c-dim:    #4a4a44;
+    --c-muted:  #666660; /* 5.5:1 sobre --c-paper (antes #7a7a72 ≈ 4.1:1) */
+    --c-line:   #e6e5dd;
+    --c-accent: #0a7da3;
+    --c-warm:   #b8501a;
+  }
+  :root[data-theme="dark"] {
+    --c-paper:  #0a0a0b;
+    --c-surf:   #141416;
+    --c-surf2:  #1c1c1f;
+    --c-ink:    #fafaf7;
+    --c-dim:    #c8c8c2;
+    --c-muted:  #888880;
+    --c-line:   #2a2a2d;
+    --c-accent: #4cd6fb;
+    --c-warm:   #f5a04a;
+  }
+
+  html, body { background: var(--c-paper) !important; color: var(--c-ink) !important; }
+  body { font-family: 'Inter', sans-serif; }
+  ::selection { background: var(--c-accent); color: var(--c-paper); }
+  *:focus-visible { outline: 2px solid var(--c-accent); outline-offset: 3px; border-radius: 3px; }
+}
+
 @tailwind components;
+
+@layer components {
+  .font-display { font-family: 'Manrope', 'Inter', sans-serif; letter-spacing: -0.02em; }
+
+  /* Nav glass */
+  .glass-nav {
+    background: color-mix(in srgb, var(--c-paper) 78%, transparent) !important;
+    backdrop-filter: blur(14px) saturate(140%);
+    -webkit-backdrop-filter: blur(14px) saturate(140%);
+    border-bottom: 1px solid var(--c-line) !important;
+  }
+
+  /* Mobile menu (panel deslizante desde arriba) */
+  #mobile-menu {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 39;
+    background: var(--c-paper);
+    border-bottom: 1px solid var(--c-line);
+    padding: 5rem 1.5rem 2rem;
+    transform: translateY(-105%);
+    transition: transform .3s cubic-bezier(.2,.8,.2,1);
+    pointer-events: none;
+  }
+  #mobile-menu.open { transform: translateY(0); pointer-events: auto; }
+  .mobile-nav-link {
+    display: block; padding: .875rem 0;
+    font-size: 1.125rem; font-weight: 600;
+    color: var(--c-dim); border-bottom: 1px solid var(--c-line);
+    transition: color .15s;
+  }
+  .mobile-nav-link:hover { color: var(--c-ink); }
+
+  /* Hamburger */
+  .hamburger {
+    width: 36px; height: 36px;
+    display: flex; flex-direction: column; justify-content: center; align-items: center; gap: 5.5px;
+    cursor: pointer; border-radius: 6px; background: transparent; border: none;
+    transition: background .15s;
+  }
+  .hamburger:hover { background: var(--c-surf2); }
+  .hamburger span {
+    display: block; width: 22px; height: 2px;
+    background: var(--c-ink); border-radius: 2px;
+    transition: transform .25s, opacity .2s;
+  }
+  .hamburger.open span:nth-child(1) { transform: translateY(7.5px) rotate(45deg); }
+  .hamburger.open span:nth-child(2) { opacity: 0; }
+  .hamburger.open span:nth-child(3) { transform: translateY(-7.5px) rotate(-45deg); }
+
+  /* Buttons */
+  .btn-primary {
+    display: inline-flex; align-items: center; gap: .5rem;
+    background: var(--c-ink); color: var(--c-paper);
+    padding: .75rem 1.25rem; font-weight: 600; font-size: .875rem;
+    border-radius: 8px; transition: opacity .18s;
+    box-shadow: 0 1px 4px rgba(0,0,0,.1);
+  }
+  .btn-primary:hover { opacity: .86; }
+  .btn-ghost {
+    display: inline-flex; align-items: center; gap: .5rem;
+    border: 1px solid var(--c-line); color: var(--c-ink);
+    padding: .75rem 1.25rem; font-weight: 600; font-size: .875rem;
+    border-radius: 8px; transition: background .15s, border-color .15s;
+  }
+  .btn-ghost:hover { background: var(--c-surf2); border-color: color-mix(in srgb, var(--c-ink) 20%, var(--c-line)); }
+
+  /* Cards */
+  .card {
+    background: var(--c-surf); border: 1px solid var(--c-line); border-radius: 12px;
+    transition: box-shadow .25s, border-color .25s;
+  }
+  .card:hover {
+    box-shadow: 0 6px 28px color-mix(in srgb, var(--c-ink) 8%, transparent);
+    border-color: color-mix(in srgb, var(--c-accent) 35%, var(--c-line));
+  }
+
+  /* Studio logo (PNG con fondo blanco): multiply en light, invert+hue-rotate en dark */
+  .studio-logo { display: block; mix-blend-mode: multiply; }
+  :root[data-theme="dark"] .studio-logo { mix-blend-mode: normal; filter: invert(1) hue-rotate(180deg); }
+}
+
 @tailwind utilities;

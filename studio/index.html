@@ -3,14 +3,19 @@
 <head>
 <meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no"/>
+<!-- CSP: recursos locales + Material Symbols (Google Fonts) -->
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data:; connect-src 'self'; base-uri 'self'; object-src 'none'; form-action 'self'"/>
 <title>Mahuno Studio — Rebranding para PyMEs mexicanas</title>
 <meta name="description" content="Sistema de rebranding completo en 5 días para PyMEs mexicanas. Identidad visual, web y handoff. Hecho por Mario Huarte Nolasco, Ingeniero en Computación UNAM."/>
 <meta name="author" content="Mario Huarte Nolasco"/>
 
 <!-- FOUC: theme antes de pintar -->
 <script>
+  // Helpers de localStorage tolerantes (modo privado / storage bloqueado); los reutiliza studio.js
+  window.lsGet = function(k){ try { return localStorage.getItem(k); } catch(e){ return null; } };
+  window.lsSet = function(k, v){ try { localStorage.setItem(k, v); } catch(e){} };
   (function(){
-    var t = localStorage.getItem('studio.theme');
+    var t = lsGet('studio.theme');
     var preferDark = window.matchMedia && window.matchMedia('(prefers-color-scheme:dark)').matches;
     var theme = (t === 'dark' || t === 'light') ? t : (preferDark ? 'dark' : 'light');
     document.documentElement.setAttribute('data-theme', theme);
@@ -24,6 +29,7 @@
 <link rel="icon" type="image/png" sizes="32x32" href="../assets/img/mahunostudiologo/favicon-32x32.png"/>
 <link rel="icon" type="image/png" sizes="16x16" href="../assets/img/mahunostudiologo/favicon-16x16.png"/>
 <link rel="apple-touch-icon"      sizes="180x180" href="../assets/img/mahunostudiologo/apple-touch-icon.png"/>
+<link rel="manifest" href="../assets/img/mahunostudiologo/site.webmanifest"/>
 
 <!-- OG -->
 <meta property="og:type" content="website"/>
@@ -32,11 +38,39 @@
 <meta property="og:url" content="https://mariounam.github.io/studio/"/>
 <meta property="og:image" content="https://mariounam.github.io/assets/img/og-card.png"/>
 <meta property="og:locale" content="es_MX"/>
+<meta name="twitter:card" content="summary_large_image"/>
+<meta name="twitter:title" content="Mahuno Studio — Rebranding para PyMEs"/>
+<meta name="twitter:description" content="Sistema de rebranding completo en 5 días. Identidad, web y handoff. Por Mario Huarte Nolasco."/>
+<meta name="twitter:image" content="https://mariounam.github.io/assets/img/og-card.png"/>
+
+<!-- Datos estructurados: Organization -->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Organization",
+  "name": "Mahuno Studio",
+  "url": "https://mariounam.github.io/studio/",
+  "logo": "https://mariounam.github.io/assets/img/mahunostudiologo-512.png",
+  "description": "Práctica de rebranding para PyMEs mexicanas: identidad visual, web y handoff en 5 días.",
+  "email": "mario_huarte@outlook.com",
+  "telephone": "+52 55 6229 3691",
+  "address": { "@type": "PostalAddress", "addressLocality": "Ciudad de México", "addressCountry": "MX" },
+  "areaServed": "MX",
+  "founder": {
+    "@type": "Person",
+    "name": "Mario Huarte Nolasco",
+    "url": "https://mariounam.github.io/",
+    "sameAs": [
+      "https://www.linkedin.com/in/mario-huarte-nolasco-874436202/",
+      "https://github.com/MarioUNAM"
+    ]
+  }
+}
+</script>
 
 <!-- Fonts: self-hosted del portfolio principal -->
 <link rel="preload" href="../assets/fonts/manrope-variable.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="../assets/fonts/inter-variable.woff2"   as="font" type="font/woff2" crossorigin>
-<link rel="stylesheet" href="../assets/css/main.css">
 
 <!-- Tailwind compilado para Mahuno Studio (build via 'npm run build:css:studio') -->
 <link rel="stylesheet" href="./assets/css/tailwind.css">
@@ -47,113 +81,14 @@
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200&display=swap">
 
 <style>
-  /* Design tokens — light ("papel cálido") */
-  :root {
-    --c-paper:  #fafaf7;
-    --c-surf:   #ffffff;
-    --c-surf2:  #f3f2ed;
-    --c-ink:    #14140f;
-    --c-dim:    #4a4a44;
-    --c-muted:  #7a7a72;
-    --c-line:   #e6e5dd;
-    --c-accent: #0a7da3;
-    --c-warm:   #b8501a;
-  }
-  :root[data-theme="dark"] {
-    --c-paper:  #0a0a0b;
-    --c-surf:   #141416;
-    --c-surf2:  #1c1c1f;
-    --c-ink:    #fafaf7;
-    --c-dim:    #c8c8c2;
-    --c-muted:  #888880;
-    --c-line:   #2a2a2d;
-    --c-accent: #4cd6fb;
-    --c-warm:   #f5a04a;
-  }
-
-  html, body { background: var(--c-paper) !important; color: var(--c-ink) !important; }
+  /* Tokens --c-*, base, botones, cards, nav, menú móvil: en ./assets/css/tailwind-input.css (compartido) */
   body {
-    font-family: 'Inter', sans-serif;
     font-feature-settings: 'ss01','cv02';
     font-size: 15px;
     line-height: 1.7;
     text-rendering: optimizeLegibility;
   }
-  ::selection { background: var(--c-accent); color: var(--c-paper); }
-  *:focus-visible { outline: 2px solid var(--c-accent); outline-offset: 3px; border-radius: 3px; }
-
-  .font-display { font-family: 'Manrope','Inter',sans-serif; letter-spacing: -0.02em; }
-
-  /* Nav glass */
-  .glass-nav {
-    background: color-mix(in srgb, var(--c-paper) 78%, transparent) !important;
-    backdrop-filter: blur(14px) saturate(140%);
-    -webkit-backdrop-filter: blur(14px) saturate(140%);
-    border-bottom: 1px solid var(--c-line) !important;
-  }
   .nav-desktop a.active { color: var(--c-ink); font-weight: 700; }
-
-  /* Mobile menu */
-  #mobile-menu {
-    position: fixed; top: 0; inset-x: 0; z-index: 39;
-    background: var(--c-paper);
-    border-bottom: 1px solid var(--c-line);
-    padding: 5rem 1.5rem 2rem;
-    transform: translateY(-105%);
-    transition: transform .3s cubic-bezier(.2,.8,.2,1);
-    pointer-events: none;
-  }
-  #mobile-menu.open { transform: translateY(0); pointer-events: auto; }
-  .mobile-nav-link {
-    display: block; padding: .875rem 0;
-    font-size: 1.125rem; font-weight: 600;
-    color: var(--c-dim); border-bottom: 1px solid var(--c-line);
-    transition: color .15s;
-  }
-  .mobile-nav-link:hover { color: var(--c-ink); }
-  /* Hamburger */
-  .hamburger {
-    width: 36px; height: 36px;
-    display: flex; flex-direction: column; justify-content: center; align-items: center; gap: 5.5px;
-    cursor: pointer; border-radius: 6px; background: transparent; border: none;
-    transition: background .15s;
-  }
-  .hamburger:hover { background: var(--c-surf2); }
-  .hamburger span {
-    display: block; width: 22px; height: 2px;
-    background: var(--c-ink); border-radius: 2px;
-    transition: transform .25s, opacity .2s;
-  }
-  .hamburger.open span:nth-child(1) { transform: translateY(7.5px) rotate(45deg); }
-  .hamburger.open span:nth-child(2) { opacity: 0; }
-  .hamburger.open span:nth-child(3) { transform: translateY(-7.5px) rotate(-45deg); }
-
-  /* Buttons */
-  .btn-primary {
-    display:inline-flex; align-items:center; gap:.5rem;
-    background: var(--c-ink); color: var(--c-paper);
-    padding: .75rem 1.25rem; font-weight: 600; font-size: .875rem;
-    border-radius: 8px; transition: opacity .18s;
-    box-shadow: 0 1px 4px rgba(0,0,0,.1);
-  }
-  .btn-primary:hover { opacity: .86; }
-  .btn-ghost {
-    display:inline-flex; align-items:center; gap:.5rem;
-    border: 1px solid var(--c-line); color: var(--c-ink);
-    padding: .75rem 1.25rem; font-weight: 600; font-size: .875rem;
-    border-radius: 8px; transition: background .15s, border-color .15s;
-  }
-  .btn-ghost:hover { background: var(--c-surf2); border-color: color-mix(in srgb, var(--c-ink) 20%, var(--c-line)); }
-
-  /* Cards */
-  .card {
-    background: var(--c-surf); border: 1px solid var(--c-line); border-radius: 12px;
-    transition: box-shadow .25s, border-color .25s;
-  }
-  .card:hover {
-    box-shadow: 0 6px 28px color-mix(in srgb, var(--c-ink) 8%, transparent);
-    border-color: color-mix(in srgb, var(--c-accent) 35%, var(--c-line));
-  }
 
   /* Feature items (Qué es) */
   .feature-item {
@@ -167,10 +102,6 @@
     background: var(--c-surf);
     border-color: color-mix(in srgb, var(--c-accent) 28%, var(--c-line));
   }
-
-  /* Studio logo */
-  .studio-logo { display: block; mix-blend-mode: multiply; }
-  :root[data-theme="dark"] .studio-logo { mix-blend-mode: normal; filter: invert(1) hue-rotate(180deg); }
 
   /* Step numbers */
   .step-num {
@@ -211,17 +142,12 @@
     background-image: radial-gradient(rgba(255,255,255,0.025) 1px, transparent 1px);
   }
 
-  /* Reveal */
-  .reveal { opacity: 0; transform: translateY(12px); transition: opacity .55s ease, transform .55s ease; }
-  .reveal.in { opacity: 1; transform: translateY(0); }
-
   .hairline { border-top: 1px solid var(--c-line); }
 
   .mock-tile { aspect-ratio: 4/3; border-radius: 10px; overflow: hidden; position: relative; border: 1px solid var(--c-line); }
   .mock-tile .label { position:absolute; bottom: 10px; left: 12px; font-size: 10px; letter-spacing: .12em; text-transform: uppercase; color: var(--c-muted); }
 
   @media (prefers-reduced-motion: reduce) {
-    .reveal { opacity:1; transform:none; transition:none; }
     .scroll-indicator { animation: none; }
   }
 </style>
@@ -261,7 +187,7 @@
 </nav>
 
 <!-- Mobile navigation panel -->
-<div id="mobile-menu" aria-label="Menú de navegación">
+<div id="mobile-menu" role="navigation" aria-label="Menú de navegación">
   <a href="#metodo"   class="mobile-nav-link">Método</a>
   <a href="lab/"      class="mobile-nav-link">Laboratorio</a>
   <a href="casos/"    class="mobile-nav-link">Casos</a>
@@ -314,7 +240,7 @@
     </div>
 
     <!-- Scroll indicator -->
-    <div class="mt-10 flex justify-start" aria-hidden="true">
+    <div class="mt-10 flex justify-start">
       <a href="#quees" class="scroll-indicator">
         <span class="text-[11px] tracking-[0.12em] uppercase font-semibold">Explorar</span>
         <span class="material-symbols-outlined text-[22px]">keyboard_arrow_down</span>
@@ -644,56 +570,10 @@
 </footer>
 
 
+<!-- Tema, año y menú móvil (compartido) -->
+<script src="./assets/js/studio.js"></script>
 <script>
 (function(){
-  // Theme toggle
-  var icon = document.getElementById('theme-icon');
-  function sync(){ var t = document.documentElement.getAttribute('data-theme'); if (icon) icon.textContent = (t === 'dark') ? 'dark_mode' : 'light_mode'; }
-  sync();
-  var btn = document.getElementById('theme-toggle');
-  if (btn) btn.addEventListener('click', function(){
-    var cur = document.documentElement.getAttribute('data-theme');
-    var next = (cur === 'dark') ? 'light' : 'dark';
-    document.documentElement.setAttribute('data-theme', next);
-    try { localStorage.setItem('studio.theme', next); } catch(e){}
-    sync();
-  });
-
-  // Year
-  var yr = document.getElementById('yr'); if (yr) yr.textContent = new Date().getFullYear();
-
-  // Reveal on scroll
-  if ('IntersectionObserver' in window) {
-    var io = new IntersectionObserver(function(entries){
-      entries.forEach(function(e){ if (e.isIntersecting){ e.target.classList.add('in'); io.unobserve(e.target);} });
-    }, { threshold: 0, rootMargin: '0px 0px -40px 0px' });
-    document.querySelectorAll('.reveal').forEach(function(el){ io.observe(el); });
-  } else {
-    document.querySelectorAll('.reveal').forEach(function(el){ el.classList.add('in'); });
-  }
-
-  // Mobile menu
-  var hamburger = document.getElementById('hamburger');
-  var mobileMenu = document.getElementById('mobile-menu');
-  function closeMobileMenu() {
-    if (!mobileMenu) return;
-    mobileMenu.classList.remove('open');
-    hamburger && hamburger.classList.remove('open');
-    hamburger && hamburger.setAttribute('aria-expanded', 'false');
-    document.body.style.overflow = '';
-  }
-  if (hamburger && mobileMenu) {
-    hamburger.addEventListener('click', function() {
-      var open = mobileMenu.classList.toggle('open');
-      hamburger.classList.toggle('open', open);
-      hamburger.setAttribute('aria-expanded', String(open));
-      document.body.style.overflow = open ? 'hidden' : '';
-    });
-    mobileMenu.querySelectorAll('a').forEach(function(a) {
-      a.addEventListener('click', closeMobileMenu);
-    });
-  }
-
   // Active nav section highlight
   if ('IntersectionObserver' in window) {
     var navLinks = document.querySelectorAll('.nav-desktop a[href^="#"]');

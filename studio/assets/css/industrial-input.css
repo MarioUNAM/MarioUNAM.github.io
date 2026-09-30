@@ -1,0 +1,6 @@
+/* Entrada Tailwind del demo industrial (studio/lab/industrial).
+   Solo las directivas: los tokens BECA viven en el <style> del propio HTML.
+   Build: npm run build:css:industrial → studio/assets/css/industrial.css */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;

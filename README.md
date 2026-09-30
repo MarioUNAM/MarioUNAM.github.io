@@ -154,7 +154,16 @@ studio/
         └── index.html      # Caso 01 — placeholder realista de rebranding completo
 ```
 
-El demo industrial (`studio/lab/industrial/`) es un demo conceptual extendido: 7 sub-páginas SPA, Leaflet (mapa de cobertura), Chart.js (KPIs), tabla comparativa de materiales, calculadora de costos, simulador de tolerancias ISO 286, glosario, búsqueda Ctrl+K, modo presentación e impresión.
+El demo industrial (`studio/lab/industrial/`) es un demo conceptual extendido: 7 sub-páginas SPA, Leaflet (mapa de cobertura), Chart.js (KPIs), tabla comparativa de materiales, calculadora de costos, simulador de tolerancias ISO 286 (aproximación didáctica), glosario, búsqueda Ctrl+K, modo presentación e impresión. Su formulario es de demostración y no envía datos.
+
+**CSS de Studio (sin CDN):** dos bundles compilados con Tailwind:
+
+| Bundle | Config | Entrada | Páginas |
+|--------|--------|---------|---------|
+| `studio/assets/css/tailwind.css` | `studio/tailwind.config.js` | `studio/assets/css/tailwind-input.css` (tokens `--c-*`, fuentes, componentes en `@layer`) | index, lab, casos, don-peter |
+| `studio/assets/css/industrial.css` | `studio/lab/industrial/tailwind.config.js` (hereda el de Studio, solo cambia `content`) | `studio/assets/css/industrial-input.css` | industrial |
+
+`npm run build:css:all` compila ambos más el de la raíz. El JS común de menú móvil y tema está en `studio/assets/js/studio.js`.
 
 ---
 

@@ -23,4 +23,4 @@ jobs:
       - name: CSS de Tailwind compilado y sin cambios pendientes
         run: |
           npm run build:css:all
-          git diff --exit-code -- assets/css/tailwind.css studio/assets/css/tailwind.css
+          git diff --exit-code -- assets/css/tailwind.css studio/assets/css/tailwind.css studio/assets/css/industrial.css

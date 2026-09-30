@@ -46,14 +46,14 @@ Esfuerzo: S (< 1 h) · M (1–4 h) · L (> 4 h).
 | ~~3.2~~ ✂️ | **XSS almacenado vía análisis IA pegado**: `focos` y `proximaMedicion.fechaSugerida` se insertan sin escapar y `validateIAResponse` no los revisa. | `tracker/index.html:4097, 4149` | P0 | S |
 | ~~3.3~~ ✂️ | **Pérdida de datos**: import sin `version` correcta → en la siguiente carga `loadState` reseedea y borra todo. `replace` no rellena `meta/perfil/objetivos`. | `tracker/index.html:1990, 4344` | P0 | S |
 | ~~3.4~~ ✅ | Chart.js desde CDN **sin SRI** ni `crossorigin`, y el SW lo precachea (un CDN comprometido queda persistido). | `tracker/index.html:24`, `tracker/sw.js:29`, `studio/lab/industrial/index.html:48` | P1 | S **HECHO** (Chart.js y Leaflet self-hosted en assets/vendor (sin CDN)) |
-| 3.5 | Tailwind CDN en producción (no admite SRI, desaconsejado por Tailwind). | `studio/lab/industrial/index.html:25` | P1 | M |
+| ~~3.5~~ ✅ | Tailwind CDN en producción (no admite SRI, desaconsejado por Tailwind). | `studio/lab/industrial/index.html:25` | P1 | M **HECHO** (industrial compilado con Tailwind (bundle propio industrial.css + @tailwindcss/forms)) |
 | ~~3.6~~ ✅ | Sin CSP. GitHub Pages no permite headers, pero sí `<meta http-equiv="Content-Security-Policy">`. | Todos los HTML | P1 | M **HECHO** (CSP por meta en todas las páginas de raíz/projects/404) |
 | ~~3.7~~ ✂️ | SW hace `skipWaiting()` en `install`: anula el prompt "Nueva versión" y fuerza recarga. Cache-first ilimitado para cualquier GET incluidos terceros. | `tracker/sw.js:37, 66-75` | P1 | S |
 | ~~3.8~~ ✂️ | CSV export sin protección contra inyección de fórmulas (`=`, `+`, `-`, `@`). | `tracker/index.html:4206-4209` | P2 | S |
 | ~~3.9~~ ⏸ | Teléfono personal y WhatsApp en claro (`wa.me/525562293691`) — recolectable por bots. El correo ya está en el CV, el teléfono no está en el portafolio principal. | `studio/index.html:596-599` | P1 | **Decisión**: mantener, ofuscar (JS), o solo correo. **DECIDIDO** (Mario mantiene el teléfono público) |
 | ~~3.10~~ ✅ | `localStorage.getItem/setItem` sin `try/catch` en todos los scripts de tema: `SecurityError` si el storage está bloqueado (Safari privado, iframes). | `index.html:7`, `studio/*:12`, `industrial:2992` | P2 | S **HECHO** (helpers lsGet/lsSet con try/catch en raíz, theme-toggle.js y subpage.js) |
 | ~~3.11~~ ⏸ | Formspree sin CAPTCHA (solo honeypot). 50 envíos/mes: el spam puede agotar la cuota. | `index.html:863` | P2 | S **DESCARTADO** (decisión de Mario 2026-09-30: se queda solo con honeypot) |
-| 3.12 | Formulario de contacto de la demo industrial simula envío exitoso sin enviar nada; teléfonos/correos inventados pueden pertenecer a terceros reales. | `studio/lab/industrial/index.html:1544-1570, 2038-2066` | P2 | S |
+| ~~3.12~~ ✅ | Formulario de contacto de la demo industrial simula envío exitoso sin enviar nada; teléfonos/correos inventados pueden pertenecer a terceros reales. | `studio/lab/industrial/index.html:1544-1570, 2038-2066` | P2 | S **HECHO** (aviso "formulario de demostración", toast sin envío, contactos claramente ficticios) |
 
 ---
 
@@ -68,9 +68,9 @@ Esfuerzo: S (< 1 h) · M (1–4 h) · L (> 4 h).
 | ~~4.5~~ ✅ | Textos sin i18n: "Hire Me", "Skip to main content", frases del typing, "CDMX / Remote", "System Status". | `index.html:124, 76, 1063` | S **HECHO** (hero.status, about.location, hero.typing por idioma) |
 | ~~4.6~~ ✅ | Footer "© 2024" en index vs "© 2026" en proyectos. | `index.html:930`, `projects/*` | S **HECHO** (© 2026) |
 | ~~4.7~~ ✅ | `<style></style>` vacío en head. | `index.html:83` | S |
-| 4.8 | Studio: `inset-x: 0` no es CSS válido (es clase Tailwind); el menú móvil no se estira. | `studio/index.html:98`, `lab:65`, `casos:65` | S |
-| 4.9 | Studio lab: `querySelector(location.hash)` sin try/catch; un hash inválido rompe el script del menú. | `studio/lab/index.html:434-436` | S |
-| 4.10 | Industrial: calculadora dice USD pero aplica IVA 16 %; no valida longitud negativa; fórmula ISO 286 aproximada sin aclararlo en UI; tiles OSM con `{s}.` desaconsejado. | `industrial:1730, 2235, 2253, 2663` | M |
+| ~~4.8~~ ✅ | Studio: `inset-x: 0` no es CSS válido (es clase Tailwind); el menú móvil no se estira. | `studio/index.html:98`, `lab:65`, `casos:65` | S **HECHO** (`left:0;right:0` vía @layer components; menú ocupa 390/390 px) |
+| ~~4.9~~ ✅ | Studio lab: `querySelector(location.hash)` sin try/catch; un hash inválido rompe el script del menú. | `studio/lab/index.html:434-436` | S **HECHO** (try/catch en hash y TOC) |
+| ~~4.10~~ ✅ | Industrial: calculadora dice USD pero aplica IVA 16 %; no valida longitud negativa; fórmula ISO 286 aproximada sin aclararlo en UI; tiles OSM con `{s}.` desaconsejado. | `industrial:1730, 2235, 2253, 2663` | M **HECHO** (MXN coherente con IVA, sin negativos, nota ISO 286 didáctica, tiles OSM sin {s}) |
 | ~~4.11~~ ✂️ | Tracker: sin guarda `typeof Chart` si falla el CDN → Dashboard roto. `apple-touch-icon` en SVG (iOS no lo soporta, existe el PNG 180). | `tracker/index.html:17, 3460` | S |
 | ~~4.12~~ ✂️ | `TRACKER_RECORDS.md` desactualizado (clave, versión, campos, líneas). | `tracker/TRACKER_RECORDS.md` | S |
 
@@ -82,14 +82,14 @@ Esfuerzo: S (< 1 h) · M (1–4 h) · L (> 4 h).
 |---|---|---|---|---|
 | ~~5.1~~ ✅ | `maximum-scale=1, user-scalable=no` bloquea zoom (WCAG 1.4.4). | `index.html:18`, todas las de `studio/` | P1 | S **HECHO** (zoom permitido) |
 | ~~5.2~~ ✅ | Sin `hreflang` ni URL por idioma: Google indexa solo el inglés. Opciones: `?lang=es` + hreflang, o `/es/` estático generado. | `index.html` | P2 | M **HECHO** (hreflang en/es/x-default con ?lang=es) |
-| ~~5.3~~ ✅ | JSON-LD Person sin `hasCredential`, `knowsAbout`, `hasOccupation`. Studio sin JSON-LD (Organization/Service) ni `twitter:card`; industrial sin OG ni favicon. | `index.html:52`, `studio/*` | P2 | S **HECHO** (hasOccupation en JSON-LD (Studio: ver agente)) |
+| ~~5.3~~ ✅ | JSON-LD Person sin `hasCredential`, `knowsAbout`, `hasOccupation`. Studio sin JSON-LD (Organization/Service) ni `twitter:card`; industrial sin OG ni favicon. | `index.html:52`, `studio/*` | P2 | S **HECHO** (hasOccupation en JSON-LD (Studio: JSON-LD Organization, twitter:card, og y favicon en industrial, webmanifest corregido)) |
 | ~~5.4~~ ✅ | Sin `404.html` personalizado. | raíz | P2 | S **HECHO** (404.html bilingüe) |
 | ~~5.5~~ ✅ | `sitemap.xml` sin `lastmod`. | `sitemap.xml` | P2 | S **HECHO** (lastmod 2026-09-30) |
 | ~~5.6~~ ⏸ | Material Symbols desde Google Fonts (se mantiene: el subset local no cubre los iconos nuevos y self-hostear la fuente completa pesa ~3 MB; decisión: seguir con Google Fonts) en 6 páginas (tercero, sin SRI) aunque existe `assets/fonts/material-symbols-outlined.woff2`. | `index.html:74`, `studio/*` | P2 | M |
 | ~~5.7~~ ✅ | `assets/audio/senora.mp3` (712 KB, 5 % del repo) sin ninguna referencia. | `assets/audio/` | P2 | S **HECHO** (senora.mp3 eliminado) |
-| 5.8 | Contraste límite en Studio: `--c-muted #7a7a72` sobre `#fafaf7` ≈ 4.1:1 en texto de 10–12 px. | `studio/index.html:52-60` | P2 | S |
-| 5.9 | Industrial: `<label>` sin `for`, modal sin `role="dialog"`, sin `<main>`, 55 `onclick` inline. | `studio/lab/industrial/index.html:1232, 1453-1498` | P2 | M |
-| 5.10 | Subpáginas de Studio sin botón de tema; don-peter sin menú móvil. | `studio/lab`, `casos`, `don-peter` | P3 | S |
+| ~~5.8~~ ✅ | Contraste límite en Studio: `--c-muted #7a7a72` sobre `#fafaf7` ≈ 4.1:1 en texto de 10–12 px. | `studio/index.html:52-60` | P2 | S **HECHO** (`--c-muted #666660` (5.5:1)) |
+| ~~5.9~~ ✅ | Industrial: `<label>` sin `for`, modal sin `role="dialog"`, sin `<main>`, 55 `onclick` inline. | `studio/lab/industrial/index.html:1232, 1453-1498` | P2 | M **HECHO** (labels con for, dialog aria-modal, <main>; los onclick inline se mantienen (55, sin riesgo con CSP)) |
+| ~~5.10~~ ✅ | Subpáginas de Studio sin botón de tema; don-peter sin menú móvil. | `studio/lab`, `casos`, `don-peter` | P3 | S **HECHO** (tema en lab/casos/don-peter, hamburguesa en don-peter) |
 
 ---
 
@@ -116,7 +116,7 @@ Esfuerzo: S (< 1 h) · M (1–4 h) · L (> 4 h).
 | ~~7.1~~ ✅ | **CI en GitHub Actions**: `html-validate`, `lychee` (enlaces rotos), Lighthouse CI (a11y ≥ 90), `npm run build:css:all` y fallo si `tailwind.css` compilado difiere del commit. | M **HECHO** (ci.yml: i18n-check, check-links, html-validate, build CSS sin diff) |
 | ~~7.2~~ ✅ | Purgar `i18n.js`: dejar solo claves usadas; script `node scripts/i18n-check.js` que falle en CI si hay claves usadas sin definir o definidas sin usar. | M **HECHO** (scripts/i18n-check.js en CI) |
 | ~~7.3~~ ✂️ | Tracker: separar `index.html` en `app.css` + módulos JS (`storage`, `render`, `ia`, `import`); tests con Vitest + jsdom para `calcBodyFat`, `calcCalorias`, `validateIAResponse`, `doImport`, migraciones. | L |
-| 7.4 | Studio: mover tokens `--c-*`, botones, cards y nav a `tailwind-input.css` con `@layer components`; un solo `menu.js` compartido. Migrar industrial al CSS compilado. | M |
+| ~~7.4~~ ✅ | Studio: mover tokens `--c-*`, botones, cards y nav a `tailwind-input.css` con `@layer components`; un solo `menu.js` compartido. Migrar industrial al CSS compilado. | M **HECHO** (tokens y componentes en tailwind-input.css @layer, studio.js compartido; Studio ya no carga main.css de la raíz (corrige .btn-primary azul)) |
 | ~~7.5~~ ✅ | Unificar el motor i18n de `projects/*.html` (4 copias inline) con `assets/js/i18n.js`. | M **HECHO** (assets/js/subpage.js compartido por projects/*, contact-* ) |
 | ~~7.6~~ ✅ | README: quitar referencias a números de línea (se desactualizan en cada commit) y documentar `BACKLOG.md`. | S **HECHO** (README sin números de línea; documenta CI, vendor y subpage.js) |
 | ~~7.7~~ ✅ | `security.txt` (`/.well-known/security.txt`) con contacto. | S **HECHO** (.well-known/security.txt) |
@@ -138,7 +138,11 @@ Esfuerzo: S (< 1 h) · M (1–4 h) · L (> 4 h).
 
 ---
 
-## 9. Orden sugerido de ejecución
+## 9. Estado final (2026-09-30)
+
+Todo lo aplicable está hecho (✅), descartado por decisión (⏸) o fuera de alcance por la eliminación del tracker (✂️). No quedan ítems abiertos.
+
+## 9b. Orden que se siguió
 
 1. Sprint 1 (P0, ~1 día): 2.1, 2.2, 2.3, 2.4, 2.5, 2.10, 3.1, 3.2, 3.3, 4.1, 4.2, 4.3, 5.1.
 2. Sprint 2 (P1, ~1 día): 3.4–3.7, 4.4–4.9, 7.1, 7.2.

@@ -1,20 +1,45 @@
 <!DOCTYPE html>
-<html lang="es" class="scroll-smooth">
+<html lang="en" class="scroll-smooth">
 <head>
 <meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
+<!-- CSP: todo local salvo Material Symbols (Google Fonts) y los tiles de OpenStreetMap -->
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https://tile.openstreetmap.org; connect-src 'self'; base-uri 'self'; object-src 'none'; form-action 'self'"/>
 <title>BECA INDUSTRIAL — Demo · Mahuno Studio Laboratorio</title>
 <link rel="canonical" href="https://mariounam.github.io/studio/lab/industrial/"/>
 <meta name="description" content="Demo navegable de plantilla industrial B2B del Mahuno Studio Laboratorio. SPA bilingüe con mapa, comparador de materiales, calculadora de costos, simulador ISO 286 y KPIs."/>
+<meta name="author" content="Mario Huarte Nolasco"/>
+
+<!-- Favicons + manifest (Mahuno Studio) -->
+<link rel="icon" type="image/x-icon"            href="../../../assets/img/mahunostudiologo/favicon.ico"/>
+<link rel="icon" type="image/png" sizes="32x32" href="../../../assets/img/mahunostudiologo/favicon-32x32.png"/>
+<link rel="icon" type="image/png" sizes="16x16" href="../../../assets/img/mahunostudiologo/favicon-16x16.png"/>
+<link rel="apple-touch-icon"      sizes="180x180" href="../../../assets/img/mahunostudiologo/apple-touch-icon.png"/>
+<link rel="manifest" href="../../../assets/img/mahunostudiologo/site.webmanifest"/>
+
+<!-- OG / Twitter -->
+<meta property="og:type" content="website"/>
+<meta property="og:title" content="BECA INDUSTRIAL — Demo industrial B2B · Mahuno Studio"/>
+<meta property="og:description" content="Demo navegable de plantilla industrial B2B: SPA bilingüe, mapa de cobertura, comparador de materiales, calculadora de costos y KPIs. Empresa ficticia."/>
+<meta property="og:url" content="https://mariounam.github.io/studio/lab/industrial/"/>
+<meta property="og:image" content="https://mariounam.github.io/assets/img/og-card.png"/>
+<meta property="og:locale" content="es_MX"/>
+<meta name="twitter:card" content="summary_large_image"/>
+<meta name="twitter:title" content="BECA INDUSTRIAL — Demo industrial B2B · Mahuno Studio"/>
+<meta name="twitter:description" content="Demo navegable de plantilla industrial B2B del laboratorio de Mahuno Studio. Empresa ficticia."/>
+<meta name="twitter:image" content="https://mariounam.github.io/assets/img/og-card.png"/>
 
 <!-- FOUC prevention: aplica tema y lang antes de pintar -->
 <script>
+  // Helpers de localStorage tolerantes (modo privado / storage bloqueado)
+  window.lsGet = function(k){ try { return localStorage.getItem(k); } catch(e){ return null; } };
+  window.lsSet = function(k, v){ try { localStorage.setItem(k, v); } catch(e){} };
   (function(){
-    var t = localStorage.getItem('beca.theme');
+    var t = lsGet('beca.theme');
     var preferDark = window.matchMedia && window.matchMedia('(prefers-color-scheme:dark)').matches;
     var theme = (t === 'dark' || t === 'light') ? t : (preferDark ? 'dark' : 'light');
     document.documentElement.setAttribute('data-theme', theme);
-    var l = localStorage.getItem('beca.lang');
+    var l = lsGet('beca.lang');
     var preferEs = (navigator.language || 'en').toLowerCase().startsWith('es');
     var lang = (l === 'es' || l === 'en') ? l : (preferEs ? 'es' : 'en');
     document.documentElement.setAttribute('lang', lang);
@@ -22,7 +47,6 @@
   })();
 </script>
 
-<script src="https://cdn.tailwindcss.com?plugins=forms"></script>
 <link rel="preload" href="../../../assets/fonts/inter-variable.woff2" as="font" type="font/woff2" crossorigin/>
 <style>
   @font-face {
@@ -38,68 +62,15 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200&display=swap">
 
-<!-- Leaflet (mapa de cobertura) -->
-<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
-      integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin=""/>
-<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
-        integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin="" defer></script>
+<!-- Leaflet 1.9.4 (mapa de cobertura) — copia local en assets/vendor -->
+<link rel="stylesheet" href="../../../assets/vendor/leaflet/leaflet.css"/>
+<script src="../../../assets/vendor/leaflet/leaflet.js" defer></script>
 
-<!-- Chart.js (KPIs en Tools) -->
-<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js" defer></script>
+<!-- Chart.js 4.4.1 (KPIs en Tools) — copia local en assets/vendor -->
+<script src="../../../assets/vendor/chart.umd.min.js" defer></script>
 
-<!-- Design system con CSS vars para soportar dark/light theme -->
-<script>
-  tailwind.config = {
-    darkMode: ['class', '[data-theme="dark"]'],
-    theme: {
-      extend: {
-        colors: {
-          "primary":                  "var(--c-primary)",
-          "primary-container":        "var(--c-primary-container)",
-          "on-primary":               "var(--c-on-primary)",
-          "on-primary-container":     "var(--c-on-primary-container)",
-          "secondary":                "var(--c-secondary)",
-          "secondary-container":      "var(--c-secondary-container)",
-          "on-secondary":             "var(--c-on-secondary)",
-          "on-secondary-container":   "var(--c-on-secondary-container)",
-          "tertiary-container":       "var(--c-tertiary-container)",
-          "on-tertiary-container":    "var(--c-on-tertiary-container)",
-          "tertiary-fixed":           "var(--c-tertiary-fixed)",
-          "on-tertiary-fixed":        "var(--c-on-tertiary-fixed)",
-          "on-tertiary-fixed-variant":"var(--c-on-tertiary-fixed-variant)",
-          "surface":                  "var(--c-surface)",
-          "surface-dim":              "var(--c-surface-dim)",
-          "surface-variant":          "var(--c-surface-variant)",
-          "surface-container-lowest": "var(--c-surface-container-lowest)",
-          "surface-container-low":    "var(--c-surface-container-low)",
-          "surface-container":        "var(--c-surface-container)",
-          "surface-container-high":   "var(--c-surface-container-high)",
-          "surface-container-highest":"var(--c-surface-container-highest)",
-          "on-surface":               "var(--c-on-surface)",
-          "on-surface-variant":       "var(--c-on-surface-variant)",
-          "on-background":            "var(--c-on-background)",
-          "inverse-primary":          "var(--c-inverse-primary)",
-          "secondary-fixed-dim":      "var(--c-secondary-fixed-dim)",
-          "outline":                  "var(--c-outline)",
-          "outline-variant":          "var(--c-outline-variant)",
-          "error":                    "var(--c-error)",
-        },
-        borderRadius: {
-          "DEFAULT": "0.125rem",
-          "sm":      "0.125rem",
-          "lg":      "0.25rem",
-          "xl":      "0.5rem",
-          "full":    "9999px",
-        },
-        fontFamily: {
-          "headline": ["Inter", "sans-serif"],
-          "body":     ["Inter", "sans-serif"],
-          "label":    ["Inter", "sans-serif"],
-        }
-      }
-    }
-  }
-</script>
+<!-- Design system: los tokens de color viven como CSS vars (abajo) y se exponen
+     a Tailwind desde studio/tailwind.config.js (theme.extend.colors) -->
 
 <style>
   /* ══════════════════════════════════════════════════════════════
@@ -135,9 +106,11 @@
     --c-outline:                  #737780;
     --c-outline-variant:          #c3c6d1;
     --c-error:                    #ba1a1a;
-    /* hardcoded helpers para los var(--c-accent) dispersos */
-    --c-accent:                   var(--c-accent);
-    --c-accent-hover:             var(--c-accent-hover);
+    /* Acento naranja usado por los var(--c-accent) dispersos y por Chart.js.
+       (Antes se definía como var(--c-accent) → referencia cíclica inválida,
+       por lo que los CTA naranjas quedaban sin fondo.) */
+    --c-accent:                   #f37a00;
+    --c-accent-hover:             #d96c00;
   }
 
   /* ══════════════════════════════════════════════════════════════
@@ -216,7 +189,7 @@
   /* ══════════════════════════════════════════════════════════════
      PRESENTATION MODE — oculta nav/footer y agranda tipografía
   ══════════════════════════════════════════════════════════════ */
-  body.presenting nav, body.presenting footer, body.presenting #mobile-menu { display: none !important; }
+  body.presenting nav, body.presenting footer, body.presenting #mobile-menu, body.presenting #lab-bar { display: none !important; }
   body.presenting { font-size: 1.15rem; }
   body.presenting h1 { font-size: 4rem !important; }
   body.presenting h2 { font-size: 2.4rem !important; }
@@ -235,7 +208,7 @@
   ══════════════════════════════════════════════════════════════ */
   @media print {
     nav, footer, #mobile-menu, #toast, #presenting-exit, #toc-sticky, #search-overlay,
-    #gallery-lightbox { display: none !important; }
+    #gallery-lightbox, #lab-bar { display: none !important; }
     .page { display: block !important; opacity: 1 !important; transform: none !important; }
     .page + .page { page-break-before: always; }
     /* Evitar cortes dentro de tarjetas */
@@ -676,10 +649,23 @@
   /* Scroll suave */
   html { scroll-behavior: smooth; }
 </style>
+<!-- Tailwind compilado (npm run build:css:industrial) — sustituye al Tailwind Play CDN -->
+<link rel="stylesheet" href="../../assets/css/industrial.css">
 </head>
 
 <!-- ════════════════════════════════════════════════════════════════ -->
 <body class="bg-surface text-on-surface min-h-screen flex flex-col antialiased">
+
+<!-- ── BARRA DEL LABORATORIO: vuelta a Mahuno Studio ─────────────── -->
+<div id="lab-bar" class="bg-surface-container-highest text-on-surface-variant text-[11px] font-semibold uppercase tracking-widest border-b border-outline-variant/30">
+  <div class="max-w-[1440px] mx-auto px-6 py-1.5 flex flex-wrap items-center justify-between gap-x-6 gap-y-1">
+    <span data-i18n="lab.note">Mahuno Studio Lab demo · fictional company</span>
+    <span class="flex items-center gap-4">
+      <a href="../"    class="hover:text-[var(--c-accent)] transition-colors" data-i18n="lab.back">← Lab</a>
+      <a href="../../" class="hover:text-[var(--c-accent)] transition-colors" data-i18n="lab.studio">← Mahuno Studio</a>
+    </span>
+  </div>
+</div>
 
 <!-- ── NAVEGACIÓN PRINCIPAL ──────────────────────────────────────── -->
 <nav class="bg-primary sticky top-0 z-50 shadow-lg shadow-primary/30">
@@ -767,6 +753,7 @@
 <!-- ════════════════════════════════════════════════════════════════ -->
 <!--  PÁGINA: HOME                                                    -->
 <!-- ════════════════════════════════════════════════════════════════ -->
+<main id="main">
 <div id="page-home" class="page active">
 
   <!-- ── HERO ──────────────────────────────────────────────────── -->
@@ -1229,7 +1216,7 @@
   </section>
 
   <!-- Modal de detalle de producto -->
-  <div id="product-modal"
+  <div id="product-modal" role="dialog" aria-modal="true" aria-labelledby="modal-title"
        class="fixed inset-0 z-50 flex items-center justify-center bg-primary/80 backdrop-blur-sm"
        style="display:none;">
     <div id="modal-inner" class="bg-surface-container-lowest max-w-lg w-full mx-4 p-8 relative shadow-2xl">
@@ -1445,18 +1432,22 @@
             Submit your technical requirements or support request.
             A specialist will be assigned within 2 hours during standard operating times.
           </p>
+          <!-- Aviso: el formulario es una maqueta, no hay backend -->
+          <p role="note" class="mb-8 px-4 py-3 border border-dashed border-[var(--c-accent)] text-[var(--c-accent)] text-xs font-bold uppercase tracking-wider" data-i18n="form.demo">
+            Demo form — no data is sent.
+          </p>
 
           <div class="space-y-8">
             <!-- Fila nombre -->
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div class="flex flex-col">
-                <label class="text-xs font-black text-primary uppercase tracking-wider mb-2" data-i18n="form.firstname">First Name</label>
+                <label for="f-firstname" class="text-xs font-black text-primary uppercase tracking-wider mb-2" data-i18n="form.firstname">First Name</label>
                 <input id="f-firstname" type="text" placeholder="Enter first name" data-i18n-ph="form.ph.firstname"
                        class="field-input bg-surface-container-highest border border-outline-variant/15
                               text-on-surface p-3.5 rounded-sm">
               </div>
               <div class="flex flex-col">
-                <label class="text-xs font-black text-primary uppercase tracking-wider mb-2" data-i18n="form.lastname">Last Name</label>
+                <label for="f-lastname" class="text-xs font-black text-primary uppercase tracking-wider mb-2" data-i18n="form.lastname">Last Name</label>
                 <input id="f-lastname" type="text" placeholder="Enter last name" data-i18n-ph="form.ph.lastname"
                        class="field-input bg-surface-container-highest border border-outline-variant/15
                               text-on-surface p-3.5 rounded-sm">
@@ -1465,7 +1456,7 @@
 
             <!-- Email -->
             <div class="flex flex-col">
-              <label class="text-xs font-black text-primary uppercase tracking-wider mb-2" data-i18n="form.email">Corporate Email</label>
+              <label for="f-email" class="text-xs font-black text-primary uppercase tracking-wider mb-2" data-i18n="form.email">Corporate Email</label>
               <input id="f-email" type="email" placeholder="name@company.com" data-i18n-ph="form.ph.email"
                      class="field-input bg-surface-container-highest border border-outline-variant/15
                             text-on-surface p-3.5 rounded-sm">
@@ -1473,7 +1464,7 @@
 
             <!-- Empresa -->
             <div class="flex flex-col">
-              <label class="text-xs font-black text-primary uppercase tracking-wider mb-2" data-i18n="form.company">Company / Organization</label>
+              <label for="f-company" class="text-xs font-black text-primary uppercase tracking-wider mb-2" data-i18n="form.company">Company / Organization</label>
               <input id="f-company" type="text" placeholder="Legal entity name" data-i18n-ph="form.ph.company"
                      class="field-input bg-surface-container-highest border border-outline-variant/15
                             text-on-surface p-3.5 rounded-sm">
@@ -1481,7 +1472,7 @@
 
             <!-- Tipo de consulta -->
             <div class="flex flex-col">
-              <label class="text-xs font-black text-primary uppercase tracking-wider mb-2" data-i18n="form.type">Inquiry Type</label>
+              <label for="f-type" class="text-xs font-black text-primary uppercase tracking-wider mb-2" data-i18n="form.type">Inquiry Type</label>
               <select id="f-type"
                       class="field-input bg-surface-container-highest border border-outline-variant/15
                              text-on-surface p-3.5 rounded-sm appearance-none cursor-pointer">
@@ -1495,7 +1486,7 @@
 
             <!-- Mensaje -->
             <div class="flex flex-col">
-              <label class="text-xs font-black text-primary uppercase tracking-wider mb-2" data-i18n="form.message">Detailed Message</label>
+              <label for="f-message" class="text-xs font-black text-primary uppercase tracking-wider mb-2" data-i18n="form.message">Detailed Message</label>
               <textarea id="f-message" rows="5" placeholder="Include relevant part numbers or project parameters..." data-i18n-ph="form.ph.message"
                         class="field-input bg-surface-container-highest border border-outline-variant/15
                                text-on-surface p-3.5 rounded-sm resize-none"></textarea>
@@ -1541,7 +1532,7 @@
           </div>
           <div>
             <h3 class="font-black text-primary uppercase tracking-tight mb-1" data-i18n="contact.phone.title">Direct Line</h3>
-            <p class="text-sm text-on-surface-variant">+52 (81) 8000-4200</p>
+            <p class="text-sm text-on-surface-variant">+52 55 0000 0000</p>
             <p class="text-xs text-on-surface-variant mt-1" data-i18n="contact.phone.hours">Mon–Fri 08:00–18:00 CST</p>
           </div>
         </div>
@@ -1554,7 +1545,7 @@
           </div>
           <div>
             <h3 class="font-black text-on-tertiary-container uppercase tracking-tight mb-1" data-i18n="contact.emergency.title">24/7 Emergency</h3>
-            <p class="text-sm text-on-tertiary-container/80">+52 (81) 8000-9911</p>
+            <p class="text-sm text-on-tertiary-container/80">+52 55 0000 0001</p>
             <p class="text-xs text-on-tertiary-container/70 mt-1" data-i18n="contact.emergency.note">Critical field support, always on.</p>
           </div>
         </div>
@@ -1567,7 +1558,7 @@
           </div>
           <div>
             <h3 class="font-black text-primary uppercase tracking-tight mb-1" data-i18n="contact.email.title">Technical Email</h3>
-            <p class="text-sm text-secondary">engineering@becaindustrial.com</p>
+            <p class="text-sm text-secondary">contacto@ejemplo.mx</p>
             <p class="text-xs text-on-surface-variant mt-1" data-i18n="contact.email.note">Response within 2 business hours</p>
           </div>
         </div>
@@ -1695,7 +1686,7 @@
         <div class="space-y-3">
           <label class="block">
             <span class="text-xs font-bold text-primary uppercase" data-i18n="tools.cost.length">Length (m)</span>
-            <input id="cc-length" type="number" min="0.1" step="0.1" value="2.5" class="field-input bg-surface-container-highest border border-outline-variant/15 text-on-surface p-2 w-full mt-1">
+            <input id="cc-length" type="number" min="0" step="0.1" value="2.5" class="field-input bg-surface-container-highest border border-outline-variant/15 text-on-surface p-2 w-full mt-1">
           </label>
           <label class="block">
             <span class="text-xs font-bold text-primary uppercase" data-i18n="tools.cost.material">Material</span>
@@ -1727,7 +1718,7 @@
           <div class="bg-surface-container p-4 mt-2">
             <div class="text-xs font-bold text-on-surface-variant uppercase tracking-wider" data-i18n="tools.cost.estimate">Estimated cost</div>
             <div class="text-3xl font-black text-[var(--c-accent)]" id="cc-result">$ 0</div>
-            <div class="text-xs text-on-surface-variant mt-1" data-i18n="tools.cost.note">USD · indicative · final quote may vary ±15%.</div>
+            <div class="text-xs text-on-surface-variant mt-1" data-i18n="tools.cost.note">MXN · indicative · IVA 16% optional · final quote may vary ±15%.</div>
           </div>
         </div>
       </div>
@@ -1760,7 +1751,7 @@
               <div class="text-xs font-bold text-on-surface-variant uppercase" data-i18n="tools.tol.method">Recommended</div>
               <div class="text-sm font-bold text-[var(--c-accent)]" id="tol-method">—</div>
             </div>
-            <p class="col-span-2 text-[10px] text-on-surface-variant opacity-60 mt-1" data-i18n="tools.tol.formula">Formula: IT = k × D⁰·⁴⁵ / 1000 mm · ISO 286-1:2010 approximation · for reference only</p>
+            <p class="col-span-2 text-[11px] text-on-surface-variant mt-1" data-i18n="tools.tol.formula">Formula: IT ≈ k × D⁰·⁴⁵ / 1000 mm · didactic approximation, not the official ISO 286 standard · reference only</p>
           </div>
         </div>
       </div>
@@ -1818,6 +1809,7 @@
     </div>
   </section>
 </div><!-- /page-tools -->
+</main>
 
 
 <!-- ════════════════════════════════════════════════════════════════ -->
@@ -1836,6 +1828,10 @@
       </p>
       <p class="text-[10px] uppercase tracking-widest text-[var(--c-accent)] font-bold mt-2" data-i18n="footer.demo">
         Demo concept · fictional company by Mario Huarte for portfolio
+      </p>
+      <p class="text-[10px] uppercase tracking-widest font-bold flex gap-4">
+        <a href="../"    class="text-secondary hover:text-[var(--c-accent)] transition-colors" data-i18n="lab.back">← Lab</a>
+        <a href="../../" class="text-secondary hover:text-[var(--c-accent)] transition-colors" data-i18n="lab.studio">← Mahuno Studio</a>
       </p>
     </div>
     <!-- Links col 1 -->
@@ -1873,7 +1869,7 @@
 <!-- Toast de confirmación -->
 <div id="toast">
   <span class="material-symbols-outlined text-[var(--c-accent)] text-sm mr-2 align-middle icon-fill">check_circle</span>
-  <span data-i18n="toast.success">Inquiry transmitted — a specialist will contact you within 2 hours.</span>
+  <span data-i18n="toast.success">Demo form: nothing was sent. On a real site a specialist would contact you within 2 hours.</span>
 </div>
 
 
@@ -2055,6 +2051,7 @@ function submitForm() {
 
   if (!valid) return;
 
+  // DEMO: no existe backend; no se transmite nada. Solo se limpia y se avisa.
   // Limpiar campos
   ['f-firstname','f-lastname','f-email','f-company','f-message'].forEach(id => {
     document.getElementById(id).value = '';
@@ -2221,25 +2218,27 @@ function triggerVisibleCounters() {
 // ══════════════════════════════════════════════════════════════════
 // TOOLS · COST CALCULATOR
 // ══════════════════════════════════════════════════════════════════
-const COST_BASE = { // USD por metro lineal según material
-  nbr: 28, epdm: 22, ptfe: 95, uhmwpe: 65, "pvc-nb": 18, ss304: 110, cr: 32, fkm: 140
+const COST_BASE = { // MXN por metro lineal según material (indicativo; el IVA 16% se aplica sobre MXN)
+  nbr: 500, epdm: 400, ptfe: 1700, uhmwpe: 1200, "pvc-nb": 320, ss304: 2000, cr: 580, fkm: 2500
 };
+const COST_FITTING = 800; // MXN por juego de conexiones, escala con la complejidad
 function setupCostCalc() {
   const matSel = document.getElementById("cc-material");
   if (!matSel) return;
   const lang = document.documentElement.getAttribute("data-lang") || "en";
   matSel.innerHTML = MATERIALS.map(m =>
-    `<option value="${m.id}">${m.name} — $${COST_BASE[m.id] || 30}/m</option>`
+    `<option value="${m.id}">${m.name} — $${COST_BASE[m.id] || 550} MXN/m</option>`
   ).join("");
   function recalc() {
-    const len    = parseFloat(document.getElementById("cc-length").value) || 0;
+    // Math.max: una longitud negativa no tiene sentido físico
+    const len    = Math.max(0, parseFloat(document.getElementById("cc-length").value) || 0);
     const mat    = matSel.value;
     const cmplx  = parseFloat(document.getElementById("cc-complex").value) || 1;
     const disc   = parseFloat(document.getElementById("cc-discount")?.value) || 0;
     const iva    = document.getElementById("cc-iva")?.checked ? 1.16 : 1;
-    const base   = (COST_BASE[mat] || 30) * len * cmplx + 45 * cmplx;
+    const base   = (COST_BASE[mat] || 550) * len * cmplx + COST_FITTING * cmplx;
     const total  = Math.round(base * (1 - disc) * iva);
-    document.getElementById("cc-result").textContent = "$ " + total.toLocaleString();
+    document.getElementById("cc-result").textContent = "$ " + total.toLocaleString("es-MX") + " MXN";
   }
   ["cc-length","cc-material","cc-complex","cc-discount"].forEach(id =>
     document.getElementById(id)?.addEventListener("input", recalc));
@@ -2264,7 +2263,7 @@ function setupTolSim() {
   const nominalEl = document.getElementById("tol-nominal");
   if (!nominalEl) return;
   function recalc() {
-    const D = parseFloat(nominalEl.value) || 0;
+    const D = Math.max(0, parseFloat(nominalEl.value) || 0);
     const grade = parseInt(document.getElementById("tol-grade").value, 10);
     const k = IT_K[grade] || 16;
     const it = (k * Math.pow(Math.max(D, 1), 0.45)) / 1000; // mm
@@ -2481,6 +2480,10 @@ function runSearch(q) {
   clearTimeout(_searchTimer);
   _searchTimer = setTimeout(() => runSearchNow(q), 150);
 }
+// Escapa HTML antes de inyectar texto del DOM/usuario con innerHTML
+function escapeHtml(str) {
+  return String(str).replace(/[&<>"']/g, c => ({ "&":"&amp;", "<":"&lt;", ">":"&gt;", '"':"&quot;", "'":"&#39;" }[c]));
+}
 function runSearchNow(q) {
   q = q.toLowerCase().trim();
   const results = document.getElementById("search-results");
@@ -2519,8 +2522,8 @@ function runSearchNow(q) {
   results.innerHTML =
     `<div style="font:500 10px/1 var(--c-on-surface-variant,#888);letter-spacing:0.07em;text-transform:uppercase;padding:6px 12px 2px;opacity:.7">${countLabel}</div>` +
     matches.map((m, i) => {
-    const navLabel = dict["nav." + m.page] || m.page;
-    const snippet = m.snippet.replace(qre, s => "<mark>" + s + "</mark>");
+    const navLabel = escapeHtml(dict["nav." + m.page] || m.page);
+    const snippet = escapeHtml(m.snippet).replace(qre, s => "<mark>" + s + "</mark>");
     return `<a class="sr-item${i===0?' active':''}" data-page="${m.page}" href="#${m.page}">
       <strong style="font-size:11px;letter-spacing:0.05em;color:var(--c-on-surface-variant);text-transform:uppercase">${navLabel}</strong>
       <div style="font-size:14px;color:var(--c-on-surface)">${snippet}</div>
@@ -2660,7 +2663,7 @@ function initCoverageMap() {
   const mapEl = document.getElementById("coverage-map");
   if (!mapEl) return;
   _coverageMap = L.map(mapEl).setView([23.5,-102], 5);
-  L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+  L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png", {
     maxZoom: 18,
     attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
   }).addTo(_coverageMap);
@@ -2711,7 +2714,7 @@ const I18N = {
     "tools.cost.desc": "Estimate the unit cost of a custom hose assembly given length, material and complexity.",
     "tools.cost.length": "Length (m)", "tools.cost.material": "Material", "tools.cost.complexity": "Complexity",
     "tools.cost.simple": "Simple (straight)", "tools.cost.standard": "Standard (1-2 fittings)", "tools.cost.complex": "Complex (3+ fittings, custom angle)",
-    "tools.cost.estimate": "Estimated cost", "tools.cost.note": "USD · indicative · final quote may vary ±15%.",
+    "tools.cost.estimate": "Estimated cost", "tools.cost.note": "MXN · indicative · IVA 16% optional · final quote may vary ±15%.",
     "tools.tol.title": "Tolerance Simulator",
     "tools.tol.desc": "Given a nominal dimension and ISO IT grade, get the upper/lower limits and recommended machining method.",
     "tools.tol.nominal": "Nominal (mm)", "tools.tol.grade": "IT Grade (ISO 286)", "tools.tol.range": "Range ±", "tools.tol.method": "Recommended",
@@ -2756,7 +2759,7 @@ const I18N = {
     "tools.cost.iva":"Include IVA (16%)",
     "tools.cost.discount":"Volume discount",
     "tools.cost.disc0":"No discount",
-    "tools.tol.formula":"Formula: IT = k × D⁰·⁴⁵ / 1000 mm · ISO 286-1:2010 approximation · for reference only",
+    "tools.tol.formula":"Formula: IT ≈ k × D⁰·⁴⁵ / 1000 mm · didactic approximation, not the official ISO 286 standard · reference only",
     "materials.tag": "Materials Database",
     "materials.title": "Material Comparator",
     "materials.subtitle": "Side-by-side properties for the elastomers, thermoplastics and metals used across our hose families. Filter by application to find the right fit.",
@@ -2831,7 +2834,9 @@ const I18N = {
     "footer.copy": "© 2025 BECA INDUSTRIAL. PRECISION ENGINEERED. ALL RIGHTS RESERVED.",
     "footer.safety": "Safety Compliance", "footer.support": "Technical Support", "footer.privacy": "Privacy Policy",
     "footer.demo": "Demo concept · fictional company by Mario Huarte for portfolio",
-    "toast.success": "Inquiry transmitted — a specialist will contact you within 2 hours.",
+    "lab.note": "Mahuno Studio Lab demo · fictional company", "lab.back": "← Lab", "lab.studio": "← Mahuno Studio",
+    "form.demo": "Demo form — no data is sent.",
+    "toast.success": "Demo form: nothing was sent. On a real site a specialist would contact you within 2 hours.",
     "search.empty": "No matches"
   },
   es: {
@@ -2845,7 +2850,7 @@ const I18N = {
     "tools.cost.desc": "Estima el costo unitario de un ensamble de manguera a medida según longitud, material y complejidad.",
     "tools.cost.length": "Longitud (m)", "tools.cost.material": "Material", "tools.cost.complexity": "Complejidad",
     "tools.cost.simple": "Simple (recta)", "tools.cost.standard": "Estándar (1-2 conexiones)", "tools.cost.complex": "Compleja (3+ conexiones, ángulo)",
-    "tools.cost.estimate": "Costo estimado", "tools.cost.note": "USD · indicativo · cotización final puede variar ±15%.",
+    "tools.cost.estimate": "Costo estimado", "tools.cost.note": "MXN · indicativo · IVA 16% opcional · la cotización final puede variar ±15%.",
     "tools.tol.title": "Simulador de tolerancias",
     "tools.tol.desc": "Dada una cota nominal y un grado IT ISO, obtén los límites y el método de manufactura recomendado.",
     "tools.tol.nominal": "Nominal (mm)", "tools.tol.grade": "Grado IT (ISO 286)", "tools.tol.range": "Rango ±", "tools.tol.method": "Recomendado",
@@ -2890,7 +2895,7 @@ const I18N = {
     "tools.cost.iva":"Incluir IVA (16%)",
     "tools.cost.discount":"Descuento por volumen",
     "tools.cost.disc0":"Sin descuento",
-    "tools.tol.formula":"Fórmula: IT = k × D⁰·⁴⁵ / 1000 mm · Aproximación ISO 286-1:2010 · solo referencia",
+    "tools.tol.formula":"Fórmula: IT ≈ k × D⁰·⁴⁵ / 1000 mm · aproximación didáctica, no la norma ISO 286 oficial · solo referencia",
     "materials.tag": "Base de datos de materiales",
     "materials.title": "Comparador de materiales",
     "materials.subtitle": "Propiedades lado a lado de los elastómeros, termoplásticos y metales usados en nuestras familias de mangueras. Filtra por aplicación.",
@@ -2965,7 +2970,9 @@ const I18N = {
     "footer.copy": "© 2025 BECA INDUSTRIAL. INGENIERÍA DE PRECISIÓN. TODOS LOS DERECHOS RESERVADOS.",
     "footer.safety": "Cumplimiento de seguridad", "footer.support": "Soporte técnico", "footer.privacy": "Política de privacidad",
     "footer.demo": "Concepto demo · empresa ficticia por Mario Huarte para portafolio",
-    "toast.success": "Consulta transmitida — un especialista te contactará en 2 horas.",
+    "lab.note": "Demo del Laboratorio de Mahuno Studio · empresa ficticia", "lab.back": "← Laboratorio", "lab.studio": "← Mahuno Studio",
+    "form.demo": "Formulario de demostración — no envía datos.",
+    "toast.success": "Formulario de demostración: no se envió nada. En un sitio real, un especialista te contactaría en 2 horas.",
     "search.empty": "Sin resultados"
   }
 };
@@ -2989,7 +2996,7 @@ function applyI18n(lang) {
 function toggleLang() {
   const cur = document.documentElement.getAttribute('data-lang') || 'en';
   const next = cur === 'es' ? 'en' : 'es';
-  localStorage.setItem('beca.lang', next);
+  lsSet('beca.lang', next);
   applyI18n(next);
   // Re-render contenido dinámico que mezcla idioma con datos
   if (typeof renderMaterials === "function") {
@@ -3030,7 +3037,7 @@ function applyTheme(theme) {
 function toggleTheme() {
   const cur = document.documentElement.getAttribute('data-theme') || 'light';
   const next = cur === 'dark' ? 'light' : 'dark';
-  localStorage.setItem('beca.theme', next);
+  lsSet('beca.theme', next);
   applyTheme(next);
   // Re-render contenido que lee CSS vars en JS (Chart.js no escucha el cambio).
   if (typeof setupKPIs === "function" && document.getElementById("page-tools")?.classList.contains("active")) {

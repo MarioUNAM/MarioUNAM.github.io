@@ -1072,18 +1072,28 @@
   var nav = document.getElementById('mobile-nav');
   var cls = document.getElementById('nav-close');
   if(!btn || !nav) return;
+  // main.css anima #mobile-nav con la clase .open (opacity 0→1, translateX).
+  // Antes solo se cambiaba display, así que el menú quedaba con opacity:0 (invisible).
+  var isOpen = false;
   function openNav(){
+    isOpen = true;
     nav.style.display = 'flex';
     nav.style.background = 'var(--surface-container-low)';
     document.body.style.overflow = 'hidden';
     btn.setAttribute('aria-expanded','true');
+    // Siguiente frame: ya con display:flex, la clase dispara la transición
+    requestAnimationFrame(function(){ nav.classList.add('open'); });
   }
   function closeNav(){
-    nav.style.display = 'none';
+    if(!isOpen) return;
+    isOpen = false;
+    nav.classList.remove('open');
     document.body.style.overflow = '';
     btn.setAttribute('aria-expanded','false');
+    // Oculta al terminar la transición (350 ms en main.css)
+    setTimeout(function(){ if(!isOpen) nav.style.display = 'none'; }, 350);
   }
-  btn.addEventListener('click', function(){ nav.style.display === 'flex' ? closeNav() : openNav(); });
+  btn.addEventListener('click', function(){ isOpen ? closeNav() : openNav(); });
   if(cls) cls.addEventListener('click', closeNav);
   document.querySelectorAll('.mobile-nav-link').forEach(function(l){ l.addEventListener('click', closeNav); });
   document.addEventListener('keydown', function(e){ if(e.key === 'Escape') closeNav(); });

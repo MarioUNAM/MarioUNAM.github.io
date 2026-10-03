@@ -19,7 +19,9 @@
     --c-dim:    #4a4a44;
     --c-muted:  #666660; /* 5.5:1 sobre --c-paper (antes #7a7a72 ≈ 4.1:1) */
     --c-line:   #e6e5dd;
-    --c-accent: #0a7da3;
+    /* #0a7da3 (token canónico de 10-identidad) da 4.49:1 sobre --c-paper: un pelo bajo AA en texto
+       chico. Regla de MAHUNOStudio/.impeccable.md: en web se usa #08739a (5.1:1; blanco encima 5.3:1). */
+    --c-accent: #08739a;
     --c-warm:   #b8501a;
   }
   :root[data-theme="dark"] {
@@ -38,6 +40,8 @@
   body { font-family: 'Inter', sans-serif; }
   ::selection { background: var(--c-accent); color: var(--c-paper); }
   *:focus-visible { outline: 2px solid var(--c-accent); outline-offset: 3px; border-radius: 3px; }
+  /* Enlaces del pie: medían 18-20 px de alto; en el celular se tocan con el dedo (WCAG 2.5.8) */
+  footer a { display: inline-block; padding-block: 0.375rem; }
 }
 
 @tailwind components;

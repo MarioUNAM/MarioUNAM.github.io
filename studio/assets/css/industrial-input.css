@@ -4,3 +4,8 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+/* Enlaces del pie: medían 15-16 px de alto; en el celular se tocan con el dedo (WCAG 2.5.8) */
+@layer base {
+  footer a { display: inline-block; padding-block: 0.375rem; }
+}

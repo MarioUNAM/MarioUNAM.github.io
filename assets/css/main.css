@@ -76,13 +76,15 @@
   --surface-variant:            #e0dbd1;
   --on-surface:                 #0d1b2a;
   --on-surface-variant:         #3a4a56;
-  /* #4cd6fb on white = 2.4:1 (fails AA); #0099c2 = 4.6:1 (passes AA) */
-  --primary:                    #0099c2;
+  /* Medido 2026-10-02 (Playwright + fórmula WCAG): #0099c2 daba 2.9:1 sobre #f6f1e7 y 3.3:1
+     sobre blanco — el "4.6:1" que decía este comentario era falso y el modo claro no cumplía AA.
+     #00677f: 5.8:1 sobre --surface, 4.9:1 sobre --surface-container; blanco encima 6.5:1. */
+  --primary:                    #00677f;
   --primary-container:          #cceef9;
   --on-primary:                 #ffffff;
-  --secondary:                  #007a9c;
+  --secondary:                  #00627a;
   --tertiary:                   #005e78;
-  --outline:                    #6b7b84;
+  --outline:                    #55636b;  /* era #6b7b84: 3.9:1; ahora 5.5:1 */
   --outline-variant:            #b8c4c9;
   --inverse-surface:            #0d1b2a;
   --error:                      #ba1a1a;
@@ -110,7 +112,7 @@ body {
 /* Text selection */
 ::selection {
   background: rgba(76, 214, 251, 0.25);
-  color: #4cd6fb;
+  color: var(--primary);
 }
 
 /* ── Focus-visible (a11y) ─────────────────────────────────
@@ -161,7 +163,7 @@ input:focus-visible, textarea:focus-visible, select:focus-visible {
 
 /* Active nav link dot indicator */
 .nav-link-active {
-  color: #4cd6fb !important;
+  color: var(--primary) !important; /* era #4cd6fb fijo: 1.6:1 en modo claro */
   position: relative;
 }
 .nav-link-active::after {
@@ -172,7 +174,7 @@ input:focus-visible, textarea:focus-visible, select:focus-visible {
   transform: translateX(-50%);
   width: 4px;
   height: 4px;
-  background: #4cd6fb;
+  background: var(--primary);
   border-radius: 50%;
 }
 
@@ -379,7 +381,7 @@ input:focus-visible, textarea:focus-visible, select:focus-visible {
 }
 .btn-outline:hover {
   border-color: rgba(76, 214, 251, 0.5);
-  color: #4cd6fb;
+  color: var(--primary);
   background: rgba(76, 214, 251, 0.05);
 }
 

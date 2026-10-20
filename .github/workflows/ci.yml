@@ -19,8 +19,8 @@ jobs:
       - name: Enlaces internos válidos
         run: node scripts/check-links.js
       - name: HTML válido
-        run: npx --yes html-validate@11 "index.html" "404.html" "contact-*.html" "projects/*.html" "studio/**/*.html"
+        run: npx --yes html-validate@11 "index.html" "404.html" "contact-*.html" "projects/*.html"
       - name: CSS de Tailwind compilado y sin cambios pendientes
         run: |
-          npm run build:css:all
-          git diff --exit-code -- assets/css/tailwind.css studio/assets/css/tailwind.css studio/assets/css/industrial.css
+          npm run build:css
+          git diff --exit-code -- assets/css/tailwind.css

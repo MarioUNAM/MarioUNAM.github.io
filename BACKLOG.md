@@ -1,5 +1,27 @@
 # BACKLOG — mariounam.github.io
 
+Backlog único del proyecto (dueño: Mario). Desde el 2026-10-20 absorbe `IMPROVEMENTS.md` (archivo
+local, borrado ese día con autorización de Mario; estaba vencido: hablaba del tracker, eliminado el 2026-09-30, y de Beca Industrial, que vive en
+`studio/`). Lo abierto va en §0; de §1 en adelante está la auditoría del 2026-09-30 como historial.
+
+## 0. Abierto (revisado 2026-10-20)
+
+| # | Pendiente | Dónde | Prio | Esf. | ¿Decisión? |
+|---|---|---|---|---|---|
+| ~~B1~~ ✅ | **HECHO 2026-10-20** (Mario autorizó el borrado; `/studio/` queda en 404, sin aviso ni redirección). **Retirar `studio/` del repo**: MAHUNOStudio pasó a la familia Amox (decisión de Mario, 2026-10-20). Hay que quitar la carpeta, el enlace «Studio ↗» del menú (escritorio y móvil), las claves i18n que lo mencionan, las 5 entradas del `sitemap.xml`, los scripts `build:css:studio/industrial` de `package.json`, `studio/**` en `ci.yml` y `tailwind.config.js`, `assets/img/mahunostudio*` y `assets/vendor/` (sólo los usa el demo industrial). | `index.html` (menús), `assets/js/i18n.js`, `sitemap.xml`, `package.json`, `.github/workflows/ci.yml`, `tailwind.config.js` | P1 | M | **Sí**: autorizar el borrado; confirmar que MAHUNOStudio ya tiene su copia, y decidir qué pasa con `mariounam.github.io/studio/` (dejar un aviso con enlace a la nueva URL o un 404) |
+| B2 | Documentación vencida: `CLAUDE.md` todavía describe el tracker (regla del SW, estructura); `README.md` dice «Tailwind CDN» en el stack y la sección del formulario pide «activar» un Formspree que ya está activo; ADR-002 (tracker) sin marcar como retirado. | `CLAUDE.md`, `README.md`, `.obsidian_base/registros/2_Registro_Decisiones.md` | P2 | S | No |
+| B3 | Comentario HTML del formulario que todavía dice «Para activarlo…» (el endpoint ya es real). | `index.html` (comentario arriba de `#contact-form`) | P3 | S | No |
+| ~~B4~~ ✅ | **HECHO 2026-10-20** (borrados con autorización de Mario). Archivos sin referencia: `assets/fonts/material-symbols-outlined.woff2` y `assets/css/material-symbols.css` (los iconos se sirven de Google Fonts, 5.6). | `assets/fonts/`, `assets/css/` | P3 | S | **Sí**: autorizar el borrado |
+| B5 | SEO tras el deploy: validar la OG card (opengraph.xyz) y dar de alta `sitemap.xml` en Google Search Console. | externo | P2 | S | Lo hace Mario con su cuenta de Google |
+| B6 | Testimonios reales con consentimiento escrito (la sección se oculta sola mientras no haya). | `assets/js/i18n.js` `testimonials.items.*` | P3 | S | Depende de que Mario los consiga |
+| B7 | WebP de `me.jpg` (12 KB). `og-card.png` (90 KB) se queda en PNG, que es lo que leen bien las redes sociales. Impacto bajo. | `assets/img/` | P3 | S | No |
+
+**Descartado al unir con `IMPROVEMENTS.md`**: dividir `i18n.js` por idioma (hoy pesa 31 KB tras la
+purga de 2.5, ya no vale la pena); todo lo del tracker (✂️, ya no está en el repo); lo de Beca
+Industrial y el `aria-label` de sus datalist (se va con `studio/` a MAHUNOStudio).
+
+---
+
 Auditoría del 2026-09-30 sobre `main` (commit `1a0fb20`). Ítems marcados ✅ se corrigieron el mismo día en la rama `claude/compassionate-einstein-5xjhk8`. Contrastada contra el CV vigente
 (MDM Consultant | TIBCO EBX Developer, Alldatum, Aug 2023–Presente).
 
@@ -140,7 +162,7 @@ Esfuerzo: S (< 1 h) · M (1–4 h) · L (> 4 h).
 
 ## 9. Estado final (2026-09-30)
 
-Todo lo aplicable está hecho (✅), descartado por decisión (⏸) o fuera de alcance por la eliminación del tracker (✂️). No quedan ítems abiertos.
+Todo lo aplicable está hecho (✅), descartado por decisión (⏸) o fuera de alcance por la eliminación del tracker (✂️). No quedan ítems abiertos de esta auditoría; lo nuevo va en §0.
 
 ## 9b. Orden que se siguió
 

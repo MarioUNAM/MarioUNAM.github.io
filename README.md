@@ -133,37 +133,7 @@ projects/
 
 Cada página usa el **Tailwind compilado** + `assets/css/main.css`. El diccionario ES/EN va inline en `window.I18N`; la lógica (idioma, tema, storage seguro) es compartida en `assets/js/subpage.js`. Las páginas de contacto y `404.html` usan el mismo script.
 
-> **Nota:** `projects/beca_industrial.html` se movió a `studio/lab/industrial/index.html` como demo navegable del **Mahuno Studio Laboratorio**.
-
----
-
-## Mahuno Studio — `studio/`
-
-Sub-dominio dentro del repo para la práctica comercial de rebranding para PyMEs mexicanas. Identidad visual propia (papel cálido + cyan profundo) inspirada en Linear/Vercel/Posthog, separada del portfolio principal pero enlazada desde el nav y un banner destacado en `index.html`.
-
-```
-studio/
-├── index.html              # Landing — hero, qué es, método 5 pasos, lab teaser, casos teaser, contacto
-├── lab/
-│   ├── index.html          # Catálogo con 4 mockups visuales (servicio local · restaurante · retail · profesional)
-│   └── industrial/
-│       └── index.html      # Demo navegable industrial (antes projects/beca_industrial.html)
-└── casos/
-    ├── index.html          # Listado de casos
-    └── don-peter/
-        └── index.html      # Caso 01 — placeholder realista de rebranding completo
-```
-
-El demo industrial (`studio/lab/industrial/`) es un demo conceptual extendido: 7 sub-páginas SPA, Leaflet (mapa de cobertura), Chart.js (KPIs), tabla comparativa de materiales, calculadora de costos, simulador de tolerancias ISO 286 (aproximación didáctica), glosario, búsqueda Ctrl+K, modo presentación e impresión. Su formulario es de demostración y no envía datos.
-
-**CSS de Studio (sin CDN):** dos bundles compilados con Tailwind:
-
-| Bundle | Config | Entrada | Páginas |
-|--------|--------|---------|---------|
-| `studio/assets/css/tailwind.css` | `studio/tailwind.config.js` | `studio/assets/css/tailwind-input.css` (tokens `--c-*`, fuentes, componentes en `@layer`) | index, lab, casos, don-peter |
-| `studio/assets/css/industrial.css` | `studio/lab/industrial/tailwind.config.js` (hereda el de Studio, solo cambia `content`) | `studio/assets/css/industrial-input.css` | industrial |
-
-`npm run build:css:all` compila ambos más el de la raíz. El JS común de menú móvil y tema está en `studio/assets/js/studio.js`.
+> **Mahuno Studio ya no está aquí.** El sub-sitio `studio/` (y su demo industrial, Chart.js y Leaflet en `assets/vendor/`) se retiró del repo el 2026-10-20: pasó a la familia Amox como producto MAHUNOStudio. `mariounam.github.io/studio/` ya no existe (da 404). Si hace falta, el código está en el historial de git.
 
 ---
 
@@ -219,14 +189,14 @@ python -m http.server 8080
 ```bash
 node scripts/i18n-check.js     # claves i18n coherentes
 node scripts/check-links.js    # enlaces internos
-npx html-validate@11 index.html 404.html contact-*.html projects/*.html "studio/**/*.html"
+npx html-validate@11 index.html 404.html contact-*.html projects/*.html
 ```
 
 Para Lighthouse local: Chrome DevTools → Lighthouse → run en mobile + desktop.
 
 ## Librerías de terceros
 
-Chart.js 4.4.1 y Leaflet 1.9.4 se sirven desde `assets/vendor/` (copiadas del paquete npm), sin CDN. Cada página lleva una `Content-Security-Policy` por `<meta>` que solo permite su propio origen (y Google Fonts / Formspree donde aplica).
+El sitio no usa librerías de JS de terceros (Chart.js y Leaflet se fueron con `studio/`). Cada página lleva una `Content-Security-Policy` por `<meta>` que solo permite su propio origen (y Google Fonts / Formspree donde aplica).
 
 ## CI
 
@@ -237,7 +207,7 @@ Chart.js 4.4.1 y Leaflet 1.9.4 se sirven desde `assets/vendor/` (copiadas del pa
 | Claves i18n coherentes (usadas vs definidas, EN vs ES) | `node scripts/i18n-check.js` |
 | Enlaces internos válidos (href/src apuntan a archivos existentes) | `node scripts/check-links.js` |
 | HTML válido | `npx html-validate@11` con `.htmlvalidate.json` |
-| CSS de Tailwind compilado sin cambios pendientes | `npm run build:css:all` + `git diff --exit-code` |
+| CSS de Tailwind compilado sin cambios pendientes | `npm run build:css` + `git diff --exit-code` |
 
 Corre los tres primeros en local antes de subir; si cambias clases de Tailwind, recompila y sube el CSS.
 

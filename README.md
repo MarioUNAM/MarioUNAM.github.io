@@ -217,4 +217,4 @@ Corre los tres primeros en local antes de subir; si cambias clases de Tailwind, 
 
 ## Archivos no rastreados
 
-`IMPROVEMENTS.md`, `NOTES.md`, `TODO.md` están en `.gitignore` — son notas internas locales, no se publican.
+`NOTES.md` y `TODO.md` están en `.gitignore` (`IMPROVEMENTS.md` se unió a `BACKLOG.md` el 2026-10-20) — son notas internas locales, no se publican.

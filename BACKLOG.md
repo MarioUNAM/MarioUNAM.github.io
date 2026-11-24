@@ -15,10 +15,25 @@ local, borrado ese día con autorización de Mario; estaba vencido: hablaba del 
 | B5 | SEO tras el deploy: validar la OG card (opengraph.xyz) y dar de alta `sitemap.xml` en Google Search Console. | externo | P2 | S | Lo hace Mario con su cuenta de Google |
 | B6 | Testimonios reales con consentimiento escrito (la sección se oculta sola mientras no haya). | `assets/js/i18n.js` `testimonials.items.*` | P3 | S | Depende de que Mario los consiga |
 | B7 | WebP de `me.jpg` (12 KB). `og-card.png` (90 KB) se queda en PNG, que es lo que leen bien las redes sociales. Impacto bajo. | `assets/img/` | P3 | S | No |
+| B8 | Vulnerabilidades del vigía (2026-11-20, 7): se trabajan en el grupo **G1** de abajo. | `package-lock.json` | P2 | S | No (se actualizó) |
 
 **Descartado al unir con `IMPROVEMENTS.md`**: dividir `i18n.js` por idioma (hoy pesa 31 KB tras la
 purga de 2.5, ya no vale la pena); todo lo del tracker (✂️, ya no está en el repo); lo de Beca
 Industrial y el `aria-label` de sus datalist (se va con `studio/` a MAHUNOStudio).
+
+## Grupos
+
+> Formato estándar: D:\PERSONAL\04_Herramientas\plantillas\backlog-estandar.md
+> Tamaños: S = 1 punto · M = 3 · B = 8; grupo ≤ 14 puntos, una zona.
+
+### G1 · Vulnerabilidades de dependencias de desarrollo · repo
+Estado: en curso — `npm audit fix` aplicado 2026-11-24 (sólo `package-lock.json`; `npm audit`: 0 vulnerabilidades). Falta commit + push (lo autoriza Mario) y que el vigía las dé por cerradas.
+Todas transitivas de `tailwindcss@3.4.19` (devDependency; sólo corre en el build, nada llega al sitio publicado).
+- [x] SEG1 · `nanoid` 3.3.12 → 3.3.20 (CVE-2026-67213 alta, CVE-2026-67214 alta: bucle infinito) · S
+- [x] SEG2 · `postcss` 8.5.15 → 8.5.33 (CVE-2026-73646 alta, CVE-2026-69153 media: lectura de `.map` arbitrarios) · S
+- [x] SEG3 · `source-map-js` 1.2.1 → 1.2.4 (CVE-2026-93749 alta: DoS) · S
+- [x] SEG4 · `postcss-selector-parser` 6.1.2 → 6.1.6 (CVE-2026-104844 media, CVE-2026-9358 baja: DoS; ya no arrastra `cssesc`) · S
+- [ ] SEG5 · commit `chore(repo): actualizar dependencias transitivas de tailwind (npm audit fix)`, push y CI/Pages en `success` · S
 
 ---
 
